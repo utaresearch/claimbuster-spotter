@@ -71,8 +71,9 @@ def parse_tags():
 def write_pickle(df):
     global args
 
-    loc = args.output_pkl.find('/', args.output_pkl.find('/') + 1)
-    print(args.output_pkl[loc:])
+    path = args.output_pkl[:args.output_pkl.find('/', args.output_pkl.find('/') + 1)]
+    if not os.path.exists(path):
+        os.mkdir(path)
 
     with open(args.output_pkl, 'wb') as f:
         pickle.dump(df, f)
