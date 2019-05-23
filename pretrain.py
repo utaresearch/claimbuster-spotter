@@ -27,7 +27,7 @@ def validation_stats(sess, cost, acc, batch_x, batch_y):
         feed_dict={
             x: pad_seq(batch_x),
             x_len: len(batch_x),
-            y: pad_seq(batch_y)
+            y: batch_y
         }
     )
     val_acc = sess.run(
@@ -35,7 +35,7 @@ def validation_stats(sess, cost, acc, batch_x, batch_y):
         feed_dict={
             x: pad_seq(batch_x),
             x_len: len(batch_x),
-            y: pad_seq(batch_y)
+            y: batch_y
         }
     )
 
@@ -65,7 +65,7 @@ def batch_stats(sess, batch_x, batch_y, cost, acc):
         feed_dict={
             x: pad_seq(batch_x),
             x_len: len(batch_x),
-            y: pad_seq(batch_y)
+            y: batch_y
         }
     )
     train_acc = sess.run(
@@ -73,7 +73,7 @@ def batch_stats(sess, batch_x, batch_y, cost, acc):
         feed_dict={
             x: pad_seq(batch_x),
             x_len: len(batch_x),
-            y: pad_seq(batch_y)
+            y: batch_y
         }
     )
 
@@ -86,7 +86,7 @@ def train_neural_network(sess, optimizer, batch_x, batch_y):
         feed_dict={
             x: pad_seq(batch_x),
             x_len: len(batch_x),
-            y: pad_seq(batch_y)
+            y: batch_y
         }
     )
 
