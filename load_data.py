@@ -48,10 +48,8 @@ def parse_tags():
 
     parser = argparse.ArgumentParser(description="Convert .json file to directory hierarchy and apply data transf.")
     parser.add_argument("--output_pkl", default="./output/prc_data.pkl")
-    parser.add_argument("--json_loc", default="../data/data_large.json",
-                        help="NOTE: relative to ./data_utils")
-    parser.add_argument("--w2v_loc", default="../data/word2vec/GoogleNews-vectors-negative300.bin",
-                        help="NOTE: relative to ./data_utils")
+    parser.add_argument("--json_loc", default="./data/data_large.json")
+    parser.add_argument("--w2v_loc", default="./data/word2vec/GoogleNews-vectors-negative300.bin")
     parser.add_argument("--train_pct", type=int, default=75)
     parser.add_argument("--noun_rep", type=bool, default=False)
     parser.add_argument("--full_tags", type=bool, default=False)
