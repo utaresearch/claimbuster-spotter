@@ -33,9 +33,6 @@ def parse_json():
         f = temp_data[i]
         lab = f["label"]
         txt = list(cont.expand_texts([f["text"]], precise=True))[0]
-        print(lab)
-        print(f["text"])
-        print(txt)
         if args.noun_rep:
             dl.append(Sample(lab, transf.process_sentence_noun_rep(txt)))
         elif args.full_tags:
