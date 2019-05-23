@@ -4,7 +4,8 @@ flags = tf.flags
 FLAGS = flags.FLAGS
 
 # Data
-flags.DEFINE_string('data_pkl_loc', './output/prc_data.pickle', 'Train on top of w2v embeddings')
+flags.DEFINE_string('data_dir', './output', 'Location of outputs')
+flags.DEFINE_string('data_pkl_loc', './output/prc_data.pickle', 'Location of prc data')
 flags.DEFINE_float('train_pct', .70, 'Training percentage')
 flags.DEFINE_float('validation_pct', .05, 'Validation percentage')
 flags.DEFINE_float('test_pct', .25, 'Testing percentage')
@@ -16,6 +17,8 @@ flags.DEFINE_integer('test_examples', None, 'Number of testing examples')
 flags.DEFINE_integer('random_state', 42, 'State of consistent pseudo-randomness')
 
 # Embeddings
+flags.DEFINE_string('w2v_loc', 'data/word2vec/GoogleNews-vectors-negative300.bin',
+  'Location of w2v embeddings')
 flags.DEFINE_bool('transfer_learn_w2v', False, 'Train on top of w2v embeddings')
 
 # Adversarial and virtual adversarial training parameters.
@@ -60,24 +63,13 @@ flags.DEFINE_integer('num_timesteps', 100, 'Number of timesteps for BPTT')
 # Model architecture
 flags.DEFINE_bool('bidir_lstm', True, 'Whether to build a bidirectional LSTM.')
 # flags.DEFINE_bool('dropout', True, 'Whether to build a bidirectional LSTM.')
-flags.DEFINE_bool('single_label', True, 'Whether the sequence has a single '
-                  'label, for optimization.')
 flags.DEFINE_integer('rnn_num_layers', 1, 'Number of LSTM layers.')
 flags.DEFINE_integer('rnn_cell_size', 512,
                      'Number of hidden units in the LSTM.')
-flags.DEFINE_integer('cl_num_layers', 1,
-                     'Number of hidden layers of classification model.')
-flags.DEFINE_integer('cl_hidden_size', 30,
-                     'Number of hidden units in classification layer.')
-flags.DEFINE_integer('num_candidate_samples', -1,
-                     'Num samples used in the sampled output layer.')
-flags.DEFINE_bool('use_seq2seq_autoencoder', False,
-                  'If True, seq2seq auto-encoder is used to pretrain. '
-                  'If False, standard language model is used.')
 
 # Vocabulary and embeddings
 flags.DEFINE_integer('embedding_dims', 256, 'Dimensions of embedded vector.')
-flags.DEFINE_bool('normalize_embeddings', True,
+flags.DEFINE_bool('normalize_embeddings', False,
                   'Normalize word embeddings by vocab frequency')
 
 # Optimization
@@ -89,9 +81,5 @@ flags.DEFINE_float('learning_rate_decay_factor', 1.0,
 # Regularization
 flags.DEFINE_float('max_grad_norm', 1.0,
                    'Clip the global gradient norm to this value.')
-flags.DEFINE_float('keep_prob_emb', 1.0, 'keep probability on embedding layer. '
+flags.DEFINE_float('keep_prob_emb', 0.7, 'keep probability on embedding layer. '
                    '0.5 is optimal on IMDB with virtual adversarial training.')
-flags.DEFINE_float('keep_prob_lstm_out', 1.0,
-                   'keep probability on lstm output.')
-flags.DEFINE_float('keep_prob_cl_hidden', 1.0,
-                   'keep probability on classification hidden layer')

@@ -1,26 +1,43 @@
 import tensorflow as tf
+
+from gensim.models import KeyedVectors
 import numpy as np
+from tensorflow.python.framework import ops
+from tensorflow.python.ops import control_flow_ops
+from tensorflow.python.ops import state_ops
+
 K = tf.keras
 
 
-class Embedding(K.layers.layer):
+class Embedding(K.layers.Layer):
     def __init__(self, vocab_size,
                  embedding_dim, normalize=False,
                  vocab_freqs=None, vocab_list=None,
                  keep_prob=1., w2v_loc=None,
-                 transfer_learn_w2v=False,
-                 **kwargs):
+                 transfer_learn_w2v=False, data_dir=None):
         self.vocab_size = vocab_size
         self.embedding_dim = embedding_dim
         self.normalized = normalize
         self.keep_prob = keep_prob
+        self.vocab_freqs = vocab_freqs
         self.vocab_list = vocab_list
         self.w2v_loc = w2v_loc
         self.transfer_learn_w2v = transfer_learn_w2v
+        self.data_dir = data_dir
 
-        super(Embedding, self).__init__(**kwargs)
+        tern = " " if self.transfer_learn_w2v else " not "
+        tf.logging.info("w2v embeddings will" + tern + "be trained on.")
 
-    def return_initialized_value(self, *args, **kwargs):
+        self.embedding_matrix_tf = self.create_embedding_matrix()
+
+        if normalize:
+            assert vocab_freqs is not None
+            self.vocab_freqs = tf.constant(
+                vocab_freqs, dtype=tf.float32, shape=(vocab_size, 1))
+
+        super(Embedding, self).__init__()
+
+    def return_initialized_value(self):
         var = self.embedding_matrix_tf
         with ops.init_scope():
             return control_flow_ops.cond(state_ops.is_variable_initialized(var),
@@ -108,8 +125,7 @@ class Embedding(K.layers.layer):
             # This slightly improves performance.
             # Please see https://arxiv.org/abs/1512.05287 for the theoretical
             # explanation.
-            embedded = tf.nn.dropout(
-                embedded, self.keep_prob, noise_shape=(shape[0], 1, shape[2]))
+            embedded = tf.nn.dropout(embedded, self.keep_prob, noise_shape=(shape[0], 1, shape[2]))
         return embedded
 
     def _normalize(self, emb):

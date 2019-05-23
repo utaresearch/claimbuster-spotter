@@ -1,6 +1,7 @@
 import tensorflow as tf
 import sys
 sys.path.append('..')
+from embedding import Embedding
 from flags import FLAGS
 
 
@@ -13,7 +14,13 @@ class RecurrentModel:
         return yhat, self.compute_loss(y, yhat)
 
     def build_lstm(self, x):
-        embed = tf.contrib.layers.embed_sequence(x, vocab_size=int(100), embed_dim=FLAGS.embedding_dims)
+        # embed = tf.contrib.layers.embed_sequence(x, vocab_size=int(100), embed_dim=FLAGS.embedding_dims)
+
+        embed = Embedding(FLAGS.vocab_size, FLAGS.embedding_dims, FLAGS.normalize_embeddings,
+                          FLAGS.keep_prob, FLAGS.keep_prob_emb, FLAGS.vocab_freqs, FLAGS.vocab_list,
+                          FLAGS.w2v_loc, FLAGS.transfer_learn_w2v, FLAGS.data_dir)
+        exit()
+
         lstm = tf.nn.rnn_cell.MultiRNNCell([self.get_lstm() for _ in range(FLAGS.rnn_num_layers)])
 
         output, state = tf.nn.dynamic_rnn(cell=lstm, inputs=embed, dtype=tf.float32)
