@@ -14,8 +14,7 @@ class RecurrentModel:
         return yhat, self.compute_loss(y, yhat)
 
     def build_lstm(self, x):
-        print(self.embed)
-        exit()
+
 
         lstm = tf.nn.rnn_cell.MultiRNNCell([self.get_lstm() for _ in range(FLAGS.rnn_num_layers)])
 

@@ -122,10 +122,6 @@ def main():
         sess.run(tf.global_variables_initializer())
         embed_obj.init_embeddings(sess)
 
-        print(tf.get_default_graph().get_tensor_by_name("embedding:0").eval())
-
-        exit()
-
         start = time.time()
 
         for epoch in range(FLAGS.max_steps):
