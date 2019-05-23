@@ -26,7 +26,7 @@ def validation_stats(sess, cost, acc, batch_x, batch_y):
         feed_dict={
             x: pad_seq(batch_x),
             x_len: [len(el) for el in batch_x],
-            y: batch_y
+            y: np.reshape(batch_y, newshape=(len(batch_y), ))
         }
     )
     val_acc = sess.run(
@@ -34,7 +34,7 @@ def validation_stats(sess, cost, acc, batch_x, batch_y):
         feed_dict={
             x: pad_seq(batch_x),
             x_len: [len(el) for el in batch_x],
-            y: batch_y
+            y: np.reshape(batch_y, newshape=(len(batch_y), ))
         }
     )
 
@@ -64,7 +64,7 @@ def batch_stats(sess, batch_x, batch_y, cost, acc):
         feed_dict={
             x: pad_seq(batch_x),
             x_len: [len(el) for el in batch_x],
-            y: batch_y
+            y: np.reshape(batch_y, newshape=(len(batch_y), ))
         }
     )
     train_acc = sess.run(
@@ -72,7 +72,7 @@ def batch_stats(sess, batch_x, batch_y, cost, acc):
         feed_dict={
             x: pad_seq(batch_x),
             x_len: [len(el) for el in batch_x],
-            y: batch_y
+            y: np.reshape(batch_y, newshape=(len(batch_y), ))
         }
     )
 
@@ -85,7 +85,7 @@ def train_neural_network(sess, optimizer, batch_x, batch_y):
         feed_dict={
             x: pad_seq(batch_x),
             x_len: [len(el) for el in batch_x],
-            y: batch_y
+            y: np.reshape(batch_y, newshape=(len(batch_y), ))
         }
     )
 
