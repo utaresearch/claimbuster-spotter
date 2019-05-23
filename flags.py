@@ -42,8 +42,7 @@ flags.DEFINE_float('adv_reg_coeff', 1.0,
                    'Regularization coefficient of adversarial loss.')
 
 # Output stats
-flags.DEFINE_integer('num_classes', 2, 'Number of classes for classification')
-flags.DEFINE_bool('multiclass_metrics', False, 'Whether to output scores for all classes')
+flags.DEFINE_integer('num_classes', 3, 'Number of classes for classification')
 
 flags.DEFINE_string('data_dir', '/tmp/IMDB',
                     'Directory path to preprocessed text dataset.')
