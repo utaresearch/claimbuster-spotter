@@ -28,23 +28,19 @@ def parse_json():
         temp_data = json.load(f)
     dl = []
 
-    print(temp_data)
-
     load_dependencies()
     for i in tqdm(range(len(temp_data)), ascii=True):
         f = temp_data[i]
-        f = cont._expand_text(f["text"])
+        lab = f["label"]
+        txt = cont._expand_text(f["text"])
         if args.noun_rep:
-            dl.append(
-                Sample(str(int(f["label"])), transf.process_sentence_noun_rep()))
+            dl.append(Sample(lab, transf.process_sentence_noun_rep(txt)))
         elif args.full_tags:
-            dl.append(
-                Sample(str(int(f["label"])), transf.process_sentence_full_tags(cont._expand_text(f["text"]))))
+            dl.append(Sample(lab, transf.process_sentence_full_tags(txt)))
         elif args.ner_spacy:
-            dl.append(
-                Sample(str(int(f["label"])), transf.process_sentence_ner_spacy(cont._expand_text(f["text"]))))
+            dl.append(Sample(lab, transf.process_sentence_ner_spacy(txt)))
         else:
-            dl.append(Sample(str(int(f["label"]) + 1), cont._expand_text(f["text"])))
+            dl.append(Sample(lab, txt))
     return dl
 
 
