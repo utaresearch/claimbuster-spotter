@@ -66,12 +66,12 @@ class Embedding(K.layers.Layer):
             sess.close()
 
         embedding_matrix = np.zeros((self.vocab_size, self.embedding_dim), dtype=np.dtype('float32'))
+
         tf.logging.info("Loading word2vec model...")
         model = KeyedVectors.load_word2vec_format(self.w2v_loc, binary=True)
         tf.logging.info("Model loaded.")
 
-        idx, fail_cnt, fail_words, tot_cnt = 0, 0, [], 0
-        tot_cnt = 0
+        idx, fail_cnt, fail_words = 0, 0, []
         for word in self.vocab_list:
             try:
                 embedding_vector = model[word]
@@ -79,12 +79,11 @@ class Embedding(K.layers.Layer):
             except:
                 fail_cnt = fail_cnt + 1
                 fail_words.append(word)
-            tot_cnt = tot_cnt + 1
             idx = idx + 1
 
         fail_words.sort()
-        tf.logging.info(str(fail_cnt) + " out of " + str(
-            tot_cnt) + " strings were not found in word2vec and were defaulted to zeroes.")
+        tf.logging.info(str(fail_cnt) + " out of " + str(idx) +
+                        " strings were not found in word2vec and were defaulted to zeroes.")
         tf.logging.info(fail_words)
 
         var_to_return = tf.Variable(embedding_matrix)
