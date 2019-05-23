@@ -20,7 +20,7 @@ class RecurrentModel:
         vocab_freqs = 0
         vocab_list = 0
         embed = Embedding(vocab_size, FLAGS.embedding_dims, FLAGS.normalize_embeddings,
-                          FLAGS.keep_prob, FLAGS.keep_prob_emb, vocab_freqs, vocab_list,
+                          FLAGS.keep_prob_emb, vocab_freqs, vocab_list,
                           FLAGS.w2v_loc, FLAGS.transfer_learn_w2v, FLAGS.data_dir)
         exit()
 
