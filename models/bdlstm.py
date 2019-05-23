@@ -23,7 +23,7 @@ class RecurrentModel:
         add_bias = tf.get_variable('post_lstm_bias', shape=FLAGS.num_classes,
                                    initializer=tf.contrib.layers.xavier_initializer())
 
-        return output[-1] * add_weight + add_bias
+        return tf.matmul(output[-1], add_weight) + add_bias
 
     def get_lstm(self):
         return tf.nn.rnn_cell.LSTMCell(FLAGS.rnn_cell_size)
