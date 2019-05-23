@@ -17,3 +17,6 @@ class RecurrentModel:
 
     def get_lstm(self):
         return tf.nn.rnn_cell.LSTMCell(self.num_hidden)
+
+    def compute_loss(self):
+
