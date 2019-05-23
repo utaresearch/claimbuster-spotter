@@ -11,18 +11,21 @@ K = tf.keras
 
 class Embedding(K.layers.Layer):
     def __init__(self, vocab_size,
-                 embedding_dim, normalize=False,
-                 vocab_freqs=None, vocab_list=None,
-                 keep_prob=1., w2v_loc=None,
-                 transfer_learn_w2v=False, data_dir=None):
+                 embedding_dim, normalize,
+                 vocab_freqs, vocab_list,
+                 keep_prob, w2v_loc,
+                 transfer_learn_w2v, data_dir):
         self.vocab_size = vocab_size
         self.embedding_dim = embedding_dim
         self.normalized = normalize
         self.keep_prob = keep_prob
+
         self.vocab_freqs = vocab_freqs
         self.vocab_list = vocab_list
+
         self.w2v_loc = w2v_loc
         self.transfer_learn_w2v = transfer_learn_w2v
+
         self.data_dir = data_dir
 
         tf.logging.info("w2v embeddings will{}be trained on.".format(
