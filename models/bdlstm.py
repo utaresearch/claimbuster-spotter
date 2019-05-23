@@ -16,6 +16,7 @@ class RecurrentModel:
         x = tf.unstack(x, axis=1)
         for i in range(len(x)):
             x[i] = tf.nn.embedding_lookup(embed, x[i])
+        x = tf.stack(x, axis=1)
 
         lstm = tf.nn.rnn_cell.MultiRNNCell([self.get_lstm() for _ in range(FLAGS.rnn_num_layers)])
         output, state = tf.nn.dynamic_rnn(cell=lstm, inputs=x, sequence_length=x_len, dtype=tf.float32)
