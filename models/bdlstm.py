@@ -25,6 +25,7 @@ class RecurrentModel:
         embed = Embedding(vocab_size, FLAGS.embedding_dims, FLAGS.normalize_embeddings,
                           vocab_freqs, vocab_list, FLAGS.keep_prob_emb,
                           FLAGS.w2v_loc, FLAGS.transfer_learn_w2v, FLAGS.data_dir)
+        x = embed(x)
         exit()
 
         lstm = tf.nn.rnn_cell.MultiRNNCell([self.get_lstm() for _ in range(FLAGS.rnn_num_layers)])
