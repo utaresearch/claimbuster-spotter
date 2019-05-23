@@ -120,7 +120,7 @@ def main():
         embed = Embedding()
         embed.init_embeddings(sess)
 
-        print(tf.get_variable("embedding:0"))
+        print(tf.get_default_graph().get_tensor_by_name("embedding:0"))
 
         exit()
 
