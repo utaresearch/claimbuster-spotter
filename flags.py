@@ -5,12 +5,7 @@ FLAGS = flags.FLAGS
 
 # Data
 flags.DEFINE_string('data_dir', './output', 'Location of outputs')
-flags.DEFINE_string('vocab_path', None,
-                    'Path to pre-calculated vocab frequency data. If '
-                    'None, use FLAGS.data_dir/vocab_freq.txt.')
-flags.DEFINE_string('vocab_freq_path', None,
-                    'Path to pre-calculated vocab frequency data. If '
-                    'None, use FLAGS.data_dir/vocab_freq.txt.')
+flags.DEFINE_string('vocab_path', './output/vocab.pickle', 'Path to pre-calculated vocab data')
 flags.DEFINE_string('data_pkl_loc', './output/prc_data.pickle', 'Location of prc data')
 
 # Data v2
