@@ -10,11 +10,13 @@ def main():
     args = parser.parse_args()
 
     print("Parsing vocab information...")
+
     with open(args.input, 'rb') as f:
         data = pickle.load(f)
-
     with open(args.output, 'wb') as f:
         pickle.dump(get_vocab_information(data), f)
+
+    print("Completed.")
 
 
 if __name__ == '__main__':
