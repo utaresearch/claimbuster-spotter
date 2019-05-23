@@ -2,6 +2,7 @@ import json, os, random
 from data_utils import transformations as transf
 import argparse
 import pickle
+from pycontractions import Contractions
 from tqdm import tqdm
 
 train_dir = ""
@@ -28,15 +29,16 @@ def parse_json():
     dl = []
     for i in tqdm(range(len(temp_data)), ascii=True):
         f = temp_data[i]
+        f = cont._expand_text(f["text"])
         if args.noun_rep:
             dl.append(
-                Sample(str(int(f["label"]) + 1), transf.process_sentence_noun_rep(cont._expand_text(f["text"]))))
+                Sample(str(int(f["label"])), transf.process_sentence_noun_rep()))
         elif args.full_tags:
             dl.append(
-                Sample(str(int(f["label"]) + 1), transf.process_sentence_full_tags(cont._expand_text(f["text"]))))
+                Sample(str(int(f["label"])), transf.process_sentence_full_tags(cont._expand_text(f["text"]))))
         elif args.ner_spacy:
             dl.append(
-                Sample(str(int(f["label"]) + 1), transf.process_sentence_ner_spacy(cont._expand_text(f["text"]))))
+                Sample(str(int(f["label"])), transf.process_sentence_ner_spacy(cont._expand_text(f["text"]))))
         else:
             dl.append(Sample(str(int(f["label"]) + 1), cont._expand_text(f["text"])))
     return dl
@@ -48,9 +50,8 @@ def parse_tags():
 
     parser = argparse.ArgumentParser(description="Convert .json file to directory hierarchy and apply data transf.")
     parser.add_argument("--output_pkl", default="./output/prc_data.pkl")
-    parser.add_argument("--json_loc", default="./data/data_large.json")
+    parser.add_argument("--json_loc", default="./data/data_small.json")
     parser.add_argument("--w2v_loc", default="./data/word2vec/GoogleNews-vectors-negative300.bin")
-    parser.add_argument("--train_pct", type=int, default=75)
     parser.add_argument("--noun_rep", type=bool, default=False)
     parser.add_argument("--full_tags", type=bool, default=False)
     parser.add_argument("--ner_spacy", type=bool, default=True)
@@ -74,6 +75,13 @@ def write_pickle(df):
         pickle.dump(df, f)
 
 
+def load_dependencies():
+    global cont
+
+    cont = Contractions(args.w2v_loc)
+    transf.load_dependencies(args)
+
+
 def main():
     parse_tags()
 
@@ -87,7 +95,6 @@ def main():
             print("Exiting...")
             exit()
 
-    transf.load_dependencies(args)
     print("Processing data...")
 
     dl = parse_json()
