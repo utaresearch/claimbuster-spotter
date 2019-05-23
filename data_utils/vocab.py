@@ -7,7 +7,6 @@ def get_vocab_information(data):
             word = ''.join(ch for ch in word if ch.isalnum())
             if not word:
                 continue
-            print(word)
             if word in ret:
                 ret[word] += 1
             else:
