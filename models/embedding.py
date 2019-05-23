@@ -74,11 +74,9 @@ class Embedding(K.layers.Layer):
         idx, fail_cnt, fail_words = 0, 0, []
         for word in self.vocab_list:
             try:
-                print('finding {}'.format(word))
                 embedding_vector = model[word]
                 embedding_matrix[idx] = embedding_vector
             except:
-                print('failed to find {}'.format(word))
                 fail_cnt = fail_cnt + 1
                 fail_words.append(word)
             idx = idx + 1
