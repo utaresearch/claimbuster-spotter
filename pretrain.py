@@ -1,7 +1,8 @@
 import tensorflow as tf
-from models.bdlstm import RecurrentModel
 import os
 from data_utils.data_loader import DataLoader
+from models.bdlstm import RecurrentModel
+from flags import FLAGS
 
 x = tf.placeholder(tf.int32, (None, None), name='x')
 y = tf.placeholder(tf.int32, (None,), name='y')
@@ -21,8 +22,7 @@ def main():
 
     lstm_model = RecurrentModel()
     logits, cost = lstm_model.build_lstm_model(x)
-
-
+    optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(cost)
 
 
 if __name__ == '__main__':
