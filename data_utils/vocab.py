@@ -15,4 +15,4 @@ def get_vocab_information(data_loc):
             else:
                 ret[word] = 1
 
-    return sorted(ret.items(), key=lambda x: x[1])
+    return sorted(ret.items(), key=lambda x: x[1], reverse=True)
