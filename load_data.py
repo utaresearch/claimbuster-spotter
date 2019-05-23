@@ -49,7 +49,7 @@ def parse_tags():
     global args
 
     parser = argparse.ArgumentParser(description="Convert .json file to directory hierarchy and apply data transf.")
-    parser.add_argument("--output_pkl", default="./output/prc_data.pkl")
+    parser.add_argument("--output_pkl", default="./output/prc_data.pickle")
     parser.add_argument("--json_loc", default="./data/data_small.json")
     parser.add_argument("--w2v_loc", default="./data/word2vec/GoogleNews-vectors-negative300.bin")
     parser.add_argument("--noun_rep", type=bool, default=False)
@@ -98,11 +98,14 @@ def main():
 
     print("Processing data...")
 
+    write_pickle([1, 2, 3])
+    print('pickle written')
+    exit()
+
     dl = parse_json()
     random.seed(456)
     random.shuffle(dl)
 
-    print(dl)
     write_pickle(dl)
 
 
