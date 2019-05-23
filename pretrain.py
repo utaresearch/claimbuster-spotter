@@ -119,6 +119,9 @@ def main():
         sess.run(tf.global_variables_initializer())
         embed = Embedding()
         embed.init_embeddings(sess)
+
+        print(tf.get_variable("embedding:0"))
+
         exit()
 
         start = time.time()

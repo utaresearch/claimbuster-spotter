@@ -14,7 +14,7 @@ class Embedding:
         self.embed_shape = (len(self.vocab_list), FLAGS.embedding_dims)
 
     def init_embeddings(self, sess):
-        embed = tf.Variable(np.zeros(self.embed_shape), dtype=tf.float32)
+        embed = tf.Variable(np.zeros(self.embed_shape), dtype=tf.float32, name='embedding')
         w2v = tf.placeholder(tf.float32, shape=self.embed_shape)
         embed_init_op = embed.assign(w2v)
 
