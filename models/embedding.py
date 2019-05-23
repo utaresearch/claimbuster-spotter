@@ -32,12 +32,11 @@ class Embedding(K.layers.Layer):
             " " if self.transfer_learn_w2v else " not "
         ))
 
+        self.var = None
         self.embedding_matrix_tf = self.create_embedding_matrix()
 
         if normalize:
-            assert vocab_freqs is not None
-            self.vocab_freqs = tf.constant(
-                vocab_freqs, dtype=tf.float32, shape=(vocab_size, 1))
+            self.vocab_freqs = tf.constant(self.vocab_freqs, dtype=tf.float32, shape=(vocab_size, 1))
 
         super(Embedding, self).__init__()
 
@@ -47,6 +46,23 @@ class Embedding(K.layers.Layer):
             return control_flow_ops.cond(state_ops.is_variable_initialized(var),
                                          var.read_value,
                                          lambda: var.initial_value)
+
+    def build(self, input_shape):
+        # old initializer below in case it is needed
+        # initializer=tf.random_uniform_initializer(-1., 1.),
+        with tf.Session() as sess:
+            sess.run(tf.global_variables_initializer())
+            self.var = self.add_weight(
+                shape=(self.vocab_size, self.embedding_dim),
+                initializer=self.return_initialized_value,
+                name='embedding',
+                trainable=self.transfer_learn_w2v)
+            sess.close()
+
+        if self.normalized:
+            self.var = self._normalize(self.var)
+
+        super(Embedding, self).build(input_shape)
 
     def create_embedding_matrix(self):
         retrieve_val = self.retrieve_embedding_matrix()
@@ -121,7 +137,7 @@ class Embedding(K.layers.Layer):
                 return tf.Variable(var_to_return.eval())
 
     def call(self, x):
-        embedded = tf.nn.embedding_lookup(self.embedding_matrix_tf, x)
+        embedded = tf.nn.embedding_lookup(self.var, x)
         if self.keep_prob < 1.:
             shape = embedded.get_shape().as_list()
 
