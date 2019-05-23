@@ -1,7 +1,6 @@
 import json, os, random
 from pycontractions import Contractions
 from data_utils import transformations as transf
-import subprocess
 import argparse
 from tqdm import tqdm
 
@@ -51,21 +50,22 @@ def split_into_dirs(dl):
     ctr = 0
     for i in range(0, len(dl)):  # training data
         sample = dl[i]
-        l = int(sample.label)
+        lab = int(sample.label)
         s = sample.sentence
 
         if i <= cutpoint:
-            target_dir = train_label_dir[l]
+            target_dir = train_label_dir[lab]
         else:
-            target_dir = test_label_dir[l]
-        with open(target_dir + "/" + str(ctr).zfill(5) + "_" + str(l) + ".txt", "w") as f:
+            target_dir = test_label_dir[lab]
+        with open(target_dir + "/" + str(ctr).zfill(5) + "_" + str(lab) + ".txt", "w") as f:
             f.write(s)
 
         ctr = ctr + 1
 
 
 def print_sample_list(dl):
-    for f in dl: print(f.label + " " + f.sentence)
+    for f in dl:
+        print(f.label + " " + f.sentence)
 
 
 def load_dependencies():
