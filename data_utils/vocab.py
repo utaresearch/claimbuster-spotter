@@ -1,4 +1,10 @@
-def get_vocab_information(data):
+import pickle
+
+
+def get_vocab_information(data_loc):
+    with open(data_loc, 'rb') as f:
+        data = pickle.load(f)
+
     ret = {}
 
     for pair in data:
