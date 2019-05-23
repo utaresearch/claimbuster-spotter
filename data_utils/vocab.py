@@ -1,15 +1,10 @@
-import re
-import string
-
-
 def get_vocab_information(data):
     ret = {}
 
     for pair in data:
         words = pair[1].split(' ')
         for word in words:
-            pattern = re.compile('[\W_]+')
-            word = pattern.sub(word, string.printable)
+            word = ''.join(ch for ch in word.printable if ch.isalnum())
             print(word)
             if word in ret:
                 ret[word] += 1
