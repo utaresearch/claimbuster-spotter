@@ -14,13 +14,15 @@ class RecurrentModel:
         return y, self.compute_loss(y)
 
     def build_lstm(self, x):
+        embed = tf.contrib.layers.embed_sequence(x, vocab_size=int(1e6), embed_dim=FLAGS.embedding_dims)
         lstm = tf.nn.rnn_cell.MultiRNNCell([self.get_lstm() for _ in range(self.lstm_layers)])
-        output, state = tf.nn.static_rnn(cell=lstm, inputs=x, dtype=tf.float32)
-        output = output[-1]
-        return output
+
+        output, state = tf.nn.dynamic_rnn(cell=lstm, inputs=embed, dtype=tf.float32)
+        return output[-1]
 
     def get_lstm(self):
         return tf.nn.rnn_cell.LSTMCell(self.num_hidden)
 
     def compute_loss(self, y):
         print('foo')
+        return 'fo'
