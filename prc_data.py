@@ -42,7 +42,6 @@ def parse_json():
                 j -= 1
 
         txt = ' '.join(words)
-        print(txt)
 
         dl.append((lab, txt))
     return dl
