@@ -4,6 +4,7 @@ import time
 import os
 from data_utils.data_loader import DataLoader
 from models.bdlstm import RecurrentModel
+from models.new_embed import init_embeddings
 from flags import FLAGS
 
 x = tf.placeholder(tf.int32, (None, None), name='x')
@@ -116,6 +117,9 @@ def main():
 
     with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as sess:
         sess.run(tf.global_variables_initializer())
+        init_embeddings(sess)
+        exit()
+
         start = time.time()
 
         for epoch in range(FLAGS.max_steps):
