@@ -5,7 +5,7 @@ import pickle
 from pycontractions import Contractions
 from tqdm import tqdm
 from flags import FLAGS
-from vocab import get_vocab_information
+from data_utils.vocab import get_vocab_information
 
 train_dir = ""
 test_dir = ""
