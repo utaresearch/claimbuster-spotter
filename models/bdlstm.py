@@ -14,6 +14,10 @@ class RecurrentModel:
 
     def build_lstm(self, x, x_len, embed):
         x = tf.unstack(x, axis=1)
+        for i in range(len(x)):
+            x[i] = tf.nn.embedding_lookup(embed, x[i])
+        print(x)
+        x = tf.stack(x, axis=1)
         print(x)
         exit()
 
