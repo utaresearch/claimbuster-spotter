@@ -79,6 +79,7 @@ def load_dependencies():
     global cont
 
     cont = Contractions(args.w2v_loc)
+    cont.load_models()
     transf.load_dependencies(args)
 
 
