@@ -27,6 +27,10 @@ def parse_json():
     with open(args.json_loc) as f:
         temp_data = json.load(f)
     dl = []
+
+    print(temp_data)
+
+    load_dependencies()
     for i in tqdm(range(len(temp_data)), ascii=True):
         f = temp_data[i]
         f = cont._expand_text(f["text"])
@@ -95,7 +99,6 @@ def main():
             print("Exiting...")
             exit()
 
-    load_dependencies()
     print("Processing data...")
 
     dl = parse_json()
