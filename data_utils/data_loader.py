@@ -1,4 +1,5 @@
 import pickle
+import math
 import sys
 sys.path.append('..')
 from flags import FLAGS
@@ -57,9 +58,12 @@ class DataLoader:
 
         return ret
 
-    @staticmethod
-    def post_process_flags():
-        print('foo')
+    def post_process_flags(self):
+        tot_ex = len(self.data)
+        FLAGS.train_examples = int(math.ceil(float(tot_ex) * FLAGS.train_pct))
+        FLAGS.test_examples = tot_ex - FLAGS.train_examples
+        FLAGS.validation_examples = int(math.floor(float(tot_ex) * FLAGS.validation_pct))
+        FLAGS.train_examples = FLAGS.train_examples - FLAGS.validation_examples
 
     @staticmethod
     def load_external():
