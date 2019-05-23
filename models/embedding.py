@@ -25,8 +25,9 @@ class Embedding(K.layers.Layer):
         self.transfer_learn_w2v = transfer_learn_w2v
         self.data_dir = data_dir
 
-        tern = " " if self.transfer_learn_w2v else " not "
-        tf.logging.info("w2v embeddings will" + tern + "be trained on.")
+        tf.logging.info("w2v embeddings will{}be trained on.".format(
+            " " if self.transfer_learn_w2v else " not "
+        ))
 
         self.embedding_matrix_tf = self.create_embedding_matrix()
 
@@ -48,6 +49,7 @@ class Embedding(K.layers.Layer):
         retrieve_val = self.retrieve_embedding_matrix()
         equal_to_init = tf.reduce_all(tf.equal(retrieve_val, tf.Variable(
             np.zeros((self.vocab_size, self.embedding_dim), dtype=np.dtype('float32')))))
+
         with tf.Session() as sess:
             sess.run(tf.global_variables_initializer())
             print(retrieve_val.eval())
@@ -96,8 +98,8 @@ class Embedding(K.layers.Layer):
         return var_to_return
 
     def retrieve_embedding_matrix(self):
-        tf.logging.info("Attempting to restore embedding matrix backup...")
         target_file = self.data_dir + "/embedding_matrix_tf.ckpt"
+        tf.logging.info("Attempting to restore embedding matrix backup from {}...".format(target_file))
 
         """Useful debugging tool"""
         # from tensorflow.python.tools import inspect_checkpoint as chkp
