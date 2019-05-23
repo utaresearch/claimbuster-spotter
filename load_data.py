@@ -53,13 +53,14 @@ def split_into_dirs(dl):
         sample = dl[i]
         l = int(sample.label)
         s = sample.sentence
-        target_dir = ""
+
         if i <= cutpoint:
             target_dir = train_label_dir[l]
         else:
             target_dir = test_label_dir[l]
         with open(target_dir + "/" + str(ctr).zfill(5) + "_" + str(l) + ".txt", "w") as f:
             f.write(s)
+
         ctr = ctr + 1
 
 
@@ -94,8 +95,7 @@ def load_dependencies():
         cont.load_models()
         print("Model Loaded.")
     except:
-        print("Error: Model does not exist")
-        exit()
+        raise Exception("Error: Model does not exist")
 
 
 def parse_json():
@@ -113,19 +113,13 @@ def parse_json():
         elif args.ner_stanford:
             dl.append(Sample(str(int(f["label"]) + 1),
                              transf.process_sentence_ner_stanford(args.ner_loc1, args.ner_loc2,
-                                                                      cont._expand_text(f["text"]))))
+                                                                  cont._expand_text(f["text"]))))
         elif args.ner_spacy:
             dl.append(
                 Sample(str(int(f["label"]) + 1), transf.process_sentence_ner_spacy(cont._expand_text(f["text"]))))
         else:
             dl.append(Sample(str(int(f["label"]) + 1), cont._expand_text(f["text"])))
     return dl
-
-
-def create_dup():
-    command_txt = "cp -R " + args.output_dir + " " + args.output_dir + "_dup/"
-    subprocess.run(command_txt, shell=True, stdout=subprocess.PIPE, universal_newlines=True).stdout
-    print('''Executed "''' + command_txt + '''"''')
 
 
 def parse_tags():
