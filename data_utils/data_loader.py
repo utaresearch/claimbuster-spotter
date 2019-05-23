@@ -34,7 +34,7 @@ class DataLoader:
     def load_training_data(self):
         ret = Dataset([], [], FLAGS.random_state)
 
-        for i in range(FLAGS.training_examples):
+        for i in range(FLAGS.train_examples):
             ret.x.append(self.data.x[i])
             ret.y.append(self.data.y[i])
 
@@ -43,7 +43,7 @@ class DataLoader:
     def load_validation_data(self):
         ret = Dataset([], [], FLAGS.random_state)
 
-        for i in range(FLAGS.training_examples, FLAGS.training_examples + FLAGS.validation_examples):
+        for i in range(FLAGS.train_examples, FLAGS.train_examples + FLAGS.validation_examples):
             ret.x.append(self.data.x[i])
             ret.y.append(self.data.y[i])
 
@@ -52,17 +52,17 @@ class DataLoader:
     def load_testing_data(self):
         ret = Dataset([], [], FLAGS.random_state)
 
-        for i in range(FLAGS.training_examples + FLAGS.validation_examples, FLAGS.total_examples):
+        for i in range(FLAGS.train_examples + FLAGS.validation_examples, FLAGS.total_examples):
             ret.x.append(self.data.x[i])
             ret.y.append(self.data.y[i])
 
         return ret
 
     def post_process_flags(self):
-        tot_ex = len(self.data)
-        FLAGS.train_examples = int(math.ceil(float(tot_ex) * FLAGS.train_pct))
-        FLAGS.test_examples = tot_ex - FLAGS.train_examples
-        FLAGS.validation_examples = int(math.floor(float(tot_ex) * FLAGS.validation_pct))
+        FLAGS.total_examples = len(self.data)
+        FLAGS.train_examples = int(math.ceil(float(FLAGS.total_examples) * FLAGS.train_pct))
+        FLAGS.test_examples = FLAGS.total_examples - FLAGS.train_examples
+        FLAGS.validation_examples = int(math.floor(float(FLAGS.total_examples) * FLAGS.validation_pct))
         FLAGS.train_examples = FLAGS.train_examples - FLAGS.validation_examples
 
     @staticmethod
