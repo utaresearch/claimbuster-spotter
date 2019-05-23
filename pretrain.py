@@ -85,7 +85,7 @@ def train_neural_network(sess, optimizer, batch_x, batch_y):
         feed_dict={
             x: pad_seq(batch_x),
             x_len: [len(el) for el in batch_x],
-            y: np.reshape(batch_y, newshape=(len(batch_y),))
+            y: tf.one_hot(batch_y, depth=FLAGS.num_classes)
         }
     )
 
