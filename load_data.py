@@ -95,6 +95,7 @@ def main():
             print("Exiting...")
             exit()
 
+    load_dependencies()
     print("Processing data...")
 
     dl = parse_json()
