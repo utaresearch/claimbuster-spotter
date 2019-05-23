@@ -1,5 +1,5 @@
 import tensorflow as tf
-from embedding import Embedding
+from .embedding import Embedding
 import sys
 sys.path.append('..')
 from flags import FLAGS
