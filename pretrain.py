@@ -20,13 +20,17 @@ def pad_seq(inp):
     return ret
 
 
+def one_hot(a):
+    return np.squeeze(np.eye(FLAGS.num_classes)[a.reshape(-1)])
+
+
 def validation_stats(sess, cost, acc, batch_x, batch_y):
     val_loss = sess.run(
         cost,
         feed_dict={
             x: pad_seq(batch_x),
             x_len: [len(el) for el in batch_x],
-            y: tf.one_hot(batch_y, depth=FLAGS.num_classes, dtype=tf.int32)
+            y: one_hot(batch_y)
         }
     )
     val_acc = sess.run(
@@ -34,7 +38,7 @@ def validation_stats(sess, cost, acc, batch_x, batch_y):
         feed_dict={
             x: pad_seq(batch_x),
             x_len: [len(el) for el in batch_x],
-            y: tf.one_hot(batch_y, depth=FLAGS.num_classes, dtype=tf.int32)
+            y: one_hot(batch_y)
         }
     )
 
@@ -64,7 +68,7 @@ def batch_stats(sess, batch_x, batch_y, cost, acc):
         feed_dict={
             x: pad_seq(batch_x),
             x_len: [len(el) for el in batch_x],
-            y: tf.one_hot(batch_y, depth=FLAGS.num_classes, dtype=tf.int32)
+            y: one_hot(batch_y)
         }
     )
     train_acc = sess.run(
@@ -72,7 +76,7 @@ def batch_stats(sess, batch_x, batch_y, cost, acc):
         feed_dict={
             x: pad_seq(batch_x),
             x_len: [len(el) for el in batch_x],
-            y: tf.one_hot(batch_y, depth=FLAGS.num_classes, dtype=tf.int32)
+            y: one_hot(batch_y)
         }
     )
 
@@ -85,7 +89,7 @@ def train_neural_network(sess, optimizer, batch_x, batch_y):
         feed_dict={
             x: pad_seq(batch_x),
             x_len: [len(el) for el in batch_x],
-            y: tf.one_hot(batch_y, depth=FLAGS.num_classes, dtype=tf.int32)
+            y: one_hot(batch_y)
         }
     )
 
