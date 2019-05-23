@@ -7,7 +7,7 @@ FLAGS = flags.FLAGS
 flags.DEFINE_string('data_dir', './output', 'Location of outputs')
 flags.DEFINE_string('vocab_path', './output/vocab.pickle', 'Path to pre-calculated vocab data')
 flags.DEFINE_string('data_pkl_loc', './output/prc_data.pickle', 'Location of prc data')
-flags.DEFINE_integer('max_len', 1000, 'Maximum length of input')
+flags.DEFINE_integer('max_len', 5, 'Maximum length of input')
 
 # Data v2
 flags.DEFINE_float('train_pct', .70, 'Training percentage')
