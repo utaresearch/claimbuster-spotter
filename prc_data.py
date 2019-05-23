@@ -33,6 +33,8 @@ def parse_json():
         words = txt.split(' ')
         for j in range(len(words)):
             words[j].strip(string.punctuation)
+            if words[j].isdigit():
+                words[j] = "NUM"
 
         txt = ' '.join(words)
         print(txt)
