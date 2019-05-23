@@ -8,7 +8,7 @@ flags.DEFINE_string('data_pkl_loc', './output/prc_data.pkl', 'Train on top of w2
 flags.DEFINE_float('train_pct', .70, 'Training percentage')
 flags.DEFINE_float('validation_pct', .05, 'Validation percentage')
 flags.DEFINE_float('test_pct', .25, 'Testing percentage')
-flags.DEFINE_integer('total_examples', None', 'Total number of examples')
+flags.DEFINE_integer('total_examples', None, 'Total number of examples')
 flags.DEFINE_integer('train_examples', None, 'Number of training examples')
 flags.DEFINE_integer('validation_examples', None, 'Number of validation examples')
 flags.DEFINE_integer('test_examples', None, 'Number of testing examples')
