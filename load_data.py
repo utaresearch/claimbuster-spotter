@@ -83,7 +83,10 @@ def load_dependencies():
 
     transf.load_dependencies(args)
     cont = Contractions(args.w2v_loc)
+
+    print("Loading contractions model...")
     cont.load_models()
+    print("Model loaded.")
 
 
 def main():
