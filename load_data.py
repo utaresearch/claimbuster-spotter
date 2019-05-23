@@ -72,7 +72,7 @@ def parse_tags():
 def write_pickle(df):
     global args
 
-    with open(args.output_pkl, 'rb') as f:
+    with open(args.output_pkl, 'wb') as f:
         pickle.dump(df, f)
 
 
@@ -97,6 +97,7 @@ def main():
     random.shuffle(dl)
 
     print(dl)
+    write_pickle(dl)
 
 
 if __name__ == "__main__":
