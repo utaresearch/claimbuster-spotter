@@ -74,12 +74,13 @@ def write_pickle():
 
 def main():
     parse_tags()
-    if os.path.exists(args.output_dir):
-        print("By running this file, you will be deleting all contents of " + args.output_dir)
+
+    if os.path.isfile(args.output_pkl):
+        print("By running this script, you will be deleting all contents of " + args.output_pkl)
         ans = input("Do you wish to continue? (y/n)")
         if ans == 'y':
             print("Running code...")
-            os.system("rm -r " + args.output_dir)
+            os.remove(args.output_pkl)
         else:
             print("Exiting...")
             exit()
