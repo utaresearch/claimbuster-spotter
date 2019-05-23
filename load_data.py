@@ -99,7 +99,7 @@ def main():
             print("Exiting...")
             exit()
 
-    print("Loading deps...")
+    print("Loading dependencies...")
     load_dependencies()
 
     print("Processing data...")
