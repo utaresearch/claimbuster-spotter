@@ -4,7 +4,7 @@ def get_vocab_information(data):
     for pair in data:
         words = pair[1].split(' ')
         for word in words:
-            word = ''.join(ch for ch in word if ch.isalnum())
+            word = ''.join(ch for ch in word.replace('-', ' ') if ch.isalnum())
             if not word:
                 continue
             if word in ret:
