@@ -92,7 +92,7 @@ def main():
 
     if os.path.isfile(args.output_pkl):
         print("By running this script, you will be deleting all contents of " + args.output_pkl)
-        ans = input("Do you wish to continue? (y/n)")
+        ans = input("Do you wish to continue? (y/n) ")
         if ans == 'y':
             print("Running code...")
             os.remove(args.output_pkl)
