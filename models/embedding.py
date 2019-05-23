@@ -62,6 +62,10 @@ class Embedding(K.layers.Layer):
                 tf.logging.info("Embedding matrix not found.")
             sess.close()
 
+        print(self.vocab_size)
+        print(self.vocab_list)
+        print(self.vocab_freqs)
+
         embedding_matrix = np.zeros((self.vocab_size, self.embedding_dim), dtype=np.dtype('float32'))
         tf.logging.info("Loading word2vec model...")
         model = KeyedVectors.load_word2vec_format(self.w2v_loc, binary=True)
