@@ -5,7 +5,15 @@ FLAGS = flags.FLAGS
 
 # Data
 flags.DEFINE_string('data_dir', './output', 'Location of outputs')
+flags.DEFINE_string('vocab_path', None,
+                    'Path to pre-calculated vocab frequency data. If '
+                    'None, use FLAGS.data_dir/vocab_freq.txt.')
+flags.DEFINE_string('vocab_freq_path', None,
+                    'Path to pre-calculated vocab frequency data. If '
+                    'None, use FLAGS.data_dir/vocab_freq.txt.')
 flags.DEFINE_string('data_pkl_loc', './output/prc_data.pickle', 'Location of prc data')
+
+# Data v2
 flags.DEFINE_float('train_pct', .70, 'Training percentage')
 flags.DEFINE_float('validation_pct', .05, 'Validation percentage')
 flags.DEFINE_float('test_pct', .25, 'Testing percentage')
@@ -46,15 +54,6 @@ flags.DEFINE_float('adv_reg_coeff', 1.0,
 
 # Output stats
 flags.DEFINE_integer('num_classes', 3, 'Number of classes for classification')
-
-flags.DEFINE_string('data_dir', '/tmp/IMDB',
-                    'Directory path to preprocessed text dataset.')
-flags.DEFINE_string('vocab_path', None,
-                    'Path to pre-calculated vocab frequency data. If '
-                    'None, use FLAGS.data_dir/vocab_freq.txt.')
-flags.DEFINE_string('vocab_freq_path', None,
-                    'Path to pre-calculated vocab frequency data. If '
-                    'None, use FLAGS.data_dir/vocab_freq.txt.')
 
 # Training
 flags.DEFINE_integer('batch_size', 16, 'Size of the batch.')
