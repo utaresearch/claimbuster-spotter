@@ -28,7 +28,6 @@ def parse_json():
         temp_data = json.load(f)
     dl = []
 
-    load_dependencies()
     for i in tqdm(range(len(temp_data)), ascii=True):
         f = temp_data[i]
         lab = f["label"]
@@ -100,8 +99,10 @@ def main():
             print("Exiting...")
             exit()
 
-    print("Processing data...")
+    print("Loading deps...")
+    load_dependencies()
 
+    print("Processing data...")
     dl = parse_json()
     random.seed(456)
     random.shuffle(dl)
