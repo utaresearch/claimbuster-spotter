@@ -19,11 +19,11 @@ class Embedding:
         embed_init_op = embed.assign(w2v)
 
         sess.run(embed_init_op, feed_dict={
-            w2v: self.create_embedding_matrix()
+            w2v: self.create_embedding_matrix(sess)
         })
 
-    def create_embedding_matrix(self):
-        retrieve_val = self.retrieve_embedding_matrix()
+    def create_embedding_matrix(self, sess):
+        retrieve_val = self.retrieve_embedding_matrix(sess)
         equal_to_init = (retrieve_val == np.zeros(self.embed_shape, dtype=np.dtype('float32'))).all()
 
         if equal_to_init:
@@ -59,14 +59,13 @@ class Embedding:
         tf.logging.info("Saving generated embedding matrix...")
         saver = tf.train.Saver({"var_to_return": var_to_return})
 
-        with tf.Session() as sess:
-            sess.run(tf.global_variables_initializer())
-            save_path = saver.save(sess, os.path.join(FLAGS.data_dir, "/embedding_matrix_tf.ckpt"))
-            tf.logging.info("Model saved in path: " + save_path)
+        sess.run(tf.global_variables_initializer())
+        save_path = saver.save(sess, os.path.join(FLAGS.data_dir, "/embedding_matrix_tf.ckpt"))
+        tf.logging.info("Model saved in path: " + save_path)
 
         return embedding_matrix
 
-    def retrieve_embedding_matrix(self):
+    def retrieve_embedding_matrix(self, sess):
         target_file = os.path.join(FLAGS.data_dir,"/embedding_matrix_tf.ckpt")
         tf.logging.info("Attempting to restore embedding matrix backup from {}...".format(target_file))
 
@@ -78,14 +77,12 @@ class Embedding:
 
         try:
             saver = tf.train.Saver({"var_to_return": var_to_return})
-            with tf.Session() as sess:
-                sess.run(tf.global_variables_initializer())
-                saver.restore(sess, target_file)
-                return var_to_return.eval()
+            sess.run(tf.global_variables_initializer())
+            saver.restore(sess, target_file)
+            return var_to_return.eval()
         except:
-            with tf.Session() as sess:
-                sess.run(tf.global_variables_initializer())
-                return var_to_return.eval()
+            sess.run(tf.global_variables_initializer())
+            return var_to_return.eval()
 
     @staticmethod
     def get_vocab():
