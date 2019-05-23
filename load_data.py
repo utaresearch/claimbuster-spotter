@@ -102,10 +102,6 @@ def main():
 
     print("Processing data...")
 
-    write_pickle([1, 2, 3])
-    print('pickle written')
-    exit()
-
     dl = parse_json()
     random.seed(456)
     random.shuffle(dl)
