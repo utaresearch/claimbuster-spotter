@@ -1,6 +1,8 @@
 # Adversarial Claim Spotting
 This is an application of techniques described in [*Adversarial Training Methods for Semi-Supervised Text Classification*](https://arxiv.org/abs/1605.07725) for the purpose of determining whether a given claim is a) factual and b) worthy of fact checking.
 
+WARNING! This documentation is deprecated. Updates are coming soon.
+
 ## Requirements
 
 * Python >= 3.0
