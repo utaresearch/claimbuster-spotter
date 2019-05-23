@@ -20,7 +20,7 @@ class RecurrentModel:
         vocab_list, vocab_freqs = self.get_vocab()
         assert len(vocab_list) == len(vocab_freqs)
         vocab_size = len(vocab_list)
-        print(vocab_list, vocab_freqs)
+        # print(vocab_list, vocab_freqs)
 
         embed = Embedding(vocab_size, FLAGS.embedding_dims, FLAGS.normalize_embeddings,
                           FLAGS.keep_prob_emb, vocab_freqs, vocab_list,
