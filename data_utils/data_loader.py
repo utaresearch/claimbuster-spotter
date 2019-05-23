@@ -70,6 +70,6 @@ class DataLoader:
         with open(FLAGS.data_pkl_loc, 'rb') as f:
             data = pickle.load(f)
         with open(FLAGS.vocab_path, 'rb') as f:
-            vc = pickle.load(f)
+            vc = [x[0] for x in pickle.load(f)]
 
-        return Dataset([[vc.index(ch) for ch in x[1]] for x in data], [int(x[0]) for x in data], FLAGS.random_state)
+        return Dataset([[vc.index(ch) for ch in x[1].split(' ')] for x in data], [int(x[0]) for x in data], FLAGS.random_state)

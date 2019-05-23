@@ -106,9 +106,6 @@ def main():
     tf.logging.info("{} training examples".format(train_data.get_length()))
     tf.logging.info("{} validation examples".format(validation_data.get_length()))
 
-    print(train_data.x[0])
-    exit()
-
     lstm_model = RecurrentModel()
     logits, cost = lstm_model.construct_model(x, y)
     optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(cost)
