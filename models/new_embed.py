@@ -12,11 +12,15 @@ class Embedding:
     def __init__(self):
         self.vocab_list, self.vocab_freqs = self.get_vocab()
         self.embed_shape = (len(self.vocab_list), FLAGS.embedding_dims)
+        self.embed = None
+
+    def construct_embeddings(self):
+        self.embed = tf.Variable(np.zeros(self.embed_shape), dtype=tf.float32, name='embedding')
+        return self.embed
 
     def init_embeddings(self, sess):
-        embed = tf.Variable(np.zeros(self.embed_shape), dtype=tf.float32, name='embedding')
         w2v = tf.placeholder(tf.float32, shape=self.embed_shape)
-        embed_init_op = embed.assign(w2v)
+        embed_init_op = self.embed.assign(w2v)
 
         sess.run(embed_init_op, feed_dict={
             w2v: self.create_embedding_matrix(sess)

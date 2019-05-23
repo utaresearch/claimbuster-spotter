@@ -107,18 +107,20 @@ def main():
     tf.logging.info("{} training examples".format(train_data.get_length()))
     tf.logging.info("{} validation examples".format(validation_data.get_length()))
 
-    # lstm_model = RecurrentModel()
-    # logits, cost = lstm_model.construct_model(x, y)
-    # optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(cost)
-    #
-    # y_pred = tf.nn.softmax(logits)
-    # correct = tf.equal(tf.argmax(y), tf.argmax(y_pred))
-    # acc = tf.reduce_mean(tf.cast(correct, tf.float32))
+    embed_obj = Embedding()
+    embed = embed_obj.construct_embeddings()
+
+    lstm_model = RecurrentModel(embed)
+    logits, cost = lstm_model.construct_model(x, y)
+    optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(cost)
+
+    y_pred = tf.nn.softmax(logits)
+    correct = tf.equal(tf.argmax(y), tf.argmax(y_pred))
+    acc = tf.reduce_mean(tf.cast(correct, tf.float32))
 
     with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as sess:
         sess.run(tf.global_variables_initializer())
-        embed = Embedding()
-        embed.init_embeddings(sess)
+        embed_obj.init_embeddings(sess)
 
         print(tf.get_default_graph().get_tensor_by_name("embedding:0").eval())
 
