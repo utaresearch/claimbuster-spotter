@@ -8,9 +8,9 @@ class RecurrentModel:
     def __init__(self):
         pass
 
-    def construct_model(self, x):
-        y = self.build_lstm(x)
-        return y, self.compute_loss(y)
+    def construct_model(self, x, y):
+        yhat = self.build_lstm(x)
+        return yhat, self.compute_loss(y, yhat)
 
     def build_lstm(self, x):
         embed = tf.contrib.layers.embed_sequence(x, vocab_size=int(1e6), embed_dim=FLAGS.embedding_dims)
@@ -25,8 +25,10 @@ class RecurrentModel:
 
         return tf.matmul(output[-1], add_weight) + add_bias
 
-    def get_lstm(self):
+    @staticmethod
+    def get_lstm():
         return tf.nn.rnn_cell.LSTMCell(FLAGS.rnn_cell_size)
 
-    def compute_loss(self, y):
-        return 'fo'
+    @staticmethod
+    def compute_loss(y, yhat):
+        return tf.nn.softmax_cross_entropy_with_logits_v2(y, yhat)
