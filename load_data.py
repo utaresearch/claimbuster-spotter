@@ -1,6 +1,7 @@
 import json, os, random
 from data_utils import transformations as transf
 import argparse
+import pickle
 from tqdm import tqdm
 
 train_dir = ""
@@ -47,7 +48,8 @@ def parse_tags():
 
     parser = argparse.ArgumentParser(description="Convert .json file to directory hierarchy and apply data transf.")
     parser.add_argument("--output_pkl", default="./output/prc_data.pkl")
-    parser.add_argument("--json_loc", default="./data/data_large.json")
+    parser.add_argument("--json_loc", default="../data/data_large.json",
+                        help="NOTE: relative to ./data_utils")
     parser.add_argument("--w2v_loc", default="../data/word2vec/GoogleNews-vectors-negative300.bin",
                         help="NOTE: relative to ./data_utils")
     parser.add_argument("--train_pct", type=int, default=75)
@@ -67,10 +69,11 @@ def parse_tags():
         raise Exception("You cannot have more than one data transformation option to be True at once.")
 
 
-def write_pickle():
+def write_pickle(df):
     global args
 
-    print('foo')
+    with open(args.output_pkl, 'rb') as f:
+        pickle.dump(df, f)
 
 
 def main():
