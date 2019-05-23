@@ -2,6 +2,7 @@ import json, os, random
 from data_utils import transformations as transf
 import argparse
 import pickle
+import string
 from pycontractions import Contractions
 from tqdm import tqdm
 from flags import FLAGS
@@ -20,14 +21,23 @@ def parse_json():
         f = temp_data[i]
         lab = f["label"]
         txt = list(cont.expand_texts([f["text"]], precise=True))[0]
+
+        txt = txt.replace('-', ' ').lower().split(' ')
         if args.noun_rep:
-            dl.append((lab, transf.process_sentence_noun_rep(txt)))
+            txt = transf.process_sentence_noun_rep(txt)
         elif args.full_tags:
-            dl.append((lab, transf.process_sentence_full_tags(txt)))
+            txt = transf.process_sentence_full_tags(txt)
         elif args.ner_spacy:
-            dl.append((lab, transf.process_sentence_ner_spacy(txt)))
-        else:
-            dl.append((lab, txt))
+            txt = transf.process_sentence_ner_spacy(txt)
+
+        words = txt.split(' ')
+        for i in range(len(words)):
+            words[i].strip(string.punctuation)
+
+        txt = ' '.join(words)
+        print(txt)
+
+        dl.append((lab, txt))
     return dl
 
 

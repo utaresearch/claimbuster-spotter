@@ -2,13 +2,8 @@ def get_vocab_information(data):
     ret = {}
 
     for pair in data:
-        words = pair[1].replace('-', ' ').lower().split(' ')
+        words = pair[1].split(' ')
         for word in words:
-            word = ''.join(ch for ch in word if ch.isalnum())
-            if not word:
-                continue
-            if word.isdigit():
-                word = 'NUM'
             if word in ret:
                 ret[word] += 1
             else:
