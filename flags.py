@@ -62,7 +62,7 @@ flags.DEFINE_integer('rnn_cell_size', 512,
                      'Number of hidden units in the LSTM.')
 
 # Vocabulary and embeddings
-flags.DEFINE_integer('embedding_dims', 256, 'Dimensions of embedded vector.')
+flags.DEFINE_integer('embedding_dims', 300, 'Dimensions of embedded vector.')
 flags.DEFINE_bool('normalize_embeddings', False,
                   'Normalize word embeddings by vocab frequency')
 
