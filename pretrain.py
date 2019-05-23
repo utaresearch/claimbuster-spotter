@@ -21,7 +21,7 @@ def main():
     tf.logging.info("{} validation examples".format(validation_data.get_length()))
 
     lstm_model = RecurrentModel()
-    logits, cost = lstm_model.build_lstm_model(x)
+    logits, cost = lstm_model.construct_model(x)
     optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(cost)
 
 

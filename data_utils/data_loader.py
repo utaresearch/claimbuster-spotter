@@ -59,7 +59,7 @@ class DataLoader:
         return ret
 
     def post_process_flags(self):
-        FLAGS.total_examples = len(self.data)
+        FLAGS.total_examples = self.data.get_length()
         FLAGS.train_examples = int(math.ceil(float(FLAGS.total_examples) * FLAGS.train_pct))
         FLAGS.test_examples = FLAGS.total_examples - FLAGS.train_examples
         FLAGS.validation_examples = int(math.floor(float(FLAGS.total_examples) * FLAGS.validation_pct))
@@ -70,5 +70,4 @@ class DataLoader:
         with open(FLAGS.data_pkl_loc, 'rb') as f:
             data = pickle.load(f)
 
-        print(data)
-        exit()
+        return Dataset([x[1] for x in data], [int(x[0]) for x in data], FLAGS.random_state)

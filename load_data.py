@@ -4,6 +4,7 @@ import argparse
 import pickle
 from pycontractions import Contractions
 from tqdm import tqdm
+from flags import FLAGS
 
 train_dir = ""
 test_dir = ""
@@ -98,7 +99,7 @@ def main():
 
     print("Processing data...")
     dl = parse_json()
-    random.seed(456)
+    random.seed(FLAGS.random_state)
     random.shuffle(dl)
 
     write_pickle(dl)

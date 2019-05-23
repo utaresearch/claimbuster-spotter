@@ -13,6 +13,8 @@ flags.DEFINE_integer('train_examples', None, 'Number of training examples')
 flags.DEFINE_integer('validation_examples', None, 'Number of validation examples')
 flags.DEFINE_integer('test_examples', None, 'Number of testing examples')
 
+flags.DEFINE_integer('random_state', 42, 'State of consistent pseudo-randomness')
+
 # Embeddings
 flags.DEFINE_bool('transfer_learn_w2v', False, 'Train on top of w2v embeddings')
 
