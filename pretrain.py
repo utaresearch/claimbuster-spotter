@@ -7,7 +7,8 @@ from models.bdlstm import RecurrentModel
 from models.new_embed import Embedding
 from flags import FLAGS
 
-x = tf.placeholder(tf.int32, (None, None), name='x')
+x = tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x')
+x_len = tf.placeholder(tf.int32, (None,), name='x_len')
 y = tf.placeholder(tf.int32, (None,), name='y')
 
 
@@ -16,6 +17,7 @@ def validation_stats(sess, cost, acc, batch_x, batch_y):
         cost,
         feed_dict={
             x: batch_x,
+            x_len: len(batch_x),
             y: batch_y
         }
     )
@@ -23,6 +25,7 @@ def validation_stats(sess, cost, acc, batch_x, batch_y):
         acc,
         feed_dict={
             x: batch_x,
+            x_len: len(batch_x),
             y: batch_y
         }
     )
@@ -52,6 +55,7 @@ def batch_stats(sess, batch_x, batch_y, cost, acc):
         cost,
         feed_dict={
             x: batch_x,
+            x_len: len(batch_x),
             y: batch_y
         }
     )
@@ -59,6 +63,7 @@ def batch_stats(sess, batch_x, batch_y, cost, acc):
         acc,
         feed_dict={
             x: batch_x,
+            x_len: len(batch_x),
             y: batch_y
         }
     )
@@ -71,6 +76,7 @@ def train_neural_network(sess, optimizer, batch_x, batch_y):
         optimizer,
         feed_dict={
             x: batch_x,
+            x_len: len(batch_x),
             y: batch_y
         }
     )
@@ -110,8 +116,8 @@ def main():
     embed_obj = Embedding()
     embed = embed_obj.construct_embeddings()
 
-    lstm_model = RecurrentModel(embed)
-    logits, cost = lstm_model.construct_model(x, y)
+    lstm_model = RecurrentModel()
+    logits, cost = lstm_model.construct_model(x, x_len, y, embed)
     optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(cost)
 
     y_pred = tf.nn.softmax(logits)

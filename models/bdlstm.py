@@ -5,20 +5,21 @@ from flags import FLAGS
 
 
 class RecurrentModel:
-    def __init__(self, embed):
-        self.embed = embed
+    def __init__(self):
         pass
 
-    def construct_model(self, x, y):
-        yhat = self.build_lstm(x)
+    def construct_model(self, x, x_len, y, embed):
+        yhat = self.build_lstm(x, x_len, embed)
         return yhat, self.compute_loss(y, yhat)
 
-    def build_lstm(self, x):
-        # x = x
+    def build_lstm(self, x, x_len, embed):
+        x = tf.unstack(x, axis=1)
+        print(x)
+        exit()
 
         lstm = tf.nn.rnn_cell.MultiRNNCell([self.get_lstm() for _ in range(FLAGS.rnn_num_layers)])
 
-        output, state = tf.nn.dynamic_rnn(cell=lstm, inputs=x, dtype=tf.float32)
+        output, state = tf.nn.dynamic_rnn(cell=lstm, inputs=x, sequence_length=x_len, dtype=tf.float32)
 
         add_weight = tf.get_variable('post_lstm_weight', shape=(FLAGS.rnn_cell_size, FLAGS.num_classes),
                                      initializer=tf.contrib.layers.xavier_initializer())
