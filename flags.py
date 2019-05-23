@@ -54,7 +54,7 @@ flags.DEFINE_string('vocab_freq_path', None,
                     'None, use FLAGS.data_dir/vocab_freq.txt.')
 
 # Training
-flags.DEFINE_integer('batch_size', 64, 'Size of the batch.')
+flags.DEFINE_integer('batch_size', 16, 'Size of the batch.')
 flags.DEFINE_integer('num_timesteps', 100, 'Number of timesteps for BPTT')
 
 # Model architecture
