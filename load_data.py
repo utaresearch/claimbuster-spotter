@@ -81,9 +81,9 @@ def write_pickle(df):
 def load_dependencies():
     global cont
 
+    transf.load_dependencies(args)
     cont = Contractions(args.w2v_loc)
     cont.load_models()
-    transf.load_dependencies(args)
 
 
 def main():
