@@ -34,6 +34,7 @@ def parse_json():
         lab = f["label"]
         txt = cont._expand_text(f["text"])
         print(lab)
+        print(f["text"])
         print(txt)
         if args.noun_rep:
             dl.append(Sample(lab, transf.process_sentence_noun_rep(txt)))
