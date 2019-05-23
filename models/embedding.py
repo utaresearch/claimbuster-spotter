@@ -121,7 +121,7 @@ class Embedding(K.layers.Layer):
                 return tf.Variable(var_to_return.eval())
 
     def call(self, x):
-        embedded = tf.nn.embedding_lookup(self.var, x)
+        embedded = tf.nn.embedding_lookup(self.embedding_matrix_tf, x)
         if self.keep_prob < 1.:
             shape = embedded.get_shape().as_list()
 
