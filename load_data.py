@@ -14,15 +14,6 @@ args = None
 parser = None
 
 
-class Sample:
-    label = ""
-    sentence = ""
-
-    def __init__(self, l, s):
-        self.label = l
-        self.sentence = s
-
-
 def parse_json():
     with open(args.json_loc) as f:
         temp_data = json.load(f)
@@ -33,13 +24,13 @@ def parse_json():
         lab = f["label"]
         txt = list(cont.expand_texts([f["text"]], precise=True))[0]
         if args.noun_rep:
-            dl.append(Sample(lab, transf.process_sentence_noun_rep(txt)))
+            dl.append((lab, transf.process_sentence_noun_rep(txt)))
         elif args.full_tags:
-            dl.append(Sample(lab, transf.process_sentence_full_tags(txt)))
+            dl.append((lab, transf.process_sentence_full_tags(txt)))
         elif args.ner_spacy:
-            dl.append(Sample(lab, transf.process_sentence_ner_spacy(txt)))
+            dl.append((lab, transf.process_sentence_ner_spacy(txt)))
         else:
-            dl.append(Sample(lab, txt))
+            dl.append((lab, txt))
     return dl
 
 
