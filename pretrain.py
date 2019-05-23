@@ -10,7 +10,7 @@ from flags import FLAGS
 
 x = tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x')
 x_len = tf.placeholder(tf.int32, (None,), name='x_len')
-y = tf.placeholder(tf.int32, (None,), name='y')
+y = tf.placeholder(tf.int32, (None, FLAGS.num_classes), name='y')
 
 
 def pad_seq(inp):
@@ -26,7 +26,7 @@ def validation_stats(sess, cost, acc, batch_x, batch_y):
         feed_dict={
             x: pad_seq(batch_x),
             x_len: [len(el) for el in batch_x],
-            y: np.reshape(batch_y, newshape=(len(batch_y), ))
+            y: tf.one_hot(batch_y, depth=FLAGS.num_classes)
         }
     )
     val_acc = sess.run(
@@ -34,7 +34,7 @@ def validation_stats(sess, cost, acc, batch_x, batch_y):
         feed_dict={
             x: pad_seq(batch_x),
             x_len: [len(el) for el in batch_x],
-            y: np.reshape(batch_y, newshape=(len(batch_y), ))
+            y: tf.one_hot(batch_y, depth=FLAGS.num_classes)
         }
     )
 
@@ -64,7 +64,7 @@ def batch_stats(sess, batch_x, batch_y, cost, acc):
         feed_dict={
             x: pad_seq(batch_x),
             x_len: [len(el) for el in batch_x],
-            y: np.reshape(batch_y, newshape=(len(batch_y), ))
+            y: tf.one_hot(batch_y, depth=FLAGS.num_classes)
         }
     )
     train_acc = sess.run(
@@ -72,7 +72,7 @@ def batch_stats(sess, batch_x, batch_y, cost, acc):
         feed_dict={
             x: pad_seq(batch_x),
             x_len: [len(el) for el in batch_x],
-            y: np.reshape(batch_y, newshape=(len(batch_y), ))
+            y: tf.one_hot(batch_y, depth=FLAGS.num_classes)
         }
     )
 
@@ -85,7 +85,7 @@ def train_neural_network(sess, optimizer, batch_x, batch_y):
         feed_dict={
             x: pad_seq(batch_x),
             x_len: [len(el) for el in batch_x],
-            y: np.reshape(batch_y, newshape=(len(batch_y), ))
+            y: np.reshape(batch_y, newshape=(len(batch_y),))
         }
     )
 
