@@ -77,10 +77,6 @@ def load_dependencies():
         transf.nltk.download('punkt')
         transf.nltk.download('averaged_perceptron_tagger')
         transf.nltk.download('tagsets')
-        if args.ner_stanford:
-            print("Loading Stanford NER Tagger...")
-            transf.st = transf.nltk.tag.StanfordNERTagger(args.ner_loc1, args.ner_loc2, encoding="utf-8")
-            print("Tagger loaded.")
         if args.ner_spacy:
             print("Loading Spacy NER Tagger...")
             transf.nlp = transf.spacy.load("en_core_web_lg")
@@ -110,10 +106,6 @@ def parse_json():
         elif args.full_tags:
             dl.append(
                 Sample(str(int(f["label"]) + 1), transf.process_sentence_full_tags(cont._expand_text(f["text"]))))
-        elif args.ner_stanford:
-            dl.append(Sample(str(int(f["label"]) + 1),
-                             transf.process_sentence_ner_stanford(args.ner_loc1, args.ner_loc2,
-                                                                  cont._expand_text(f["text"]))))
         elif args.ner_spacy:
             dl.append(
                 Sample(str(int(f["label"]) + 1), transf.process_sentence_ner_spacy(cont._expand_text(f["text"]))))
