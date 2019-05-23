@@ -1,4 +1,5 @@
 import tensorflow as tf
+import numpy as np
 import math
 import time
 import os
@@ -12,21 +13,27 @@ x_len = tf.placeholder(tf.int32, (None,), name='x_len')
 y = tf.placeholder(tf.int32, (None,), name='y')
 
 
+def pad_seq(inp):
+    ret = np.zeros(FLAGS.max_len)
+    ret[:len(inp)] = inp
+    return ret
+
+
 def validation_stats(sess, cost, acc, batch_x, batch_y):
     val_loss = sess.run(
         cost,
         feed_dict={
-            x: batch_x,
+            x: pad_seq(batch_x),
             x_len: len(batch_x),
-            y: batch_y
+            y: pad_seq(batch_y)
         }
     )
     val_acc = sess.run(
         acc,
         feed_dict={
-            x: batch_x,
+            x: pad_seq(batch_x),
             x_len: len(batch_x),
-            y: batch_y
+            y: pad_seq(batch_y)
         }
     )
 
@@ -54,17 +61,17 @@ def batch_stats(sess, batch_x, batch_y, cost, acc):
     train_loss = sess.run(
         cost,
         feed_dict={
-            x: batch_x,
+            x: pad_seq(batch_x),
             x_len: len(batch_x),
-            y: batch_y
+            y: pad_seq(batch_y)
         }
     )
     train_acc = sess.run(
         acc,
         feed_dict={
-            x: batch_x,
+            x: pad_seq(batch_x),
             x_len: len(batch_x),
-            y: batch_y
+            y: pad_seq(batch_y)
         }
     )
 
@@ -75,9 +82,9 @@ def train_neural_network(sess, optimizer, batch_x, batch_y):
     sess.run(
         optimizer,
         feed_dict={
-            x: batch_x,
+            x: pad_seq(batch_x),
             x_len: len(batch_x),
-            y: batch_y
+            y: pad_seq(batch_y)
         }
     )
 
