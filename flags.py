@@ -4,7 +4,7 @@ flags = tf.flags
 FLAGS = flags.FLAGS
 
 # Data
-flags.DEFINE_string('data_pkl_loc', './output/prc_data.pkl', 'Train on top of w2v embeddings')
+flags.DEFINE_string('data_pkl_loc', './output/prc_data.pickle', 'Train on top of w2v embeddings')
 flags.DEFINE_float('train_pct', .70, 'Training percentage')
 flags.DEFINE_float('validation_pct', .05, 'Validation percentage')
 flags.DEFINE_float('test_pct', .25, 'Testing percentage')
