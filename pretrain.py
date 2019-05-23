@@ -120,7 +120,7 @@ def main():
 
         for epoch in range(FLAGS.max_steps):
 
-            n_batches = math.ceil(float(FLAGS.training_examples) / float(FLAGS.batch_size))
+            n_batches = math.ceil(float(FLAGS.train_examples) / float(FLAGS.batch_size))
 
             n_samples = 0
             epoch_loss = 0.0
