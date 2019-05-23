@@ -6,7 +6,7 @@ from data_utils.data_loader import DataLoader
 from models.bdlstm import RecurrentModel
 from flags import FLAGS
 
-x = tf.placeholder(tf.string, (None, None), name='x')
+x = tf.placeholder(tf.int32, (None, None), name='x')
 y = tf.placeholder(tf.int32, (None,), name='y')
 
 
@@ -105,6 +105,9 @@ def main():
 
     tf.logging.info("{} training examples".format(train_data.get_length()))
     tf.logging.info("{} validation examples".format(validation_data.get_length()))
+
+    print(train_data.x[0])
+    exit()
 
     lstm_model = RecurrentModel()
     logits, cost = lstm_model.construct_model(x, y)
