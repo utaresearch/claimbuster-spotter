@@ -15,7 +15,6 @@ y = tf.placeholder(tf.int32, (None,), name='y')
 
 def pad_seq(inp):
     ret = np.zeros((len(inp), FLAGS.max_len), dtype=np.int32)
-    print(inp)
     for i in range(len(inp)):
         ret[i][:len(inp[i])] = inp[i]
     return ret
@@ -26,7 +25,7 @@ def validation_stats(sess, cost, acc, batch_x, batch_y):
         cost,
         feed_dict={
             x: pad_seq(batch_x),
-            x_len: len(batch_x),
+            x_len: [len(el) for el in batch_x],
             y: batch_y
         }
     )
@@ -34,7 +33,7 @@ def validation_stats(sess, cost, acc, batch_x, batch_y):
         acc,
         feed_dict={
             x: pad_seq(batch_x),
-            x_len: len(batch_x),
+            x_len: [len(el) for el in batch_x],
             y: batch_y
         }
     )
@@ -64,7 +63,7 @@ def batch_stats(sess, batch_x, batch_y, cost, acc):
         cost,
         feed_dict={
             x: pad_seq(batch_x),
-            x_len: len(batch_x),
+            x_len: [len(el) for el in batch_x],
             y: batch_y
         }
     )
@@ -72,7 +71,7 @@ def batch_stats(sess, batch_x, batch_y, cost, acc):
         acc,
         feed_dict={
             x: pad_seq(batch_x),
-            x_len: len(batch_x),
+            x_len: [len(el) for el in batch_x],
             y: batch_y
         }
     )
@@ -85,7 +84,7 @@ def train_neural_network(sess, optimizer, batch_x, batch_y):
         optimizer,
         feed_dict={
             x: pad_seq(batch_x),
-            x_len: len(batch_x),
+            x_len: [len(el) for el in batch_x],
             y: batch_y
         }
     )
