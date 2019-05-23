@@ -16,8 +16,11 @@ class RecurrentModel:
     def build_lstm(self, x):
         # embed = tf.contrib.layers.embed_sequence(x, vocab_size=int(100), embed_dim=FLAGS.embedding_dims)
 
-        embed = Embedding(FLAGS.vocab_size, FLAGS.embedding_dims, FLAGS.normalize_embeddings,
-                          FLAGS.keep_prob, FLAGS.keep_prob_emb, FLAGS.vocab_freqs, FLAGS.vocab_list,
+        vocab_size = 0
+        vocab_freqs = 0
+        vocab_list = 0
+        embed = Embedding(vocab_size, FLAGS.embedding_dims, FLAGS.normalize_embeddings,
+                          FLAGS.keep_prob, FLAGS.keep_prob_emb, vocab_freqs, vocab_list,
                           FLAGS.w2v_loc, FLAGS.transfer_learn_w2v, FLAGS.data_dir)
         exit()
 
