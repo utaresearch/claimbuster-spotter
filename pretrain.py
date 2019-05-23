@@ -118,7 +118,7 @@ def main():
         sess.run(tf.global_variables_initializer())
         start = time.time()
 
-        for epoch in range(FLAGS.num_epochs):
+        for epoch in range(FLAGS.max_steps):
 
             n_batches = math.ceil(float(FLAGS.training_examples) / float(FLAGS.batch_size))
 
