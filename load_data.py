@@ -5,6 +5,7 @@ import pickle
 from pycontractions import Contractions
 from tqdm import tqdm
 from flags import FLAGS
+from vocab import get_vocab_information
 
 train_dir = ""
 test_dir = ""
@@ -103,6 +104,10 @@ def main():
     random.shuffle(dl)
 
     write_pickle(dl)
+
+    print("Parsing vocab information...")
+    print(get_vocab_information(dl))
+    exit()
 
 
 if __name__ == "__main__":

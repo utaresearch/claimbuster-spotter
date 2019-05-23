@@ -66,9 +66,8 @@ class Embedding(K.layers.Layer):
         tf.logging.info("Loading word2vec model...")
         model = KeyedVectors.load_word2vec_format(self.w2v_loc, binary=True)
         tf.logging.info("Model loaded.")
-        idx = 0
-        fail_cnt = 0
-        fail_words = []
+
+        idx, fail_cnt, fail_words, tot_cnt = 0, 0, [], 0
         tot_cnt = 0
         for word in self.vocab_list:
             try:
@@ -79,6 +78,7 @@ class Embedding(K.layers.Layer):
                 fail_words.append(word)
             tot_cnt = tot_cnt + 1
             idx = idx + 1
+
         fail_words.sort()
         tf.logging.info(str(fail_cnt) + " out of " + str(
             tot_cnt) + " strings were not found in word2vec and were defaulted to zeroes.")
