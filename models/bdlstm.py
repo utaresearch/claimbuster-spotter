@@ -14,7 +14,7 @@ class RecurrentModel:
         return yhat, self.compute_loss(y, yhat)
 
     def build_lstm(self, x):
-
+        # x = x
 
         lstm = tf.nn.rnn_cell.MultiRNNCell([self.get_lstm() for _ in range(FLAGS.rnn_num_layers)])
 
@@ -25,6 +25,7 @@ class RecurrentModel:
         add_bias = tf.get_variable('post_lstm_bias', shape=FLAGS.num_classes,
                                    initializer=tf.contrib.layers.xavier_initializer())
 
+        print(output[-1])
         return tf.matmul(output[-1], add_weight) + add_bias
 
     @staticmethod
