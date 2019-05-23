@@ -72,7 +72,7 @@ def load_dependencies():
     global cont
 
     # Load NLTK deps
-    if args.noun_rep or args.full_tags or args.ner_stanford or args.ner_spacy:
+    if args.noun_rep or args.full_tags or args.ner_spacy:
         print("Loading NLTK Dependencies...")
         transf.nltk.download('punkt')
         transf.nltk.download('averaged_perceptron_tagger')
