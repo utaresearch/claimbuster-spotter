@@ -22,7 +22,7 @@ def parse_json():
         lab = f["label"]
         txt = list(cont.expand_texts([f["text"]], precise=True))[0]
 
-        txt = txt.replace('-', ' ').lower().split(' ')
+        txt = txt.replace('-', ' ').lower()
         if args.noun_rep:
             txt = transf.process_sentence_noun_rep(txt)
         elif args.full_tags:
@@ -31,8 +31,8 @@ def parse_json():
             txt = transf.process_sentence_ner_spacy(txt)
 
         words = txt.split(' ')
-        for i in range(len(words)):
-            words[i].strip(string.punctuation)
+        for j in range(len(words)):
+            words[j].strip(string.punctuation)
 
         txt = ' '.join(words)
         print(txt)
