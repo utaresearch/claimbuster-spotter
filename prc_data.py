@@ -36,6 +36,11 @@ def parse_json():
             if words[j].isdigit():
                 words[j] = "NUM"
 
+        for j in range(len(words)):
+            if not words[j]:
+                del words[j]
+                j -= 1
+
         txt = ' '.join(words)
         print(txt)
 
