@@ -10,6 +10,7 @@ from flags import FLAGS
 cont = None
 args = None
 parser = None
+kill_words = ["", "uh"]
 
 
 def parse_json():
@@ -38,7 +39,7 @@ def parse_json():
 
         txt = []
         for word in words:
-            if word:
+            if word not in kill_words:
                 txt.append(word)
 
         txt = ' '.join(txt)
