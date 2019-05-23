@@ -1,5 +1,4 @@
 import json, os, random
-from pycontractions import Contractions
 from data_utils import transformations as transf
 import argparse
 from tqdm import tqdm
@@ -20,78 +19,6 @@ class Sample:
     def __init__(self, l, s):
         self.label = l
         self.sentence = s
-
-
-def create_dir(dir):
-    if not os.path.exists(dir):
-        os.makedirs(dir)
-    return dir
-
-
-def set_dirs():
-    global train_dir
-    global test_dir
-    global train_label_dir
-    global test_label_dir
-    create_dir(args.output_dir)
-    train_dir = create_dir(args.output_dir + "/train")
-    test_dir = create_dir(args.output_dir + "/test")
-    train_label_dir.append(create_dir(train_dir + "/0"))
-    train_label_dir.append(create_dir(train_dir + "/1"))
-    train_label_dir.append(create_dir(train_dir + "/2"))
-    test_label_dir.append(create_dir(test_dir + "/0"))
-    test_label_dir.append(create_dir(test_dir + "/1"))
-    test_label_dir.append(create_dir(test_dir + "/2"))
-
-
-def split_into_dirs(dl):
-    set_dirs()
-    cutpoint = int(float(args.train_pct) / 100.0 * float(len(dl)))
-    ctr = 0
-    for i in range(0, len(dl)):  # training data
-        sample = dl[i]
-        lab = int(sample.label)
-        s = sample.sentence
-
-        if i <= cutpoint:
-            target_dir = train_label_dir[lab]
-        else:
-            target_dir = test_label_dir[lab]
-        with open(target_dir + "/" + str(ctr).zfill(5) + "_" + str(lab) + ".txt", "w") as f:
-            f.write(s)
-
-        ctr = ctr + 1
-
-
-def print_sample_list(dl):
-    for f in dl:
-        print(f.label + " " + f.sentence)
-
-
-def load_dependencies():
-    global cont
-
-    # Load NLTK deps
-    if args.noun_rep or args.full_tags or args.ner_spacy:
-        print("Loading NLTK Dependencies...")
-        transf.nltk.download('punkt')
-        transf.nltk.download('averaged_perceptron_tagger')
-        transf.nltk.download('tagsets')
-        if args.ner_spacy:
-            print("Loading Spacy NER Tagger...")
-            transf.nlp = transf.spacy.load("en_core_web_lg")
-            print("Tagger loaded.")
-        print("NLTK dependencies Loaded.")
-
-    # Load word2vec model for contraction expansion
-    print("Loading model from " + args.w2v_loc)
-    cont = Contractions(args.w2v_loc)
-
-    try:
-        cont.load_models()
-        print("Model Loaded.")
-    except:
-        raise Exception("Error: Model does not exist")
 
 
 def parse_json():
@@ -119,7 +46,7 @@ def parse_tags():
     global args
 
     parser = argparse.ArgumentParser(description="Convert .json file to directory hierarchy and apply data transf.")
-    parser.add_argument("--output_dir", default="./output/prc_data")
+    parser.add_argument("--output_pkl", default="./output/prc_data.pkl")
     parser.add_argument("--json_loc", default="./data/data_large.json")
     parser.add_argument("--w2v_loc", default="./data/word2vec/GoogleNews-vectors-negative300.bin")
     parser.add_argument("--train_pct", type=int, default=75)
@@ -139,6 +66,12 @@ def parse_tags():
         raise Exception("You cannot have more than one data transformation option to be True at once.")
 
 
+def write_pickle():
+    global args
+
+    print('foo')
+
+
 def main():
     parse_tags()
     if os.path.exists(args.output_dir):
@@ -151,14 +84,14 @@ def main():
             print("Exiting...")
             exit()
 
-    load_dependencies()
+    transf.load_dependencies(args)
     print("Processing data...")
+
     dl = parse_json()
     random.seed(456)
     random.shuffle(dl)
-    print("Creating directories...")
-    split_into_dirs(dl)
-    print("Processing complete.")
+
+    print(dl)
 
 
 if __name__ == "__main__":
