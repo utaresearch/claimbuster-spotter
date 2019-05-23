@@ -40,7 +40,7 @@ class Embedding(K.layers.Layer):
 
         super(Embedding, self).__init__()
 
-    def return_initialized_value(self):
+    def return_initialized_value(self, *args, **kwargs):
         var = self.embedding_matrix_tf
         with ops.init_scope():
             return control_flow_ops.cond(state_ops.is_variable_initialized(var),
