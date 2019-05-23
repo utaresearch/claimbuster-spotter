@@ -32,7 +32,7 @@ def parse_json():
     for i in tqdm(range(len(temp_data)), ascii=True):
         f = temp_data[i]
         lab = f["label"]
-        txt = cont._expand_text(f["text"])[0]
+        txt = cont.expand_text(f["text"])
         print(lab)
         print(f["text"])
         print(txt)
