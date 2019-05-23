@@ -25,6 +25,7 @@ class RecurrentModel:
         embed = Embedding(vocab_size, FLAGS.embedding_dims, FLAGS.normalize_embeddings,
                           vocab_freqs, vocab_list, FLAGS.keep_prob_emb,
                           FLAGS.w2v_loc, FLAGS.transfer_learn_w2v, FLAGS.data_dir)
+        embed.build(tf.shape(x))
         x = embed(x)
         exit()
 
