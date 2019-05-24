@@ -25,6 +25,8 @@ def one_hot(a):
 
 
 def eval_stats(sess, batch_x, batch_y, cost, acc):
+    if len(batch_x) == 0 and len(batch_y) == 0:
+        return 0.0, 0.0
     eval_loss = sess.run(
         cost,
         feed_dict={
@@ -129,6 +131,7 @@ def main():
             eval_acc += b_acc * len(batch_y)
             n_samples += len(batch_y)
 
+        eval_loss /= n_samples
         eval_acc /= n_samples
 
         tf.logging.info('Final stats | Loss: {:>7.4} Acc: {:>7.4f}% '.format(eval_loss, eval_acc * 100))
