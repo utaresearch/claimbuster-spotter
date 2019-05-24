@@ -68,9 +68,9 @@ class DataLoader:
 
     @staticmethod
     def load_external(custom_loc):
-        with open(os.path.join(FLAGS.output_dir, FLAGS.prc_data_loc) if not custom_loc else custom_loc, 'rb') as f:
+        with open(FLAGS.prc_data_loc if not custom_loc else custom_loc, 'rb') as f:
             data = pickle.load(f)
-        with open(os.path.join(FLAGS.output_dir, FLAGS.vocab_loc), 'rb') as f:
+        with open(FLAGS.vocab_loc, 'rb') as f:
             vc = [x[0] for x in pickle.load(f)]
 
         print(data)

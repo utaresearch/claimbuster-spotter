@@ -11,7 +11,7 @@ kill_words = ["", "uh"]
 
 
 def parse_json():
-    with open(args.json_loc) as f:
+    with open(FLAGS.raw_data_loc) as f:
         temp_data = json.load(f)
     dl = []
 
@@ -58,11 +58,11 @@ def parse_tags():
 
 
 def write_pickle(df):
-    path = os.path.join(FLAGS.output_dir, FLAGS.prc_data_loc)[:os.path.join(FLAGS.output_dir, FLAGS.prc_data_loc).find('/', os.path.join(FLAGS.output_dir, FLAGS.prc_data_loc).find('/') + 1)]
+    path = FLAGS.prc_data_loc[:FLAGS.prc_data_loc.find('/', FLAGS.prc_data_loc.find('/') + 1)]
     if not os.path.exists(path):
         os.mkdir(path)
 
-    with open(os.path.join(FLAGS.output_dir, FLAGS.prc_data_loc), 'wb') as f:
+    with open(FLAGS.prc_data_loc, 'wb') as f:
         pickle.dump(df, f)
 
 
@@ -80,15 +80,19 @@ def load_dependencies():
 def main():
     parse_tags()
 
-    if os.path.isfile(os.path.join(FLAGS.output_dir, FLAGS.prc_data_loc)):
-        print("By running this script, you will be deleting all contents of " + os.path.join(FLAGS.output_dir, FLAGS.prc_data_loc))
+    if os.path.isfile(FLAGS.prc_data_loc):
+        print("By running this script, you will be deleting all contents of " + FLAGS.prc_data_loc)
         ans = input("Do you wish to continue? (y/n) ")
         if ans == 'y':
             print("Running code...")
-            os.remove(os.path.join(FLAGS.output_dir, FLAGS.prc_data_loc))
+            os.remove(FLAGS.prc_data_loc)
         else:
             print("Exiting...")
             exit()
+
+    print("Creating missing {} directory...".format(FLAGS.output_dir))
+    if not os.path.exists(FLAGS.output_dir):
+        os.mkdir(FLAGS.output_dir)
 
     print("Loading dependencies...")
     load_dependencies()
