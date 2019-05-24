@@ -142,7 +142,6 @@ def main():
     correct = tf.equal(tf.argmax(y), tf.argmax(y_pred))
     acc = tf.reduce_mean(tf.cast(correct, tf.float32))
 
-    tf.logging.info("Starting training...")
     with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as sess:
         sess.run(tf.global_variables_initializer())
         embed_obj.init_embeddings(sess)
@@ -151,6 +150,7 @@ def main():
         start = time.time()
         epochs_trav = 0
 
+        tf.logging.info("Starting training...")
         for epoch in range(FLAGS.max_steps):
             epochs_trav += 1
             n_batches = math.ceil(float(FLAGS.train_examples) / float(FLAGS.batch_size))
