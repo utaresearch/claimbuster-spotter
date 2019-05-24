@@ -80,5 +80,5 @@ flags.DEFINE_float('learning_rate_decay_factor', 1.0,
 
 # Regularization
 flags.DEFINE_float('max_grad_norm', 1.0, 'Clip the global gradient norm to this value.')
-flags.DEFINE_float('keep_prob_lstm', 0.7, 'Keep probability LSTM network.')
-flags.DEFINE_float('keep_prob_emb', 0.7, 'Keep probability on embedding layer.')
+flags.DEFINE_float('keep_prob_lstm', 0.5, 'Keep probability LSTM network.')
+flags.DEFINE_float('keep_prob_emb', 0.5, 'Keep probability on embedding layer.')
