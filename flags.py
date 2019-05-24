@@ -3,10 +3,16 @@ import tensorflow as tf
 flags = tf.flags
 FLAGS = flags.FLAGS
 
+# Preprocessing
+flags.DEFINE_bool('noun_rep', False, 'Replace nouns with identifiers')
+flags.DEFINE_bool('full_tags', False, 'Replace all words with tags')
+flags.DEFINE_bool('ner_spacy', True, 'Named entity recognition with spaCy')
+
 # Data
 flags.DEFINE_string('output_dir', './output/', 'Location of outputs')
 flags.DEFINE_string('vocab_loc', 'vocab.pickle', 'Path to pre-calculated vocab data')
-flags.DEFINE_string('prc_data_loc', 'prc_data.pickle', 'Location of prc data')
+flags.DEFINE_string('prc_data_loc', 'prc_data.pickle', 'Location of processed data')
+flags.DEFINE_string('raw_data_loc', './data/data_large.json', 'Location of raw data')
 flags.DEFINE_integer('max_len', 150, 'Maximum length of input')
 
 flags.DEFINE_integer('stat_print_interval', 1, 'Numbers of epochs before stats are printed again')

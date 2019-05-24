@@ -27,7 +27,7 @@ class Dataset:
 
 
 class DataLoader:
-    def __init__(self, custom_loc):
+    def __init__(self, custom_loc=None):
         self.data = self.load_external(custom_loc)
         self.data.shuffle()
         self.post_process_flags()
