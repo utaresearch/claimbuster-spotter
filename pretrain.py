@@ -141,9 +141,10 @@ def main():
         embed_obj.init_embeddings(sess)
 
         start = time.time()
+        epochs_trav = 0
 
         for epoch in range(FLAGS.max_steps):
-
+            epochs_trav += 1
             n_batches = math.ceil(float(FLAGS.train_examples) / float(FLAGS.batch_size))
 
             n_samples = 0
@@ -157,10 +158,9 @@ def main():
 
                 b_loss, b_acc = batch_stats(sess, batch_x, batch_y, cost, acc)
                 epoch_loss += b_loss
-                epoch_acc += b_acc
+                epoch_acc += b_acc * len(batch_y)
                 n_samples += len(batch_y)
 
-            epoch_loss /= n_samples
             epoch_acc /= n_samples
 
             if epoch % FLAGS.stat_print_interval == 0:
@@ -168,11 +168,12 @@ def main():
                                                                                 epoch_acc * 100)
                 if validation_data.get_length() > 0:
                     log_string += execute_validation(sess, cost, acc, validation_data)
-                log_string += '({:3.3f} sec/epoch)'.format((time.time() - start) / epochs_traversed)
+                log_string += '({:3.3f} sec/epoch)'.format((time.time() - start) / epochs_trav)
 
                 tf.logging.info(log_string)
+
                 start = time.time()
-                epochs_traversed = 0
+                epochs_trav = 0
 
             if epoch % FLAGS.model_save_interval == 0 and epoch != 0:
                 save_model(sess, epoch)
