@@ -34,4 +34,4 @@ class RecurrentModel:
 
     @staticmethod
     def compute_loss(y, yhat):
-        return tf.nn.softmax_cross_entropy_with_logits_v2(labels=y, logits=yhat)
+        return tf.nn.softmax_cross_entropy_with_logits_v2(labels=y, logits=yhat, axis=1)
