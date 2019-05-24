@@ -33,12 +33,28 @@ flags.DEFINE_integer('total_examples', None, 'Total number of examples')
 flags.DEFINE_integer('train_examples', None, 'Number of training examples')
 flags.DEFINE_integer('validation_examples', None, 'Number of validation examples')
 flags.DEFINE_integer('test_examples', None, 'Number of testing examples')
-
 flags.DEFINE_integer('random_state', 59, 'State of consistent pseudo-randomness')
+
+# Model architecture
+flags.DEFINE_bool('bidir_lstm', False, 'Whether to build a bidirectional LSTM.')
+flags.DEFINE_integer('rnn_num_layers', 1, 'Number of LSTM layers.')
+flags.DEFINE_integer('rnn_cell_size', 8, 'Number of hidden units in the LSTM.')
+
+# Optimization
+flags.DEFINE_integer('max_steps', 1000, 'Number of epochs to run.')
+flags.DEFINE_float('learning_rate', 0.0001, 'Learning rate while fine-tuning.')
+flags.DEFINE_float('learning_rate_decay_factor', 1.0, 'Learning rate decay factor')
+
+# Regularization
+flags.DEFINE_float('max_grad_norm', 1.0, 'Clip the global gradient norm to this value.')
+flags.DEFINE_float('keep_prob_lstm', 0.3, 'Keep probability LSTM network.')
+flags.DEFINE_float('keep_prob_emb', 0.7, 'Keep probability on embedding layer.')
 
 # Embeddings
 flags.DEFINE_string('w2v_loc', 'data/word2vec/GoogleNews-vectors-negative300.bin', 'Location of w2v embeddings')
 flags.DEFINE_bool('transfer_learn_w2v', False, 'Train on top of w2v embeddings')
+flags.DEFINE_integer('embedding_dims', 300, 'Dimensions of embedded vector.')
+flags.DEFINE_bool('normalize_embeddings', False, 'Normalize word embeddings by vocab frequency')
 flags.DEFINE_bool('random_init_oov', True, 'Use np.random.normal init for unknown embeddings. 0-fill if False')
 
 # Adversarial and virtual adversarial training parameters.
@@ -54,22 +70,3 @@ flags.DEFINE_integer('num_classes', 3, 'Number of classes for classification')
 # Training
 flags.DEFINE_integer('batch_size', 256, 'Size of the batch.')
 flags.DEFINE_integer('num_timesteps', 100, 'Number of timesteps for BPTT')
-
-# Model architecture
-flags.DEFINE_bool('bidir_lstm', False, 'Whether to build a bidirectional LSTM.')
-flags.DEFINE_integer('rnn_num_layers', 1, 'Number of LSTM layers.')
-flags.DEFINE_integer('rnn_cell_size', 8, 'Number of hidden units in the LSTM.')
-
-# Vocabulary and embeddings
-flags.DEFINE_integer('embedding_dims', 300, 'Dimensions of embedded vector.')
-flags.DEFINE_bool('normalize_embeddings', False, 'Normalize word embeddings by vocab frequency')
-
-# Optimization
-flags.DEFINE_integer('max_steps', 1000, 'Number of epochs to run.')
-flags.DEFINE_float('learning_rate', 0.0001, 'Learning rate while fine-tuning.')
-flags.DEFINE_float('learning_rate_decay_factor', 1.0, 'Learning rate decay factor')
-
-# Regularization
-flags.DEFINE_float('max_grad_norm', 1.0, 'Clip the global gradient norm to this value.')
-flags.DEFINE_float('keep_prob_lstm', 0.3, 'Keep probability LSTM network.')
-flags.DEFINE_float('keep_prob_emb', 0.7, 'Keep probability on embedding layer.')
