@@ -64,13 +64,13 @@ class Embedding:
         saver = tf.train.Saver({"var_to_return": var_to_return})
 
         sess.run(tf.global_variables_initializer())
-        save_path = saver.save(sess, os.path.join(FLAGS.data_dir, "embedding_matrix_tf.ckpt"))
+        save_path = saver.save(sess, os.path.join(FLAGS.output_loc, "embedding_matrix_tf.ckpt"))
         tf.logging.info("Model saved in path: " + save_path)
 
         return embedding_matrix
 
     def retrieve_embedding_matrix(self, sess):
-        target_file = os.path.join(FLAGS.data_dir, "embedding_matrix_tf.ckpt")
+        target_file = os.path.join(FLAGS.output_loc, "embedding_matrix_tf.ckpt")
         tf.logging.info("Attempting to restore embedding matrix backup from {}...".format(target_file))
 
         """Useful debugging tool"""
@@ -90,6 +90,6 @@ class Embedding:
 
     @staticmethod
     def get_vocab():
-        with open(FLAGS.vocab_path, 'rb') as f:
+        with open(FLAGS.vocab_loc, 'rb') as f:
             data = pickle.load(f)
         return [x[0] for x in data], [x[1] for x in data]

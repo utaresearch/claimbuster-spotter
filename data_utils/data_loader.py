@@ -26,8 +26,8 @@ class Dataset:
 
 
 class DataLoader:
-    def __init__(self):
-        self.data = self.load_external()
+    def __init__(self, custom_loc):
+        self.data = self.load_external(custom_loc)
         self.data.shuffle()
         self.post_process_flags()
 
@@ -66,10 +66,10 @@ class DataLoader:
         FLAGS.train_examples = FLAGS.train_examples - FLAGS.validation_examples
 
     @staticmethod
-    def load_external():
-        with open(FLAGS.data_pkl_loc, 'rb') as f:
+    def load_external(custom_loc):
+        with open(FLAGS.prc_data_loc if not custom_loc else custom_loc, 'rb') as f:
             data = pickle.load(f)
-        with open(FLAGS.vocab_path, 'rb') as f:
+        with open(FLAGS.vocab_loc, 'rb') as f:
             vc = [x[0] for x in pickle.load(f)]
 
         return Dataset([[vc.index(ch) for ch in x[1].split(' ')] for x in data], [int(x[0]) + 1 for x in data], FLAGS.random_state)
