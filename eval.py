@@ -65,7 +65,7 @@ def load_model(sess, graph):
         return ret_ar[-1]
 
     model_dir = '{}/{}'.format(FLAGS.save_loc, get_last_save(FLAGS.save_loc))
-    tf.logging.info('Attempting to restore from {} | '.format(model_dir), end='', flush=True)
+    tf.logging.info('Attempting to restore from {}'.format(model_dir))
 
     with graph.as_default():
         saver = tf.train.import_meta_graph(model_dir)
