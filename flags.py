@@ -52,7 +52,7 @@ flags.DEFINE_float('adv_reg_coeff', 1.0,
 flags.DEFINE_integer('num_classes', 3, 'Number of classes for classification')
 
 # Training
-flags.DEFINE_integer('batch_size', 16, 'Size of the batch.')
+flags.DEFINE_integer('batch_size', 256, 'Size of the batch.')
 flags.DEFINE_integer('num_timesteps', 100, 'Number of timesteps for BPTT')
 
 # Model architecture
