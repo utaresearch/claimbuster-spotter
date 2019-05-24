@@ -180,6 +180,7 @@ def main():
                 epoch_acc += b_acc * len(batch_y)
                 n_samples += len(batch_y)
 
+            epoch_loss /= n_samples
             epoch_acc /= n_samples
 
             if epoch % FLAGS.stat_print_interval == 0:
