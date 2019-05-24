@@ -79,7 +79,6 @@ flags.DEFINE_float('learning_rate_decay_factor', 1.0,
                    'Learning rate decay factor')
 
 # Regularization
-flags.DEFINE_float('max_grad_norm', 1.0,
-                   'Clip the global gradient norm to this value.')
-flags.DEFINE_float('keep_prob_emb', 0.7, 'keep probability on embedding layer. '
-                   '0.5 is optimal on IMDB with virtual adversarial training.')
+flags.DEFINE_float('max_grad_norm', 1.0, 'Clip the global gradient norm to this value.')
+flags.DEFINE_float('keep_prob_lstm', 0.7, 'Keep probability LSTM network.'）
+flags.DEFINE_float('keep_prob_emb', 0.7, 'Keep probability on embedding layer.'）
