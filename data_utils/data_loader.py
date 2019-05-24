@@ -1,6 +1,7 @@
 import pickle
 import math
 import sys
+import os
 sys.path.append('..')
 from flags import FLAGS
 from sklearn.utils import shuffle
@@ -67,9 +68,9 @@ class DataLoader:
 
     @staticmethod
     def load_external(custom_loc):
-        with open(FLAGS.prc_data_loc if not custom_loc else custom_loc, 'rb') as f:
+        with open(os.path.join(FLAGS.output_dir, FLAGS.prc_data_loc) if not custom_loc else custom_loc, 'rb') as f:
             data = pickle.load(f)
-        with open(FLAGS.vocab_loc, 'rb') as f:
+        with open(os.path.join(FLAGS.output_dir, FLAGS.vocab_loc), 'rb') as f:
             vc = [x[0] for x in pickle.load(f)]
 
         return Dataset([[vc.index(ch) for ch in x[1].split(' ')] for x in data], [int(x[0]) + 1 for x in data], FLAGS.random_state)

@@ -4,10 +4,9 @@ flags = tf.flags
 FLAGS = flags.FLAGS
 
 # Data
-output = './output/'
-flags.DEFINE_string('output_loc', output, 'Location of outputs')
-flags.DEFINE_string('vocab_loc', '{}vocab.pickle'.format(output), 'Path to pre-calculated vocab data')
-flags.DEFINE_string('prc_data_loc', '{}prc_data.pickle'.format(output), 'Location of prc data')
+flags.DEFINE_string('output_dir', './output/', 'Location of outputs')
+flags.DEFINE_string('vocab_loc', 'vocab.pickle', 'Path to pre-calculated vocab data')
+flags.DEFINE_string('prc_data_loc', 'prc_data.pickle', 'Location of prc data')
 flags.DEFINE_integer('max_len', 150, 'Maximum length of input')
 
 flags.DEFINE_integer('stat_print_interval', 1, 'Numbers of epochs before stats are printed again')
