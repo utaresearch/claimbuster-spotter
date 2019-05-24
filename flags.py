@@ -13,7 +13,7 @@ flags.DEFINE_integer('stat_print_interval', 1, 'Numbers of epochs before stats a
 flags.DEFINE_integer('model_save_interval', 50, 'Numbers of epochs before model is saved again')
 
 # Save
-flags.DEFINE_integer('save_loc', './output', 'Location to save model')
+flags.DEFINE_string('save_loc', './output', 'Location to save model')
 
 # Data v2
 flags.DEFINE_float('train_pct', .70, 'Training percentage')
