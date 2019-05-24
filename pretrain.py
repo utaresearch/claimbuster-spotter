@@ -5,7 +5,7 @@ import time
 import os
 from data_utils.data_loader import DataLoader
 from models.bdlstm import RecurrentModel
-from models.new_embed import Embedding
+from models.embeddings import Embedding
 from flags import FLAGS
 
 x = tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x')
