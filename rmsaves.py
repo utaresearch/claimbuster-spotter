@@ -22,7 +22,7 @@ def main():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--folder_to_clean', default='')
+    parser.add_argument('--folder_to_clean', default='./output')
     args = parser.parse_args()
 
     main()
