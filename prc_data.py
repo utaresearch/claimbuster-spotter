@@ -7,8 +7,6 @@ from tqdm import tqdm
 from flags import FLAGS
 
 cont = None
-args = None
-parser = None
 kill_words = ["", "uh"]
 
 
@@ -60,8 +58,6 @@ def parse_tags():
 
 
 def write_pickle(df):
-    global args
-
     path = os.path.join(FLAGS.output_dir, FLAGS.prc_data_loc)[:os.path.join(FLAGS.output_dir, FLAGS.prc_data_loc).find('/', os.path.join(FLAGS.output_dir, FLAGS.prc_data_loc).find('/') + 1)]
     if not os.path.exists(path):
         os.mkdir(path)
@@ -73,7 +69,7 @@ def write_pickle(df):
 def load_dependencies():
     global cont
 
-    transf.load_dependencies(args)
+    transf.load_dependencies(FLAGS)
     cont = Contractions(FLAGS.w2v_loc)
 
     print("Loading contractions model...")
