@@ -9,8 +9,8 @@ class RecurrentModel:
         pass
 
     def construct_model(self, x, x_len, output_mask, y, embed, kp_emb, kp_lstm):
-        yhat, asdf = self.build_lstm(x, x_len, output_mask, embed, kp_emb, kp_lstm)
-        return yhat, self.compute_loss(y, yhat), asdf
+        yhat = self.build_lstm(x, x_len, output_mask, embed, kp_emb, kp_lstm)
+        return yhat, self.compute_loss(y, yhat)
 
     def build_lstm(self, x, x_len, output_mask, embed, kp_emb, kp_lstm):
         x = tf.unstack(x, axis=1)
@@ -28,7 +28,7 @@ class RecurrentModel:
         add_bias = tf.get_variable('post_lstm_bias', shape=FLAGS.num_classes,
                                    initializer=tf.contrib.layers.xavier_initializer())
 
-        return tf.matmul(tf.boolean_mask(output, output_mask), add_weight) + add_bias, output
+        return tf.matmul(tf.boolean_mask(output, output_mask), add_weight) + add_bias
 
     @staticmethod
     def get_lstm(kp_lstm):
@@ -41,4 +41,4 @@ class RecurrentModel:
 
     @staticmethod
     def compute_loss(y, yhat):
-        return tf.nn.softmax_cross_entropy_with_logits_v2(labels=y, logits=yhat)
+        return tf.nn.softmax_cross_entropy_with_logits_v2(labels=y, logits=yhat, name='cost')

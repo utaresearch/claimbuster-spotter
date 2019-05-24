@@ -147,13 +147,13 @@ def main():
     embed = embed_obj.construct_embeddings()
 
     lstm_model = RecurrentModel()
-    logits, cost, asdf = lstm_model.construct_model(x, x_len, output_mask, y, embed, kp_emb, kp_lstm)
+    logits, cost = lstm_model.construct_model(x, x_len, output_mask, y, embed, kp_emb, kp_lstm)
     optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(cost)
 
     print(logits)
-    y_pred = tf.nn.softmax(logits, axis=1)
+    y_pred = tf.nn.softmax(logits, axis=1, name='y_pred')
     correct = tf.equal(tf.argmax(y, axis=1), tf.argmax(y_pred, axis=1))
-    acc = tf.reduce_mean(tf.cast(correct, tf.float32))
+    acc = tf.reduce_mean(tf.cast(correct, tf.float32), name='acc')
 
     with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as sess:
         sess.run(tf.global_variables_initializer())

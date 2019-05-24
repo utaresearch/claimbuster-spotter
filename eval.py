@@ -27,8 +27,8 @@ def one_hot(a):
     return np.squeeze(np.eye(FLAGS.num_classes)[np.array(a).reshape(-1)])
 
 
-def validation_stats(sess, cost, acc, batch_x, batch_y):
-    val_loss = sess.run(
+def eval_stats(sess, batch_x, batch_y, cost, acc):
+    eval_loss = sess.run(
         cost,
         feed_dict={
             x: pad_seq(batch_x),
@@ -39,7 +39,7 @@ def validation_stats(sess, cost, acc, batch_x, batch_y):
             kp_lstm: 1.0
         }
     )
-    val_acc = sess.run(
+    eval_acc = sess.run(
         acc,
         feed_dict={
             x: pad_seq(batch_x),
@@ -51,84 +51,47 @@ def validation_stats(sess, cost, acc, batch_x, batch_y):
         }
     )
 
-    return np.sum(val_loss), val_acc
+    return np.sum(eval_acc), eval_acc
 
 
-def execute_validation(sess, cost, acc, validation_data):
-    n_batches = math.ceil(float(FLAGS.validation_examples) / float(FLAGS.batch_size))
-    val_loss, val_acc = 0.0, 0.0
-    tot_val_ex = 0
+def load_model(sess, graph):
+    def get_last_save(scan_loc):
+        ret_ar = []
+        directory = os.fsencode(scan_loc)
+        for fstr in os.listdir(directory):
+            if '.meta' in os.fsdecode(fstr):
+                ret_ar.append(os.fsdecode(fstr))
+        ret_ar.sort()
+        return ret_ar[-1]
 
-    for batch in range(n_batches):
-        batch_x, batch_y = get_batch(batch, validation_data, ver='validation')
-        loss, ac = validation_stats(sess, cost, acc, batch_x, batch_y)
-        val_loss += loss * len(batch_y)
-        val_acc += ac * len(batch_y)
-        tot_val_ex += len(batch_y)
+    model_dir = '{}/{}'.format(FLAGS.save_loc, get_last_save(FLAGS.save_loc))
+    tf.logging.info('Attempting to restore from {} | '.format(model_dir), end='', flush=True)
 
-    val_loss /= tot_val_ex
-    val_acc /= tot_val_ex
-    return 'Val Loss: {:>7.4f} Val Acc: {:>7.4f}% '.format(val_loss, val_acc * 100)
+    with graph.as_default():
+        saver = tf.train.import_meta_graph(model_dir)
+        saver.restore(sess, tf.train.latest_checkpoint(FLAGS.save_loc))
 
+        # outputs
+        cost = graph.get_tensor_by_name('cost:0')
+        y_pred = graph.get_tensor_by_name('y_pred:0')
+        acc = graph.get_tensor_by_name('acc:0')
 
-def batch_stats(sess, batch_x, batch_y, cost, acc):
-    train_loss = sess.run(
-        cost,
-        feed_dict={
-            x: pad_seq(batch_x),
-            x_len: [len(el) for el in batch_x],
-            output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
-            y: one_hot(batch_y),
-            kp_emb: 1.0,
-            kp_lstm: 1.0
-        }
-    )
-    train_acc = sess.run(
-        acc,
-        feed_dict={
-            x: pad_seq(batch_x),
-            x_len: [len(el) for el in batch_x],
-            output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
-            y: one_hot(batch_y),
-            kp_emb: 1.0,
-            kp_lstm: 1.0
-        }
-    )
-
-    return np.sum(train_loss), train_acc
+        tf.logging.info('Model successfully restored.')
+        return cost, y_pred, acc
 
 
-def train_neural_network(sess, optimizer, batch_x, batch_y):
-    sess.run(
-        optimizer,
-        feed_dict={
-            x: pad_seq(batch_x),
-            x_len: [len(el) for el in batch_x],
-            output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
-            y: one_hot(batch_y),
-            kp_emb: FLAGS.keep_prob_emb,
-            kp_lstm: FLAGS.keep_prob_lstm
-        }
-    )
-
-
-def get_batch(bid, data, ver='train'):
+def get_batch(bid, data):
     batch_x = []
     batch_y = []
 
     for i in range(FLAGS.batch_size):
         idx = bid * FLAGS.batch_size + i
-        if idx >= (FLAGS.train_examples if ver == 'train' else FLAGS.validation_examples):
+        if idx >= FLAGS.testing_examples:
             break
         batch_x.append(data.x[idx])
         batch_y.append(data.y[idx])
 
     return batch_x, batch_y
-
-
-def save_model(sess, epoch):
-    saver = tf.train.Saver()
-    saver.save(sess, os.path.join(FLAGS.save_loc, 'stm.ckpt'), global_step=epoch)
 
 
 def main():
@@ -137,102 +100,31 @@ def main():
     tf.logging.info("Loading dataset")
     data_load = DataLoader()
 
-    train_data = data_load.load_training_data()
-    validation_data = data_load.load_validation_data()
+    test_data = data_load.load_testing_data()
+    tf.logging.info("{} testing examples".format(test_data.get_length()))
 
-    tf.logging.info("{} training examples".format(train_data.get_length()))
-    tf.logging.info("{} validation examples".format(validation_data.get_length()))
-
-    embed_obj = Embedding()
-    embed = embed_obj.construct_embeddings()
-
-    lstm_model = RecurrentModel()
-    logits, cost, asdf = lstm_model.construct_model(x, x_len, output_mask, y, embed, kp_emb, kp_lstm)
-    optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(cost)
-
-    print(logits)
-    y_pred = tf.nn.softmax(logits, axis=1)
-    correct = tf.equal(tf.argmax(y, axis=1), tf.argmax(y_pred, axis=1))
-    acc = tf.reduce_mean(tf.cast(correct, tf.float32))
-
-    with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as sess:
+    graph = tf.Graph()
+    with tf.Session(graph=graph, config=tf.ConfigProto(allow_soft_placement=True)) as sess:
         sess.run(tf.global_variables_initializer())
-        embed_obj.init_embeddings(sess)
+        cost, y_pred, acc = load_model(sess, graph)
 
-        start = time.time()
-        epochs_trav = 0
+        n_batches = math.ceil(float(FLAGS.train_examples) / float(FLAGS.batch_size))
 
-        tf.logging.info("Starting training...")
-        for epoch in range(FLAGS.max_steps):
-            epochs_trav += 1
-            n_batches = math.ceil(float(FLAGS.train_examples) / float(FLAGS.batch_size))
+        n_samples = 0
+        eval_loss = 0.0
+        eval_acc = 0.0
 
-            n_samples = 0
-            epoch_loss = 0.0
-            epoch_acc = 0.0
+        for i in range(n_batches):
+            batch_x, batch_y = get_batch(i, test_data)
 
-            for i in range(n_batches):
-                batch_x, batch_y = get_batch(i, train_data)
+            b_loss, b_acc = eval_stats(sess, batch_x, batch_y, cost, acc)
+            eval_loss += b_loss
+            eval_acc += b_acc * len(batch_y)
+            n_samples += len(batch_y)
 
-                train_neural_network(sess, optimizer, batch_x, batch_y)
+        eval_acc /= n_samples
 
-                # if epoch >= 10:
-                #     import pickle
-                #     with open(FLAGS.vocab_path, 'rb') as f:
-                #         asdfasdf = pickle.load(f)
-                #     for word in batch_x[0]:
-                #         print(asdfasdf[word])
-                #     # print(batch_x[0])
-                #     print(batch_y[0])
-                #     print(sess.run(y_pred, feed_dict={
-                #         x: pad_seq(batch_x),
-                #         x_len: [len(el) for el in batch_x],
-                #         output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
-                #         y: one_hot(batch_y)
-                #     })[0])
-                #     exit()
-
-                # print(batch_x)
-                # print(sess.run(asdf, feed_dict={
-                #     x: pad_seq(batch_x),
-                #     x_len: [len(el) for el in batch_x],
-                #     y: one_hot(batch_y)
-                # }))
-                # exit()
-                # print(sess.run(y_pred, feed_dict={
-                #     x: pad_seq(batch_x),
-                #     x_len: [len(el) for el in batch_x],
-                #     y: one_hot(batch_y)
-                # }))
-
-                b_loss, b_acc = batch_stats(sess, batch_x, batch_y, cost, acc)
-                epoch_loss += b_loss
-                epoch_acc += b_acc * len(batch_y)
-                n_samples += len(batch_y)
-
-            epoch_acc /= n_samples
-
-            if epoch % FLAGS.stat_print_interval == 0:
-                log_string = 'Epoch {:>3} Loss: {:>7.4} Acc: {:>7.4f}% '.format(epoch + 1, epoch_loss,
-                                                                                epoch_acc * 100)
-                if validation_data.get_length() > 0:
-                    log_string += execute_validation(sess, cost, acc, validation_data)
-                log_string += '({:3.3f} sec/epoch)'.format((time.time() - start) / epochs_trav)
-
-                tf.logging.info(log_string)
-
-                start = time.time()
-                epochs_trav = 0
-
-            if epoch % FLAGS.model_save_interval == 0 and epoch != 0:
-                save_model(sess, epoch)
-                tf.logging.info('Model @ epoch {} saved'.format(epoch + 1))
-
-        tf.logging.info('Training complete. Saving final model...')
-        save_model(sess, -1)
-        tf.logging.info('Model saved.')
-
-        sess.close()
+        tf.logging.info('Final stats | Loss: {:>7.4} Acc: {:>7.4f}% '.format(eval_loss, eval_acc * 100))
 
 
 if __name__ == '__main__':
