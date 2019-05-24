@@ -57,7 +57,7 @@ flags.DEFINE_integer('num_timesteps', 100, 'Number of timesteps for BPTT')
 # Model architecture
 flags.DEFINE_bool('bidir_lstm', False, 'Whether to build a bidirectional LSTM.')
 flags.DEFINE_integer('rnn_num_layers', 1, 'Number of LSTM layers.')
-flags.DEFINE_integer('rnn_cell_size', 32, 'Number of hidden units in the LSTM.')
+flags.DEFINE_integer('rnn_cell_size', 16, 'Number of hidden units in the LSTM.')
 
 # Vocabulary and embeddings
 flags.DEFINE_integer('embedding_dims', 300, 'Dimensions of embedded vector.')
@@ -70,5 +70,5 @@ flags.DEFINE_float('learning_rate_decay_factor', 1.0, 'Learning rate decay facto
 
 # Regularization
 flags.DEFINE_float('max_grad_norm', 1.0, 'Clip the global gradient norm to this value.')
-flags.DEFINE_float('keep_prob_lstm', 0.5, 'Keep probability LSTM network.')
-flags.DEFINE_float('keep_prob_emb', 0.5, 'Keep probability on embedding layer.')
+flags.DEFINE_float('keep_prob_lstm', 0.3, 'Keep probability LSTM network.')
+flags.DEFINE_float('keep_prob_emb', 0.7, 'Keep probability on embedding layer.')
