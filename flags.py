@@ -9,15 +9,17 @@ flags.DEFINE_bool('full_tags', False, 'Replace all words with tags')
 flags.DEFINE_bool('ner_spacy', True, 'Named entity recognition with spaCy')
 
 # Data
-# output_dir = './output/'
-output_dir = './data/disjoint_2000/'
+output_dir = './output/'
+data_dir = './data/'
+# output_dir = './data/disjoint_2000/'
 flags.DEFINE_string('output_dir', output_dir, 'Location of outputs')
-# flags.DEFINE_string('model_dir', output_dir, 'Location of model save')
-flags.DEFINE_string('model_dir', './output/', 'Location of model save')
+flags.DEFINE_string('data_dir', data_dir, 'Location of data')
+flags.DEFINE_string('model_dir', output_dir, 'Location of model save')
+# flags.DEFINE_string('model_dir', './output/', 'Location of model save')
 flags.DEFINE_string('vocab_loc', '{}vocab.pickle'.format(output_dir), 'Path to pre-calculated vocab data')
 flags.DEFINE_string('prc_data_loc', '{}prc_data.pickle'.format(output_dir), 'Location of processed data')
-# flags.DEFINE_string('raw_data_loc', '{}disjoint_2000.json'.format(output_dir), 'Location of raw data')
-flags.DEFINE_string('raw_data_loc', './data/disjoint_2000.json'.format(output_dir), 'Location of raw data')
+flags.DEFINE_string('raw_data_loc', '{}data_large.json'.format(output_dir), 'Location of raw data')
+# flags.DEFINE_string('raw_data_loc', './data/disjoint_2000.json'.format(output_dir), 'Location of raw data')
 flags.DEFINE_integer('max_len', 150, 'Maximum length of input')
 
 flags.DEFINE_integer('stat_print_interval', 1, 'Numbers of epochs before stats are printed again')
@@ -55,7 +57,7 @@ flags.DEFINE_integer('num_timesteps', 100, 'Number of timesteps for BPTT')
 # Model architecture
 flags.DEFINE_bool('bidir_lstm', False, 'Whether to build a bidirectional LSTM.')
 flags.DEFINE_integer('rnn_num_layers', 1, 'Number of LSTM layers.')
-flags.DEFINE_integer('rnn_cell_size', 512, 'Number of hidden units in the LSTM.')
+flags.DEFINE_integer('rnn_cell_size', 256, 'Number of hidden units in the LSTM.')
 
 # Vocabulary and embeddings
 flags.DEFINE_integer('embedding_dims', 300, 'Dimensions of embedded vector.')
