@@ -71,7 +71,7 @@ flags.DEFINE_bool('normalize_embeddings', False, 'Normalize word embeddings by v
 
 # Optimization
 flags.DEFINE_integer('max_steps', 1000, 'Number of epochs to run.')
-flags.DEFINE_float('learning_rate', 0.001, 'Learning rate while fine-tuning.')
+flags.DEFINE_float('learning_rate', 0.01, 'Learning rate while fine-tuning.')
 flags.DEFINE_float('learning_rate_decay_factor', 1.0,
                    'Learning rate decay factor')
 
