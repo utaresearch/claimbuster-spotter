@@ -164,7 +164,12 @@ def main():
 
                 train_neural_network(sess, optimizer, batch_x, batch_y)
 
-                print(batch_x[0])
+                import pickle
+                with open(FLAGS.vocab_path, 'rb') as f:
+                    asdfasdf = pickle.load(f)
+                for word in batch_x[0]:
+                    print(asdfasdf[word])
+                # print(batch_x[0])
                 print(batch_y[0])
                 print(sess.run(y_pred, feed_dict={
                     x: pad_seq(batch_x),
