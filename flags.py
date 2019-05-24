@@ -34,7 +34,7 @@ flags.DEFINE_bool('transfer_learn_w2v', False, 'Train on top of w2v embeddings')
 flags.DEFINE_float('perturb_norm_length', 5.0, 'Norm length of adversarial perturbation')
 
 # Parameters for building the graph
-flags.DEFINE_string('adv_training_method', None, 'How adversarial training is to be undertaken'
+flags.DEFINE_string('adv_training_method', None, 'How adversarial training is to be undertaken')
 flags.DEFINE_float('adv_reg_coeff', 1.0, 'Regularization coefficient of adversarial loss')
 
 # Output stats
