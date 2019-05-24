@@ -1,4 +1,5 @@
 import os
+import shutil
 import argparse
 
 
@@ -23,7 +24,12 @@ def list_del(location):
 def main():
     to_del = list_del(args.folder_to_clean)
     for el in to_del:
-        print(el)
+        if '.' in el:
+            os.remove(os.path.join(args.folder_to_clean, el))
+        elif el == 'checkpoint':
+            shutil.rmtree(os.path.join(args.folder_to_clean, el))
+        else:
+            raise Exception('unidentified marker {}'.format(el))
 
 
 if __name__ == '__main__':
