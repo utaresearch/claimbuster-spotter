@@ -42,7 +42,7 @@ def validation_stats(sess, cost, acc, batch_x, batch_y):
         }
     )
 
-    return val_loss, val_acc
+    return np.sum(val_loss), val_acc
 
 
 def execute_validation(sess, cost, acc, validation_data):
@@ -80,7 +80,9 @@ def batch_stats(sess, batch_x, batch_y, cost, acc):
         }
     )
 
-    return train_loss, train_acc
+    print(train_loss)
+    print(np.sum(train_loss))
+    return np.sum(train_loss), train_acc
 
 
 def train_neural_network(sess, optimizer, batch_x, batch_y):
