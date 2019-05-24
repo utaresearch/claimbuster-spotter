@@ -83,7 +83,7 @@ def get_batch(bid, data):
 
     for i in range(FLAGS.batch_size):
         idx = bid * FLAGS.batch_size + i
-        if idx >= FLAGS.testing_examples:
+        if idx >= FLAGS.test_examples:
             break
         batch_x.append(data.x[idx])
         batch_y.append(data.y[idx])
