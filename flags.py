@@ -34,7 +34,7 @@ flags.DEFINE_integer('train_examples', None, 'Number of training examples')
 flags.DEFINE_integer('validation_examples', None, 'Number of validation examples')
 flags.DEFINE_integer('test_examples', None, 'Number of testing examples')
 
-flags.DEFINE_integer('random_state', 42, 'State of consistent pseudo-randomness')
+flags.DEFINE_integer('random_state', 59, 'State of consistent pseudo-randomness')
 
 # Embeddings
 flags.DEFINE_string('w2v_loc', 'data/word2vec/GoogleNews-vectors-negative300.bin', 'Location of w2v embeddings')
