@@ -1,11 +1,8 @@
 import tensorflow as tf
 import numpy as np
 import math
-import time
 import os
 from data_utils.data_loader import DataLoader
-from models.recurrent import RecurrentModel
-from models.embeddings import Embedding
 from flags import FLAGS
 
 x = tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x')
@@ -51,7 +48,7 @@ def eval_stats(sess, batch_x, batch_y, cost, acc):
         }
     )
 
-    return np.sum(eval_acc), eval_acc
+    return np.sum(eval_loss), eval_acc
 
 
 def load_model(sess, graph):
