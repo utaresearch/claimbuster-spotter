@@ -80,8 +80,6 @@ def batch_stats(sess, batch_x, batch_y, cost, acc):
         }
     )
 
-    print(train_loss)
-    print(np.sum(train_loss))
     return np.sum(train_loss), train_acc
 
 
