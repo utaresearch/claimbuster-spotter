@@ -45,8 +45,6 @@ def execute_validation(sess, cost, acc, validation_data):
 
 
 def validation_stats(sess, cost, acc, batch_x, batch_y):
-    print(batch_x)
-    print(batch_y)
     val_loss = sess.run(
         cost,
         feed_dict={
