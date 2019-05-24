@@ -150,7 +150,6 @@ def main():
     logits, cost = lstm_model.construct_model(x, x_len, output_mask, y, embed, kp_emb, kp_lstm)
     optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(cost)
 
-    print(logits)
     y_pred = tf.nn.softmax(logits, axis=1, name='y_pred')
     correct = tf.equal(tf.argmax(y, axis=1), tf.argmax(y_pred, axis=1))
     acc = tf.reduce_mean(tf.cast(correct, tf.float32), name='acc')
