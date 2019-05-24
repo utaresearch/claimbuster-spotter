@@ -3,7 +3,7 @@ import numpy as np
 import argparse
 import math
 import os
-from data_utils.data_loader import DataLoader
+from utils.data_loader import DataLoader
 from flags import FLAGS
 
 x = tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x')

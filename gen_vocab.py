@@ -1,7 +1,7 @@
 import os
 import pickle
 import argparse
-from data_utils.vocab import get_vocab_information
+from utils.vocab import get_vocab_information
 
 
 def main():

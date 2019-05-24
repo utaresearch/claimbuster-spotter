@@ -3,7 +3,7 @@ import numpy as np
 import math
 import time
 import os
-from data_utils.data_loader import DataLoader
+from utils.data_loader import DataLoader
 from models.recurrent import RecurrentModel
 from models.embeddings import Embedding
 from flags import FLAGS
