@@ -138,8 +138,9 @@ def main():
     logits, cost, asdf = lstm_model.construct_model(x, x_len, output_mask, y, embed)
     optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(cost)
 
-    y_pred = tf.nn.softmax(logits)
-    correct = tf.equal(tf.argmax(y), tf.argmax(y_pred))
+    print(logits)
+    y_pred = tf.nn.softmax(logits, axis=1)
+    correct = tf.equal(tf.argmax(y, axis=1), tf.argmax(y_pred, axis=1))
     acc = tf.reduce_mean(tf.cast(correct, tf.float32))
 
     with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as sess:
