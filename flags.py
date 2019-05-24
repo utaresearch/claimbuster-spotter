@@ -10,7 +10,7 @@ flags.DEFINE_string('data_pkl_loc', './output/prc_data.pickle', 'Location of prc
 flags.DEFINE_integer('max_len', 150, 'Maximum length of input')
 
 flags.DEFINE_integer('stat_print_interval', 1, 'Numbers of epochs before stats are printed again')
-flags.DEFINE_integer('model_save_interval', 50, 'Numbers of epochs before model is saved again')
+flags.DEFINE_integer('model_save_interval', 25, 'Numbers of epochs before model is saved again')
 
 # Save
 flags.DEFINE_string('save_loc', './output', 'Location to save model')
