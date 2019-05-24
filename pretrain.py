@@ -128,7 +128,7 @@ def get_batch(bid, data, ver='train'):
 
 def save_model(sess, epoch):
     saver = tf.train.Saver()
-    saver.save(sess, os.path.join(FLAGS.save_loc, 'stm.ckpt'), global_step=epoch)
+    saver.save(sess, os.path.join(FLAGS.model_dir, 'stm.ckpt'), global_step=epoch)
 
 
 def main():

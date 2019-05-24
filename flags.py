@@ -12,6 +12,7 @@ flags.DEFINE_bool('ner_spacy', True, 'Named entity recognition with spaCy')
 # output_dir = './output/'
 output_dir = './data/disjoint_2000/'
 flags.DEFINE_string('output_dir', output_dir, 'Location of outputs')
+flags.DEFINE_string('model_dir', output_dir, 'Location of model save')
 flags.DEFINE_string('vocab_loc', '{}vocab.pickle'.format(output_dir), 'Path to pre-calculated vocab data')
 flags.DEFINE_string('prc_data_loc', '{}prc_data.pickle'.format(output_dir), 'Location of processed data')
 # flags.DEFINE_string('raw_data_loc', '{}disjoint_2000.json'.format(output_dir), 'Location of raw data')
@@ -20,9 +21,6 @@ flags.DEFINE_integer('max_len', 150, 'Maximum length of input')
 
 flags.DEFINE_integer('stat_print_interval', 1, 'Numbers of epochs before stats are printed again')
 flags.DEFINE_integer('model_save_interval', 25, 'Numbers of epochs before model is saved again')
-
-# Save
-flags.DEFINE_string('save_loc', './output', 'Location to save model')
 
 # Data v2
 flags.DEFINE_float('train_pct', .70, 'Training percentage')
