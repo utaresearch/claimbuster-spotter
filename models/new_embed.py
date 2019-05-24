@@ -11,7 +11,7 @@ from flags import FLAGS
 class Embedding:
     def __init__(self):
         self.vocab_list, self.vocab_freqs = self.get_vocab()
-        self.embed_shape = (len(self.vocab_list), FLAGS.embedding_dims)
+        self.embed_shape = (len(self.vocab_list) + 1, FLAGS.embedding_dims)
         self.embed = None
 
     def construct_embeddings(self):
