@@ -1,30 +1,25 @@
 import os
 import pickle
-import argparse
 from utils.vocab import get_vocab_information
+from flags import FLAGS
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--input", default="./output/prc_data.pickle")
-    parser.add_argument("--output", default="./output/vocab.pickle")
-    args = parser.parse_args()
-
-    if os.path.isfile(args.output):
-        print("By running this script, you will be deleting all contents of " + args.output)
+    if os.path.isfile(FLAGS.vocab_loc):
+        print("By running this script, you will be deleting all contents of " + FLAGS.vocab_loc)
         ans = input("Do you wish to continue? (y/n) ")
         if ans == 'y':
             print("Running code...")
-            os.remove(args.output)
+            os.remove(FLAGS.vocab_loc)
         else:
             print("Exiting...")
             exit()
 
     print("Parsing vocab information...")
 
-    with open(args.input, 'rb') as f:
+    with open(FLAGS.prc_data_loc, 'rb') as f:
         data = pickle.load(f)
-    with open(args.output, 'wb') as f:
+    with open(FLAGS.vocab_loc, 'wb') as f:
         pickle.dump(get_vocab_information(data), f)
 
     print("Completed.")
