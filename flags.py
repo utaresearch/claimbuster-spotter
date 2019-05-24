@@ -10,11 +10,12 @@ flags.DEFINE_bool('ner_spacy', True, 'Named entity recognition with spaCy')
 
 # Data
 # output_dir = './output/'
-output_dir = './data/'
-flags.DEFINE_string('output_dir', '{}disjoint_2000'.format(output_dir), 'Location of outputs')
+output_dir = './data/disjoint_2000/'
+flags.DEFINE_string('output_dir', output_dir, 'Location of outputs')
 flags.DEFINE_string('vocab_loc', '{}vocab.pickle'.format(output_dir), 'Path to pre-calculated vocab data')
 flags.DEFINE_string('prc_data_loc', '{}prc_data.pickle'.format(output_dir), 'Location of processed data')
-flags.DEFINE_string('raw_data_loc', '{}disjoint_2000.json'.format(output_dir), 'Location of raw data')
+# flags.DEFINE_string('raw_data_loc', '{}disjoint_2000.json'.format(output_dir), 'Location of raw data')
+flags.DEFINE_string('raw_data_loc', './data/disjoint_2000.json'.format(output_dir), 'Location of raw data')
 flags.DEFINE_integer('max_len', 150, 'Maximum length of input')
 
 flags.DEFINE_integer('stat_print_interval', 1, 'Numbers of epochs before stats are printed again')
