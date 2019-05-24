@@ -52,6 +52,8 @@ def eval_stats(sess, batch_x, batch_y, cost, acc):
 
 
 def load_model(sess, graph):
+    global x, x_len, output_mask, y, kp_emb, kp_lstm
+
     def get_last_save(scan_loc):
         ret_ar = []
         directory = os.fsencode(scan_loc)
@@ -67,6 +69,14 @@ def load_model(sess, graph):
     with graph.as_default():
         saver = tf.train.import_meta_graph(model_dir)
         saver.restore(sess, tf.train.latest_checkpoint(FLAGS.save_loc))
+
+        # inputs
+        x = graph.get_tensor_by_name('x:0')
+        x_len = graph.get_tensor_by_name('x_len:0')
+        output_mask = graph.get_tensor_by_name('output_mask:0')
+        y = graph.get_tensor_by_name('y:0')
+        kp_emb = graph.get_tensor_by_name('kp_emb:0')
+        kp_lstm = graph.get_tensor_by_name('kp_lstm:0')
 
         # outputs
         cost = graph.get_tensor_by_name('cost:0')
