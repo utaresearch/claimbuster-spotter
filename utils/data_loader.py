@@ -27,8 +27,10 @@ class Dataset:
 
 
 class DataLoader:
-    def __init__(self, custom_loc=None):
-        self.data = self.load_external(custom_loc)
+    def __init__(self, custom_prc_data_loc=None, custom_vocab_loc=None):
+        assert (custom_prc_data_loc is None and custom_prc_data_loc is None) or \
+               (custom_prc_data_loc is not None and custom_prc_data_loc is not None)
+        self.data = self.load_external(custom_prc_data_loc, custom_vocab_loc)
         self.data.shuffle()
         self.post_process_flags()
 
@@ -67,10 +69,10 @@ class DataLoader:
         FLAGS.train_examples = FLAGS.train_examples - FLAGS.validation_examples
 
     @staticmethod
-    def load_external(custom_loc):
-        with open(FLAGS.prc_data_loc if not custom_loc else custom_loc, 'rb') as f:
+    def load_external(custom_prc_data_loc, custom_vocab_loc):
+        with open(FLAGS.prc_data_loc if not custom_prc_data_loc else custom_prc_data_loc, 'rb') as f:
             data = pickle.load(f)
-        with open(FLAGS.vocab_loc, 'rb') as f:
+        with open(FLAGS.vocab_loc if not custom_vocab_loc else custom_vocab_loc, 'rb') as f:
             vc = [x[0] for x in pickle.load(f)]
 
         print(data)

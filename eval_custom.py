@@ -108,7 +108,7 @@ def main():
     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
     tf.logging.info("Loading dataset")
-    data_load = DataLoader(args.custom_loc)
+    data_load = DataLoader(args.custom_prc_data_loc, args.custom_vocab_loc)
 
     test_data = data_load.load_testing_data()
     tf.logging.info("{} testing examples".format(test_data.get_length()))
@@ -141,6 +141,7 @@ def main():
 if __name__ == '__main__':
     tf.logging.set_verbosity(tf.logging.INFO)
     parser = argparse.ArgumentParser()
-    parser.add_argument('--custom_loc', default='./data/disjoint_2000.pkl')
+    parser.add_argument('--custom_prc_data_loc', default='./data/disjoint_2000/prc_data.pickle')
+    parser.add_argument('--custom_vocab_loc', default='./data/disjoint_2000/vocab.pickle')
     args = parser.parse_args()
     main()
