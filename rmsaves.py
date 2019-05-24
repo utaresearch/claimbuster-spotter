@@ -5,12 +5,14 @@ import argparse
 extension_list = ['.data', '.meta', '.index']
 
 
-def list_dirs(location):
+def list_del(location):
     ret_ar = []
     directory = os.fsencode(location)
     for fstr in os.listdir(directory):
         if not args.clear_embeddings and 'embedding_matrix' in os.fsdecode(fstr):
             continue
+        elif os.fsdecode(fstr) == 'checkpoint':
+            ret_ar.append(os.fsdecode(fstr))
         for ext in extension_list:
             if ext in os.fsdecode(fstr):
                 ret_ar.append(os.fsdecode(fstr))
@@ -19,7 +21,9 @@ def list_dirs(location):
 
 
 def main():
-    print(list_dirs(args.folder_to_clean))
+    to_del = list_del(args.folder_to_clean)
+    for el in to_del:
+        print(el)
 
 
 if __name__ == '__main__':
