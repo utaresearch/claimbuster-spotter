@@ -42,10 +42,10 @@ class RecurrentModel:
     @staticmethod
     def compute_loss(y, yhat):
         loss = tf.nn.softmax_cross_entropy_with_logits_v2(labels=y, logits=yhat, name='cost')
-        loss_l2 = None
+        loss_l2 = 0
 
         if FLAGS.l2_reg:
             varlist = tf.trainable_variables()
             loss_l2 = tf.add_n([tf.nn.l2_loss(v) for v in varlist if 'bias' not in v.name]) * 0.001
 
-        return loss + (loss_l2 if loss_l2 is not None)
+        return loss + loss_l2
