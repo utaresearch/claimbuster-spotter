@@ -1,5 +1,4 @@
 import os
-import shutil
 import argparse
 
 
@@ -25,10 +24,7 @@ def main():
     to_del = list_del(args.folder_to_clean)
     for el in to_del:
         os.remove(os.path.join(args.folder_to_clean, el))
-        # elif el == 'checkpoint':
-        #     shutil.rmtree(os.path.join(args.folder_to_clean, el))
-        # else:
-        #     raise Exception('unidentified marker {}'.format(el))
+    print('Process completed.')
 
 
 if __name__ == '__main__':
