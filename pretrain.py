@@ -34,9 +34,9 @@ def execute_validation(sess, cost, acc, validation_data):
 
     for batch in range(n_batches):
         batch_x, batch_y = get_batch(batch, validation_data, ver='validation')
-        loss, acc = validation_stats(sess, cost, acc, batch_x, batch_y)
-        val_loss += loss * len(batch_y)
-        val_acc += acc * len(batch_y)
+        tloss, tacc = validation_stats(sess, cost, acc, batch_x, batch_y)
+        val_loss += tloss * len(batch_y)
+        val_acc += tacc * len(batch_y)
         tot_val_ex += len(batch_y)
 
     val_loss /= tot_val_ex
