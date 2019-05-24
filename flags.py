@@ -9,6 +9,8 @@ flags.DEFINE_string('vocab_path', './output/vocab.pickle', 'Path to pre-calculat
 flags.DEFINE_string('data_pkl_loc', './output/prc_data.pickle', 'Location of prc data')
 flags.DEFINE_integer('max_len', 150, 'Maximum length of input')
 
+flags.DEFINE_integer('stat_print_interval', 1, 'Numbers of epochs before stats are printed again')
+
 # Data v2
 flags.DEFINE_float('train_pct', .70, 'Training percentage')
 flags.DEFINE_float('validation_pct', .05, 'Validation percentage')
