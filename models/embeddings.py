@@ -36,7 +36,10 @@ class Embedding:
             tf.logging.info("Embedding matrix found.")
             return retrieve_val
 
-        embedding_matrix = np.zeros(self.embed_shape, dtype=np.dtype('float32'))
+        embedding_matrix = np.random.normal(loc=0, scale=0.1, size=self.embed_shape) if FLAGS.random_init_oov else \
+            np.zeros(self.embed_shape, dtype=np.dtype('float32'))
+
+        embedding_matrix[-1] = np.zeros(FLAGS.embedding_dims)
 
         tf.logging.info("Loading word2vec model...")
         model = KeyedVectors.load_word2vec_format(FLAGS.w2v_loc, binary=True)

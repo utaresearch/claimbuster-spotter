@@ -23,7 +23,7 @@ flags.DEFINE_string('raw_data_loc', '{}data_large.json'.format(data_dir), 'Locat
 flags.DEFINE_integer('max_len', 150, 'Maximum length of input')
 
 flags.DEFINE_integer('stat_print_interval', 1, 'Numbers of epochs before stats are printed again')
-flags.DEFINE_integer('model_save_interval', 25, 'Numbers of epochs before model is saved again')
+flags.DEFINE_integer('model_save_interval', 50, 'Numbers of epochs before model is saved again')
 
 # Data v2
 flags.DEFINE_float('train_pct', 0.60, 'Training percentage')
@@ -39,6 +39,7 @@ flags.DEFINE_integer('random_state', 59, 'State of consistent pseudo-randomness'
 # Embeddings
 flags.DEFINE_string('w2v_loc', 'data/word2vec/GoogleNews-vectors-negative300.bin', 'Location of w2v embeddings')
 flags.DEFINE_bool('transfer_learn_w2v', False, 'Train on top of w2v embeddings')
+flags.DEFINE_bool('random_init_oov', True, 'Use np.random.normal init for unknown embeddings. 0-fill if False')
 
 # Adversarial and virtual adversarial training parameters.
 flags.DEFINE_float('perturb_norm_length', 5.0, 'Norm length of adversarial perturbation')
@@ -57,7 +58,7 @@ flags.DEFINE_integer('num_timesteps', 100, 'Number of timesteps for BPTT')
 # Model architecture
 flags.DEFINE_bool('bidir_lstm', False, 'Whether to build a bidirectional LSTM.')
 flags.DEFINE_integer('rnn_num_layers', 1, 'Number of LSTM layers.')
-flags.DEFINE_integer('rnn_cell_size', 16, 'Number of hidden units in the LSTM.')
+flags.DEFINE_integer('rnn_cell_size', 8, 'Number of hidden units in the LSTM.')
 
 # Vocabulary and embeddings
 flags.DEFINE_integer('embedding_dims', 300, 'Dimensions of embedded vector.')
