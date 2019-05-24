@@ -57,7 +57,7 @@ flags.DEFINE_integer('num_timesteps', 100, 'Number of timesteps for BPTT')
 # Model architecture
 flags.DEFINE_bool('bidir_lstm', False, 'Whether to build a bidirectional LSTM.')
 flags.DEFINE_integer('rnn_num_layers', 1, 'Number of LSTM layers.')
-flags.DEFINE_integer('rnn_cell_size', 16, 'Number of hidden units in the LSTM.')
+flags.DEFINE_integer('rnn_cell_size', 32, 'Number of hidden units in the LSTM.')
 
 # Vocabulary and embeddings
 flags.DEFINE_integer('embedding_dims', 300, 'Dimensions of embedded vector.')
