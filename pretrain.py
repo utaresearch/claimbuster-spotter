@@ -157,13 +157,13 @@ def main():
 
                 train_neural_network(sess, optimizer, batch_x, batch_y)
 
-                print(batch_x)
-                print(sess.run(asdf, feed_dict={
-                    x: pad_seq(batch_x),
-                    x_len: [len(el) for el in batch_x],
-                    y: one_hot(batch_y)
-                }))
-                exit()
+                # print(batch_x)
+                # print(sess.run(asdf, feed_dict={
+                #     x: pad_seq(batch_x),
+                #     x_len: [len(el) for el in batch_x],
+                #     y: one_hot(batch_y)
+                # }))
+                # exit()
                 # print(sess.run(y_pred, feed_dict={
                 #     x: pad_seq(batch_x),
                 #     x_len: [len(el) for el in batch_x],
