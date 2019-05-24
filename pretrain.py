@@ -31,7 +31,7 @@ def validation_stats(sess, cost, acc, batch_x, batch_y):
         feed_dict={
             x: pad_seq(batch_x),
             x_len: [len(el) for el in batch_x],
-            output_mask: [[1 if j == len(el) - 1 else 0 for j in el] for el in batch_x],
+            output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
             y: one_hot(batch_y)
         }
     )
@@ -40,7 +40,7 @@ def validation_stats(sess, cost, acc, batch_x, batch_y):
         feed_dict={
             x: pad_seq(batch_x),
             x_len: [len(el) for el in batch_x],
-            output_mask: [[1 if j == len(el) - 1 else 0 for j in el] for el in batch_x],
+            output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
             y: one_hot(batch_y)
         }
     )
@@ -71,7 +71,7 @@ def batch_stats(sess, batch_x, batch_y, cost, acc):
         feed_dict={
             x: pad_seq(batch_x),
             x_len: [len(el) for el in batch_x],
-            output_mask: [[1 if j == len(el) - 1 else 0 for j in el] for el in batch_x],
+            output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
             y: one_hot(batch_y)
         }
     )
@@ -80,7 +80,7 @@ def batch_stats(sess, batch_x, batch_y, cost, acc):
         feed_dict={
             x: pad_seq(batch_x),
             x_len: [len(el) for el in batch_x],
-            output_mask: [[1 if j == len(el) - 1 else 0 for j in el] for el in batch_x],
+            output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
             y: one_hot(batch_y)
         }
     )
@@ -94,7 +94,7 @@ def train_neural_network(sess, optimizer, batch_x, batch_y):
         feed_dict={
             x: pad_seq(batch_x),
             x_len: [len(el) for el in batch_x],
-            output_mask: [[1 if j == len(el) - 1 else 0 for j in el] for el in batch_x],
+            output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
             y: one_hot(batch_y)
         }
     )
