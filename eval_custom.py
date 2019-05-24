@@ -1,5 +1,6 @@
 import tensorflow as tf
 import numpy as np
+import argparse
 import math
 import os
 from data_utils.data_loader import DataLoader
@@ -107,7 +108,7 @@ def main():
     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
     tf.logging.info("Loading dataset")
-    data_load = DataLoader()
+    data_load = DataLoader(args.custom_loc)
 
     test_data = data_load.load_testing_data()
     tf.logging.info("{} testing examples".format(test_data.get_length()))
@@ -139,4 +140,7 @@ def main():
 
 if __name__ == '__main__':
     tf.logging.set_verbosity(tf.logging.INFO)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--custom_loc', default='./data/disjoint_2000.pkl')
+    args = parser.parse_args()
     main()
