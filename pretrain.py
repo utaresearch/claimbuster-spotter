@@ -21,7 +21,7 @@ def pad_seq(inp):
 
 
 def one_hot(a):
-    return np.squeeze(np.eye(FLAGS.num_classes)[a.reshape(-1)])
+    return np.squeeze(np.eye(FLAGS.num_classes)[np.array(a).reshape(-1)])
 
 
 def validation_stats(sess, cost, acc, batch_x, batch_y):
