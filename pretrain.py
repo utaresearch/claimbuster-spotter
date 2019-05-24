@@ -158,7 +158,6 @@ def main():
     with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as sess:
         sess.run(tf.global_variables_initializer())
         embed_obj.init_embeddings(sess)
-        print(embed.eval())
 
         start = time.time()
         epochs_trav = 0
