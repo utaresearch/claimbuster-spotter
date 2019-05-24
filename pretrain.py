@@ -27,6 +27,23 @@ def one_hot(a):
     return np.squeeze(np.eye(FLAGS.num_classes)[np.array(a).reshape(-1)])
 
 
+def execute_validation(sess, cost, acc, validation_data):
+    n_batches = math.ceil(float(FLAGS.validation_examples) / float(FLAGS.batch_size))
+    val_loss, val_acc = 0.0, 0.0
+    tot_val_ex = 0
+
+    for batch in range(n_batches):
+        batch_x, batch_y = get_batch(batch, validation_data, ver='validation')
+        loss, acc = validation_stats(sess, cost, acc, batch_x, batch_y)
+        val_loss += loss * len(batch_y)
+        val_acc += acc * len(batch_y)
+        tot_val_ex += len(batch_y)
+
+    val_loss /= tot_val_ex
+    val_acc /= tot_val_ex
+    return 'Val Loss: {:>7.4f} Val Acc: {:>7.4f}% '.format(val_loss, val_acc * 100)
+
+
 def validation_stats(sess, cost, acc, batch_x, batch_y):
     val_loss = sess.run(
         cost,
@@ -52,23 +69,6 @@ def validation_stats(sess, cost, acc, batch_x, batch_y):
     )
 
     return np.sum(val_loss), val_acc
-
-
-def execute_validation(sess, cost, acc, validation_data):
-    n_batches = math.ceil(float(FLAGS.validation_examples) / float(FLAGS.batch_size))
-    val_loss, val_acc = 0.0, 0.0
-    tot_val_ex = 0
-
-    for batch in range(n_batches):
-        batch_x, batch_y = get_batch(batch, validation_data, ver='validation')
-        loss, ac = validation_stats(sess, cost, acc, batch_x, batch_y)
-        val_loss += loss * len(batch_y)
-        val_acc += ac * len(batch_y)
-        tot_val_ex += len(batch_y)
-
-    val_loss /= tot_val_ex
-    val_acc /= tot_val_ex
-    return 'Val Loss: {:>7.4f} Val Acc: {:>7.4f}% '.format(val_loss, val_acc * 100)
 
 
 def batch_stats(sess, batch_x, batch_y, cost, acc):
@@ -173,37 +173,7 @@ def main():
 
             for i in range(n_batches):
                 batch_x, batch_y = get_batch(i, train_data)
-
                 train_neural_network(sess, optimizer, batch_x, batch_y)
-
-                # if epoch >= 10:
-                #     import pickle
-                #     with open(FLAGS.vocab_path, 'rb') as f:
-                #         asdfasdf = pickle.load(f)
-                #     for word in batch_x[0]:
-                #         print(asdfasdf[word])
-                #     # print(batch_x[0])
-                #     print(batch_y[0])
-                #     print(sess.run(y_pred, feed_dict={
-                #         x: pad_seq(batch_x),
-                #         x_len: [len(el) for el in batch_x],
-                #         output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
-                #         y: one_hot(batch_y)
-                #     })[0])
-                #     exit()
-
-                # print(batch_x)
-                # print(sess.run(asdf, feed_dict={
-                #     x: pad_seq(batch_x),
-                #     x_len: [len(el) for el in batch_x],
-                #     y: one_hot(batch_y)
-                # }))
-                # exit()
-                # print(sess.run(y_pred, feed_dict={
-                #     x: pad_seq(batch_x),
-                #     x_len: [len(el) for el in batch_x],
-                #     y: one_hot(batch_y)
-                # }))
 
                 b_loss, b_acc = batch_stats(sess, batch_x, batch_y, cost, acc)
                 epoch_loss += b_loss
