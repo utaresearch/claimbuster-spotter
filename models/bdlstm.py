@@ -8,19 +8,19 @@ class RecurrentModel:
     def __init__(self):
         pass
 
-    def construct_model(self, x, x_len, output_mask, y, embed):
-        yhat, asdf = self.build_lstm(x, x_len, output_mask, embed)
+    def construct_model(self, x, x_len, output_mask, y, embed, kp_emb, kp_lstm):
+        yhat, asdf = self.build_lstm(x, x_len, output_mask, embed, kp_emb, kp_lstm)
         return yhat, self.compute_loss(y, yhat), asdf
 
-    def build_lstm(self, x, x_len, output_mask, embed):
+    def build_lstm(self, x, x_len, output_mask, embed, kp_emb, kp_lstm):
         x = tf.unstack(x, axis=1)
         for i in range(len(x)):
             x[i] = tf.nn.embedding_lookup(embed, x[i])
         x = tf.stack(x, axis=1)
 
-        x = tf.nn.dropout(x, keep_prob=FLAGS.keep_prob_emb)
+        x = tf.nn.dropout(x, keep_prob=kp_emb)
 
-        lstm = tf.nn.rnn_cell.MultiRNNCell([self.get_lstm() for _ in range(FLAGS.rnn_num_layers)])
+        lstm = tf.nn.rnn_cell.MultiRNNCell([self.get_lstm(kp_lstm) for _ in range(FLAGS.rnn_num_layers)])
         output, state = tf.nn.dynamic_rnn(cell=lstm, inputs=x, sequence_length=x_len, dtype=tf.float32)
 
         add_weight = tf.get_variable('post_lstm_weight', shape=(FLAGS.rnn_cell_size, FLAGS.num_classes),
@@ -31,12 +31,12 @@ class RecurrentModel:
         return tf.matmul(tf.boolean_mask(output, output_mask), add_weight) + add_bias, output
 
     @staticmethod
-    def get_lstm():
+    def get_lstm(kp_lstm):
         return tf.nn.rnn_cell.DropoutWrapper(
             tf.nn.rnn_cell.LSTMCell(FLAGS.rnn_cell_size),
-            input_keep_prob=FLAGS.keep_prob_lstm,
-            state_keep_prob=FLAGS.keep_prob_lstm,
-            output_keep_prob=FLAGS.keep_prob_lstm
+            input_keep_prob=kp_lstm,
+            state_keep_prob=kp_lstm,
+            output_keep_prob=kp_lstm
         )
 
     @staticmethod
