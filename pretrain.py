@@ -14,7 +14,7 @@ y = tf.placeholder(tf.int32, (None, FLAGS.num_classes), name='y')
 
 
 def pad_seq(inp):
-    ret = np.negative((len(inp), FLAGS.max_len), dtype=np.int32)
+    ret = np.full((len(inp), FLAGS.max_len), -1, dtype=np.int32)
     for i in range(len(inp)):
         ret[i][:len(inp[i])] = inp[i]
     return ret
