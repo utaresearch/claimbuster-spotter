@@ -164,6 +164,16 @@ def main():
 
                 train_neural_network(sess, optimizer, batch_x, batch_y)
 
+                print(batch_x[0])
+                print(batch_y[0])
+                print(sess.run(y_pred, feed_dict={
+                    x: pad_seq(batch_x),
+                    x_len: [len(el) for el in batch_x],
+                    output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
+                    y: one_hot(batch_y)
+                })[0])
+                exit()
+
                 # print(batch_x)
                 # print(sess.run(asdf, feed_dict={
                 #     x: pad_seq(batch_x),
