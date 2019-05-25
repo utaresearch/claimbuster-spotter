@@ -15,7 +15,9 @@ class Embedding:
         self.embed = None
 
     def construct_embeddings(self):
-        self.embed = tf.Variable(np.zeros(self.embed_shape), dtype=tf.float32, name='embedding')
+        self.embed = tf.Variable(np.zeros(self.embed_shape), dtype=tf.float32, name='embedding',
+                                 trainable=FLAGS.transfer_learn_w2v)
+        tf.logging.info("Word vectors will{} be trained on".format(" " if FLAGS.transfer_learn_w2v else " not"))
         return self.embed
 
     def init_embeddings(self, sess):
