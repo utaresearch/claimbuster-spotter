@@ -26,7 +26,7 @@ def one_hot(a):
 
 def eval_stats(sess, batch_x, batch_y, cost, acc, y_pred):
     if len(batch_x) == 0 and len(batch_y) == 0:
-        return 0.0, 0.0
+        return 0.0, 0.0, 0.0
     eval_loss = sess.run(
         cost,
         feed_dict={
@@ -61,9 +61,6 @@ def eval_stats(sess, batch_x, batch_y, cost, acc, y_pred):
         }
     )
 
-    print('new batch')
-    print(batch_y)
-    print(preds)
     return np.sum(eval_loss), eval_acc, np.argmax(preds, axis=1)
 
 
