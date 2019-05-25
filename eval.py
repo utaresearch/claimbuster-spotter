@@ -131,6 +131,18 @@ def main():
             eval_acc += b_acc * len(batch_y)
             n_samples += len(batch_y)
 
+            preds = sess.run(y_pred, feed_dict={
+                x: pad_seq(batch_x),
+                x_len: [len(el) for el in batch_x],
+                output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
+                y: one_hot(batch_y),
+                kp_emb: 1.0,
+                kp_lstm: 1.0
+            })
+
+            from sklearn.metrics import f1_score
+            print(f1_score(batch_y, preds))
+
         eval_loss /= n_samples
         eval_acc /= n_samples
 
