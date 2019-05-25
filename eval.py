@@ -1,6 +1,5 @@
 import tensorflow as tf
 import numpy as np
-import argparse
 import math
 import os
 from utils.data_loader import DataLoader
@@ -120,7 +119,7 @@ def main():
     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
     tf.logging.info("Loading dataset")
-    data_load = DataLoader(args.custom_prc_data_loc, args.custom_vocab_loc) if args.custom_data else \
+    data_load = DataLoader(FLAGS.custom_prc_data_loc, FLAGS.custom_vocab_loc) if FLAGS.custom_data else \
         DataLoader()
 
     test_data = data_load.load_testing_data()
@@ -165,10 +164,4 @@ def main():
 
 if __name__ == '__main__':
     tf.logging.set_verbosity(tf.logging.INFO)
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--custom_data', type=bool, default=False)
-    parser.add_argument('--custom_prc_data_loc', default='./data/disjoint_2000/prc_data.pickle')
-    parser.add_argument('--custom_vocab_loc', default='./data/disjoint_2000/vocab.pickle')
-    args = parser.parse_args()
-
     main()

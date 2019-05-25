@@ -22,6 +22,12 @@ flags.DEFINE_string('raw_data_loc', '{}data_large.json'.format(data_dir), 'Locat
 # flags.DEFINE_string('raw_data_loc', './data/disjoint_2000.json'.format(output_dir), 'Location of raw data')
 flags.DEFINE_integer('max_len', 150, 'Maximum length of input')
 
+# Eval
+flags.DEFINE_bool('custom_data', False, 'Use custom non-train set data to evaluate model')
+flags.DEFINE_string('custom_prc_data_loc', './data/disjoint_2000/prc_data.pickle', 'Location of custom data file')
+flags.DEFINE_string('custom_vocab_loc', './data/disjoint_2000/vocab.pickle', 'Location of custom vocab file')
+
+
 flags.DEFINE_integer('stat_print_interval', 1, 'Numbers of epochs before stats are printed again')
 flags.DEFINE_integer('model_save_interval', 50, 'Numbers of epochs before model is saved again')
 
