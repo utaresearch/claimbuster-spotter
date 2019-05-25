@@ -141,7 +141,7 @@ def main():
             })
 
             from sklearn.metrics import f1_score
-            print(f1_score(batch_y, preds))
+            print(f1_score(batch_y, np.argmax(preds, axis=1), average='micro'))
 
         eval_loss /= n_samples
         eval_acc /= n_samples
