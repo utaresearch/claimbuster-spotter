@@ -24,7 +24,7 @@ def one_hot(a):
     return np.squeeze(np.eye(FLAGS.num_classes)[np.array(a).reshape(-1)])
 
 
-def eval_stats(sess, batch_x, batch_y, cost, acc):
+def eval_stats(sess, batch_x, batch_y, cost, acc, y_pred):
     if len(batch_x) == 0 and len(batch_y) == 0:
         return 0.0, 0.0
     eval_loss = sess.run(
@@ -49,8 +49,16 @@ def eval_stats(sess, batch_x, batch_y, cost, acc):
             kp_lstm: 1.0
         }
     )
+    preds = sess.run(y_pred, feed_dict={
+        x: pad_seq(batch_x),
+        x_len: [len(el) for el in batch_x],
+        output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
+        y: one_hot(batch_y),
+        kp_emb: 1.0,
+        kp_lstm: 1.0
+    })
 
-    return np.sum(eval_loss), eval_acc
+    return np.sum(eval_loss), eval_acc, np.argmax(preds, axis=1)
 
 
 def load_model(sess, graph):
@@ -123,25 +131,24 @@ def main():
         eval_loss = 0.0
         eval_acc = 0.0
 
+        y_all = []
+        pred_all = []
+
         for i in range(n_batches):
             batch_x, batch_y = get_batch(i, test_data)
 
-            b_loss, b_acc = eval_stats(sess, batch_x, batch_y, cost, acc)
+            b_loss, b_acc, b_pred = eval_stats(sess, batch_x, batch_y, cost, acc, y_pred)
             eval_loss += b_loss
             eval_acc += b_acc * len(batch_y)
             n_samples += len(batch_y)
 
-            preds = sess.run(y_pred, feed_dict={
-                x: pad_seq(batch_x),
-                x_len: [len(el) for el in batch_x],
-                output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
-                y: one_hot(batch_y),
-                kp_emb: 1.0,
-                kp_lstm: 1.0
-            })
+            y_all = np.concatenate((y_all, batch_y))
+            pred_all = np.concatenate((pred_all, b_pred))
+            print(np.shape(y_all))
+            print(np.shape(pred_all))
 
-            from sklearn.metrics import f1_score
-            print(f1_score(batch_y, np.argmax(preds, axis=1), average='micro'))
+        from sklearn.metrics import f1_score
+        print(f1_score(y_all, pred_all, average='micro'))
 
         eval_loss /= n_samples
         eval_acc /= n_samples
