@@ -17,7 +17,7 @@ class Embedding:
     def construct_embeddings(self):
         self.embed = tf.Variable(np.zeros(self.embed_shape), dtype=tf.float32, name='embedding',
                                  trainable=FLAGS.transfer_learn_w2v)
-        tf.logging.info("Word vectors will{} be trained on".format(" " if FLAGS.transfer_learn_w2v else " not"))
+        tf.logging.info("Word vectors will{} be trained on".format("" if FLAGS.transfer_learn_w2v else " not"))
         return self.embed
 
     def init_embeddings(self, sess):
@@ -38,8 +38,8 @@ class Embedding:
             tf.logging.info("Embedding matrix found.")
             return retrieve_val
 
-        embedding_matrix = np.random.normal(loc=0, scale=0.1, size=self.embed_shape) if FLAGS.random_init_oov else \
-            np.zeros(self.embed_shape, dtype=np.dtype('float32'))
+        embedding_matrix = np.random.normal(loc=0, scale=0.1, size=self.embed_shape).astype(np.float32) \
+            if FLAGS.random_init_oov else np.zeros(self.embed_shape, dtype=np.dtype('float32'))
 
         embedding_matrix[-1] = np.zeros(FLAGS.embedding_dims)
 
