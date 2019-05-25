@@ -3,7 +3,7 @@ import numpy as np
 import math
 import os
 from utils.data_loader import DataLoader
-from sklearn.metrics import f1_score, multilabel_confusion_matrix
+from sklearn.metrics import f1_score, confusion_matrix
 from flags import FLAGS
 
 x = tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x')
@@ -161,7 +161,7 @@ def main():
         tf.logging.info('Final stats | Loss: {:>7.4} Acc: {:>7.4f}% F1: {:>.4f}'.format(
             eval_loss, eval_acc * 100, f1score))
 
-        print(multilabel_confusion_matrix(y_all, pred_all))
+        print(confusion_matrix(y_all, pred_all))
 
 
 if __name__ == '__main__':
