@@ -65,12 +65,12 @@ def load_model(sess, graph):
         ret_ar.sort()
         return ret_ar[-1]
 
-    model_dir = '{}/{}'.format(FLAGS.save_loc, get_last_save(FLAGS.save_loc))
+    model_dir = '{}/{}'.format(FLAGS.model_dir, get_last_save(FLAGS.model_dir))
     tf.logging.info('Attempting to restore from {}'.format(model_dir))
 
     with graph.as_default():
         saver = tf.train.import_meta_graph(model_dir)
-        saver.restore(sess, tf.train.latest_checkpoint(FLAGS.save_loc))
+        saver.restore(sess, tf.train.latest_checkpoint(FLAGS.model_dir))
 
         # inputs
         x = graph.get_tensor_by_name('x:0')
