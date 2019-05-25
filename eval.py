@@ -78,7 +78,7 @@ def load_model(sess, graph):
         ret_ar.sort()
         return ret_ar[-1]
 
-    model_dir = '{}/{}'.format(FLAGS.model_dir, get_last_save(FLAGS.model_dir))
+    model_dir = os.path.join(FLAGS.model_dir, get_last_save(FLAGS.model_dir))
     tf.logging.info('Attempting to restore from {}'.format(model_dir))
 
     with graph.as_default():
