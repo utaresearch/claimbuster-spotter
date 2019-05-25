@@ -3,6 +3,7 @@ import numpy as np
 import math
 import os
 from utils.data_loader import DataLoader
+from sklearn.metrics import f1_score
 from flags import FLAGS
 
 x = tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x')
@@ -151,13 +152,13 @@ def main():
             y_all = np.concatenate((y_all, batch_y))
             pred_all = np.concatenate((pred_all, b_pred))
 
-        from sklearn.metrics import f1_score
-        print(f1_score(y_all, pred_all, average='weighted'))
+        f1score = f1_score(y_all, pred_all, average='weighted')
 
         eval_loss /= n_samples
         eval_acc /= n_samples
 
-        tf.logging.info('Final stats | Loss: {:>7.4} Acc: {:>7.4f}% '.format(eval_loss, eval_acc * 100))
+        tf.logging.info('Final stats | Loss: {:>7.4} Acc: {:>7.4f}% F1: {:>.4f}'.format(
+            eval_loss, eval_acc * 100, f1score))
 
 
 if __name__ == '__main__':
