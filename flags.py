@@ -26,9 +26,9 @@ flags.DEFINE_integer('stat_print_interval', 1, 'Numbers of epochs before stats a
 flags.DEFINE_integer('model_save_interval', 50, 'Numbers of epochs before model is saved again')
 
 # Data v2
-flags.DEFINE_float('train_pct', 0.60, 'Training percentage')
-flags.DEFINE_float('validation_pct', 0.10, 'Validation percentage')
-flags.DEFINE_float('test_pct', 0.30, 'Testing percentage')
+flags.DEFINE_float('train_pct', 0.80, 'Training percentage')
+flags.DEFINE_float('validation_pct', 0.05, 'Validation percentage')
+flags.DEFINE_float('test_pct', 0.15, 'Testing percentage')
 flags.DEFINE_integer('total_examples', None, 'Total number of examples')
 flags.DEFINE_integer('train_examples', None, 'Number of training examples')
 flags.DEFINE_integer('validation_examples', None, 'Number of validation examples')
@@ -38,7 +38,7 @@ flags.DEFINE_integer('random_state', 59, 'State of consistent pseudo-randomness'
 # Model architecture
 flags.DEFINE_bool('bidir_lstm', False, 'Whether to build a bidirectional LSTM.')
 flags.DEFINE_integer('rnn_num_layers', 1, 'Number of LSTM layers.')
-flags.DEFINE_integer('rnn_cell_size', 128, 'Number of hidden units in the LSTM.')
+flags.DEFINE_integer('rnn_cell_size', 64, 'Number of hidden units in the LSTM.')
 
 # Optimization
 flags.DEFINE_integer('max_steps', 1000, 'Number of epochs to run.')
