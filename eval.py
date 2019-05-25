@@ -152,7 +152,7 @@ def main():
             pred_all = np.concatenate((pred_all, b_pred))
 
         from sklearn.metrics import f1_score
-        print(f1_score(y_all, pred_all, average='micro'))
+        print(f1_score(y_all, pred_all, average='weighted'))
 
         eval_loss /= n_samples
         eval_acc /= n_samples
