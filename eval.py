@@ -61,6 +61,8 @@ def eval_stats(sess, batch_x, batch_y, cost, acc, y_pred):
         }
     )
 
+    print('new batch')
+    print(batch_y)
     print(preds)
     return np.sum(eval_loss), eval_acc, np.argmax(preds, axis=1)
 
