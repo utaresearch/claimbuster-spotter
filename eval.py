@@ -141,14 +141,15 @@ def main():
             batch_x, batch_y = get_batch(i, test_data)
 
             b_loss, b_acc, b_pred = eval_stats(sess, batch_x, batch_y, cost, acc, y_pred)
+            if b_loss == 0 and b_acc == 0 and b_pred == 0:
+                continue
+
             eval_loss += b_loss
             eval_acc += b_acc * len(batch_y)
             n_samples += len(batch_y)
 
             y_all = np.concatenate((y_all, batch_y))
             pred_all = np.concatenate((pred_all, b_pred))
-            print(np.shape(y_all))
-            print(np.shape(pred_all))
 
         from sklearn.metrics import f1_score
         print(f1_score(y_all, pred_all, average='micro'))
