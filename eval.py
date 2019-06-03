@@ -124,6 +124,7 @@ def main():
 
     print(FLAGS.train_examples)
     print(FLAGS.validation_examples)
+    print(FLAGS.test_examples)
     print(FLAGS.total_examples)
 
     test_data = data_load.load_all_data() if FLAGS.disjoint_data else data_load.load_testing_data()
