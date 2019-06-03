@@ -8,6 +8,7 @@ from flags import FLAGS
 
 cont = None
 kill_words = ["", "uh"]
+random.seed(FLAGS.random_state)
 
 
 def dummy_parse_json():
@@ -16,6 +17,12 @@ def dummy_parse_json():
     dl = []
 
     labels = [0, 0, 0]
+
+    data_by_label = {
+        "-1": [],
+        "0": [],
+        "1": []
+    }
 
     for i in tqdm(range(len(temp_data)), ascii=True):
         f = temp_data[i]
@@ -36,8 +43,17 @@ def dummy_parse_json():
 
         txt = ' '.join(txt)
 
-        labels[int(lab)] += 1
-        dl.append((lab, txt))
+        data_by_label[lab].append(txt)
+
+    if FLAGS.balance_NFS:
+        random.shuffle(data_by_label["-1"])
+        data_by_label["-1"] = data_by_label["-1"][:len(data_by_label["1"])]
+
+    for key in data_by_label:
+        for el in data_by_label[key]:
+            dl.append((key, el))
+            labels[int(key) + 1] += 1
+
     print(labels)
     exit()
     return dl
@@ -134,7 +150,6 @@ def main():
 
     print("Processing data...")
     dl = parse_json()
-    random.seed(FLAGS.random_state)
     random.shuffle(dl)
 
     write_pickle(dl)
