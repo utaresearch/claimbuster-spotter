@@ -6,3 +6,5 @@ output2/
 output3/
 
 __pycache__/
+
+*nohup*
