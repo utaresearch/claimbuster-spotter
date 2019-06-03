@@ -100,7 +100,7 @@ class DataLoader:
         target_shape = (DataLoader.get_default_vocab_len() + 1, FLAGS.embedding_dims)
 
         with tf.Session() as sess:
-            embed_dict = DataLoader.load_embedding_dict(sess, target_shape).eval()
+            embed_dict = DataLoader.load_embedding_dict(sess, target_shape)
             assert not (embed_dict == np.zeros(target_shape, dtype=np.float32)).all()
 
         print(embed_dict)
