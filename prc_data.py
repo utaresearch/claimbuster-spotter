@@ -19,9 +19,9 @@ def dummy_parse_json():
     labels = [0, 0, 0]
 
     data_by_label = {
-        "-1": [],
-        "0": [],
-        "1": []
+        -1: [],
+        0: [],
+        1: []
     }
 
     for i in tqdm(range(len(temp_data)), ascii=True):
@@ -46,8 +46,8 @@ def dummy_parse_json():
         data_by_label[lab].append(txt)
 
     if FLAGS.balance_NFS:
-        random.shuffle(data_by_label["-1"])
-        data_by_label["-1"] = data_by_label["-1"][:len(data_by_label["1"])]
+        random.shuffle(data_by_label[-1])
+        data_by_label[-1] = data_by_label[-1][:len(data_by_label[1])]
 
     for key in data_by_label:
         for el in data_by_label[key]:
