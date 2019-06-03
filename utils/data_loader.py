@@ -106,10 +106,7 @@ class DataLoader:
             except:
                 return -1
 
-        print([[vocab_idx(ch) for ch in x[1].split(' ')] for x in data])
-        exit()
-
-        return Dataset([[default_vocab.index(ch) for ch in x[1].split(' ')] for x in data],
+        return Dataset([[vocab_idx(ch) for ch in x[1].split(' ')] for x in data],
                        [int(x[0]) + 1 for x in data], FLAGS.random_state)
 
     @staticmethod
