@@ -1,3 +1,5 @@
+import tensorflow as tf
+import numpy as np
 import pickle
 import math
 import sys
@@ -30,7 +32,8 @@ class DataLoader:
     def __init__(self, custom_prc_data_loc=None, custom_vocab_loc=None):
         assert (custom_prc_data_loc is None and custom_prc_data_loc is None) or \
                (custom_prc_data_loc is not None and custom_prc_data_loc is not None)
-        self.data = self.load_external(custom_prc_data_loc, custom_vocab_loc)
+        self.data = self.load_external() if (not custom_prc_data_loc and not custom_vocab_loc) else \
+            self.load_external_custom(custom_prc_data_loc, custom_vocab_loc)
         self.data.shuffle()
         self.post_process_flags()
 
@@ -78,12 +81,44 @@ class DataLoader:
         FLAGS.train_examples = FLAGS.train_examples - FLAGS.validation_examples
 
     @staticmethod
-    def load_external(custom_prc_data_loc, custom_vocab_loc):
-        with open(FLAGS.prc_data_loc if not custom_prc_data_loc else custom_prc_data_loc, 'rb') as f:
+    def load_external():
+        with open(FLAGS.prc_data_loc, 'rb') as f:
             data = pickle.load(f)
-        with open(FLAGS.vocab_loc if not custom_vocab_loc else custom_vocab_loc, 'rb') as f:
+        with open(FLAGS.vocab_loc, 'rb') as f:
             vc = [x[0] for x in pickle.load(f)]
 
-        print([[vc.index(ch) for ch in x[1].split(' ')] for x in data])
+        return Dataset([[vc.index(ch) for ch in x[1].split(' ')] for x in data],
+                       [int(x[0]) + 1 for x in data], FLAGS.random_state)
 
-        return Dataset([[vc.index(ch) for ch in x[1].split(' ')] for x in data], [int(x[0]) + 1 for x in data], FLAGS.random_state)
+    @staticmethod
+    def load_external_custom(custom_prc_data_loc, custom_vocab_loc):
+        with open(custom_prc_data_loc, 'rb') as f:
+            data = pickle.load(f)
+        with open(custom_vocab_loc, 'rb') as f:
+            vc = [x[0] for x in pickle.load(f)]
+
+        with tf.Session() as sess:
+            embed_dict = DataLoader.load_embedding_dict(sess).eval()
+            assert (embed_dict != 0)
+
+        print(embed_dict)
+        exit()
+
+        return Dataset([[vc.index(ch) for ch in x[1].split(' ')] for x in data],
+                       [int(x[0]) + 1 for x in data], FLAGS.random_state)
+
+    @staticmethod
+    def load_embedding_dict(sess):
+        target_file = os.path.join(FLAGS.output_dir, "embedding_matrix_tf.ckpt")
+        tf.logging.info("Attempting to restore embedding matrix backup from {}...".format(target_file))
+
+        var_to_return = tf.Variable(0, dtype=np.dtype('float32'))
+
+        try:
+            saver = tf.train.Saver({"var_to_return": var_to_return})
+            sess.run(tf.global_variables_initializer())
+            saver.restore(sess, target_file)
+            return var_to_return.eval()
+        except:
+            sess.run(tf.global_variables_initializer())
+            return var_to_return.eval()
