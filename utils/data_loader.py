@@ -75,4 +75,7 @@ class DataLoader:
         with open(FLAGS.vocab_loc if not custom_vocab_loc else custom_vocab_loc, 'rb') as f:
             vc = [x[0] for x in pickle.load(f)]
 
+        print([[vc.index(ch) for ch in x[1].split(' ')] for x in data])
+        exit()
+
         return Dataset([[vc.index(ch) for ch in x[1].split(' ')] for x in data], [int(x[0]) + 1 for x in data], FLAGS.random_state)
