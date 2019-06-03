@@ -23,6 +23,8 @@ class RecurrentModel:
         lstm = tf.nn.rnn_cell.MultiRNNCell([self.get_lstm(kp_lstm) for _ in range(FLAGS.rnn_num_layers)])
         output, state = tf.nn.dynamic_rnn(cell=lstm, inputs=x, sequence_length=x_len, dtype=tf.float32)
 
+        print(output)
+
         add_weight = tf.get_variable('post_lstm_weight', shape=(FLAGS.rnn_cell_size, FLAGS.num_classes),
                                      initializer=tf.contrib.layers.xavier_initializer())
         add_bias = tf.get_variable('post_lstm_bias', shape=FLAGS.num_classes,
