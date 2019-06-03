@@ -15,6 +15,8 @@ def parse_json():
         temp_data = json.load(f)
     dl = []
 
+    labels = [0, 0, 0]
+
     for i in tqdm(range(len(temp_data)), ascii=True):
         f = temp_data[i]
         lab = f["label"]
@@ -41,7 +43,10 @@ def parse_json():
 
         txt = ' '.join(txt)
 
+        labels[int(lab)] += 1
         dl.append((lab, txt))
+    print(lab)
+    exit()
     return dl
 
 
