@@ -121,5 +121,6 @@ class DataLoader:
             saver.restore(sess, target_file)
             return var_to_return.eval()
         except:
+            print('faileddddd')
             sess.run(tf.global_variables_initializer())
             return var_to_return.eval()
