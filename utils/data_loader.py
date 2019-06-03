@@ -97,10 +97,11 @@ class DataLoader:
         with open(custom_vocab_loc, 'rb') as f:
             vc = [x[0] for x in pickle.load(f)]
 
+        target_shape = (DataLoader.get_default_vocab_len() + 1, FLAGS.embedding_dims)
+
         with tf.Session() as sess:
-            print(DataLoader.load_embedding_dict(sess))
-            embed_dict = DataLoader.load_embedding_dict(sess).eval()
-            assert (embed_dict != 0)
+            embed_dict = DataLoader.load_embedding_dict(sess, target_shape).eval()
+            assert not (embed_dict == np.zeros(target_shape, dtype=np.float32)).all()
 
         print(embed_dict)
         exit()
@@ -109,11 +110,11 @@ class DataLoader:
                        [int(x[0]) + 1 for x in data], FLAGS.random_state)
 
     @staticmethod
-    def load_embedding_dict(sess):
+    def load_embedding_dict(sess, target_shape):
         target_file = os.path.join(FLAGS.output_dir, "embedding_matrix_tf.ckpt")
         tf.logging.info("Attempting to restore embedding matrix backup from {}...".format(target_file))
 
-        var_to_return = tf.Variable(0, dtype=tf.float32)
+        var_to_return = tf.Variable(np.zeros(target_shape, dtype=np.float32))
 
         try:
             saver = tf.train.Saver({"var_to_return": var_to_return})
@@ -121,6 +122,10 @@ class DataLoader:
             saver.restore(sess, target_file)
             return var_to_return.eval()
         except:
-            print('faileddddd')
             sess.run(tf.global_variables_initializer())
             return var_to_return.eval()
+
+    @staticmethod
+    def get_default_vocab_len():
+        with open(FLAGS.vocab_loc, 'rb') as f:
+            return len(pickle.load(f))
