@@ -10,12 +10,43 @@ cont = None
 kill_words = ["", "uh"]
 
 
-def parse_json():
+def dummy_parse_json():
     with open(FLAGS.raw_data_loc) as f:
         temp_data = json.load(f)
     dl = []
 
     labels = [0, 0, 0]
+
+    for i in tqdm(range(len(temp_data)), ascii=True):
+        f = temp_data[i]
+        lab = f["label"]
+
+        txt = f["text"].replace('-', ' ').lower()
+
+        words = txt.split(' ')
+        for j in range(len(words)):
+            words[j] = words[j].strip(string.punctuation)
+            if words[j].isdigit():
+                words[j] = "NUM"
+
+        txt = []
+        for word in words:
+            if word not in kill_words:
+                txt.append(word)
+
+        txt = ' '.join(txt)
+
+        labels[int(lab)] += 1
+        dl.append((lab, txt))
+    print(labels)
+    exit()
+    return dl
+
+
+def parse_json():
+    with open(FLAGS.raw_data_loc) as f:
+        temp_data = json.load(f)
+    dl = []
 
     for i in tqdm(range(len(temp_data)), ascii=True):
         f = temp_data[i]
@@ -43,10 +74,8 @@ def parse_json():
 
         txt = ' '.join(txt)
 
-        labels[int(lab)] += 1
         dl.append((lab, txt))
-    print(lab)
-    exit()
+
     return dl
 
 
@@ -84,6 +113,7 @@ def load_dependencies():
 
 def main():
     parse_tags()
+    dummy_parse_json()
 
     if os.path.isfile(FLAGS.prc_data_loc):
         print("By running this script, you will be deleting all contents of " + FLAGS.prc_data_loc)
