@@ -98,6 +98,7 @@ class DataLoader:
         #     vc = [x[0] for x in pickle.load(f)]
 
         default_vocab = DataLoader.get_default_vocab()
+        print(default_vocab)
 
         def vocab_idx(ch):
             try:
