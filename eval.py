@@ -107,7 +107,7 @@ def get_batch(bid, data):
 
     for i in range(FLAGS.batch_size):
         idx = bid * FLAGS.batch_size + i
-        if idx >= FLAGS.total_examples:
+        if idx >= FLAGS.total_examples if FLAGS.disjoint_data else FLAGS.test_examples:
             break
         batch_x.append(data.x[idx])
         batch_y.append(data.y[idx])
@@ -130,7 +130,7 @@ def main():
         sess.run(tf.global_variables_initializer())
         cost, y_pred, acc = load_model(sess, graph)
 
-        n_batches = math.ceil(float(FLAGS.total_examples) / float(FLAGS.batch_size))
+        n_batches = math.ceil(float(FLAGS.total_examples if FLAGS.disjoint_data else FLAGS.test_examples) / float(FLAGS.batch_size))
 
         n_samples = 0
         eval_loss = 0.0
