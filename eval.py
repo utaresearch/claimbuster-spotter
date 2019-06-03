@@ -3,7 +3,7 @@ import numpy as np
 import math
 import os
 from utils.data_loader import DataLoader
-from sklearn.metrics import f1_score, confusion_matrix, classification_report
+from sklearn.metrics import f1_score, classification_report
 from flags import FLAGS
 
 x = tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x')
@@ -72,7 +72,7 @@ def load_model(sess, graph):
         ret_ar = []
         directory = os.fsencode(scan_loc)
         for fstr in os.listdir(directory):
-            if '.meta' in os.fsdecode(fstr):
+            if '.meta' in os.fsdecode(fstr) and 'cb.ckpt-' in os.fsdecode(fstr):
                 ret_ar.append(os.fsdecode(fstr))
         ret_ar.sort()
         return ret_ar[-1]
