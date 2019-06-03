@@ -98,6 +98,7 @@ class DataLoader:
             vc = [x[0] for x in pickle.load(f)]
 
         with tf.Session() as sess:
+            print(DataLoader.load_embedding_dict(sess))
             embed_dict = DataLoader.load_embedding_dict(sess).eval()
             assert (embed_dict != 0)
 
