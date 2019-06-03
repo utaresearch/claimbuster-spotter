@@ -143,7 +143,8 @@ def main():
             print("Exiting...")
             exit()
 
-    print("Creating missing {} directory...".format(FLAGS.output_dir))
+    print("Creating{}{} directory...".format(" missing " if not os.path.exists(FLAGS.output_dir)
+                                             else " ", FLAGS.output_dir))
     if not os.path.exists(FLAGS.output_dir):
         os.mkdir(FLAGS.output_dir)
 
