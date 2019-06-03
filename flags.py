@@ -9,16 +9,16 @@ flags.DEFINE_bool('full_tags', False, 'Replace all words with tags')
 flags.DEFINE_bool('ner_spacy', True, 'Named entity recognition with spaCy')
 
 # Base directories
-flags.DEFINE_string('output_dir', './output/', 'Location of outputs')
-flags.DEFINE_string('data_dir', './data/', 'Location of data')
+flags.DEFINE_string('output_dir', './output', 'Location of outputs')
+flags.DEFINE_string('data_dir', './data', 'Location of data')
 # output_dir = './data/disjoint_2000/'
 
 # Data
 flags.DEFINE_string('model_dir', FLAGS.output_dir, 'Location of model save')
 # flags.DEFINE_string('model_dir', './output/', 'Location of model save')
-flags.DEFINE_string('vocab_loc', '{}vocab.pickle'.format(FLAGS.output_dir), 'Path to pre-calculated vocab data')
-flags.DEFINE_string('prc_data_loc', '{}prc_data.pickle'.format(FLAGS.output_dir), 'Location of processed data')
-flags.DEFINE_string('raw_data_loc', '{}data_large.json'.format(FLAGS.data_dir), 'Location of raw data')
+flags.DEFINE_string('vocab_loc', '{}/vocab.pickle'.format(FLAGS.output_dir), 'Path to pre-calculated vocab data')
+flags.DEFINE_string('prc_data_loc', '{}/prc_data.pickle'.format(FLAGS.output_dir), 'Location of processed data')
+flags.DEFINE_string('raw_data_loc', '{}/data_large.json'.format(FLAGS.data_dir), 'Location of raw data')
 # flags.DEFINE_string('raw_data_loc', './data/disjoint_2000.json'.format(output_dir), 'Location of raw data')
 flags.DEFINE_integer('max_len', 200, 'Maximum length of input')
 flags.DEFINE_bool('balance_NFS', True, 'Reduce NFS to level of CFS')
