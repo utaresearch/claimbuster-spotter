@@ -119,7 +119,7 @@ def main():
     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
     tf.logging.info("Loading dataset")
-    data_load = DataLoader(FLAGS.custom_prc_data_loc, FLAGS.custom_vocab_loc) if FLAGS.custom_data else \
+    data_load = DataLoader(FLAGS.custom_prc_data_loc, FLAGS.custom_vocab_loc) if FLAGS.disjoint_data else \
         DataLoader()
 
     test_data = data_load.load_testing_data()
