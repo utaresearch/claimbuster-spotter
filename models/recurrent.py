@@ -8,11 +8,11 @@ class RecurrentModel:
     def __init__(self):
         pass
 
-    def construct_model(self, x, x_len, y, embed, kp_emb, kp_lstm):
-        yhat = self.build_lstm(x, x_len, embed, kp_emb, kp_lstm)
+    def construct_model(self, x, x_len, output_mask, y, embed, kp_emb, kp_lstm):
+        yhat = self.build_lstm(x, x_len, output_mask, embed, kp_emb, kp_lstm)
         return yhat, self.compute_loss(y, yhat)
 
-    def build_lstm(self, x, x_len, embed, kp_emb, kp_lstm):
+    def build_lstm(self, x, x_len, output_mask, embed, kp_emb, kp_lstm):
         x = tf.unstack(x, axis=1)
         for i in range(len(x)):
             x[i] = tf.nn.embedding_lookup(embed, x[i])
@@ -28,7 +28,7 @@ class RecurrentModel:
         add_bias = tf.get_variable('post_lstm_bias', shape=FLAGS.num_classes,
                                    initializer=tf.contrib.layers.xavier_initializer())
 
-        return tf.matmul(output[x_len - 1], add_weight) + add_bias
+        return tf.matmul(tf.boolean_mask(output, output_mask), add_weight) + add_bias
 
     @staticmethod
     def get_lstm(kp_lstm):
