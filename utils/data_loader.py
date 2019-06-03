@@ -76,9 +76,8 @@ class DataLoader:
     def post_process_flags(self):
         FLAGS.total_examples = self.data.get_length()
         FLAGS.train_examples = int(math.ceil(float(FLAGS.total_examples) * FLAGS.train_pct))
-        FLAGS.test_examples = FLAGS.total_examples - FLAGS.train_examples
         FLAGS.validation_examples = int(math.floor(float(FLAGS.total_examples) * FLAGS.validation_pct))
-        FLAGS.train_examples = FLAGS.train_examples - FLAGS.validation_examples
+        FLAGS.test_examples = FLAGS.total_examples - FLAGS.train_examples - FLAGS.validation_examples
 
     @staticmethod
     def load_external():
