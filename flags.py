@@ -48,7 +48,7 @@ flags.DEFINE_integer('rnn_cell_size', 64, 'Number of hidden units in the LSTM.')
 
 # Optimization
 flags.DEFINE_integer('max_steps', 1000, 'Number of epochs to run.')
-flags.DEFINE_float('learning_rate', 0.0001, 'Learning rate while fine-tuning.')
+flags.DEFINE_float('learning_rate', 0.001, 'Learning rate while during optimiation.')
 flags.DEFINE_float('learning_rate_decay_factor', 1.0, 'Learning rate decay factor')
 
 # Regularization
