@@ -122,7 +122,7 @@ def main():
     data_load = DataLoader(FLAGS.custom_prc_data_loc, FLAGS.custom_vocab_loc) if FLAGS.disjoint_data else \
         DataLoader()
 
-    test_data = data_load.load_testing_data()
+    test_data = data_load.load_all_data() if FLAGS.disjoint_data else data_load.load_testing_data()
     tf.logging.info("{} testing examples".format(test_data.get_length()))
 
     graph = tf.Graph()

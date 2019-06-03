@@ -61,6 +61,16 @@ class DataLoader:
 
         return ret
 
+    def load_all_data(self):
+        ret = Dataset([], [], FLAGS.random_state)
+
+        for i in range(FLAGS.total_examples):
+            ret.x.append(self.data.x[i])
+            ret.y.append(self.data.y[i])
+
+        return ret
+
+
     def post_process_flags(self):
         FLAGS.total_examples = self.data.get_length()
         FLAGS.train_examples = int(math.ceil(float(FLAGS.total_examples) * FLAGS.train_pct))
