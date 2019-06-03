@@ -59,7 +59,7 @@ class Embedding:
 
         fail_words.sort()
         tf.logging.info(str(fail_cnt) + " out of " + str(idx) +
-                        " strings were not found in word2vec and were defaulted to zeroes.")
+                        " strings were not found in word2vec and were initialized with random_normal_initializer.")
         tf.logging.info(fail_words)
 
         var_to_return = tf.Variable(embedding_matrix)

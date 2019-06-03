@@ -20,7 +20,7 @@ flags.DEFINE_string('vocab_loc', '{}vocab.pickle'.format(output_dir), 'Path to p
 flags.DEFINE_string('prc_data_loc', '{}prc_data.pickle'.format(output_dir), 'Location of processed data')
 flags.DEFINE_string('raw_data_loc', '{}data_large.json'.format(data_dir), 'Location of raw data')
 # flags.DEFINE_string('raw_data_loc', './data/disjoint_2000.json'.format(output_dir), 'Location of raw data')
-flags.DEFINE_integer('max_len', 150, 'Maximum length of input')
+flags.DEFINE_integer('max_len', 200, 'Maximum length of input')
 flags.DEFINE_bool('balance_NFS', True, 'Reduce NFS to level of CFS')
 
 # Eval
