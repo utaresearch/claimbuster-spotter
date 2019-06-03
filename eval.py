@@ -107,7 +107,7 @@ def get_batch(bid, data):
 
     for i in range(FLAGS.batch_size):
         idx = bid * FLAGS.batch_size + i
-        if idx >= FLAGS.test_examples:
+        if idx >= FLAGS.total_examples:
             break
         batch_x.append(data.x[idx])
         batch_y.append(data.y[idx])
@@ -139,12 +139,8 @@ def main():
         y_all = []
         pred_all = []
 
-        stupid = 0
-
         for i in range(n_batches):
             batch_x, batch_y = get_batch(i, test_data)
-
-            stupid += len(batch_x)
 
             b_loss, b_acc, b_pred = eval_stats(sess, batch_x, batch_y, cost, acc, y_pred)
             if b_loss == 0 and b_acc == 0 and b_pred == 0:
@@ -156,8 +152,6 @@ def main():
 
             y_all = np.concatenate((y_all, batch_y))
             pred_all = np.concatenate((pred_all, b_pred))
-
-        print('STUPIDSTUPIDSTUPID {}'.format(stupid))
 
         f1score = f1_score(y_all, pred_all, average='weighted')
 
