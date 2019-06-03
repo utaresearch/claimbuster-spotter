@@ -13,7 +13,7 @@ if __name__ == '__main__':
     embed = tf.get_variable('dummy_embed', shape=(100, FLAGS.embedding_dims))
 
     lstm_model = RecurrentModel()
-    logits, cost = lstm_model.construct_model(x, x_len, y, embed, kp_emb, kp_lstm)
+    logits, cost = lstm_model.construct_model(x, x_len, output_mask, y, embed, kp_emb, kp_lstm)
     optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(cost)
 
     y_pred = tf.nn.softmax(logits, axis=1, name='y_pred')
