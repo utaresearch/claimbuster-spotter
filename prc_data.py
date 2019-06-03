@@ -27,7 +27,15 @@ def parse_json():
     for i in tqdm(range(len(temp_data)), ascii=True):
         f = temp_data[i]
         lab = int(f["label"])
-        txt = f["text"].replace('-', ' ').lower()
+        txt = list(cont.expand_texts([f["text"]], precise=True))[0]
+
+        txt = txt.replace('-', ' ').lower()
+        if FLAGS.noun_rep:
+            txt = transf.process_sentence_noun_rep(txt)
+        elif FLAGS.full_tags:
+            txt = transf.process_sentence_full_tags(txt)
+        elif FLAGS.ner_spacy:
+            txt = transf.process_sentence_ner_spacy(txt)
 
         words = txt.split(' ')
         for j in range(len(words)):
