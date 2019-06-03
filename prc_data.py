@@ -26,8 +26,7 @@ def parse_json():
 
     for i in tqdm(range(len(temp_data)), ascii=True):
         f = temp_data[i]
-        lab = f["label"]
-
+        lab = int(f["label"])
         txt = f["text"].replace('-', ' ').lower()
 
         words = txt.split(' ')
