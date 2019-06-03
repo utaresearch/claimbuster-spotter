@@ -99,7 +99,13 @@ class DataLoader:
 
         default_vocab = DataLoader.get_default_vocab()
 
-        print([[default_vocab.index(ch) for ch in x[1].split(' ')] for x in data])
+        def vocab_idx(ch):
+            try:
+                return default_vocab.index(ch)
+            except:
+                return -1
+
+        print([[vocab_idx(ch) for ch in x[1].split(' ')] for x in data])
         exit()
 
         return Dataset([[default_vocab.index(ch) for ch in x[1].split(' ')] for x in data],
