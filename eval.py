@@ -142,8 +142,6 @@ def main():
         for i in range(n_batches):
             batch_x, batch_y = get_batch(i, test_data)
 
-            print(len(batch_y))
-
             b_loss, b_acc, b_pred = eval_stats(sess, batch_x, batch_y, cost, acc, y_pred)
             if b_loss == 0 and b_acc == 0 and b_pred == 0:
                 continue
