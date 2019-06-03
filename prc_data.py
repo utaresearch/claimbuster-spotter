@@ -11,54 +11,12 @@ kill_words = ["", "uh"]
 random.seed(FLAGS.random_state)
 
 
-def check_sizes_parse_json():
-    with open(FLAGS.raw_data_loc) as f:
-        temp_data = json.load(f)
-
-    labels = [0, 0, 0]
-
-    data_by_label = {
-        -1: [],
-        0: [],
-        1: []
-    }
-
-    for i in tqdm(range(len(temp_data)), ascii=True):
-        f = temp_data[i]
-        lab = f["label"]
-
-        txt = f["text"].replace('-', ' ').lower()
-
-        words = txt.split(' ')
-        for j in range(len(words)):
-            words[j] = words[j].strip(string.punctuation)
-            if words[j].isdigit():
-                words[j] = "NUM"
-
-        txt = []
-        for word in words:
-            if word not in kill_words:
-                txt.append(word)
-
-        txt = ' '.join(txt)
-
-        data_by_label[lab].append(txt)
-
-    if FLAGS.balance_NFS:
-        random.shuffle(data_by_label[-1])
-        data_by_label[-1] = data_by_label[-1][:len(data_by_label[1])]
-
-    for key in data_by_label:
-        for _ in data_by_label[key]:
-            labels[int(key) + 1] += 1
-
-    return labels
-
-
 def parse_json():
     with open(FLAGS.raw_data_loc) as f:
         temp_data = json.load(f)
+
     dl = []
+    labels = [0, 0, 0]
 
     data_by_label = {
         -1: [],
@@ -94,7 +52,9 @@ def parse_json():
     for key in data_by_label:
         for el in data_by_label[key]:
             dl.append((key, el))
+            labels[int(key) + 1] += 1
 
+    print(labels)
     return dl
 
 
