@@ -112,7 +112,7 @@ class DataLoader:
         target_file = os.path.join(FLAGS.output_dir, "embedding_matrix_tf.ckpt")
         tf.logging.info("Attempting to restore embedding matrix backup from {}...".format(target_file))
 
-        var_to_return = tf.Variable(0, dtype=np.dtype('float32'))
+        var_to_return = tf.Variable(0, dtype=tf.dtype('float32'))
 
         try:
             saver = tf.train.Saver({"var_to_return": var_to_return})
