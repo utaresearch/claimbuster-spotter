@@ -11,10 +11,9 @@ kill_words = ["", "uh"]
 random.seed(FLAGS.random_state)
 
 
-def dummy_parse_json():
+def check_sizes_parse_json():
     with open(FLAGS.raw_data_loc) as f:
         temp_data = json.load(f)
-    dl = []
 
     labels = [0, 0, 0]
 
@@ -50,13 +49,10 @@ def dummy_parse_json():
         data_by_label[-1] = data_by_label[-1][:len(data_by_label[1])]
 
     for key in data_by_label:
-        for el in data_by_label[key]:
-            dl.append((key, el))
+        for _ in data_by_label[key]:
             labels[int(key) + 1] += 1
 
-    print(labels)
-    exit()
-    return dl
+    return labels
 
 
 def parse_json():
@@ -64,18 +60,17 @@ def parse_json():
         temp_data = json.load(f)
     dl = []
 
+    data_by_label = {
+        -1: [],
+        0: [],
+        1: []
+    }
+
     for i in tqdm(range(len(temp_data)), ascii=True):
         f = temp_data[i]
         lab = f["label"]
-        txt = list(cont.expand_texts([f["text"]], precise=True))[0]
 
-        txt = txt.replace('-', ' ').lower()
-        if FLAGS.noun_rep:
-            txt = transf.process_sentence_noun_rep(txt)
-        elif FLAGS.full_tags:
-            txt = transf.process_sentence_full_tags(txt)
-        elif FLAGS.ner_spacy:
-            txt = transf.process_sentence_ner_spacy(txt)
+        txt = f["text"].replace('-', ' ').lower()
 
         words = txt.split(' ')
         for j in range(len(words)):
@@ -90,7 +85,15 @@ def parse_json():
 
         txt = ' '.join(txt)
 
-        dl.append((lab, txt))
+        data_by_label[lab].append(txt)
+
+    if FLAGS.balance_NFS:
+        random.shuffle(data_by_label[-1])
+        data_by_label[-1] = data_by_label[-1][:len(data_by_label[1])]
+
+    for key in data_by_label:
+        for el in data_by_label[key]:
+            dl.append((key, el))
 
     return dl
 
@@ -129,7 +132,6 @@ def load_dependencies():
 
 def main():
     parse_tags()
-    dummy_parse_json()
 
     if os.path.isfile(FLAGS.prc_data_loc):
         print("By running this script, you will be deleting all contents of " + FLAGS.prc_data_loc)
