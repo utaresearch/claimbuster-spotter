@@ -1,6 +1,6 @@
 import tensorflow as tf
 import sys
-from losses import adversarial_perturbation
+from .losses import adversarial_perturbation
 sys.path.append('..')
 from flags import FLAGS
 
