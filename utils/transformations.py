@@ -69,8 +69,6 @@ def process_sentence_full_tags(sentence):
 def process_sentence_ner_spacy(sentence):
     doc = nlp(sentence)
     ret = list(sentence)
-    print(doc.ents)
-    print(ret)
     adj = 0
     for ent in doc.ents:
         newlab = spacy_to_nl[ent.label_]
