@@ -61,14 +61,10 @@ class DataLoader:
                 elif ret.y[i] == 2:
                     c2.append((ret.x[i], ret.y[i]))
 
-            print(len(c0), len(c1), len(c2))
             maj_len = max(len(c0), len(c1), len(c2))
             c0 = resample(c0, n_samples=maj_len, random_state=FLAGS.random_state)
             c1 = resample(c1, n_samples=maj_len, random_state=FLAGS.random_state)
             c2 = resample(c2, n_samples=maj_len, random_state=FLAGS.random_state)
-
-            print(len(c0), len(c1), len(c2))
-            exit()
 
             ret.x, ret.y = [], []
             del self.data.x[:FLAGS.train_examples]
