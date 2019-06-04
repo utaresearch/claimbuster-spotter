@@ -6,6 +6,9 @@ from flags import FLAGS
 from sklearn.utils import shuffle
 
 
+fail_cnt = 0
+
+
 class Dataset:
     x = []
     y = []
@@ -94,7 +97,6 @@ class DataLoader:
             vc = [x[0] for x in pickle.load(f)]
 
         default_vocab = DataLoader.get_default_vocab()
-        fail_cnt = 0
 
         def vocab_idx(ch):
             global fail_cnt
