@@ -15,7 +15,8 @@ flags.DEFINE_string('data_dir', './data', 'Location of data')
 
 # Data
 flags.DEFINE_integer('max_len', 200, 'Maximum length of input')
-flags.DEFINE_bool('balance_NFS', False, 'Reduce NFS to level of CFS')
+flags.DEFINE_bool('undersample_NFS', False, 'Reduce NFS to level of CFS')
+flags.DEFINE_bool('smote_oversample', True, 'Oversample imabalanced classes using imblearn')
 
 # Eval
 flags.DEFINE_bool('disjoint_data', False, 'Use custom non-train set data to evaluate model')

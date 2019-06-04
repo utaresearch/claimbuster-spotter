@@ -52,7 +52,7 @@ def parse_json():
 
         data_by_label[lab].append(txt)
 
-    if FLAGS.balance_NFS:
+    if FLAGS.undersample_NFS:
         random.shuffle(data_by_label[-1])
         data_by_label[-1] = data_by_label[-1][:len(data_by_label[1])]
 

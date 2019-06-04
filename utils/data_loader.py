@@ -1,3 +1,4 @@
+from imblearn.over_sampling import SMOTE
 import pickle
 import math
 import sys
@@ -43,6 +44,10 @@ class DataLoader:
         for i in range(FLAGS.train_examples):
             ret.x.append(self.data.x[i])
             ret.y.append(self.data.y[i])
+
+        if FLAGS.smote_oversample:
+            sm = SMOTE(random_state=FLAGS.random_state, ratio=1.0)
+            ret.x, ret.y = sm.fit_sample(ret.x, ret.y)
 
         return ret
 
