@@ -36,7 +36,7 @@ flags.DEFINE_integer('total_examples', None, 'Total number of examples')
 flags.DEFINE_integer('train_examples', None, 'Number of training examples')
 flags.DEFINE_integer('validation_examples', None, 'Number of validation examples')
 flags.DEFINE_integer('test_examples', None, 'Number of testing examples')
-flags.DEFINE_integer('random_state', 59, 'State of consistent pseudo-randomness')
+flags.DEFINE_integer('random_state', 95, 'State of consistent pseudo-randomness')
 
 # Model architecture
 flags.DEFINE_bool('bidir_lstm', False, 'Whether to build a bidirectional LSTM.')
