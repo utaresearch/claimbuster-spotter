@@ -74,7 +74,6 @@ def process_sentence_ner_spacy(sentence):
     adj = 0
     for ent in doc.ents:
         newlab = spacy_to_nl[ent.label_]
-        print(ent.text, newlab, ent.text)
         del ret[ent.start_char - adj:ent.end_char - adj]
         temp = list(newlab)
         ret[ent.start_char - adj:ent.start_char - adj] = temp
