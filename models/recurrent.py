@@ -16,7 +16,6 @@ class RecurrentModel:
             new_embed = adversarial_perturbation(embed, loss)
             yhat = self.build_lstm(x, x_len, output_mask, new_embed, kp_emb, kp_lstm)
             loss = tf.identity(self.compute_loss(y, yhat), name='new_loss')
-        print(loss)
         return yhat, loss
 
     def build_lstm(self, x, x_len, output_mask, embed, kp_emb, kp_lstm):
