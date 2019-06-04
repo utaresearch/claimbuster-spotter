@@ -36,7 +36,7 @@ flags.DEFINE_integer('total_examples', None, 'Total number of examples')
 flags.DEFINE_integer('train_examples', None, 'Number of training examples')
 flags.DEFINE_integer('validation_examples', None, 'Number of validation examples')
 flags.DEFINE_integer('test_examples', None, 'Number of testing examples')
-flags.DEFINE_integer('random_state', 95, 'State of consistent pseudo-randomness')
+flags.DEFINE_integer('random_state', 59, 'State of pseudo-randomness')
 
 # Model architecture
 flags.DEFINE_bool('bidir_lstm', False, 'Whether to build a bidirectional LSTM.')
@@ -51,8 +51,8 @@ flags.DEFINE_float('learning_rate_decay_factor', 1.0, 'Learning rate decay facto
 # Regularization
 flags.DEFINE_float('l2_reg_coeff', 0.001, 'If val > 0, use L2 Regularization on weights in graph')
 flags.DEFINE_float('max_grad_norm', 1.0, 'Clip the global gradient norm to this value.')
-flags.DEFINE_float('keep_prob_lstm', 0.4, 'Keep probability LSTM network.')
-flags.DEFINE_float('keep_prob_emb', 0.5, 'Keep probability on embedding layer.')
+flags.DEFINE_float('keep_prob_lstm', 0.7, 'Keep probability LSTM network.')
+flags.DEFINE_float('keep_prob_emb', 0.7, 'Keep probability on embedding layer.')
 
 # Embeddings
 flags.DEFINE_string('w2v_loc', 'data/word2vec/GoogleNews-vectors-negative300.bin', 'Location of w2v embeddings')
