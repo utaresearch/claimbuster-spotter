@@ -1,9 +1,6 @@
-import tensorflow as tf
-import numpy as np
 import pickle
 import math
 import sys
-import os
 sys.path.append('..')
 from flags import FLAGS
 from sklearn.utils import shuffle
@@ -93,16 +90,21 @@ class DataLoader:
     def load_external_custom(custom_prc_data_loc, custom_vocab_loc):
         with open(custom_prc_data_loc, 'rb') as f:
             data = pickle.load(f)
-        # with open(custom_vocab_loc, 'rb') as f:
-        #     vc = [x[0] for x in pickle.load(f)]
+        with open(custom_vocab_loc, 'rb') as f:
+            vc = [x[0] for x in pickle.load(f)]
 
         default_vocab = DataLoader.get_default_vocab()
+        fail_cnt = 0
 
         def vocab_idx(ch):
+            global fail_cnt
             try:
                 return default_vocab.index(ch)
             except:
+                fail_cnt += 1
                 return -1
+
+        print('{} out of {} words were not found are defaulted to -1.'.format(fail_cnt, len(vc)))
 
         return Dataset([[vocab_idx(ch) for ch in x[1].split(' ')] for x in data],
                        [int(x[0]) + 1 for x in data], FLAGS.random_state)
