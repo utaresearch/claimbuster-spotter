@@ -1,5 +1,6 @@
 import tensorflow as tf
 import sys
+from losses import adversarial_perturbation
 sys.path.append('..')
 from flags import FLAGS
 
@@ -8,9 +9,15 @@ class RecurrentModel:
     def __init__(self):
         pass
 
-    def construct_model(self, x, x_len, output_mask, y, embed, kp_emb, kp_lstm):
+    def construct_model(self, x, x_len, output_mask, y, embed, kp_emb, kp_lstm, adv=False):
         yhat = self.build_lstm(x, x_len, output_mask, embed, kp_emb, kp_lstm)
-        return yhat, self.compute_loss(y, yhat)
+        loss = self.compute_loss(y, yhat)
+        if adv:
+            new_embed = adversarial_perturbation(embed, loss)
+            yhat = self.build_lstm(x, x_len, output_mask, new_embed, kp_emb, kp_lstm)
+            loss = tf.identity(self.compute_loss(y, yhat), name='new_loss')
+        print(loss)
+        return yhat, loss
 
     def build_lstm(self, x, x_len, output_mask, embed, kp_emb, kp_lstm):
         x = tf.unstack(x, axis=1)

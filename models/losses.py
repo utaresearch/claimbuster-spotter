@@ -20,6 +20,15 @@ def adversarial_loss(embedded, loss, loss_fn):
     return loss_fn(embedded + perturb)
 
 
+def adversarial_perturbation(embedded, loss):
+    """Adds gradient to embedding and recomputes classification loss."""
+    grad, = tf.gradients(loss, embedded,
+                         aggregation_method=tf.AggregationMethod.EXPERIMENTAL_ACCUMULATE_N)
+    grad = tf.stop_gradient(grad)
+    perturb = _scale_l2(grad, FLAGS.perturb_norm_length)
+    return embedded + perturb
+
+
 def _mask_by_length(t, length):
     """Mask t, 3-D [batch, time, dim], by length, 1-D [batch,]."""
     maxlen = t.get_shape().as_list()[1]
