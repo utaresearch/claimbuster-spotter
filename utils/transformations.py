@@ -3,6 +3,26 @@ import spacy
 from pycontractions import Contractions
 
 nlp = None
+spacy_to_nl = {
+    "PERSON": "person",
+    "NORP": "nationality",
+    "FAC": "infrastructure",
+    "ORG": "organization",
+    "GPE": "country",
+    "LOC": "location",
+    "PRODUCT": "product",
+    "EVENT": "event",
+    "WORK_OF_ART": "art",
+    "LAW": "law",
+    "LANGUAGE": "language",
+    "DATE": "date",
+    "TIME": "time",
+    "PERCENT": "percentage",
+    "MONEY": "money",
+    "QUANTITY": "quantity",
+    "ORDINAL": "first",
+    "CARDINAL": "number"
+}
 
 
 def list_to_string(list):
@@ -49,12 +69,16 @@ def process_sentence_full_tags(sentence):
 def process_sentence_ner_spacy(sentence):
     doc = nlp(sentence)
     ret = list(sentence)
+    print(doc.ents)
+    print(ret)
     adj = 0
     for ent in doc.ents:
+        newlab = spacy_to_nl[ent.label_]
+        print(ent.text, newlab, ent.text)
         del ret[ent.start_char - adj:ent.end_char - adj]
-        temp = list(ent.label_)
+        temp = list(newlab)
         ret[ent.start_char - adj:ent.start_char - adj] = temp
-        adj = adj + len(ent.text) - len(ent.label_)
+        adj = adj + len(ent.text) - len(newlab)
     return char_list_to_string(ret)
 
 
@@ -82,3 +106,21 @@ def load_dependencies(args):
         print("Model Loaded.")
     except:
         raise Exception("Error: Model does not exist")
+
+
+def load_deps_dummy():
+    global nlp
+
+    print("Loading NLTK Dependencies...")
+    nltk.download('punkt')
+    nltk.download('averaged_perceptron_tagger')
+    nltk.download('tagsets')
+    print("Loading Spacy NER Tagger...")
+    nlp = spacy.load("en_core_web_lg")
+    print("Tagger loaded.")
+    print("NLTK dependencies Loaded.")
+
+
+if __name__ == '__main__':
+    load_deps_dummy()
+    print(process_sentence_ner_spacy('I like Kevin Meng because he has lots of $50 million.'))
