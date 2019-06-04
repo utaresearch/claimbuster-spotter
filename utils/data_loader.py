@@ -67,9 +67,13 @@ class DataLoader:
             c2 = resample(c2, n_samples=maj_len, random_state=FLAGS.random_state)
 
             ret.x, ret.y = [], []
+            del self.data.x[:FLAGS.train_examples]
+            del self.data.y[:FLAGS.train_examples]
             for el in np.concatenate((c0, c1, c2)):
                 ret.x.append(el[0])
                 ret.y.append(el[1])
+                self.data.x.insert(0, el[0])
+                self.data.y.insert(0, el[1])
 
             FLAGS.total_examples += ret.get_length() - FLAGS.train_examples
             FLAGS.train_examples = ret.get_length()
