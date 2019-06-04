@@ -24,6 +24,41 @@ class Dataset:
 
     def shuffle(self):
         self.x, self.y = shuffle(self.x, self.y, random_state=self.random_state)
+        # c0, c1, c2 = [], [], []
+        #
+        # for i in range(len(self.x)):
+        #     if self.y[i] == 0:
+        #         c0.append((self.x[i], self.y[i]))
+        #     elif self.y[i] == 1:
+        #         c1.append((self.x[i], self.y[i]))
+        #     elif self.y[i] == 2:
+        #         c2.append((self.x[i], self.y[i]))
+        #
+        # def shuffle_util(cc):
+        #     t1, t2 = shuffle([x[0] for x in cc], [x[1] for x in cc], random_state=self.random_state)
+        #     return list(zip(t1, t2))
+        #
+        # def get_target_num(tot_ex):
+        #     train_ex = int(math.ceil(float(tot_ex) * FLAGS.train_pct))
+        #     val_ex = int(math.floor(float(tot_ex) * FLAGS.validation_pct))
+        #     test_ex = tot_ex - train_ex - val_ex
+        #     return train_ex, val_ex, test_ex
+        #
+        # new_x, new_y = [], []
+        # all_ars = [shuffle_util(c0), shuffle_util(c1), shuffle_util(c2)]
+        # for ar in all_ars:
+        #     temp_x = [f[0] for f in ar]
+        #     temp_y = [f[1] for f in ar]
+        #
+        #     trex, vex, teex = get_target_num(len(ar))
+        #     np.concatenate((new_x, temp_x[:trex]))
+        #     np.concatenate((new_x, temp_x[trex:trex + vex]))
+        #     np.concatenate((new_x, temp_x[trex + vex:len(temp_x)]))
+        #
+        #     np.concatenate((new_y, temp_y[:trex]))
+        #     np.concatenate((new_y, temp_y[trex:trex + vex]))
+        #     np.concatenate((new_y, temp_y[trex + vex:len(temp_y)]))
+
 
     def get_length(self):
         if len(self.x) != len(self.y):
