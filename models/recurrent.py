@@ -32,8 +32,14 @@ class RecurrentModel:
 
     @staticmethod
     def get_lstm(kp_lstm):
+        # return tf.nn.rnn_cell.DropoutWrapper(
+        #     tf.nn.rnn_cell.LSTMCell(FLAGS.rnn_cell_size),
+        #     input_keep_prob=kp_lstm,
+        #     state_keep_prob=kp_lstm,
+        #     output_keep_prob=kp_lstm
+        # )
         return tf.nn.rnn_cell.DropoutWrapper(
-            tf.nn.rnn_cell.LSTMCell(FLAGS.rnn_cell_size),
+            tf.nn.rnn_cell.GRUCell(FLAGS.rnn_cell_size),
             input_keep_prob=kp_lstm,
             state_keep_prob=kp_lstm,
             output_keep_prob=kp_lstm
