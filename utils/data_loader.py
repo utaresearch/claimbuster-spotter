@@ -71,8 +71,8 @@ class DataLoader:
                 ret.x.append(el[0])
                 ret.y.append(el[1])
 
+            FLAGS.total_examples += ret.get_length() - FLAGS.train_examples
             FLAGS.train_examples = ret.get_length()
-            FLAGS.total_examples += ret.get_length()
 
         return ret
 
