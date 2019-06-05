@@ -73,7 +73,6 @@ flags.DEFINE_integer('num_classes', 3, 'Number of classes for classification')
 
 # Training
 flags.DEFINE_integer('batch_size', 256, 'Size of the batch.')
-flags.DEFINE_integer('num_timesteps', 100, 'Number of timesteps for BPTT')
 
 # Locations (must be last due to customization)
 flags.DEFINE_string('model_dir', FLAGS.output_dir, 'Location of model save')
