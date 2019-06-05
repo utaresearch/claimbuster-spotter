@@ -8,3 +8,6 @@ output3/
 __pycache__/
 
 *nohup*
+
+.idea/
+.vscode/
