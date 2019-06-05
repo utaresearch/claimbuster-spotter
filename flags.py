@@ -41,7 +41,7 @@ flags.DEFINE_integer('random_state', 59, 'State of pseudo-randomness')
 # Model architecture
 flags.DEFINE_bool('bidir_lstm', False, 'Whether to build a bidirectional LSTM.')
 flags.DEFINE_integer('rnn_num_layers', 1, 'Number of LSTM layers.')
-flags.DEFINE_integer('rnn_cell_size', 2, 'Number of hidden units in the LSTM.')
+flags.DEFINE_integer('rnn_cell_size', 256, 'Number of hidden units in the LSTM.')
 
 # Optimization
 flags.DEFINE_integer('max_steps', 1000, 'Number of epochs to run.')
@@ -56,7 +56,7 @@ flags.DEFINE_float('keep_prob_emb', 0.3, 'Keep probability on embedding layer.')
 
 # Embeddings
 flags.DEFINE_string('w2v_loc', 'data/word2vec/GoogleNews-vectors-negative300.bin', 'Location of w2v embeddings')
-flags.DEFINE_bool('train_embed', True, 'Train on top of w2v embeddings')
+flags.DEFINE_bool('train_embed', False, 'Train on top of w2v embeddings')
 flags.DEFINE_integer('embedding_dims', 300, 'Dimensions of embedded vector.')
 flags.DEFINE_bool('normalize_embeddings', False, 'Normalize word embeddings by vocab frequency')
 flags.DEFINE_bool('random_init_oov', True, 'Use np.random.normal init for unknown embeddings. 0-fill if False')
