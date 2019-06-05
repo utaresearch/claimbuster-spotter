@@ -20,7 +20,7 @@ flags.DEFINE_bool('smote_synthetic', False, '[NOT WORKING] Oversample imabalance
 flags.DEFINE_bool('sklearn_oversample', True, 'Oversample underrepresented classes with sklearn')
 
 # Eval
-flags.DEFINE_bool('disjoint_data', False, 'Use custom non-train set data to evaluate model')
+flags.DEFINE_bool('disjoint_data', True, 'Use custom non-train set data to evaluate model')
 flags.DEFINE_string('custom_prc_data_loc', './data/disjoint_2000/prc_data.pickle', 'Location of custom data file')
 flags.DEFINE_string('custom_vocab_loc', './data/disjoint_2000/vocab.pickle', 'Location of custom vocab file')
 
