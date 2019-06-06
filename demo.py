@@ -80,7 +80,7 @@ def load_ext_vocab():
     global ext_vocab
 
     with open(FLAGS.vocab_loc, 'rb') as f:
-        ext_vocab = pickle.load(f)
+        ext_vocab = [z[0] for z in pickle.load(f)]
 
 
 def parse_sentence(sentence):
@@ -119,7 +119,6 @@ def main():
     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
     load_ext_vocab()
-    print(ext_vocab)
     # transf.load_dependencies()
 
     graph = tf.Graph()
