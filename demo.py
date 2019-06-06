@@ -14,6 +14,7 @@ y = tf.placeholder(tf.int32, (None, FLAGS.num_classes), name='y')
 kp_emb = tf.placeholder(tf.float32, name='kp_emb')
 kp_lstm = tf.placeholder(tf.float32, name='kp_lstm')
 ext_vocab = []
+return_strings = ['Non-factual statement', 'Unimportant factual statement', 'Salient factual statement']
 
 
 def pad_seq(inp):
@@ -106,6 +107,7 @@ def subscribe_query(sess, y_pred):
             x: pad_seq(batch_x),
             x_len: [len(el) for el in batch_x],
             output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
+            y: [[0, 0, 1]],
             kp_emb: 1.0,
             kp_lstm: 1.0
         }
@@ -124,7 +126,9 @@ def main():
         sess.run(tf.global_variables_initializer())
         y_pred = load_model(sess, graph)
 
-        print(subscribe_query(sess, y_pred))
+        res = subscribe_query(sess, y_pred)
+        idx = np.argmax(res, axis=1)
+        print('{} with probability {}'.format(return_strings[idx], res[0][idx]))
 
 
 if __name__ == '__main__':
