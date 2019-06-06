@@ -90,7 +90,7 @@ def parse_sentence(sentence):
         except:
             return -1
 
-    sentence = transf.transform_sentence_complete(sentence)
+    # sentence = transf.transform_sentence_complete(sentence)
     return [vocab_idx(word) for word in sentence.split(' ')]
 
 
@@ -115,7 +115,7 @@ def subscribe_query(sess, y_pred):
 def main():
     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
-    transf.load_dependencies()
+    # transf.load_dependencies()
 
     graph = tf.Graph()
     with tf.Session(graph=graph, config=tf.ConfigProto(allow_soft_placement=True)) as sess:
