@@ -86,9 +86,11 @@ def process_sentence_ner_spacy(sentence):
 
 
 def transform_sentence_complete(sentence):
-    txt = list(cont.expand_texts([sentence], precise=True))[0]
+    # txt = list(cont.expand_texts([sentence], precise=True))[0]
     # txt = txt.replace('-', ' ').lower()
-    txt = txt.lower()
+    # txt = txt.lower()
+
+    txt = sentence.lower()
 
     if FLAGS.noun_rep:
         txt = process_sentence_noun_rep(txt)
@@ -149,14 +151,14 @@ def load_dependencies():
         print("NLTK dependencies Loaded.")
 
     # Load word2vec model for contraction expansion
-    print("Loading model from " + FLAGS.w2v_loc_bin)
-    cont = Contractions(FLAGS.w2v_loc_bin)
-
-    try:
-        cont.load_models()
-        print("Model Loaded.")
-    except:
-        raise Exception("Error: Model does not exist")
+    # print("Loading model from " + FLAGS.w2v_loc_bin)
+    # cont = Contractions(FLAGS.w2v_loc_bin)
+    #
+    # try:
+    #     cont.load_models()
+    #     print("Model Loaded.")
+    # except:
+    #     raise Exception("Error: Model does not exist")
 
 
 def load_deps_dummy():
