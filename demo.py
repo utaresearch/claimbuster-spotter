@@ -128,6 +128,8 @@ def main():
 
         res = subscribe_query(sess, y_pred)
         idx = np.argmax(res, axis=1)
+        print(res)
+        print(return_strings)
         print('{} with probability {}'.format(return_strings[idx], res[0][idx]))
 
 
