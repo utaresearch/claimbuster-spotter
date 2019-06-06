@@ -21,12 +21,13 @@ def adversarial_loss(embedded, loss, loss_fn):
 
 
 def apply_adversarial_perturbation(embedded, loss):
-    """Adds gradient to embedding and recomputes classification loss."""
+    """Adds gradient to embedding."""
     grad, = tf.gradients(loss, embedded,
                          aggregation_method=tf.AggregationMethod.EXPERIMENTAL_ACCUMULATE_N)
     grad = tf.stop_gradient(grad)
     perturb = _scale_l2(grad, FLAGS.perturb_norm_length)
-    return embedded + perturb
+    # return embedded + perturb
+    return embedded - perturb
 
 
 def _mask_by_length(t, length):
