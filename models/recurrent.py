@@ -35,7 +35,7 @@ class RecurrentModel:
                 x = adversarial_perturbation(x, reg_loss)
                 tf.logging.info('Adversarial perturbations applied to {x}')
             else:
-                tf.logging.info('First pass omits adversarial perturbations')
+                tf.logging.info('First pass of fprop() omits adversarial perturbations')
 
             x = tf.nn.dropout(x, keep_prob=kp_emb)
 
