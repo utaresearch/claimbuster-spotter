@@ -28,7 +28,8 @@ class RecurrentModel:
         var_scope_name = 'lstm{}'.format('_adv' if adv else '')
         with tf.variable_scope(var_scope_name):
             if adv:
-                x_embed = apply_adversarial_perturbation(orig_embed, reg_loss)
+                # x_embed = apply_adversarial_perturbation(orig_embed, reg_loss)
+                x_embed = orig_embed
             else:
                 x = tf.unstack(x, axis=1)
                 for i in range(len(x)):
