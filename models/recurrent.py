@@ -28,17 +28,13 @@ class RecurrentModel:
         var_scope_name = 'lstm{}'.format('_adv' if adv else '')
         with tf.variable_scope(var_scope_name):
             if adv:
-                print(orig_embed, reg_loss)
                 x_embed = apply_adversarial_perturbation(orig_embed, reg_loss)
-                tf.logging.info('Adversarial perturbations applied')
             else:
                 x = tf.unstack(x, axis=1)
                 for i in range(len(x)):
                     x[i] = tf.nn.embedding_lookup(embed, x[i])
                 x = tf.stack(x, axis=1)
-
                 x_embed = tf.identity(x, name='x_embed')
-                tf.logging.info('First pass of fprop() omits adversarial perturbations')
 
             x = tf.nn.dropout(x_embed, keep_prob=kp_emb)
 

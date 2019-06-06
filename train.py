@@ -161,7 +161,7 @@ def main():
         start = time.time()
         epochs_trav = 0
 
-        tf.logging.info("Starting training...")
+        tf.logging.info("Starting{}training...".format(' adversarial ' if FLAGS.adv_train else ' '))
         for epoch in range(FLAGS.max_steps):
             epochs_trav += 1
             n_batches = math.ceil(float(FLAGS.train_examples) / float(FLAGS.batch_size))
