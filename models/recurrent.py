@@ -29,7 +29,7 @@ class RecurrentModel:
         with tf.variable_scope(var_scope_name):
             if adv:
                 print(orig_embed, reg_loss)
-                x = apply_adversarial_perturbation(orig_embed, reg_loss)
+                x_embed = apply_adversarial_perturbation(orig_embed, reg_loss)
                 tf.logging.info('Adversarial perturbations applied to {x}')
             else:
                 x = tf.unstack(x, axis=1)
@@ -40,7 +40,7 @@ class RecurrentModel:
                 x_embed = tf.identity(x, name='x_embed')
                 tf.logging.info('First pass of fprop() omits adversarial perturbations')
 
-            x = tf.nn.dropout(x, keep_prob=kp_emb)
+            x = tf.nn.dropout(x_embed, keep_prob=kp_emb)
 
             lstm = tf.nn.rnn_cell.MultiRNNCell([self.get_lstm(kp_lstm) for _ in range(FLAGS.rnn_num_layers)])
             output, state = tf.nn.dynamic_rnn(cell=lstm, inputs=x, sequence_length=x_len, dtype=tf.float32)
