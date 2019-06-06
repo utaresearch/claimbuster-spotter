@@ -1,10 +1,8 @@
 import tensorflow as tf
 import numpy as np
 import pickle
-import math
 import os
 from utils import transformations as transf
-from sklearn.metrics import f1_score, classification_report
 from flags import FLAGS
 
 x = tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x')
@@ -130,8 +128,9 @@ def main():
 
         res = subscribe_query(sess, y_pred)
         idx = np.argmax(res, axis=1)
-        print(res[0][idx])
-        print(return_strings[idx])
+        print(res[0][idx][0])
+
+        print(return_strings[0][idx])
         print('{} with probability {}'.format(return_strings[idx], res[0][idx]))
 
 
