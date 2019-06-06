@@ -53,7 +53,10 @@ flags.DEFINE_float('keep_prob_lstm', 0.7, 'Keep probability LSTM network.')
 flags.DEFINE_float('keep_prob_emb', 0.7, 'Keep probability on embedding layer.')
 
 # Embeddings
-flags.DEFINE_string('w2v_loc', 'data/word2vec/GoogleNews-vectors-negative300.bin', 'Location of w2v embeddings')
+flags.DEFINE_integer('embed_type', 1, '0 for word2vec, 1 for Stanford glove')
+flags.DEFINE_string('w2v_loc', './data/word2vec/w2v3b_gensim.txt', 'Location of w2v embeddings')
+flags.DEFINE_string('glove_loc', './data/glove/glove840b_gensim.txt', 'Location of glove embeddings')
+flags.DEFINE_string('w2v_loc_bin', './data/word2vec/w2v3b_gensim.bin', 'Location of w2v embeddings in BINARY form')
 flags.DEFINE_bool('train_embed', False, 'Train on top of w2v embeddings')  # we don't have enough data to train embeddings
 flags.DEFINE_integer('embedding_dims', 300, 'Dimensions of embedded vector.')
 flags.DEFINE_bool('normalize_embeddings', False, 'Normalize word embeddings by vocab frequency')

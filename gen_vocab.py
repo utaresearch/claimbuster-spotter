@@ -1,6 +1,6 @@
 import os
 import pickle
-from utils.vocab import get_vocab_information
+from utils.vocab import get_embed_vocab_info
 from flags import FLAGS
 
 
@@ -17,10 +17,8 @@ def main():
 
     print("Parsing vocab information...")
 
-    with open(FLAGS.prc_data_loc, 'rb') as f:
-        data = pickle.load(f)
     with open(FLAGS.vocab_loc, 'wb') as f:
-        pickle.dump(get_vocab_information(data), f)
+        pickle.dump(get_embed_vocab_info(), f)
 
     print("Completed.")
 

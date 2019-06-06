@@ -87,7 +87,9 @@ def process_sentence_ner_spacy(sentence):
 
 def transform_sentence_complete(sentence):
     txt = list(cont.expand_texts([sentence], precise=True))[0]
-    txt = txt.replace('-', ' ').lower()
+    # txt = txt.replace('-', ' ').lower()
+    txt = txt.lower()
+
     if FLAGS.noun_rep:
         txt = process_sentence_noun_rep(txt)
     elif FLAGS.full_tags:
@@ -95,18 +97,39 @@ def transform_sentence_complete(sentence):
     elif FLAGS.ner_spacy:
         txt = process_sentence_ner_spacy(txt)
 
+    def strip_chars(str, to_strip):
+        stripped_away_front = ""
+        stripped_away_back = ""
+
+        for i in reversed(range(0, len(str))):
+            if str[i] in to_strip:
+                stripped_away_back += str[i]
+                del str[i]
+            else:
+                break
+        for i in range(0, len(str)):
+            if str[i] in to_strip:
+                stripped_away_front += str[i]
+                del str[i]
+                i -= 1
+            else:
+                break
+
+        return stripped_away_front, str, stripped_away_back
+
     words = txt.split(' ')
+    ret_words = []
     for j in range(len(words)):
-        words[j] = words[j].strip(string.punctuation)
-        if words[j].isdigit():
-            words[j] = "NUM"
+        str_front, new_word, str_back = strip_chars(words[j], string.punctuation)
 
-    txt = []
-    for word in words:
-        if word not in kill_words:
-            txt.append(word)
+        if str_front not in kill_words:
+            ret_words.append(str_front)
+        if new_word not in kill_words:
+            ret_words.append(new_word)
+        if str_back not in kill_words:
+            ret_words.append(str_back)
 
-    return ' '.join(txt)
+    return ' '.join(ret_words)
 
 
 def load_dependencies():
@@ -125,8 +148,8 @@ def load_dependencies():
         print("NLTK dependencies Loaded.")
 
     # Load word2vec model for contraction expansion
-    print("Loading model from " + FLAGS.w2v_loc)
-    cont = Contractions(FLAGS.w2v_loc)
+    print("Loading model from " + FLAGS.w2v_loc_bin)
+    cont = Contractions(FLAGS.w2v_loc_bin)
 
     try:
         cont.load_models()

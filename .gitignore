@@ -1,5 +1,5 @@
 data/word2vec/GoogleNews-vectors-negative300.bin
-data/glove/glove840b.txt
+data/glove/glove840b_gensim.txt
 
 output/
 output1/

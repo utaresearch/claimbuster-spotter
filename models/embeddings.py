@@ -44,7 +44,9 @@ class Embedding:
         embedding_matrix[-1] = np.zeros(FLAGS.embedding_dims)
 
         tf.logging.info("Loading word2vec model...")
-        model = KeyedVectors.load_word2vec_format(FLAGS.w2v_loc, binary=True)
+        assert FLAGS.embed_type == 0 or FLAGS.embed_type == 1
+        model = KeyedVectors.load_word2vec_format(
+            FLAGS.w2v_loc if FLAGS.embed_type == 0 else FLAGS.glove_loc, binary=False)
         tf.logging.info("Model loaded.")
 
         idx, fail_cnt, fail_words = 0, 0, []
