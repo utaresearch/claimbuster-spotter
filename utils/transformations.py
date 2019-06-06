@@ -104,20 +104,23 @@ def transform_sentence_complete(sentence):
         stripped_away_front = ""
         stripped_away_back = ""
 
-        print(strar)
+        print(''.join(strar), end=' ')
         for i in reversed(range(0, len(strar))):
             if strar[i] in to_strip:
                 stripped_away_back += strar[i]
                 del strar[i]
             else:
                 break
-        for i in range(0, len(strar)):
-            if strar[i] in to_strip:
-                stripped_away_front += strar[i]
-                del strar[i]
-                i -= 1
+        lcount = 0
+        while lcount < len(strar):
+            if strar[lcount] in to_strip:
+                stripped_away_front += strar[lcount]
+                del strar[lcount]
+                lcount -= 1
             else:
                 break
+
+        print(''.join(strar))
 
         return stripped_away_front, ''.join(strar), stripped_away_back
 
