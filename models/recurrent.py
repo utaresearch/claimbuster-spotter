@@ -48,7 +48,7 @@ class RecurrentModel:
             add_weight = tf.get_variable('post_lstm_weight', shape=(FLAGS.rnn_cell_size, FLAGS.num_classes),
                                          initializer=tf.contrib.layers.xavier_initializer())
             add_bias = tf.get_variable('post_lstm_bias', shape=FLAGS.num_classes,
-                                       initializer=tf.contrib.layers.xavier_initializer())
+                                       initializer=tf.zeros_initializer())
 
             if not adv:
                 return x_embed, tf.matmul(tf.boolean_mask(output, output_mask), add_weight) + add_bias
