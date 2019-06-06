@@ -97,25 +97,26 @@ def transform_sentence_complete(sentence):
     elif FLAGS.ner_spacy:
         txt = process_sentence_ner_spacy(txt)
 
-    def strip_chars(str, to_strip):
+    def strip_chars(inpstr, to_strip):
+        strar = list(inpstr)
         stripped_away_front = ""
         stripped_away_back = ""
 
-        for i in reversed(range(0, len(str))):
-            if str[i] in to_strip:
-                stripped_away_back += str[i]
-                del str[i]
+        for i in reversed(range(0, len(strar))):
+            if strar[i] in to_strip:
+                stripped_away_back += strar[i]
+                del strar[i]
             else:
                 break
-        for i in range(0, len(str)):
-            if str[i] in to_strip:
-                stripped_away_front += str[i]
-                del str[i]
+        for i in range(0, len(strar)):
+            if strar[i] in to_strip:
+                stripped_away_front += strar[i]
+                del strar[i]
                 i -= 1
             else:
                 break
 
-        return stripped_away_front, str, stripped_away_back
+        return stripped_away_front, ''.join(strar), stripped_away_back
 
     words = txt.split(' ')
     ret_words = []
