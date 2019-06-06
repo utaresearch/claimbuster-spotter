@@ -135,7 +135,7 @@ def main():
 
     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
-    tf.logging.info("Loading dataset")
+    tf.logging.info("Loading dataset and integrating embeddings")
     data_load = DataLoader()
 
     train_data = data_load.load_training_data()
