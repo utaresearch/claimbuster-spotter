@@ -10,14 +10,10 @@ class RecurrentModel:
         pass
 
     def construct_model(self, x, x_len, output_mask, y, embed, kp_emb, kp_lstm, adv=False):
-        tf.logging.info(adv)
-        tf.logging.info(FLAGS.adv_train)
-        tf.logging.info('asdfasdfasdfsafasdfas')
         yhat = self.fprop(x, x_len, output_mask, embed, kp_emb, kp_lstm, adv=False)
         loss = self.ce_loss(y, yhat)
 
         if adv:
-            tf.logging.info('ahhhhhhhhhhhhhhhhhhhhhhhhhhh')
             yhat = self.fprop(x, x_len, output_mask, embed, kp_emb, kp_lstm, loss, adv=True)
             loss = self.adv_loss(y, yhat)
 
