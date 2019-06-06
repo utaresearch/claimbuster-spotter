@@ -17,14 +17,15 @@ class Embedding:
     def construct_embeddings(self, tf_embed):
         self.embed = tf.Variable(tf_embed, dtype=tf.float32, name='embedding',
                                  trainable=FLAGS.train_embed)
-        tf.logging.info("Word vectors will{} be trained on".format("" if FLAGS.train_embed else " not"))
+        tf.logging.info("Word vectors will{} be trained on".format("" if FLAGS.train_embed else " NOT"))
         return self.embed
 
-    def init_embeddings(self, sess):
+    def init_embeddings(self, sess, tf_embed):
         w2v = tf.placeholder(tf.float32, shape=self.embed_shape)
         embed_init_op = self.embed.assign(w2v)
 
         sess.run(embed_init_op, feed_dict={
+            tf_embed: np.zeros(self.embed_shape)
             w2v: self.create_embedding_matrix(sess)
         })
 
