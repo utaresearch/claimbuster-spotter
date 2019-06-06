@@ -116,6 +116,8 @@ def subscribe_query(sess, y_pred):
 
 
 def main():
+    global return_strings
+
     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
     load_ext_vocab()
