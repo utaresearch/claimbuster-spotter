@@ -1,3 +1,4 @@
+import tensorflow as tf
 from imblearn.over_sampling import SMOTE
 from sklearn.utils import resample
 import numpy as np
@@ -171,10 +172,15 @@ class DataLoader:
 
         fail_cnt = 0
         tot_cnt = 0
+
+        tf.logging.info('Initializing embedding matrix')
         embed_obj = EmbeddingHelper()
+        tf.logging.info('Embedding matrix successfully initialized')
+
         ret = Dataset(DataLoader.words_to_embeddings(embed_obj, [[vocab_idx(ch) for ch in x[1].split(' ')] for x in data]),
                       [int(x[0]) + 1 for x in data], FLAGS.random_state)
-        print('{} out of {} words were not found are defaulted to -1.'.format(fail_cnt, tot_cnt))
+
+        tf.logging.info('{} out of {} words were not found are defaulted to -1.'.format(fail_cnt, tot_cnt))
 
         del embed_obj
         return ret
