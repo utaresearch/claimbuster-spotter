@@ -14,8 +14,8 @@ class RecurrentModel:
         loss = self.ce_loss(y, yhat)
 
         if adv:
-            yhat = self.fprop(x, x_len, output_mask, embed, kp_emb, kp_lstm, orig_embed, loss, adv=True)
-            loss = self.adv_loss(y, yhat)
+            yhat_adv = self.fprop(x, x_len, output_mask, embed, kp_emb, kp_lstm, orig_embed, loss, adv=True)
+            loss = self.adv_loss(y, yhat_adv)
 
         return yhat, loss
 
