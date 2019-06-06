@@ -45,13 +45,13 @@ flags.DEFINE_integer('rnn_cell_size', 256, 'Number of hidden units in the LSTM.'
 
 # Optimization
 flags.DEFINE_integer('max_steps', 1000, 'Number of epochs to run.')
-flags.DEFINE_float('learning_rate', 0.001, 'Learning rate while during optimiation.')
+flags.DEFINE_float('learning_rate', 0.0001, 'Learning rate while during optimiation.')
 
 # Regularization
 flags.DEFINE_float('l2_reg_coeff', 0.001, 'If val > 0, use L2 Regularization on weights in graph')
 flags.DEFINE_float('max_grad_norm', 1.0, 'Clip the global gradient norm to this value.')
-flags.DEFINE_float('keep_prob_lstm', 0.3, 'Keep probability LSTM network.')
-flags.DEFINE_float('keep_prob_emb', 0.3, 'Keep probability on embedding layer.')
+flags.DEFINE_float('keep_prob_lstm', 0.7, 'Keep probability LSTM network.')
+flags.DEFINE_float('keep_prob_emb', 0.7, 'Keep probability on embedding layer.')
 
 # Embeddings
 flags.DEFINE_string('w2v_loc', 'data/word2vec/GoogleNews-vectors-negative300.bin', 'Location of w2v embeddings')
