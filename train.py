@@ -126,42 +126,6 @@ def get_batch(bid, data, ver='train'):
     return batch_x, batch_y
 
 
-def load_model(sess, graph):
-    global x, x_len, output_mask, y, kp_emb, kp_lstm
-
-    def get_last_save(scan_loc):
-        ret_ar = []
-        directory = os.fsencode(scan_loc)
-        for fstr in os.listdir(directory):
-            if '.meta' in os.fsdecode(fstr) and 'cb.ckpt-' in os.fsdecode(fstr):
-                ret_ar.append(os.fsdecode(fstr))
-        ret_ar.sort()
-        return ret_ar[-1]
-
-    model_dir = os.path.join(FLAGS.model_dir, get_last_save(FLAGS.model_dir))
-    tf.logging.info('Attempting to restore from {}'.format(model_dir))
-
-    with graph.as_default():
-        saver = tf.train.import_meta_graph(model_dir)
-        saver.restore(sess, tf.train.latest_checkpoint(FLAGS.model_dir))
-
-        # inputs
-        x = graph.get_tensor_by_name('x:0')
-        x_len = graph.get_tensor_by_name('x_len:0')
-        output_mask = graph.get_tensor_by_name('output_mask:0')
-        y = graph.get_tensor_by_name('y:0')
-        kp_emb = graph.get_tensor_by_name('kp_emb:0')
-        kp_lstm = graph.get_tensor_by_name('kp_lstm:0')
-
-        # outputs
-        cost = graph.get_tensor_by_name('cost:0')
-        y_pred = graph.get_tensor_by_name('y_pred:0')
-        acc = graph.get_tensor_by_name('acc:0')
-
-        tf.logging.info('Model successfully restored.')
-        return cost, y_pred, acc
-
-
 def save_model(sess, epoch):
     saver = tf.train.Saver()
     saver.save(sess, os.path.join(FLAGS.model_dir, 'cb.ckpt'), global_step=epoch)
@@ -183,22 +147,21 @@ def main():
     embed = embed_obj.construct_embeddings()
 
     lstm_model = RecurrentModel()
-    logits, cost = lstm_model.construct_model(x, x_len, output_mask, y, embed, kp_emb, kp_lstm, adv=True)
+    logits, cost = lstm_model.construct_model(x, x_len, output_mask, y, embed, kp_emb, kp_lstm, adv=FLAGS.adv_train)
     optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(cost)
 
     y_pred = tf.nn.softmax(logits, axis=1, name='y_pred')
     correct = tf.equal(tf.argmax(y, axis=1), tf.argmax(y_pred, axis=1))
     acc = tf.reduce_mean(tf.cast(correct, tf.float32), name='acc')
 
-    graph = tf.Graph()
-    with tf.Session(graph=graph, config=tf.ConfigProto(allow_soft_placement=True)) as sess:
+    with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as sess:
         sess.run(tf.global_variables_initializer())
-        cost, y_pred, acc = load_model(sess, graph)
+        embed_obj.init_embeddings(sess)
 
         start = time.time()
         epochs_trav = 0
 
-        tf.logging.info("Starting ADVERSARIAL training...")
+        tf.logging.info("Starting training...")
         for epoch in range(FLAGS.max_steps):
             epochs_trav += 1
             n_batches = math.ceil(float(FLAGS.train_examples) / float(FLAGS.batch_size))
