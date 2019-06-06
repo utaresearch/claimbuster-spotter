@@ -22,9 +22,8 @@ def adversarial_loss(embedded, loss, loss_fn):
 
 def adversarial_perturbation(embedded, loss):
     """Adds gradient to embedding and recomputes classification loss."""
-    grad, = tf.gradients(loss, [embedded],
+    grad, = tf.gradients(loss, embedded,
                          aggregation_method=tf.AggregationMethod.EXPERIMENTAL_ACCUMULATE_N)
-    print(grad)
     grad = tf.stop_gradient(grad)
     perturb = _scale_l2(grad, FLAGS.perturb_norm_length)
     return embedded + perturb
