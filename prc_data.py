@@ -61,7 +61,7 @@ def write_pickle(df):
 
 
 def load_dependencies():
-    transf.load_dependencies(FLAGS)
+    transf.load_dependencies()
 
 
 def main():
