@@ -16,7 +16,7 @@ def get_vocab_information(data):
 
 
 def get_embed_vocab_info():
-    print("Loading embedding model")
+    print("Loading embedding model | ", end='', flush=True)
 
     word_list = []
 
