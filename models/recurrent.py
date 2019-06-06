@@ -19,7 +19,7 @@ class RecurrentModel:
 
         return yhat, loss
 
-    def fprop(self, x, x_len, output_mask, embed, kp_emb, kp_lstm, ce_loss, adv):
+    def fprop(self, x, x_len, output_mask, embed, kp_emb, kp_lstm, ce_loss=None, adv=False):
         if adv:
             assert ce_loss is not None
         return self.build_lstm(x, x_len, output_mask, embed, kp_emb, kp_lstm, ce_loss, adv)
