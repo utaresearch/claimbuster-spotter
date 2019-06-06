@@ -104,6 +104,7 @@ def transform_sentence_complete(sentence):
         stripped_away_front = ""
         stripped_away_back = ""
 
+        print(strar)
         for i in reversed(range(0, len(strar))):
             if strar[i] in to_strip:
                 stripped_away_back += strar[i]
