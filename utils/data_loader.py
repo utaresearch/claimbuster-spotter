@@ -7,6 +7,7 @@ import sys
 sys.path.append('..')
 from flags import FLAGS
 from sklearn.utils import shuffle
+from models.embeddings import EmbeddingHelper
 
 
 fail_cnt = 0
@@ -59,7 +60,6 @@ class Dataset:
         #     np.concatenate((new_y, temp_y[:trex]))
         #     np.concatenate((new_y, temp_y[trex:trex + vex]))
         #     np.concatenate((new_y, temp_y[trex + vex:len(temp_y)]))
-
 
     def get_length(self):
         if len(self.x) != len(self.y):
@@ -171,9 +171,22 @@ class DataLoader:
 
         fail_cnt = 0
         tot_cnt = 0
-        ret = Dataset([[vocab_idx(ch) for ch in x[1].split(' ')] for x in data],
+        embed_obj = EmbeddingHelper()
+        ret = Dataset(DataLoader.words_to_embeddings(embed_obj, [[vocab_idx(ch) for ch in x[1].split(' ')] for x in data]),
                       [int(x[0]) + 1 for x in data], FLAGS.random_state)
         print('{} out of {} words were not found are defaulted to -1.'.format(fail_cnt, tot_cnt))
+
+        return ret
+
+    @staticmethod
+    def words_to_embeddings(embed_obj, complete):
+        ret = list()
+
+        ret.append([])
+        for i in range(len(complete)):
+            sentence = complete[i]
+            for word_idx in sentence:
+                ret[i].append(embed_obj.query(word_idx))
 
         return ret
 
