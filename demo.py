@@ -116,6 +116,7 @@ def subscribe_query(sess, y_pred):
 def main():
     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
+    load_ext_vocab()
     # transf.load_dependencies()
 
     graph = tf.Graph()
