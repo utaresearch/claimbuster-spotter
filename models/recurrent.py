@@ -1,6 +1,6 @@
 import tensorflow as tf
 import sys
-from .adv_losses import adversarial_perturbation
+from .adv_losses import apply_adversarial_perturbation
 sys.path.append('..')
 from flags import FLAGS
 
@@ -28,7 +28,8 @@ class RecurrentModel:
         var_scope_name = 'lstm{}'.format('_adv' if adv else '')
         with tf.variable_scope(var_scope_name):
             if adv:
-                x = adversarial_perturbation(orig_embed, reg_loss)
+                print(orig_embed, reg_loss)
+                x = apply_adversarial_perturbation(orig_embed, reg_loss)
                 tf.logging.info('Adversarial perturbations applied to {x}')
             else:
                 x = tf.unstack(x, axis=1)

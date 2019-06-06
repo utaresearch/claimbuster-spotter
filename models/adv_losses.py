@@ -20,7 +20,7 @@ def adversarial_loss(embedded, loss, loss_fn):
     return loss_fn(embedded + perturb)
 
 
-def adversarial_perturbation(embedded, loss):
+def apply_adversarial_perturbation(embedded, loss):
     """Adds gradient to embedding and recomputes classification loss."""
     grad, = tf.gradients(loss, embedded,
                          aggregation_method=tf.AggregationMethod.EXPERIMENTAL_ACCUMULATE_N)
