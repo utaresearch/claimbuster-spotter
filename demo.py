@@ -13,7 +13,7 @@ output_mask = tf.placeholder(tf.bool, (None, FLAGS.max_len), name='output_mask')
 y = tf.placeholder(tf.int32, (None, FLAGS.num_classes), name='y')
 kp_emb = tf.placeholder(tf.float32, name='kp_emb')
 kp_lstm = tf.placeholder(tf.float32, name='kp_lstm')
-ext_vocab = None
+ext_vocab = []
 
 
 def pad_seq(inp):
@@ -85,6 +85,8 @@ def load_ext_vocab():
 
 def parse_sentence(sentence):
     def vocab_idx(ch):
+        global ext_vocab
+
         try:
             return ext_vocab.index(ch)
         except:
@@ -117,6 +119,7 @@ def main():
     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
     load_ext_vocab()
+    print(ext_vocab)
     # transf.load_dependencies()
 
     graph = tf.Graph()
