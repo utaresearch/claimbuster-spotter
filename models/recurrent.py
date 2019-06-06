@@ -33,6 +33,7 @@ class RecurrentModel:
 
             if adv:
                 x = adversarial_perturbation(x, ce_loss)
+                tf.logging.info('Adversarial perturbations applied to {x}')
 
             x = tf.nn.dropout(x, keep_prob=kp_emb)
 
