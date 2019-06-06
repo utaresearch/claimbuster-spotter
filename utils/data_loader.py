@@ -10,6 +10,7 @@ from sklearn.utils import shuffle
 
 
 fail_cnt = 0
+tot_cnt = 0
 
 
 class Dataset:
@@ -151,16 +152,34 @@ class DataLoader:
 
     @staticmethod
     def load_external():
+        global fail_cnt, tot_cnt
+
         with open(FLAGS.prc_data_loc, 'rb') as f:
             data = pickle.load(f)
         with open(FLAGS.vocab_loc, 'rb') as f:
             vc = [x[0] for x in pickle.load(f)]
 
-        return Dataset([[vc.index(ch) for ch in x[1].split(' ')] for x in data],
-                       [int(x[0]) + 1 for x in data], FLAGS.random_state)
+        def vocab_idx(ch):
+            global fail_cnt, tot_cnt
+            try:
+                return vc.index(ch)
+            except:
+                fail_cnt += 1
+                return -1
+            tot_cnt += 1
+
+        fail_cnt = 0
+        tot_cnt = 0
+        ret = Dataset([[vocab_idx(ch) for ch in x[1].split(' ')] for x in data],
+                      [int(x[0]) + 1 for x in data], FLAGS.random_state)
+        print('{} out of {} words were not found are defaulted to -1.'.format(fail_cnt, tot_cnt))
+
+        return ret
 
     @staticmethod
     def load_external_custom(custom_prc_data_loc, custom_vocab_loc):
+        global fail_cnt
+
         with open(custom_prc_data_loc, 'rb') as f:
             data = pickle.load(f)
         with open(custom_vocab_loc, 'rb') as f:
@@ -176,10 +195,12 @@ class DataLoader:
                 fail_cnt += 1
                 return -1
 
+        fail_cnt = 0
+        ret = Dataset([[vocab_idx(ch) for ch in x[1].split(' ')] for x in data],
+                      [int(x[0]) + 1 for x in data], FLAGS.random_state)
         print('{} out of {} words were not found are defaulted to -1.'.format(fail_cnt, len(vc)))
 
-        return Dataset([[vocab_idx(ch) for ch in x[1].split(' ')] for x in data],
-                       [int(x[0]) + 1 for x in data], FLAGS.random_state)
+        return ret
 
     @staticmethod
     def get_default_vocab():
