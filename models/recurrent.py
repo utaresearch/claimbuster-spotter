@@ -10,25 +10,25 @@ class RecurrentModel:
         pass
 
     def construct_model(self, x, x_len, output_mask, y, embed, kp_emb, kp_lstm, adv=False):
-        yhat = self.fprop(x, x_len, output_mask, embed, kp_emb, kp_lstm, adv=False)
+        orig_embed, yhat = self.fprop(x, x_len, output_mask, embed, kp_emb, kp_lstm, adv=False)
         loss = self.ce_loss(y, yhat)
 
         if adv:
-            yhat = self.fprop(x, x_len, output_mask, embed, kp_emb, kp_lstm, loss, adv=True)
+            yhat = self.fprop(x, x_len, output_mask, embed, kp_emb, kp_lstm, orig_embed, loss, adv=True)
             loss = self.adv_loss(y, yhat)
 
         return yhat, loss
 
-    def fprop(self, x, x_len, output_mask, embed, kp_emb, kp_lstm, reg_loss=None, adv=False):
+    def fprop(self, x, x_len, output_mask, embed, kp_emb, kp_lstm, orig_embed=None, reg_loss=None, adv=False):
         if adv:
-            assert reg_loss is not None
+            assert (reg_loss is not None and orig_embed is not None)
         return self.build_lstm(x, x_len, output_mask, embed, kp_emb, kp_lstm, reg_loss, adv)
 
-    def build_lstm(self, x, x_len, output_mask, embed, kp_emb, kp_lstm, reg_loss, adv):
+    def build_lstm(self, x, x_len, output_mask, embed, kp_emb, kp_lstm, orig_embed, reg_loss, adv):
         var_scope_name = 'lstm{}'.format('_adv' if adv else '')
         with tf.variable_scope(var_scope_name):
             if adv:
-                x = adversarial_perturbation(tf.get_variable('lstm/orig_embedded:0'), reg_loss)
+                x = adversarial_perturbation(orig_embed, reg_loss)
                 tf.logging.info('Adversarial perturbations applied to {x}')
             else:
                 x = tf.unstack(x, axis=1)
@@ -36,7 +36,7 @@ class RecurrentModel:
                     x[i] = tf.nn.embedding_lookup(embed, x[i])
                 x = tf.stack(x, axis=1)
 
-                x = tf.identity(x, name='orig_embedded')
+                x_embed = tf.identity(x, name='x_embed')
                 tf.logging.info('First pass of fprop() omits adversarial perturbations')
 
             x = tf.nn.dropout(x, keep_prob=kp_emb)
@@ -49,7 +49,10 @@ class RecurrentModel:
             add_bias = tf.get_variable('post_lstm_bias', shape=FLAGS.num_classes,
                                        initializer=tf.contrib.layers.xavier_initializer())
 
-            return tf.matmul(tf.boolean_mask(output, output_mask), add_weight) + add_bias
+            if not adv:
+                return x_embed, tf.matmul(tf.boolean_mask(output, output_mask), add_weight) + add_bias
+            else:
+                return tf.matmul(tf.boolean_mask(output, output_mask), add_weight) + add_bias
 
     @staticmethod
     def get_lstm(kp_lstm):
