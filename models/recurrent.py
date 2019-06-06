@@ -19,12 +19,12 @@ class RecurrentModel:
 
         return yhat, loss
 
-    def fprop(self, x, x_len, output_mask, embed, kp_emb, kp_lstm, ce_loss=None, adv=False):
+    def fprop(self, x, x_len, output_mask, embed, kp_emb, kp_lstm, reg_loss=None, adv=False):
         if adv:
-            assert ce_loss is not None
-        return self.build_lstm(x, x_len, output_mask, embed, kp_emb, kp_lstm, ce_loss, adv)
+            assert reg_loss is not None
+        return self.build_lstm(x, x_len, output_mask, embed, kp_emb, kp_lstm, reg_loss, adv)
 
-    def build_lstm(self, x, x_len, output_mask, embed, kp_emb, kp_lstm, ce_loss, adv):
+    def build_lstm(self, x, x_len, output_mask, embed, kp_emb, kp_lstm, reg_loss, adv):
         with tf.variable_scope('lstm', reuse=tf.AUTO_REUSE):
             x = tf.unstack(x, axis=1)
             for i in range(len(x)):
@@ -32,7 +32,7 @@ class RecurrentModel:
             x = tf.stack(x, axis=1)
 
             if adv:
-                x = adversarial_perturbation(x, ce_loss)
+                x = adversarial_perturbation(x, reg_loss)
                 tf.logging.info('Adversarial perturbations applied to {x}')
 
             x = tf.nn.dropout(x, keep_prob=kp_emb)
