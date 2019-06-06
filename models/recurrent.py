@@ -1,6 +1,6 @@
 import tensorflow as tf
 import sys
-from .losses import adversarial_perturbation
+from .adv_losses import adversarial_perturbation
 sys.path.append('..')
 from flags import FLAGS
 
@@ -10,20 +10,29 @@ class RecurrentModel:
         pass
 
     def construct_model(self, x, x_len, output_mask, y, embed, kp_emb, kp_lstm, adv=False):
-        yhat = self.build_lstm(x, x_len, output_mask, embed, kp_emb, kp_lstm)
-        loss = self.compute_loss(y, yhat)
+        yhat = self.fprop(x, x_len, output_mask, embed, kp_emb, kp_lstm, adv=False)
+        loss = self.ce_loss(y, yhat)
+
         if adv:
-            new_embed = adversarial_perturbation(embed, loss)
-            loss = tf.identity(self.compute_loss(
-                y, self.build_lstm(x, x_len, output_mask, new_embed, kp_emb, kp_lstm)), name='new_loss')
+            yhat = self.fprop(x, x_len, output_mask, embed, kp_emb, kp_lstm, loss, adv=True)
+            loss = self.adv_loss(y, yhat)
+
         return yhat, loss
 
-    def build_lstm(self, x, x_len, output_mask, embed, kp_emb, kp_lstm):
+    def fprop(self, x, x_len, output_mask, embed, kp_emb, kp_lstm, ce_loss, adv):
+        if adv:
+            assert ce_loss is not None
+        return self.build_lstm(x, x_len, output_mask, embed, kp_emb, kp_lstm, ce_loss, adv)
+
+    def build_lstm(self, x, x_len, output_mask, embed, kp_emb, kp_lstm, ce_loss, adv):
         with tf.variable_scope('lstm', reuse=tf.AUTO_REUSE):
             x = tf.unstack(x, axis=1)
             for i in range(len(x)):
                 x[i] = tf.nn.embedding_lookup(embed, x[i])
             x = tf.stack(x, axis=1)
+
+            if adv:
+                x = adversarial_perturbation(x, ce_loss)
 
             x = tf.nn.dropout(x, keep_prob=kp_emb)
 
@@ -47,12 +56,16 @@ class RecurrentModel:
         )
 
     @staticmethod
-    def compute_loss(y, yhat):
-        loss = tf.nn.softmax_cross_entropy_with_logits_v2(labels=y, logits=yhat, name='cost')
+    def adv_loss(y, logits):
+        return tf.identity(RecurrentModel.ce_loss(y, logits), name='adv_loss')
+
+    @staticmethod
+    def ce_loss(y, logits):
+        loss = tf.nn.softmax_cross_entropy_with_logits_v2(labels=y, logits=logits)
         loss_l2 = 0
 
         if FLAGS.l2_reg_coeff > 0.0:
             varlist = tf.trainable_variables()
             loss_l2 = tf.add_n([tf.nn.l2_loss(v) for v in varlist if 'bias' not in v.name]) * FLAGS.l2_reg_coeff
 
-        return loss + loss_l2
+        return tf.identity(loss + loss_l2, name='reg_loss')

@@ -46,7 +46,6 @@ flags.DEFINE_integer('rnn_cell_size', 256, 'Number of hidden units in the LSTM.'
 # Optimization
 flags.DEFINE_integer('max_steps', 1000, 'Number of epochs to run.')
 flags.DEFINE_float('learning_rate', 0.001, 'Learning rate while during optimiation.')
-flags.DEFINE_float('learning_rate_decay_factor', 1.0, 'Learning rate decay factor')
 
 # Regularization
 flags.DEFINE_float('l2_reg_coeff', 0.001, 'If val > 0, use L2 Regularization on weights in graph')
@@ -62,10 +61,8 @@ flags.DEFINE_bool('normalize_embeddings', False, 'Normalize word embeddings by v
 flags.DEFINE_bool('random_init_oov', True, 'Use np.random.normal init for unknown embeddings. 0-fill if False')
 
 # Adversarial and virtual adversarial training parameters.
+flags.DEFINE_float('adv_train', False, 'Train using adversarial perturbations')
 flags.DEFINE_float('perturb_norm_length', 5.0, 'Norm length of adversarial perturbation')
-
-# Parameters for building the graph
-flags.DEFINE_string('adv_training_method', None, 'How adversarial training is to be undertaken')
 flags.DEFINE_float('adv_reg_coeff', 1.0, 'Regularization coefficient of adversarial loss')
 
 # Output stats
