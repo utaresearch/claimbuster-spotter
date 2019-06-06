@@ -159,8 +159,8 @@ def main():
     acc = tf.reduce_mean(tf.cast(correct, tf.float32), name='acc')
 
     with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as sess:
-        sess.run(tf.global_variables_initializer())
-        embed_obj.init_embeddings(sess, tf_embed)
+        sess.run(tf.global_variables_initializer(), feed_dict={tf_embed: np.zeros(embed_obj.embed_shape)})
+        embed_obj.init_embeddings(sess,' foo')
 
         start = time.time()
         epochs_trav = 0

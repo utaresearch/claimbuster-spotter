@@ -25,7 +25,7 @@ class Embedding:
         embed_init_op = self.embed.assign(w2v)
 
         sess.run(embed_init_op, feed_dict={
-            tf_embed: np.zeros(self.embed_shape),
+            # tf_embed: np.zeros(self.embed_shape),
             w2v: self.create_embedding_matrix(sess)
         })
 
