@@ -95,6 +95,7 @@ def parse_sentence(sentence):
 
 
 def subscribe_query(sess, y_pred):
+    print('Enter a sentence to process')
     sentence = parse_sentence(input().strip('\n\r\t '))
     print(sentence)
     exit()
