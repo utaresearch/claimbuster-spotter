@@ -91,7 +91,7 @@ def parse_sentence(sentence):
         except:
             return -1
 
-    # sentence = transf.transform_sentence_complete(sentence)
+    sentence = transf.transform_sentence_complete(sentence)
     return [vocab_idx(word) for word in sentence.split(' ')]
 
 
@@ -118,17 +118,18 @@ def main():
     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
     load_ext_vocab()
-    # transf.load_dependencies()
+    transf.load_dependencies()
 
     graph = tf.Graph()
     with tf.Session(graph=graph, config=tf.ConfigProto(allow_soft_placement=True)) as sess:
         sess.run(tf.global_variables_initializer())
         y_pred = load_model(sess, graph)
 
-        res = subscribe_query(sess, y_pred)
-        idx = np.argmax(res, axis=1)
+        while True:
+            res = subscribe_query(sess, y_pred)
+            idx = np.argmax(res, axis=1)
 
-        print('{} with probability {}'.format(np.array(return_strings)[idx][0], res[0][idx][0]))
+            print('{} with probability {}'.format(np.array(return_strings)[idx][0], res[0][idx][0]))
 
 
 if __name__ == '__main__':

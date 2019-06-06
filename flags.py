@@ -39,7 +39,6 @@ flags.DEFINE_integer('test_examples', None, 'Number of testing examples')
 flags.DEFINE_integer('random_state', 59, 'State of pseudo-randomness')
 
 # Model architecture
-flags.DEFINE_bool('bidir_lstm', False, 'Whether to build a bidirectional LSTM.')
 flags.DEFINE_integer('rnn_num_layers', 1, 'Number of LSTM layers.')
 flags.DEFINE_integer('rnn_cell_size', 256, 'Number of hidden units in the LSTM.')
 
