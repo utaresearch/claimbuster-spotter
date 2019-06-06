@@ -161,12 +161,13 @@ class DataLoader:
 
         def vocab_idx(ch):
             global fail_cnt, tot_cnt
+
+            tot_cnt += 1
             try:
                 return vc.index(ch)
             except:
                 fail_cnt += 1
                 return -1
-            tot_cnt += 1
 
         fail_cnt = 0
         tot_cnt = 0
