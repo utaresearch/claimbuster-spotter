@@ -30,7 +30,7 @@ class RecurrentModel:
             if adv:
                 print(orig_embed, reg_loss)
                 x_embed = apply_adversarial_perturbation(orig_embed, reg_loss)
-                tf.logging.info('Adversarial perturbations applied to {x}')
+                tf.logging.info('Adversarial perturbations applied')
             else:
                 x = tf.unstack(x, axis=1)
                 for i in range(len(x)):
