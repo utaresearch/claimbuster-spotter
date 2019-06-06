@@ -14,6 +14,7 @@ output_mask = tf.placeholder(tf.bool, (None, FLAGS.max_len), name='output_mask')
 y = tf.placeholder(tf.int32, (None, FLAGS.num_classes), name='y')
 kp_emb = tf.placeholder(tf.float32, name='kp_emb')
 kp_lstm = tf.placeholder(tf.float32, name='kp_lstm')
+tf_embed = None
 
 
 def pad_seq(inp):
@@ -132,6 +133,8 @@ def save_model(sess, epoch):
 
 
 def main():
+    global tf_embed
+
     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
     tf.logging.info("Loading dataset")
@@ -144,7 +147,8 @@ def main():
     tf.logging.info("{} validation examples".format(validation_data.get_length()))
 
     embed_obj = Embedding()
-    embed = embed_obj.construct_embeddings()
+    tf_embed = tf.placeholder(tf.float32, embed_obj.embed_shape, name='tf_embed')
+    embed = embed_obj.construct_embeddings(tf_embed)
 
     lstm_model = RecurrentModel()
     logits, cost = lstm_model.construct_model(x, x_len, output_mask, y, embed, kp_emb, kp_lstm, adv=FLAGS.adv_train)

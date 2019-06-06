@@ -14,8 +14,8 @@ class Embedding:
         self.embed_shape = (len(self.vocab_list) + 1, FLAGS.embedding_dims)
         self.embed = None
 
-    def construct_embeddings(self):
-        self.embed = tf.Variable(np.zeros(self.embed_shape), dtype=tf.float32, name='embedding',
+    def construct_embeddings(self, tf_embed):
+        self.embed = tf.Variable(tf_embed, dtype=tf.float32, name='embedding',
                                  trainable=FLAGS.train_embed)
         tf.logging.info("Word vectors will{} be trained on".format("" if FLAGS.train_embed else " not"))
         return self.embed
