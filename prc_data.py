@@ -1,13 +1,9 @@
 import json, os, random
 from utils import transformations as transf
 import pickle
-import string
-from pycontractions import Contractions
 from tqdm import tqdm
 from flags import FLAGS
 
-cont = None
-kill_words = ["", "uh"]
 random.seed(FLAGS.random_state)
 
 
@@ -27,29 +23,7 @@ def parse_json():
     for i in tqdm(range(len(temp_data)), ascii=True):
         f = temp_data[i]
         lab = int(f["label"])
-        txt = list(cont.expand_texts([f["text"]], precise=True))[0]
-
-        txt = txt.replace('-', ' ').lower()
-        if FLAGS.noun_rep:
-            txt = transf.process_sentence_noun_rep(txt)
-        elif FLAGS.full_tags:
-            txt = transf.process_sentence_full_tags(txt)
-        elif FLAGS.ner_spacy:
-            txt = transf.process_sentence_ner_spacy(txt)
-
-        words = txt.split(' ')
-        for j in range(len(words)):
-            words[j] = words[j].strip(string.punctuation)
-            if words[j].isdigit():
-                words[j] = "NUM"
-
-        txt = []
-        for word in words:
-            if word not in kill_words:
-                txt.append(word)
-
-        txt = ' '.join(txt)
-
+        txt = transf.transform_sentence_complete(f["text"])
         data_by_label[lab].append(txt)
 
     if FLAGS.undersample_NFS:
@@ -87,14 +61,7 @@ def write_pickle(df):
 
 
 def load_dependencies():
-    global cont
-
     transf.load_dependencies(FLAGS)
-    cont = Contractions(FLAGS.w2v_loc)
-
-    print("Loading contractions model...")
-    cont.load_models()
-    print("Model loaded.")
 
 
 def main():

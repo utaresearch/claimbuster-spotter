@@ -1,8 +1,14 @@
 import nltk
 import spacy
+import string
+import sys
+sys.path.append('..')
+from flags import FLAGS
 from pycontractions import Contractions
 
 nlp = None
+cont = None
+kill_words = ["", "uh"]
 spacy_to_nl = {
     "PERSON": "person",
     "NORP": "nationality",
@@ -79,24 +85,48 @@ def process_sentence_ner_spacy(sentence):
     return char_list_to_string(ret)
 
 
-def load_dependencies(args):
-    global nlp
+def transform_sentence_complete(sentence):
+    txt = list(cont.expand_texts([sentence], precise=True))[0]
+    txt = txt.replace('-', ' ').lower()
+    if FLAGS.noun_rep:
+        txt = process_sentence_noun_rep(txt)
+    elif FLAGS.full_tags:
+        txt = process_sentence_full_tags(txt)
+    elif FLAGS.ner_spacy:
+        txt = process_sentence_ner_spacy(txt)
+
+    words = txt.split(' ')
+    for j in range(len(words)):
+        words[j] = words[j].strip(string.punctuation)
+        if words[j].isdigit():
+            words[j] = "NUM"
+
+    txt = []
+    for word in words:
+        if word not in kill_words:
+            txt.append(word)
+
+    return ' '.join(txt)
+
+
+def load_dependencies():
+    global nlp, cont
 
     # Load NLTK deps
-    if args.noun_rep or args.full_tags or args.ner_spacy:
+    if FLAGS.noun_rep or FLAGS.full_tags or FLAGS.ner_spacy:
         print("Loading NLTK Dependencies...")
         nltk.download('punkt')
         nltk.download('averaged_perceptron_tagger')
         nltk.download('tagsets')
-        if args.ner_spacy:
+        if FLAGS.ner_spacy:
             print("Loading Spacy NER Tagger...")
             nlp = spacy.load("en_core_web_lg")
             print("Tagger loaded.")
         print("NLTK dependencies Loaded.")
 
     # Load word2vec model for contraction expansion
-    print("Loading model from " + args.w2v_loc)
-    cont = Contractions(args.w2v_loc)
+    print("Loading model from " + FLAGS.w2v_loc)
+    cont = Contractions(FLAGS.w2v_loc)
 
     try:
         cont.load_models()
