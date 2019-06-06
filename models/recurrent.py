@@ -22,7 +22,7 @@ class RecurrentModel:
     def fprop(self, x, x_len, output_mask, embed, kp_emb, kp_lstm, orig_embed=None, reg_loss=None, adv=False):
         if adv:
             assert (reg_loss is not None and orig_embed is not None)
-        return self.build_lstm(x, x_len, output_mask, embed, kp_emb, kp_lstm, reg_loss, adv)
+        return self.build_lstm(x, x_len, output_mask, embed, kp_emb, kp_lstm, orig_embed, reg_loss, adv)
 
     def build_lstm(self, x, x_len, output_mask, embed, kp_emb, kp_lstm, orig_embed, reg_loss, adv):
         var_scope_name = 'lstm{}'.format('_adv' if adv else '')
