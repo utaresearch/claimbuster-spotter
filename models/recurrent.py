@@ -25,7 +25,8 @@ class RecurrentModel:
         return self.build_lstm(x, x_len, output_mask, embed, kp_emb, kp_lstm, reg_loss, adv)
 
     def build_lstm(self, x, x_len, output_mask, embed, kp_emb, kp_lstm, reg_loss, adv):
-        with tf.variable_scope('lstm', reuse=tf.AUTO_REUSE):
+        var_scope_name = 'lstm{}'.format('_adv' if adv else '')
+        with tf.variable_scope(var_scope_name):
             x = tf.unstack(x, axis=1)
             for i in range(len(x)):
                 x[i] = tf.nn.embedding_lookup(embed, x[i])
