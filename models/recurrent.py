@@ -17,7 +17,7 @@ class RecurrentModel:
             yhat = self.fprop(x, x_len, output_mask, embed, kp_emb, kp_lstm, orig_embed, loss, adv=True)
             loss = self.adv_loss(y, yhat)
 
-        return yhat, loss
+        return yhat, tf.identity(loss, name='cost')
 
     def fprop(self, x, x_len, output_mask, embed, kp_emb, kp_lstm, orig_embed=None, reg_loss=None, adv=False):
         if adv:
