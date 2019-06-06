@@ -14,6 +14,7 @@ class RecurrentModel:
         loss = self.ce_loss(y, yhat)
 
         if adv:
+            tf.logging.info('ahhhhhhhhhhhhhhhhhhhhhhhhhhh')
             yhat = self.fprop(x, x_len, output_mask, embed, kp_emb, kp_lstm, loss, adv=True)
             loss = self.adv_loss(y, yhat)
 
