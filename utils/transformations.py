@@ -120,9 +120,7 @@ def transform_sentence_complete(sentence):
             else:
                 break
 
-        print(''.join(strar))
-
-        return stripped_away_front, ''.join(strar), stripped_away_back
+        return stripped_away_front, ''.join(strar), reversed(stripped_away_back)
 
     words = txt.split(' ')
     ret_words = []
