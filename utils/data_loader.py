@@ -176,18 +176,12 @@ class DataLoader:
                       [int(x[0]) + 1 for x in data], FLAGS.random_state)
         print('{} out of {} words were not found are defaulted to -1.'.format(fail_cnt, tot_cnt))
 
+        del embed_obj
         return ret
 
     @staticmethod
     def words_to_embeddings(embed_obj, complete):
-        ret = list()
-
-        ret.append([])
-        for i in range(len(complete)):
-            sentence = complete[i]
-            for word_idx in sentence:
-                ret[i].append(embed_obj.query(word_idx))
-
+        ret = [[embed_obj.query(word_idx) for word_idx in sentence] for sentence in complete]
         return ret
 
     @staticmethod
