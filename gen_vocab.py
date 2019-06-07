@@ -26,6 +26,8 @@ def main():
         print("Vocab files {} will also be sampled from".format(FLAGS.addition_vocab))
 
         for loc in FLAGS.addition_vocab:
+            if loc == FLAGS.vocab_loc:
+                continue
             with open(loc, 'rb') as f:
                 data = pickle.load(f)
                 np.concatenate((all_vocab, data))
