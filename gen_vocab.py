@@ -15,6 +15,9 @@ def main():
             print("Exiting...")
             exit()
 
+    if not os.path.exists(FLAGS.output_dir):
+        os.mkdir(FLAGS.output_dir)
+
     print("Parsing vocab information...")
 
     with open(FLAGS.vocab_loc, 'wb') as f:
