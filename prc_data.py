@@ -23,12 +23,8 @@ def parse_json():
     for i in tqdm(range(len(temp_data)), ascii=True):
         f = temp_data[i]
         lab = int(f["label"])
-        txt = transf.transform_sentence_complete(f["text"])
-        data_by_label[lab].append(txt)
-
-    if FLAGS.undersample_NFS:
-        random.shuffle(data_by_label[-1])
-        data_by_label[-1] = data_by_label[-1][:len(data_by_label[1])]
+        txt_embed = transf.transform_sentence_complete(f["text"])
+        data_by_label[lab].append(txt_embed)
 
     for key in data_by_label:
         for el in data_by_label[key]:

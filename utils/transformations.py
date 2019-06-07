@@ -2,12 +2,15 @@ import nltk
 import spacy
 import string
 import sys
+import pickle
 sys.path.append('..')
 from flags import FLAGS
 from pycontractions import Contractions
+from models.embeddings import EmbeddingHelper
 
 nlp = None
 cont = None
+embed_obj = None
 kill_words = ["", "uh"]
 spacy_to_nl = {
     "PERSON": "person",
@@ -131,11 +134,13 @@ def transform_sentence_complete(sentence):
         if str_back not in kill_words:
             ret_words.append(str_back)
 
-    return ' '.join(ret_words)
+    print(embed_obj.words_to_embeddings(ret_words))
+    exit()
+    return embed_obj.words_to_embeddings(ret_words)
 
 
 def load_dependencies():
-    global nlp, cont
+    global nlp, cont, embed_obj
 
     # Load NLTK deps
     if FLAGS.noun_rep or FLAGS.full_tags or FLAGS.ner_spacy:
@@ -159,6 +164,11 @@ def load_dependencies():
     except:
         raise Exception("Error: Model does not exist")
 
+    # Load embedding matrix
+    print('Initializing embedding matrix')
+    embed_obj = EmbeddingHelper()
+    print('Embedding matrix successfully initialized')
+
 
 def load_deps_dummy():
     global nlp
@@ -175,4 +185,4 @@ def load_deps_dummy():
 
 if __name__ == '__main__':
     load_deps_dummy()
-    print(process_sentence_ner_spacy('I like Kevin Meng because he has lots of $50 million.'))
+    print(process_sentence_ner_spacy('I like Donald Trump because he has lots of $50 million.'))

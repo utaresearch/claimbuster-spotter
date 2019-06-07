@@ -173,9 +173,7 @@ class DataLoader:
         fail_cnt = 0
         tot_cnt = 0
 
-        tf.logging.info('Initializing embedding matrix')
-        embed_obj = EmbeddingHelper()
-        tf.logging.info('Embedding matrix successfully initialized')
+
 
         ret = Dataset(DataLoader.words_to_embeddings(embed_obj, [[vocab_idx(ch) for ch in x[1].split(' ')] for x in data]),
                       [int(x[0]) + 1 for x in data], FLAGS.random_state)
@@ -185,10 +183,7 @@ class DataLoader:
         del embed_obj
         return ret
 
-    @staticmethod
-    def words_to_embeddings(embed_obj, complete):
-        ret = [[embed_obj.query(word_idx) for word_idx in sentence] for sentence in complete]
-        return ret
+
 
     @staticmethod
     def load_external_custom(custom_prc_data_loc, custom_vocab_loc):

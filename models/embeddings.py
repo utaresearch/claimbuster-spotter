@@ -112,6 +112,19 @@ class EmbeddingHelper:
     def query(self, word_idx):
         return self.embedding_matrix[word_idx]
 
+    def words_to_embeddings(self, word_list):
+        def vocab_idx(ch):
+            try:
+                return self.vocab_list.index(ch)
+            except:
+                return -1
+
+        return self.word_idx_to_embeddings([vocab_idx(z) for z in word_list])
+
+    def word_idx_to_embeddings(self, idx_list):
+        ret = [self.query(word_idx) for word_idx in idx_list]
+        return ret
+
     @staticmethod
     def create_embedding_matrix():
         fop = open(FLAGS.w2v_loc if FLAGS.embed_type == 0 else FLAGS.glove_loc, 'r')
