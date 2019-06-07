@@ -47,7 +47,6 @@ flags.DEFINE_float('learning_rate', 0.0001, 'Learning rate while during optimiat
 
 # Regularization
 flags.DEFINE_float('l2_reg_coeff', 0.001, 'If val > 0, use L2 Regularization on weights in graph')
-flags.DEFINE_float('max_grad_norm', 1.0, 'Clip the global gradient norm to this value.')
 flags.DEFINE_float('keep_prob_lstm', 0.7, 'Keep probability LSTM network.')
 
 # Embeddings
@@ -62,8 +61,8 @@ flags.DEFINE_bool('random_init_oov', True, 'Use np.random.normal init for unknow
 
 # Adversarial and virtual adversarial training parameters.
 flags.DEFINE_bool('adv_train', True, 'Train using adversarial perturbations')
-flags.DEFINE_float('perturb_norm_length', 5.0, 'Norm length of adversarial perturbation')
 flags.DEFINE_float('adv_coeff', 1.0, 'Coefficient of adversarial loss')
+flags.DEFINE_float('perturb_norm_length', 5.0, 'Norm length of adversarial perturbation')
 
 # Output stats
 flags.DEFINE_integer('num_classes', 3, 'Number of classes for classification')
