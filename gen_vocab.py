@@ -22,6 +22,8 @@ def main():
 
     with open(FLAGS.prc_data_loc, 'rb') as f:
         data = pickle.load(f)
+        print(get_vocab_information(data))
+        print(all_vocab)
         np.concatenate((all_vocab, get_vocab_information(data)))
 
     if len(FLAGS.addition_vocab) > 0:
