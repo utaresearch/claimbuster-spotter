@@ -8,6 +8,8 @@ sys.path.append('..')
 from flags import FLAGS
 from sklearn.utils import shuffle
 
+fail_cnt = 0
+
 
 class Dataset:
     x = []
