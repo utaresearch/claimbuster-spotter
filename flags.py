@@ -17,6 +17,7 @@ flags.DEFINE_string('data_dir', './data', 'Location of data')
 flags.DEFINE_integer('max_len', 200, 'Maximum length of input')
 flags.DEFINE_bool('smote_synthetic', False, '[NOT WORKING] Oversample imabalanced classes using imblearn')
 flags.DEFINE_bool('sklearn_oversample', True, 'Oversample underrepresented classes with sklearn')
+flags.DEFINE_list('addition_vocab', ['./data/disjoint_2000/vocab.pickle'], 'Additional corpuses to sample vocab data from')
 
 # Eval
 flags.DEFINE_bool('disjoint_data', True, 'Use custom non-train set data to evaluate model')
@@ -42,7 +43,7 @@ flags.DEFINE_integer('rnn_num_layers', 1, 'Number of LSTM layers.')
 flags.DEFINE_integer('rnn_cell_size', 256, 'Number of hidden units in the LSTM.')
 
 # Optimization
-flags.DEFINE_integer('max_steps', 500, 'Number of epochs to run.')
+flags.DEFINE_integer('max_steps', 300, 'Number of epochs to run.')
 flags.DEFINE_float('learning_rate', 0.0001, 'Learning rate while during optimiation.')
 
 # Regularization

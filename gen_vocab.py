@@ -1,3 +1,4 @@
+import numpy as np
 import os
 import pickle
 from utils.vocab import get_vocab_information
@@ -17,10 +18,24 @@ def main():
 
     print("Parsing vocab information...")
 
+    all_vocab = []
+
     with open(FLAGS.prc_data_loc, 'rb') as f:
         data = pickle.load(f)
+        np.concatenate((all_vocab, get_vocab_information(data)))
+
+    if len(FLAGS.addition_vocab) > 0:
+        print("Vocab files {} will also be sampled from".format(FLAGS.addition_vocab))
+
+        for loc in FLAGS.addition_vocab:
+            with open(loc, 'rb') as f:
+                data = pickle.load(f)
+                np.concatenate((all_vocab, get_vocab_information(data)))
+
+    all_vocab = sorted(all_vocab, key=lambda x: x[1], reverse=True)
+
     with open(FLAGS.vocab_loc, 'wb') as f:
-        pickle.dump(get_vocab_information(data), f)
+        pickle.dump(all_vocab, f)
 
     print("Completed.")
 
