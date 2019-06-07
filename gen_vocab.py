@@ -30,7 +30,7 @@ def main():
                 data = pickle.load(f)
                 np.concatenate((all_vocab, data))
 
-    all_vocab = sorted(all_vocab, key=lambda x: x[1], reverse=True)
+    all_vocab = sorted(list(set(all_vocab)), key=lambda x: x[1], reverse=True)
 
     with open(FLAGS.vocab_loc, 'wb') as f:
         pickle.dump(all_vocab, f)
