@@ -152,7 +152,7 @@ class DataLoader:
         with open(FLAGS.prc_data_loc, 'rb') as f:
             data = pickle.load(f)
         with open(FLAGS.vocab_loc, 'rb') as f:
-            vc = [x[0] for x in pickle.load(f)]
+            vc = pickle.load(f)
 
         return Dataset([[vc.index(ch) for ch in x[1].split(' ')] for x in data],
                        [int(x[0]) + 1 for x in data], FLAGS.random_state)
@@ -162,7 +162,7 @@ class DataLoader:
         with open(custom_prc_data_loc, 'rb') as f:
             data = pickle.load(f)
         with open(custom_vocab_loc, 'rb') as f:
-            vc = [x[0] for x in pickle.load(f)]
+            vc = pickle.load(f)
 
         default_vocab = DataLoader.get_default_vocab()
 
