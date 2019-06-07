@@ -115,6 +115,7 @@ class EmbeddingHelper:
     @staticmethod
     def create_embedding_matrix():
         fop = open(FLAGS.w2v_loc if FLAGS.embed_type == 0 else FLAGS.glove_loc, 'r')
+        fop.readline()  # flush out first line that denotes embedding dims
         ret = [[float(f) for f in line.split(' ')[1:]] for line in fop]
         fop.close()
 
