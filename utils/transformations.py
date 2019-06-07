@@ -88,8 +88,7 @@ def process_sentence_ner_spacy(sentence):
 
 def transform_sentence_complete(sentence):
     txt = list(cont.expand_texts([sentence], precise=True))[0]
-    # txt = txt.replace('-', ' ').lower()
-    txt = txt.lower()
+    txt = txt.replace('-', ' ')
 
     if FLAGS.noun_rep:
         txt = process_sentence_noun_rep(txt)
