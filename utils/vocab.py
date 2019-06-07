@@ -3,6 +3,7 @@ from flags import FLAGS
 
 def get_vocab_information(data):
     ret = {}
+    #bk
 
     for pair in data:
         words = pair[1].split(' ')
