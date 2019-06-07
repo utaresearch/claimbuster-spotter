@@ -7,7 +7,7 @@ from utils.data_loader import DataLoader
 from models.recurrent import RecurrentModel
 from flags import FLAGS
 
-x = tf.placeholder(tf.int32, (None, FLAGS.max_len, FLAGS.embedding_dims), name='x')
+x = tf.placeholder(tf.float32, (None, FLAGS.max_len, FLAGS.embedding_dims), name='x')
 x_len = tf.placeholder(tf.int32, (None,), name='x_len')
 output_mask = tf.placeholder(tf.bool, (None, FLAGS.max_len), name='output_mask')
 y = tf.placeholder(tf.int32, (None, FLAGS.num_classes), name='y')
