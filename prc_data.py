@@ -86,6 +86,7 @@ def main():
     random.shuffle(dl)
 
     write_pickle(dl)
+    print("Process successfully completed.")
 
 
 if __name__ == "__main__":
