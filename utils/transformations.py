@@ -116,6 +116,7 @@ def transform_sentence_complete(sentence):
                 lcount -= 1
             else:
                 break
+            lcount += 1
 
         return stripped_away_front, ''.join(strar), stripped_away_back[::-1]
 
