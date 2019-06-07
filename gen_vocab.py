@@ -28,7 +28,7 @@ def main():
         for loc in FLAGS.addition_vocab:
             with open(loc, 'rb') as f:
                 data = pickle.load(f)
-                np.concatenate((all_vocab, get_vocab_information(data)))
+                np.concatenate((all_vocab, data))
 
     all_vocab = sorted(all_vocab, key=lambda x: x[1], reverse=True)
 
