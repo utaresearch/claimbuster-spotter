@@ -134,8 +134,6 @@ def transform_sentence_complete(sentence):
         if str_back not in kill_words:
             ret_words.append(str_back)
 
-    print(embed_obj.words_to_embeddings(ret_words))
-    exit()
     return embed_obj.words_to_embeddings(ret_words)
 
 
