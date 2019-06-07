@@ -119,17 +119,22 @@ def transform_sentence_complete(sentence):
 
         return stripped_away_front, ''.join(strar), stripped_away_back[::-1]
 
+    def remove_possessive(st):
+        return st[:-2] if st.rfind("'s") == len(st) - 2 else st
+
     words = txt.split(' ')
     ret_words = []
     for j in range(len(words)):
         str_front, new_word, str_back = strip_chars(words[j], string.punctuation)
 
         if str_front not in kill_words:
-            ret_words.append(str_front)
+            for ch in str_front:
+                ret_words.append(ch)
         if new_word not in kill_words:
-            ret_words.append(new_word)
+            ret_words.append(remove_possessive(new_word))
         if str_back not in kill_words:
-            ret_words.append(str_back)
+            for ch in str_back:
+                ret_words.append(ch)
 
     return ' '.join(ret_words)
 
