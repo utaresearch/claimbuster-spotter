@@ -22,7 +22,8 @@ flags.DEFINE_list('addition_vocab', ['./data/disjoint_2000/vocab.pickle'], 'Addi
 # Eval
 flags.DEFINE_bool('disjoint_data', True, 'Use custom non-train set data to evaluate model')
 flags.DEFINE_string('custom_prc_data_loc', './data/disjoint_2000/prc_data.pickle', 'Location of custom data file')
-flags.DEFINE_string('custom_vocab_loc', './data/disjoint_2000/vocab.pickle', 'Location of custom vocab file')
+flags.DEFINE_string('custom_vocab_loc', './output/vocab.pickle', 'Location of custom vocab file')
+# flags.DEFINE_string('custom_vocab_loc', './data/disjoint_2000/vocab.pickle', 'Location of custom vocab file')
 
 
 flags.DEFINE_integer('stat_print_interval', 1, 'Numbers of epochs before stats are printed again')
