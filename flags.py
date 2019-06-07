@@ -10,7 +10,7 @@ flags.DEFINE_bool('ner_spacy', True, 'Named entity recognition with spaCy')
 
 # Base directories
 # flags.DEFINE_string('output_dir', './output', 'Location of outputs')
-flags.DEFINE_string('output_dir', './data/disjoint_2000/', 'Location of outputs')
+flags.DEFINE_string('output_dir', './data/disjoint_2000', 'Location of outputs')
 flags.DEFINE_string('data_dir', './data', 'Location of data')
 
 # Data
