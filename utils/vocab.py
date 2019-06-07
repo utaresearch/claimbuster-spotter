@@ -21,7 +21,7 @@ def get_embed_vocab_info():
     word_list = []
 
     with open(FLAGS.w2v_loc if FLAGS.embed_type == 0 else FLAGS.glove_loc, 'r') as f:
-        print(f.readline())  # flush first line of metadata
+        print(f.readline(), end=' | ', flush=True)  # flush first line of metadata
         for line in f:
             split_line = line.split()
             word = split_line[0]
