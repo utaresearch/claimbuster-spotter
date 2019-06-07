@@ -88,9 +88,6 @@ def main():
     print("Serializing and writing data...")
     write_pickle(dl)
 
-    print("Freeing large chunk of memory...")
-    del transf.embed_obj
-
     print("Process successfully completed.")
 
 

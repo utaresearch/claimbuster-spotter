@@ -14,18 +14,17 @@ class Embedding:
         self.embed_shape = (len(self.vocab_list) + 1, FLAGS.embedding_dims)
         self.embed = None
 
-    def construct_embeddings(self, tf_embed):
-        self.embed = tf.Variable(tf_embed, dtype=tf.float32, name='embedding',
+    def construct_embeddings(self):
+        self.embed = tf.Variable(np.zeros(self.embed_shape), dtype=tf.float32, name='embedding',
                                  trainable=FLAGS.train_embed)
-        tf.logging.info("Word vectors will{} be trained on".format("" if FLAGS.train_embed else " NOT"))
+        tf.logging.info("Word vectors will{} be trained on".format("" if FLAGS.train_embed else " not"))
         return self.embed
 
-    def init_embeddings(self, sess, tf_embed):
+    def init_embeddings(self, sess):
         w2v = tf.placeholder(tf.float32, shape=self.embed_shape)
         embed_init_op = self.embed.assign(w2v)
 
         sess.run(embed_init_op, feed_dict={
-            tf_embed: np.zeros(self.embed_shape),
             w2v: self.create_embedding_matrix(sess)
         })
 
@@ -45,9 +44,7 @@ class Embedding:
         embedding_matrix[-1] = np.zeros(FLAGS.embedding_dims)
 
         tf.logging.info("Loading word2vec model...")
-        assert FLAGS.embed_type == 0 or FLAGS.embed_type == 1
-        model = KeyedVectors.load_word2vec_format(
-            FLAGS.w2v_loc if FLAGS.embed_type == 0 else FLAGS.glove_loc, binary=False)
+        model = KeyedVectors.load_word2vec_format(FLAGS.w2v_loc, binary=True)
         tf.logging.info("Model loaded.")
 
         idx, fail_cnt, fail_words = 0, 0, []

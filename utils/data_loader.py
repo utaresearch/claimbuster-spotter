@@ -149,14 +149,33 @@ class DataLoader:
     def load_external():
         with open(FLAGS.prc_data_loc, 'rb') as f:
             data = pickle.load(f)
-        ret = Dataset([x[1] for x in data], [int(x[0]) + 1 for x in data], FLAGS.random_state)
-        return ret
+        with open(FLAGS.vocab_loc, 'rb') as f:
+            vc = [x[0] for x in pickle.load(f)]
+
+        return Dataset([[vc.index(ch) for ch in x[1].split(' ')] for x in data],
+                       [int(x[0]) + 1 for x in data], FLAGS.random_state)
 
     @staticmethod
     def load_external_custom(custom_prc_data_loc, custom_vocab_loc):
         with open(custom_prc_data_loc, 'rb') as f:
             data = pickle.load(f)
-        ret = Dataset([x[1] for x in data], [int(x[0]) + 1 for x in data], FLAGS.random_state)
+        with open(custom_vocab_loc, 'rb') as f:
+            vc = [x[0] for x in pickle.load(f)]
+
+        default_vocab = DataLoader.get_default_vocab()
+
+        def vocab_idx(ch):
+            global fail_cnt
+            try:
+                return default_vocab.index(ch)
+            except:
+                fail_cnt += 1
+                return -1
+
+        ret = Dataset([[vocab_idx(ch) for ch in x[1].split(' ')] for x in data],
+                      [int(x[0]) + 1 for x in data], FLAGS.random_state)
+
+        print('{} out of {} words were not found are defaulted to -1.'.format(fail_cnt, len(vc)))
         return ret
 
     @staticmethod

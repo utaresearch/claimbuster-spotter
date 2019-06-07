@@ -2,11 +2,9 @@ import nltk
 import spacy
 import string
 import sys
-import pickle
 sys.path.append('..')
 from flags import FLAGS
 from pycontractions import Contractions
-from models.embeddings import EmbeddingHelper
 
 nlp = None
 cont = None
@@ -134,7 +132,7 @@ def transform_sentence_complete(sentence):
         if str_back not in kill_words:
             ret_words.append(str_back)
 
-    return embed_obj.words_to_embeddings(ret_words)
+    return ' '.join(ret_words)
 
 
 def load_dependencies():
@@ -161,11 +159,6 @@ def load_dependencies():
         print("Model Loaded.")
     except:
         raise Exception("Error: Model does not exist")
-
-    # Load embedding matrix
-    print('Initializing embedding matrix')
-    embed_obj = EmbeddingHelper()
-    print('Embedding matrix successfully initialized')
 
 
 def load_deps_dummy():
