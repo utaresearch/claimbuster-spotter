@@ -120,7 +120,7 @@ def transform_sentence_complete(sentence):
         return stripped_away_front, ''.join(strar), stripped_away_back[::-1]
 
     def remove_possessive(st):
-        return st[:-2] if st.rfind("'s") == len(st) - 2 else st
+        return st[:-2] if st.rfind("'s") == len(st) - 3 else st
 
     words = txt.split(' ')
     ret_words = []
