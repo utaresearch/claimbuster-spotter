@@ -35,7 +35,7 @@ def main():
     with open(FLAGS.vocab_loc, 'wb') as f:
         pickle.dump(all_vocab, f)
 
-    print("Completed.")
+    print("Completed with {} vocabulary items.".format(len(all_vocab)))
 
 
 if __name__ == '__main__':
