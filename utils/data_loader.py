@@ -1,4 +1,3 @@
-import tensorflow as tf
 from imblearn.over_sampling import SMOTE
 from sklearn.utils import resample
 import numpy as np
@@ -8,11 +7,6 @@ import sys
 sys.path.append('..')
 from flags import FLAGS
 from sklearn.utils import shuffle
-from models.embeddings import EmbeddingHelper
-
-
-fail_cnt = 0
-tot_cnt = 0
 
 
 class Dataset:
@@ -153,62 +147,16 @@ class DataLoader:
 
     @staticmethod
     def load_external():
-        global fail_cnt, tot_cnt
-
         with open(FLAGS.prc_data_loc, 'rb') as f:
             data = pickle.load(f)
-        with open(FLAGS.vocab_loc, 'rb') as f:
-            vc = [x[0] for x in pickle.load(f)]
-
-        def vocab_idx(ch):
-            global fail_cnt, tot_cnt
-
-            tot_cnt += 1
-            try:
-                return vc.index(ch)
-            except:
-                fail_cnt += 1
-                return -1
-
-        fail_cnt = 0
-        tot_cnt = 0
-
-
-
-        ret = Dataset(DataLoader.words_to_embeddings(embed_obj, [[vocab_idx(ch) for ch in x[1].split(' ')] for x in data]),
-                      [int(x[0]) + 1 for x in data], FLAGS.random_state)
-
-        tf.logging.info('{} out of {} words were not found are defaulted to -1.'.format(fail_cnt, tot_cnt))
-
-        del embed_obj
+        ret = Dataset([x[1] for x in data], [int(x[0]) + 1 for x in data], FLAGS.random_state)
         return ret
-
-
 
     @staticmethod
     def load_external_custom(custom_prc_data_loc, custom_vocab_loc):
-        global fail_cnt
-
         with open(custom_prc_data_loc, 'rb') as f:
             data = pickle.load(f)
-        with open(custom_vocab_loc, 'rb') as f:
-            vc = [x[0] for x in pickle.load(f)]
-
-        default_vocab = DataLoader.get_default_vocab()
-
-        def vocab_idx(ch):
-            global fail_cnt
-            try:
-                return default_vocab.index(ch)
-            except:
-                fail_cnt += 1
-                return -1
-
-        fail_cnt = 0
-        ret = Dataset([[vocab_idx(ch) for ch in x[1].split(' ')] for x in data],
-                      [int(x[0]) + 1 for x in data], FLAGS.random_state)
-        print('{} out of {} words were not found are defaulted to -1.'.format(fail_cnt, len(vc)))
-
+        ret = Dataset([x[1] for x in data], [int(x[0]) + 1 for x in data], FLAGS.random_state)
         return ret
 
     @staticmethod
