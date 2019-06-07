@@ -184,4 +184,4 @@ class DataLoader:
     @staticmethod
     def get_default_vocab():
         with open(FLAGS.vocab_loc, 'rb') as f:
-            return [x[0] for x in pickle.load(f)]
+            return pickle.load(f)
