@@ -8,7 +8,7 @@ sys.path.append('..')
 from flags import FLAGS
 from sklearn.utils import shuffle
 
-fail_words = []
+fail_words = set()
 
 
 class Dataset:
@@ -171,7 +171,7 @@ class DataLoader:
             try:
                 return default_vocab.index(ch)
             except:
-                fail_words.append(ch)
+                fail_words.add(ch)
                 return -1
 
         ret = Dataset([[vocab_idx(ch) for ch in x[1].split(' ')] for x in data],
