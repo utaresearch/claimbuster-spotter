@@ -10,7 +10,7 @@ from flags import FLAGS
 
 class Embedding:
     def __init__(self):
-        self.vocab_list, self.vocab_freqs = self.get_vocab()
+        self.vocab_list = self.get_vocab()
         self.embed_shape = (len(self.vocab_list) + 1, FLAGS.embedding_dims)
         self.embed = None
 
@@ -97,13 +97,12 @@ class Embedding:
     @staticmethod
     def get_vocab():
         with open(FLAGS.vocab_loc, 'rb') as f:
-            data = pickle.load(f)
-        return [x[0] for x in data], [x[1] for x in data]
+            return pickle.load(f)
 
 
 class EmbeddingHelper:
     def __init__(self):
-        self.vocab_list, self.vocab_freqs = self.get_vocab()
+        self.vocab_list = self.get_vocab()
         self.embed_shape = (len(self.vocab_list) + 1, FLAGS.embedding_dims)
         self.embedding_matrix = self.create_embedding_matrix()
 
@@ -135,5 +134,4 @@ class EmbeddingHelper:
     @staticmethod
     def get_vocab():
         with open(FLAGS.vocab_loc, 'rb') as f:
-            data = pickle.load(f)
-        return [x[0] for x in data], [x[1] for x in data]
+            return pickle.load(f)

@@ -18,9 +18,13 @@ def main():
 
     print("Parsing vocab information...")
 
+    all_vocab = set()
+
     with open(FLAGS.prc_data_loc, 'rb') as f:
         data = pickle.load(f)
-        all_vocab = get_vocab_information(data)
+        temp_voc = get_vocab_information(data)
+        for word in temp_voc:
+            all_vocab.add(word)
 
     if len(FLAGS.addition_vocab) > 0:
         for loc in FLAGS.addition_vocab:
@@ -28,10 +32,11 @@ def main():
                 continue
             print("Sampling from {}".format(loc))
             with open(loc, 'rb') as f:
-                data = pickle.load(f)
-                np.concatenate((all_vocab, data))
+                temp_voc = pickle.load(f)
+                for word in temp_voc:
+                    all_vocab.add(word)
 
-    all_vocab = sorted(list(set(all_vocab)), key=lambda x: x[1], reverse=True)
+    all_vocab = list(all_vocab)
 
     with open(FLAGS.vocab_loc, 'wb') as f:
         pickle.dump(all_vocab, f)

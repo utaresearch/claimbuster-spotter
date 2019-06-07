@@ -2,18 +2,14 @@ from flags import FLAGS
 
 
 def get_vocab_information(data):
-    ret = {}
-    #bk
+    ret = set()
 
     for pair in data:
         words = pair[1].split(' ')
         for word in words:
-            if word in ret:
-                ret[word] += 1
-            else:
-                ret[word] = 1
+            ret.add(word)
 
-    return sorted(ret.items(), key=lambda x: x[1], reverse=True)
+    return list(ret)
 
 
 def get_embed_vocab_info():
