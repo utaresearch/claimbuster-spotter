@@ -24,7 +24,6 @@ flags.DEFINE_bool('disjoint_data', True, 'Use custom non-train set data to evalu
 flags.DEFINE_string('custom_prc_data_loc', './data/disjoint_2000/prc_data.pickle', 'Location of custom data file')
 flags.DEFINE_string('custom_vocab_loc', './data/disjoint_2000/vocab.pickle', 'Location of custom vocab file')
 
-
 flags.DEFINE_integer('stat_print_interval', 1, 'Numbers of epochs before stats are printed again')
 flags.DEFINE_integer('model_save_interval', 25, 'Numbers of epochs before model is saved again')
 
@@ -69,6 +68,7 @@ flags.DEFINE_float('perturb_norm_length', 20.0, 'Norm length of adversarial pert
 flags.DEFINE_integer('num_classes', 3, 'Number of classes for classification')
 
 # Training
+flags.DEFINE_bool('restore_and_continue', False, 'Restore previous training session and continue')
 flags.DEFINE_integer('batch_size', 512, 'Size of the batch.')
 
 # Locations (must be last due to customization)
