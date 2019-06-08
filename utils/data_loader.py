@@ -97,7 +97,7 @@ class DataLoader:
             # maj_len = max(len(c0), len(c1), len(c2))
             maj_len = len(c2)
             c0 = resample(c0, n_samples=int(maj_len * 2 * 2.5), random_state=FLAGS.random_state)
-            c1 = resample(c1, n_samples=int(maj_len * 2), random_state=FLAGS.random_state)
+            c1 = resample(c1, n_samples=int(maj_len * 2 * 0.95), random_state=FLAGS.random_state)
             c2 = resample(c2, n_samples=int(maj_len * 2 * 1.25), random_state=FLAGS.random_state)
 
             ret.x, ret.y = [], []
