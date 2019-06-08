@@ -58,7 +58,6 @@ flags.DEFINE_string('glove_loc', './data/glove/glove840b_gensim.txt', 'Location 
 flags.DEFINE_string('w2v_loc_bin', './data/word2vec/w2v3b_gensim.bin', 'Location of w2v embeddings in BINARY form')
 flags.DEFINE_bool('train_embed', False, 'Train on top of w2v embeddings')  # we don't have enough data to train embeddings
 flags.DEFINE_integer('embedding_dims', 300, 'Dimensions of embedded vector.')
-flags.DEFINE_bool('normalize_embeddings', False, 'Normalize word embeddings by vocab frequency')
 flags.DEFINE_bool('random_init_oov', True, 'Use np.random.normal init for unknown embeddings. 0-fill if False')
 
 # Adversarial and virtual adversarial training parameters.
@@ -70,7 +69,7 @@ flags.DEFINE_float('perturb_norm_length', 20.0, 'Norm length of adversarial pert
 flags.DEFINE_integer('num_classes', 3, 'Number of classes for classification')
 
 # Training
-flags.DEFINE_integer('batch_size', 256, 'Size of the batch.')
+flags.DEFINE_integer('batch_size', 512, 'Size of the batch.')
 
 # Locations (must be last due to customization)
 flags.DEFINE_string('model_dir', FLAGS.output_dir, 'Location of model save')
