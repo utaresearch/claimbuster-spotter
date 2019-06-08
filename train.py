@@ -195,7 +195,6 @@ def main():
                 epochs_trav = 0
 
 
-
             if epoch % FLAGS.model_save_interval == 0 and epoch != 0:
                 save_model(sess, epoch)
                 tf.logging.info('Model @ epoch {} saved'.format(epoch + 1))
