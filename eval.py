@@ -158,8 +158,8 @@ def main():
         eval_loss /= n_samples
         eval_acc /= n_samples
 
-        print(y_all)
-        print(pred_all)
+        print('Labels:', y_all)
+        print('Predic:', pred_all)
 
         tf.logging.info('Final stats | Loss: {:>7.4} Acc: {:>7.4f}% F1: {:>.4f}'.format(
             eval_loss, eval_acc * 100, f1score))
