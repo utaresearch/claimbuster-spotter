@@ -40,10 +40,10 @@ flags.DEFINE_integer('random_state', 59, 'State of pseudo-randomness')
 
 # Model architecture
 flags.DEFINE_integer('rnn_num_layers', 1, 'Number of LSTM layers.')
-flags.DEFINE_integer('rnn_cell_size', 128, 'Number of hidden units in the LSTM.')
+flags.DEFINE_integer('rnn_cell_size', 64, 'Number of hidden units in the LSTM.')
 
 # Optimization
-flags.DEFINE_integer('max_steps', 300, 'Number of epochs to run.')
+flags.DEFINE_integer('max_steps', 500, 'Number of epochs to run.')
 flags.DEFINE_float('learning_rate', 0.0001, 'Learning rate while during optimiation.')
 
 # Regularization
