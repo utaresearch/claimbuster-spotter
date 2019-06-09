@@ -131,14 +131,6 @@ def save_model(sess, epoch):
     saver.save(sess, os.path.join(FLAGS.output_dir, 'cb.ckpt'), global_step=epoch)
 
 
-def load_model(sess, graph):
-    tf.logging.info('Attempting to restore model for continued training.')
-
-    with graph.as_default():
-        saver = tf.train.Saver()
-        saver.restore(sess, tf.train.latest_checkpoint(FLAGS.output_dir))
-
-
 def main():
     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
@@ -151,8 +143,6 @@ def main():
     tf.logging.info("{} training examples".format(train_data.get_length()))
     tf.logging.info("{} validation examples".format(validation_data.get_length()))
 
-    graph = tf.get_default_graph()
-
     embed_obj = Embedding()
     embed = embed_obj.construct_embeddings()
 
@@ -164,13 +154,9 @@ def main():
     correct = tf.equal(tf.argmax(y, axis=1), tf.argmax(y_pred, axis=1))
     acc = tf.reduce_mean(tf.cast(correct, tf.float32), name='acc')
 
-    with tf.Session(graph=graph, config=tf.ConfigProto(allow_soft_placement=True)) as sess:
+    with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as sess:
         sess.run(tf.global_variables_initializer())
-
-        if not FLAGS.restore_and_continue:
-            embed_obj.init_embeddings(sess)
-        else:
-            load_model(sess, graph)
+        embed_obj.init_embeddings(sess)
 
         start = time.time()
         epochs_trav = 0
