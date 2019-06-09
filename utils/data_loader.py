@@ -73,7 +73,7 @@ class DataLoader:
             maj_len = len(c2)
             c0 = resample(c0, n_samples=int(maj_len * 2 * 2.50), random_state=FLAGS.random_state)
             c1 = resample(c1, n_samples=int(maj_len * 2 * 0.90), random_state=FLAGS.random_state)
-            c2 = resample(c2, n_samples=int(maj_len * 2 * 1.25), random_state=FLAGS.random_state)
+            c2 = resample(c2, n_samples=int(maj_len * 2 * 1.50), random_state=FLAGS.random_state)
 
             ret.x, ret.y = [], []
             del self.data.x[:FLAGS.train_examples]
