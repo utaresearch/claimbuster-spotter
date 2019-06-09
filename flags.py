@@ -79,6 +79,4 @@ flags.DEFINE_string('raw_data_loc', '{}/data_small.json'.format(FLAGS.data_dir),
 
 
 def print_flags():
-	for key, value in FLAGS.flag_values_dict():
-		print('{} {}'.format(key, value), end=' | ')
-	print()
+    print(FLAGS.flag_values_dict())
