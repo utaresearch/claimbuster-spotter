@@ -85,12 +85,12 @@ def load_model(sess, graph):
         saver.restore(sess, tf.train.latest_checkpoint(FLAGS.output_dir))
 
         # inputs
-        # x_1 = graph.get_tensor_by_name('x:0')
-        # x_len_1 = graph.get_tensor_by_name('x_len:0')
-        # output_mask_1 = graph.get_tensor_by_name('output_mask:0')
-        # y_1 = graph.get_tensor_by_name('y:0')
-        # kp_emb_1 = graph.get_tensor_by_name('kp_emb:0')
-        # kp_lstm_1 = graph.get_tensor_by_name('kp_lstm:0')
+        x_1 = graph.get_tensor_by_name('x:0')
+        x_len_1 = graph.get_tensor_by_name('x_len:0')
+        output_mask_1 = graph.get_tensor_by_name('output_mask:0')
+        y_1 = graph.get_tensor_by_name('y:0')
+        kp_emb_1 = graph.get_tensor_by_name('kp_emb:0')
+        kp_lstm_1 = graph.get_tensor_by_name('kp_lstm:0')
 
         # outputs
         cost = graph.get_tensor_by_name('cost:0')
