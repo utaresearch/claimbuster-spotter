@@ -45,10 +45,7 @@ class DataLoader:
         self.post_process_flags()
 
     def conv_3_to_2(self):
-        orig_data = Dataset(self.data.x, self.data.y, self.data.random_state)
-        self.data = Dataset(self.data.x, [(1 if orig_data.y[i] == 2 else 0) for i in range(len(orig_data.y))],
-                            random_state=FLAGS.random_state)
-        del orig_data
+        self.data.y = [(1 if self.data.y[i] == 2 else 0) for i in range(len(self.data.y))]
 
     def load_training_data(self):
         ret = Dataset([], [], FLAGS.random_state)
