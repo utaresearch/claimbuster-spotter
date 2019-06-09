@@ -132,8 +132,6 @@ def save_model(sess, epoch):
 
 
 def load_model(sess, graph):
-    global x, x_len, output_mask, y, kp_emb, kp_lstm
-
     tf.logging.info('Attempting to restore model for continued training.')
 
     with graph.as_default():
@@ -153,6 +151,8 @@ def main():
     tf.logging.info("{} training examples".format(train_data.get_length()))
     tf.logging.info("{} validation examples".format(validation_data.get_length()))
 
+    graph = tf.get_default_graph()
+
     embed_obj = Embedding()
     embed = embed_obj.construct_embeddings()
 
@@ -164,7 +164,6 @@ def main():
     correct = tf.equal(tf.argmax(y, axis=1), tf.argmax(y_pred, axis=1))
     acc = tf.reduce_mean(tf.cast(correct, tf.float32), name='acc')
 
-    graph = tf.Graph()
     with tf.Session(graph=graph, config=tf.ConfigProto(allow_soft_placement=True)) as sess:
         sess.run(tf.global_variables_initializer())
 

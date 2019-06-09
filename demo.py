@@ -120,7 +120,7 @@ def main():
     load_ext_vocab()
     transf.load_dependencies()
 
-    graph = tf.Graph()
+    graph = tf.get_default_graph()
     with tf.Session(graph=graph, config=tf.ConfigProto(allow_soft_placement=True)) as sess:
         sess.run(tf.global_variables_initializer())
         y_pred = load_model(sess, graph)
