@@ -11,7 +11,7 @@ x_len = tf.placeholder(tf.int32, (None,), name='x_len')
 output_mask = tf.placeholder(tf.bool, (None, FLAGS.max_len), name='output_mask')
 y = tf.placeholder(tf.int32, (None, FLAGS.num_classes), name='y')
 kp_emb_1 = tf.placeholder(tf.float32, name='kp_emb_1')
-kp_lstm = tf.placeholder(tf.float32, name='kp_lstm')
+kp_lstm_1 = tf.placeholder(tf.float32, name='kp_lstm_1')
 
 
 def pad_seq(inp):
@@ -36,7 +36,7 @@ def eval_stats(sess, batch_x, batch_y, cost, acc, y_pred):
             output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
             y: one_hot(batch_y),
             kp_emb_1: 1.0,
-            kp_lstm: 1.0
+            kp_lstm_1: 1.0
         }
     )
     eval_acc = sess.run(
@@ -47,7 +47,7 @@ def eval_stats(sess, batch_x, batch_y, cost, acc, y_pred):
             output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
             y: one_hot(batch_y),
             kp_emb_1: 1.0,
-            kp_lstm: 1.0
+            kp_lstm_1: 1.0
         }
     )
     preds = sess.run(
@@ -58,7 +58,7 @@ def eval_stats(sess, batch_x, batch_y, cost, acc, y_pred):
             output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
             y: one_hot(batch_y),
             kp_emb_1: 1.0,
-            kp_lstm: 1.0
+            kp_lstm_1: 1.0
         }
     )
 
@@ -66,7 +66,7 @@ def eval_stats(sess, batch_x, batch_y, cost, acc, y_pred):
 
 
 def load_model(sess, graph):
-    global x, x_len, output_mask, y, kp_emb_1, kp_lstm
+    global x, x_len, output_mask, y, kp_emb_1, kp_lstm_1
 
     def get_last_save(scan_loc):
         ret_ar = []
@@ -90,7 +90,7 @@ def load_model(sess, graph):
         output_mask = graph.get_tensor_by_name('output_mask:0')
         y = graph.get_tensor_by_name('y:0')
         kp_emb_1 = graph.get_tensor_by_name('kp_emb:0')
-        kp_lstm = graph.get_tensor_by_name('kp_lstm:0')
+        kp_lstm_1 = graph.get_tensor_by_name('kp_lstm:0')
 
         # outputs
         cost = graph.get_tensor_by_name('cost:0')
