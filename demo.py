@@ -29,21 +29,11 @@ def one_hot(a):
 def load_model(sess, graph):
     global x, x_len, output_mask, y, kp_emb, kp_lstm
 
-    def get_last_save(scan_loc):
-        ret_ar = []
-        directory = os.fsencode(scan_loc)
-        for fstr in os.listdir(directory):
-            if '.meta' in os.fsdecode(fstr) and 'cb.ckpt-' in os.fsdecode(fstr):
-                ret_ar.append(os.fsdecode(fstr))
-        ret_ar.sort()
-        return ret_ar[-1]
-
-    model_dir = os.path.join(FLAGS.model_dir, get_last_save(FLAGS.model_dir))
-    tf.logging.info('Attempting to restore from {}'.format(model_dir))
+    tf.logging.info('Attempting to restore from {}'.format(FLAGS.output_dir))
 
     with graph.as_default():
-        saver = tf.train.import_meta_graph(model_dir)
-        saver.restore(sess, tf.train.latest_checkpoint(FLAGS.model_dir))
+        saver = tf.train.Saver()
+        saver.restore(sess, tf.train.latest_checkpoint(FLAGS.output_dir))
 
         # inputs
         x = graph.get_tensor_by_name('x:0')
@@ -121,6 +111,8 @@ def main():
     transf.load_dependencies()
 
     graph = tf.get_default_graph()
+    _ = tf.Variable(name='_dummy_var')
+
     with tf.Session(graph=graph, config=tf.ConfigProto(allow_soft_placement=True)) as sess:
         sess.run(tf.global_variables_initializer())
         y_pred = load_model(sess, graph)
