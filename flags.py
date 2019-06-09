@@ -76,3 +76,9 @@ flags.DEFINE_string('vocab_loc', '{}/vocab.pickle'.format(FLAGS.output_dir), 'Pa
 flags.DEFINE_string('prc_data_loc', '{}/prc_data.pickle'.format(FLAGS.output_dir), 'Location of processed data')
 flags.DEFINE_string('raw_data_loc', '{}/data_small.json'.format(FLAGS.data_dir), 'Location of raw data')
 # flags.DEFINE_string('raw_data_loc', './data/disjoint_2000.json', 'Location of raw data')
+
+
+def print_flags():
+	for key, value in FLAGS.flag_values_dict():
+		print('{} {}'.format(key, value), end=' | ')
+    print()

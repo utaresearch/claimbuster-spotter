@@ -6,7 +6,7 @@ import os
 from utils.data_loader import DataLoader
 from models.recurrent import RecurrentModel
 from models.embeddings import Embedding
-from flags import FLAGS
+from flags import FLAGS, print_flags
 
 x = tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x')
 x_len = tf.placeholder(tf.int32, (None,), name='x_len')
@@ -133,6 +133,8 @@ def save_model(sess, epoch):
 
 def main():
     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+
+    print_flags()
 
     tf.logging.info("Loading dataset")
     data_load = DataLoader()
