@@ -31,8 +31,14 @@ def load_model(sess, graph):
 
     tf.logging.info('Attempting to restore from {}'.format(FLAGS.output_dir))
 
+    def get_save(scan_loc):
+        directory = os.fsencode(scan_loc)
+        for fstr in os.listdir(directory):
+            if '.meta' in os.fsdecode(fstr) and 'cb.ckpt-' in os.fsdecode(fstr):
+                return os.fsdecode(fstr)
+
     with graph.as_default():
-        saver = tf.train.Saver()
+        saver = tf.train.import_meta_graph(get_save(FLAGS.output_dir))
         saver.restore(sess, tf.train.latest_checkpoint(FLAGS.output_dir))
 
         # inputs
@@ -111,8 +117,6 @@ def main():
     transf.load_dependencies()
 
     graph = tf.get_default_graph()
-    _ = tf.Variable(0, name='dummy_var')
-
     with tf.Session(graph=graph, config=tf.ConfigProto(allow_soft_placement=True)) as sess:
         sess.run(tf.global_variables_initializer())
         y_pred = load_model(sess, graph)
