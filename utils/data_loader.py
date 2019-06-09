@@ -78,10 +78,7 @@ class DataLoader:
             del self.data.y[:FLAGS.train_examples]
 
             for lab in range(len(classes)):
-                print(lab)
-                print('--------------------------')
                 for inp_x in classes[lab]:
-                    print(inp_x)
                     ret.x.append(inp_x)
                     ret.y.append(lab)
                     self.data.x.insert(0, inp_x)
