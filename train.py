@@ -134,37 +134,11 @@ def save_model(sess, epoch):
 def load_model(sess, graph):
     global x, x_len, output_mask, y, kp_emb, kp_lstm
 
-    def get_last_save(scan_loc):
-        ret_ar = []
-        directory = os.fsencode(scan_loc)
-        for fstr in os.listdir(directory):
-            if '.meta' in os.fsdecode(fstr) and 'cb.ckpt-' in os.fsdecode(fstr):
-                ret_ar.append(os.fsdecode(fstr))
-        ret_ar.sort()
-        return ret_ar[-1]
-
-    model_dir = os.path.join(FLAGS.model_dir, get_last_save(FLAGS.model_dir))
     tf.logging.info('Attempting to restore model for continued training.')
 
     with graph.as_default():
-        saver = tf.train.import_meta_graph(model_dir)
-        saver.restore(sess, tf.train.latest_checkpoint(FLAGS.model_dir))
-
-        # inputs
-        x = graph.get_tensor_by_name('x:0')
-        x_len = graph.get_tensor_by_name('x_len:0')
-        output_mask = graph.get_tensor_by_name('output_mask:0')
-        y = graph.get_tensor_by_name('y:0')
-        kp_emb = graph.get_tensor_by_name('kp_emb:0')
-        kp_lstm = graph.get_tensor_by_name('kp_lstm:0')
-
-        # outputs
-        cost = graph.get_tensor_by_name('cost:0')
-        y_pred = graph.get_tensor_by_name('y_pred:0')
-        acc = graph.get_tensor_by_name('acc:0')
-
-        tf.logging.info('Model successfully restored.')
-        return cost, y_pred, acc
+        saver = tf.train.Saver()
+        saver.restore(sess, tf.train.latest_checkpoint(FLAGS.output_dir))
 
 
 def main():
@@ -197,8 +171,7 @@ def main():
         if not FLAGS.restore_and_continue:
             embed_obj.init_embeddings(sess)
         else:
-            cost, y_pred, acc = load_model(sess, graph)
-            optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(cost)
+            load_model(sess, graph)
 
         start = time.time()
         epochs_trav = 0
