@@ -28,8 +28,8 @@ def one_hot(a):
 def eval_stats(sess, batch_x, batch_y, cost, acc, y_pred):
     if len(batch_x) == 0 and len(batch_y) == 0:
         return 0.0, 0.0, 0.0
-    eval_loss = sess.run(
-        cost,
+    eval_acc = sess.run(
+        acc,
         feed_dict={
             x_1: pad_seq(batch_x),
             x_len_1: [len(el) for el in batch_x],
@@ -39,8 +39,8 @@ def eval_stats(sess, batch_x, batch_y, cost, acc, y_pred):
             kp_lstm_1: 1.0
         }
     )
-    eval_acc = sess.run(
-        acc,
+    eval_loss = sess.run(
+        cost,
         feed_dict={
             x_1: pad_seq(batch_x),
             x_len_1: [len(el) for el in batch_x],
