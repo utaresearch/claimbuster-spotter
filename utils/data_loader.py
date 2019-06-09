@@ -70,7 +70,8 @@ class DataLoader:
                 classes[2] = resample(classes[2], n_samples=int(maj_len * 2 * 1.50), random_state=FLAGS.random_state)
             else:
                 maj_len = len(classes[0])
-                print(maj_len)
+                print(len(classes[0]))
+                print(len(classes[1]))
                 # classes[0] = resample(classes[0], n_samples=int(maj_len), random_state=FLAGS.random_state)
                 classes[1] = resample(classes[1], n_samples=int(maj_len), random_state=FLAGS.random_state)
 
