@@ -165,7 +165,7 @@ def main():
         tf.logging.info('Final stats | Loss: {:>7.4} Acc: {:>7.4f}% F1: {:>.4f}'.format(
             eval_loss, eval_acc * 100, f1score))
 
-        target_names = ['NFS', 'UFS', 'CFS']
+        target_names = (['NFS', 'UFS', 'CFS'] if FLAGS.num_classes == 3 else ['NFS/UFS', 'CFS'])
         print(classification_report(y_all, pred_all, target_names=target_names))
 
 
