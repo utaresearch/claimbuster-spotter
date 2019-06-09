@@ -48,6 +48,7 @@ class DataLoader:
         orig_data = Dataset(self.data.x, self.data.y, self.data.random_state)
         self.data = Dataset(self.data.x, [(1 if orig_data.y[i] == 2 else 0) for i in range(len(orig_data.y))],
                             random_state=FLAGS.random_state)
+        del orig_data
 
     def load_training_data(self):
         ret = Dataset([], [], FLAGS.random_state)
