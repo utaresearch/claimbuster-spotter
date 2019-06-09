@@ -74,7 +74,7 @@ def load_model(sess, graph):
         directory = os.fsencode(scan_loc)
         for fstr in os.listdir(directory):
             if '.meta' in os.fsdecode(fstr) and 'cb.ckpt-' in os.fsdecode(fstr):
-                return os.fsdecode(fstr)
+                return os.path.join(FLAGS.output_dir, os.fsdecode(fstr))
 
     with graph.as_default():
         saver = tf.train.import_meta_graph(get_save(FLAGS.output_dir))
