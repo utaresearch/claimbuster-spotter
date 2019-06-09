@@ -7,11 +7,11 @@ from sklearn.metrics import f1_score, classification_report
 from flags import FLAGS
 
 x_1 = tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x')
-x_len_1 = tf.placeholder(tf.int32, (None,), name='x_len_1')
-output_mask_1 = tf.placeholder(tf.bool, (None, FLAGS.max_len), name='output_mask_1')
+x_len_1 = tf.placeholder(tf.int32, (None,), name='x_len')
+output_mask_1 = tf.placeholder(tf.bool, (None, FLAGS.max_len), name='output_mask')
 y_1 = tf.placeholder(tf.int32, (None, FLAGS.num_classes), name='y')
-kp_emb_1 = tf.placeholder(tf.float32, name='kp_emb_1')
-kp_lstm_1 = tf.placeholder(tf.float32, name='kp_lstm_1')
+kp_emb_1 = tf.placeholder(tf.float32, name='kp_emb')
+kp_lstm_1 = tf.placeholder(tf.float32, name='kp_lstm')
 
 
 def pad_seq(inp):
