@@ -68,7 +68,7 @@ class DataLoader:
             else:
                 maj_len = len(classes[0])
                 # classes[0] = resample(classes[0], n_samples=int(maj_len), random_state=FLAGS.random_state)
-                classes[1] = resample(classes[1], n_samples=int(maj_len * 0.75), random_state=FLAGS.random_state)
+                classes[1] = resample(classes[1], n_samples=int(maj_len * 0.5), random_state=FLAGS.random_state)
 
             ret.x, ret.y = [], []
             del self.data.x[:FLAGS.train_examples]
