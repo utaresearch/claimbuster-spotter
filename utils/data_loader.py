@@ -57,10 +57,7 @@ class DataLoader:
             ret.x.append(self.data.x[i])
             ret.y.append(self.data.y[i])
 
-        if FLAGS.smote_synthetic:
-            sm = SMOTE(random_state=FLAGS.random_state, ratio=1.0)
-            ret.x, ret.y = sm.fit_sample(ret.x, ret.y)
-        elif FLAGS.sklearn_oversample:
+        if FLAGS.sklearn_oversample:
             classes = [[] for _ in range(FLAGS.num_classes)]
 
             for i in range(len(ret.x)):

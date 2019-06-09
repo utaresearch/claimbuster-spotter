@@ -15,7 +15,6 @@ flags.DEFINE_string('data_dir', './data', 'Location of data')
 
 # Data
 flags.DEFINE_integer('max_len', 200, 'Maximum length of input')
-flags.DEFINE_bool('smote_synthetic', False, '[NOT WORKING] Oversample imabalanced classes using imblearn')
 flags.DEFINE_bool('sklearn_oversample', True, 'Oversample underrepresented classes with sklearn')
 flags.DEFINE_list('addition_vocab', ['./data/disjoint_2000/vocab.pickle'], 'Additional corpuses to sample vocab data from')
 
