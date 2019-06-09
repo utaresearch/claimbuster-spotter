@@ -44,9 +44,10 @@ class DataLoader:
         self.data.shuffle()
         self.post_process_flags()
 
-    # @TODO implement this
     def conv_3_to_2(self):
-        pass
+        orig_data = Dataset(self.data.x, self.data.y, self.data.random_state)
+        self.data = Dataset(self.data.x, [(1 if orig_data.y[i] == 2 else 0) for i in range(len(orig_data.y))],
+                            random_state=FLAGS.random_state)
 
     def load_training_data(self):
         ret = Dataset([], [], FLAGS.random_state)
@@ -59,30 +60,31 @@ class DataLoader:
             sm = SMOTE(random_state=FLAGS.random_state, ratio=1.0)
             ret.x, ret.y = sm.fit_sample(ret.x, ret.y)
         elif FLAGS.sklearn_oversample:
-            c0, c1, c2 = [], [], []
+            classes = [[] for _ in range(FLAGS.num_classes)]
 
             for i in range(len(ret.x)):
-                if ret.y[i] == 0:
-                    c0.append((ret.x[i], ret.y[i]))
-                elif ret.y[i] == 1:
-                    c1.append((ret.x[i], ret.y[i]))
-                elif ret.y[i] == 2:
-                    c2.append((ret.x[i], ret.y[i]))
+                classes[ret.y[i]].append(ret.x[i])
 
-            # maj_len = max(len(c0), len(c1), len(c2))
-            maj_len = len(c2)
-            c0 = resample(c0, n_samples=int(maj_len * 2 * 2.50), random_state=FLAGS.random_state)
-            c1 = resample(c1, n_samples=int(maj_len * 2 * 0.90), random_state=FLAGS.random_state)
-            c2 = resample(c2, n_samples=int(maj_len * 2 * 1.50), random_state=FLAGS.random_state)
+            if FLAGS.num_classes == 3:
+                maj_len = len(classes[2])
+                classes[0] = resample(classes[0], n_samples=int(maj_len * 2 * 2.50), random_state=FLAGS.random_state)
+                classes[1] = resample(classes[1], n_samples=int(maj_len * 2 * 0.90), random_state=FLAGS.random_state)
+                classes[2] = resample(classes[2], n_samples=int(maj_len * 2 * 1.50), random_state=FLAGS.random_state)
+            else:
+                maj_len = len(classes[0])
+                # classes[0] = resample(classes[0], n_samples=int(maj_len), random_state=FLAGS.random_state)
+                classes[1] = resample(classes[1], n_samples=int(maj_len), random_state=FLAGS.random_state)
 
             ret.x, ret.y = [], []
             del self.data.x[:FLAGS.train_examples]
             del self.data.y[:FLAGS.train_examples]
-            for el in np.concatenate((c0, c1, c2)):
-                ret.x.append(el[0])
-                ret.y.append(el[1])
-                self.data.x.insert(0, el[0])
-                self.data.y.insert(0, el[1])
+
+            for lab in range(len(classes)):
+                for inp_x in classes[lab]:
+                    ret.x.append(inp_x)
+                    ret.y.append(lab)
+                    self.data.x.insert(0, inp_x)
+                    self.data.y.insert(0, lab)
 
             FLAGS.total_examples += ret.get_length() - FLAGS.train_examples
             FLAGS.train_examples = ret.get_length()
