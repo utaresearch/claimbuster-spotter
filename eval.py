@@ -6,12 +6,12 @@ from utils.data_loader import DataLoader
 from sklearn.metrics import f1_score, classification_report
 from flags import FLAGS
 
-x_1 = tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x')
-x_len_1 = tf.placeholder(tf.int32, (None,), name='x_len')
-output_mask_1 = tf.placeholder(tf.bool, (None, FLAGS.max_len), name='output_mask')
-y_1 = tf.placeholder(tf.int32, (None, FLAGS.num_classes), name='y')
-kp_emb_1 = tf.placeholder(tf.float32, name='kp_emb')
-kp_lstm_1 = tf.placeholder(tf.float32, name='kp_lstm')
+x = tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x')
+x_len = tf.placeholder(tf.int32, (None,), name='x_len')
+output_mask = tf.placeholder(tf.bool, (None, FLAGS.max_len), name='output_mask')
+y = tf.placeholder(tf.int32, (None, FLAGS.num_classes), name='y')
+kp_emb = tf.placeholder(tf.float32, name='kp_emb')
+kp_lstm = tf.placeholder(tf.float32, name='kp_lstm')
 
 
 def pad_seq(inp):
@@ -28,37 +28,37 @@ def one_hot(a):
 def eval_stats(sess, batch_x, batch_y, cost, acc, y_pred):
     if len(batch_x) == 0 and len(batch_y) == 0:
         return 0.0, 0.0, 0.0
-    eval_acc = sess.run(
-        acc,
-        feed_dict={
-            x_1: pad_seq(batch_x),
-            x_len_1: [len(el) for el in batch_x],
-            output_mask_1: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
-            y_1: one_hot(batch_y),
-            kp_emb_1: 1.0,
-            kp_lstm_1: 1.0
-        }
-    )
     eval_loss = sess.run(
         cost,
         feed_dict={
-            x_1: pad_seq(batch_x),
-            x_len_1: [len(el) for el in batch_x],
-            output_mask_1: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
-            y_1: one_hot(batch_y),
-            kp_emb_1: 1.0,
-            kp_lstm_1: 1.0
+            x: pad_seq(batch_x),
+            x_len: [len(el) for el in batch_x],
+            output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
+            y: one_hot(batch_y),
+            kp_emb: 1.0,
+            kp_lstm: 1.0
+        }
+    )
+    eval_acc = sess.run(
+        acc,
+        feed_dict={
+            x: pad_seq(batch_x),
+            x_len: [len(el) for el in batch_x],
+            output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
+            y: one_hot(batch_y),
+            kp_emb: 1.0,
+            kp_lstm: 1.0
         }
     )
     preds = sess.run(
         y_pred,
         feed_dict={
-            x_1: pad_seq(batch_x),
-            x_len_1: [len(el) for el in batch_x],
-            output_mask_1: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
-            y_1: one_hot(batch_y),
-            kp_emb_1: 1.0,
-            kp_lstm_1: 1.0
+            x: pad_seq(batch_x),
+            x_len: [len(el) for el in batch_x],
+            output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
+            y: one_hot(batch_y),
+            kp_emb: 1.0,
+            kp_lstm: 1.0
         }
     )
 
@@ -66,7 +66,7 @@ def eval_stats(sess, batch_x, batch_y, cost, acc, y_pred):
 
 
 def load_model(sess, graph):
-    global x_1, x_len_1, output_mask_1, y_1, kp_emb_1, kp_lstm_1
+    global x, x_len, output_mask, y, kp_emb, kp_lstm
 
     def get_last_save(scan_loc):
         ret_ar = []
@@ -85,12 +85,12 @@ def load_model(sess, graph):
         saver.restore(sess, tf.train.latest_checkpoint(FLAGS.output_dir))
 
         # inputs
-        x_1 = graph.get_tensor_by_name('x:0')
-        x_len_1 = graph.get_tensor_by_name('x_len:0')
-        output_mask_1 = graph.get_tensor_by_name('output_mask:0')
-        y_1 = graph.get_tensor_by_name('y:0')
-        kp_emb_1 = graph.get_tensor_by_name('kp_emb:0')
-        kp_lstm_1 = graph.get_tensor_by_name('kp_lstm:0')
+        x = graph.get_tensor_by_name('x:0')
+        x_len = graph.get_tensor_by_name('x_len:0')
+        output_mask = graph.get_tensor_by_name('output_mask:0')
+        y = graph.get_tensor_by_name('y:0')
+        kp_emb = graph.get_tensor_by_name('kp_emb:0')
+        kp_lstm = graph.get_tensor_by_name('kp_lstm:0')
 
         # outputs
         cost = graph.get_tensor_by_name('cost:0')
@@ -125,12 +125,13 @@ def main():
     test_data = data_load.load_all_data() if FLAGS.disjoint_data else data_load.load_testing_data()
     tf.logging.info("{} testing examples".format(test_data.get_length()))
 
-    graph = tf.get_default_graph()
+    graph = tf.reset_default_graph()
     with tf.Session(graph=graph, config=tf.ConfigProto(allow_soft_placement=True)) as sess:
         sess.run(tf.global_variables_initializer())
         cost, y_pred, acc = load_model(sess, graph)
 
-        n_batches = math.ceil(float(FLAGS.total_examples if FLAGS.disjoint_data else FLAGS.test_examples) / float(FLAGS.batch_size))
+        n_batches = math.ceil(
+            float(FLAGS.total_examples if FLAGS.disjoint_data else FLAGS.test_examples) / float(FLAGS.batch_size))
 
         n_samples = 0
         eval_loss = 0.0
