@@ -116,7 +116,7 @@ def main():
     tf.logging.info("{} testing examples".format(test_data.get_length()))
 
     graph = tf.get_default_graph()
-    _ = tf.Variable(name='_dummy_var')
+    _ = tf.Variable(0, name='_dummy_var')
 
     with tf.Session(graph=graph, config=tf.ConfigProto(allow_soft_placement=True)) as sess:
         sess.run(tf.global_variables_initializer())
