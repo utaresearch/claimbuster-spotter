@@ -39,7 +39,7 @@ flags.DEFINE_integer('random_state', 59, 'State of pseudo-randomness')
 
 # Model architecture
 flags.DEFINE_integer('rnn_num_layers', 1, 'Number of LSTM layers.')
-flags.DEFINE_integer('rnn_cell_size', 32, 'Number of hidden units in the LSTM.')
+flags.DEFINE_integer('rnn_cell_size', 35, 'Number of hidden units in the LSTM.')
 
 # Optimization
 flags.DEFINE_integer('max_steps', 1000, 'Number of epochs to run.')
@@ -57,7 +57,7 @@ flags.DEFINE_string('glove_loc', './data/glove/glove840b_gensim.txt', 'Location 
 flags.DEFINE_string('w2v_loc_bin', './data/word2vec/w2v3b_gensim.bin', 'Location of w2v embeddings in BINARY form')
 flags.DEFINE_bool('train_embed', False, 'Train on top of w2v embeddings')  # we don't have enough data to train embeddings
 flags.DEFINE_integer('embedding_dims', 300, 'Dimensions of embedded vector.')
-flags.DEFINE_bool('random_init_oov', True, 'Use np.random.normal init for unknown embeddings. 0-fill if False')
+flags.DEFINE_bool('random_init_oov', False, 'Use np.random.normal init for unknown embeddings. 0-fill if False')
 
 # Adversarial and virtual adversarial training parameters.
 flags.DEFINE_bool('adv_train', True, 'Train using adversarial perturbations')
