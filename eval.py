@@ -31,10 +31,10 @@ def eval_stats(sess, batch_x, batch_y, cost, acc, y_pred):
     eval_loss = sess.run(
         cost,
         feed_dict={
-            x_1: pad_seq(batch_x),
-            x_len_1: [len(el) for el in batch_x],
-            output_mask_1: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
-            y_1: one_hot(batch_y),
+            # x_1: pad_seq(batch_x),
+            # x_len_1: [len(el) for el in batch_x],
+            # output_mask_1: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
+            # y_1: one_hot(batch_y),
             # kp_emb_1: 1.0,
             kp_lstm_1: 1.0
         }
