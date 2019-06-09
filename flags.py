@@ -42,8 +42,8 @@ flags.DEFINE_integer('rnn_num_layers', 1, 'Number of LSTM layers.')
 flags.DEFINE_integer('rnn_cell_size', 32, 'Number of hidden units in the LSTM.')
 
 # Optimization
-flags.DEFINE_integer('max_steps', 500, 'Number of epochs to run.')
-flags.DEFINE_float('learning_rate', 0.0001, 'Learning rate while during optimiation.')
+flags.DEFINE_integer('max_steps', 1000, 'Number of epochs to run.')
+flags.DEFINE_float('learning_rate', 0.001, 'Learning rate while during optimiation.')
 
 # Regularization
 flags.DEFINE_float('l2_reg_coeff', 0.001, 'If val > 0, use L2 Regularization on weights in graph')
