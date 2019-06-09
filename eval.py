@@ -125,7 +125,7 @@ def main():
     test_data = data_load.load_all_data() if FLAGS.disjoint_data else data_load.load_testing_data()
     tf.logging.info("{} testing examples".format(test_data.get_length()))
 
-    graph = tf.reset_default_graph()
+    graph = tf.get_default_graph()
     with tf.Session(graph=graph, config=tf.ConfigProto(allow_soft_placement=True)) as sess:
         sess.run(tf.global_variables_initializer())
         cost, y_pred, acc = load_model(sess, graph)
