@@ -116,7 +116,7 @@ def get_batch(bid, data):
 
 
 def main():
-    os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+    os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu_active])
 
     tf.logging.info("Loading dataset")
     data_load = DataLoader(FLAGS.custom_prc_data_loc, FLAGS.custom_vocab_loc) if FLAGS.disjoint_data else \

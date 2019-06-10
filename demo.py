@@ -111,7 +111,7 @@ def subscribe_query(sess, y_pred):
 def main():
     global return_strings
 
-    os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+    os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu_active])
 
     load_ext_vocab()
     transf.load_dependencies()

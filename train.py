@@ -132,7 +132,7 @@ def save_model(sess, epoch):
 
 
 def main():
-    os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+    os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu_active])
 
     print_flags()
 
