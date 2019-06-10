@@ -4,11 +4,11 @@ data/glove/glove840b_gensim.txt
 data/glove/glove840b.txt
 
 output/
-output1/
-output2/
-output3/
-output4/
-output5/
+*output1*
+*output2*
+*output3*
+*output4*
+*output5*
 
 __pycache__/
 
