@@ -20,6 +20,13 @@ def adversarial_loss(embedded, loss, loss_fn):
     return loss_fn(embedded + perturb)
 
 
+# def apply_random_perturbation(embedded):
+#     """Adds noise to embedding."""
+#     noise = tf.random_normal(shape=tf.shape(embedded))
+#     perturb = _scale_l2(grad, FLAGS.perturb_norm_length)
+#     return embedded + perturb
+
+
 def apply_adversarial_perturbation(embedded, loss):
     """Adds gradient to embedding."""
     grad, = tf.gradients(loss, embedded,
