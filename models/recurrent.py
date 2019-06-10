@@ -36,7 +36,7 @@ class RecurrentModel:
                 x = tf.stack(x, axis=1)
                 x_embed = tf.identity(x, name='x_embed')
 
-            x = tf.nn.dropout(x_embed, keep_prob=1.0)
+            x = tf.nn.dropout(x_embed, keep_prob=kp_emb)
 
             lstm = tf.nn.rnn_cell.MultiRNNCell([self.get_lstm(kp_lstm) for _ in range(FLAGS.rnn_num_layers)])
             output, state = tf.nn.dynamic_rnn(cell=lstm, inputs=x, sequence_length=x_len, dtype=tf.float32)
