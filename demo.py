@@ -9,7 +9,6 @@ x = tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x')
 x_len = tf.placeholder(tf.int32, (None,), name='x_len')
 output_mask = tf.placeholder(tf.bool, (None, FLAGS.max_len), name='output_mask')
 y = tf.placeholder(tf.int32, (None, FLAGS.num_classes), name='y')
-kp_emb = tf.placeholder(tf.float32, name='kp_emb')
 kp_lstm = tf.placeholder(tf.float32, name='kp_lstm')
 ext_vocab = []
 return_strings = ['Non-factual statement', 'Unimportant factual statement', 'Salient factual statement']
@@ -27,7 +26,7 @@ def one_hot(a):
 
 
 def load_model(sess, graph):
-    global x, x_len, output_mask, y, kp_emb, kp_lstm
+    global x, x_len, output_mask, y, kp_lstm
 
     tf.logging.info('Attempting to restore from {}'.format(FLAGS.output_dir))
 
@@ -46,7 +45,6 @@ def load_model(sess, graph):
         x_len = graph.get_tensor_by_name('x_len:0')
         output_mask = graph.get_tensor_by_name('output_mask:0')
         y = graph.get_tensor_by_name('y:0')
-        kp_emb = graph.get_tensor_by_name('kp_emb:0')
         kp_lstm = graph.get_tensor_by_name('kp_lstm:0')
 
         # outputs
@@ -101,7 +99,6 @@ def subscribe_query(sess, y_pred):
             x: pad_seq(batch_x),
             x_len: [len(el) for el in batch_x],
             output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
-            kp_emb: 1.0,
             kp_lstm: 1.0
         }
     )

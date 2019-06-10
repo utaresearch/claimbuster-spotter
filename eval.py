@@ -10,7 +10,6 @@ x = tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x')
 x_len = tf.placeholder(tf.int32, (None,), name='x_len')
 output_mask = tf.placeholder(tf.bool, (None, FLAGS.max_len), name='output_mask')
 y = tf.placeholder(tf.int32, (None, FLAGS.num_classes), name='y')
-kp_emb = tf.placeholder(tf.float32, name='kp_emb')
 kp_lstm = tf.placeholder(tf.float32, name='kp_lstm')
 
 
@@ -35,7 +34,6 @@ def eval_stats(sess, batch_x, batch_y, cost, acc, y_pred):
             x_len: [len(el) for el in batch_x],
             output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
             y: one_hot(batch_y),
-            kp_emb: 1.0,
             kp_lstm: 1.0
         }
     )
@@ -46,7 +44,6 @@ def eval_stats(sess, batch_x, batch_y, cost, acc, y_pred):
             x_len: [len(el) for el in batch_x],
             output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
             y: one_hot(batch_y),
-            kp_emb: 1.0,
             kp_lstm: 1.0
         }
     )
@@ -57,7 +54,6 @@ def eval_stats(sess, batch_x, batch_y, cost, acc, y_pred):
             x_len: [len(el) for el in batch_x],
             output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
             y: one_hot(batch_y),
-            kp_emb: 1.0,
             kp_lstm: 1.0
         }
     )
@@ -66,7 +62,7 @@ def eval_stats(sess, batch_x, batch_y, cost, acc, y_pred):
 
 
 def load_model(sess, graph):
-    global x, x_len, output_mask, y, kp_emb, kp_lstm
+    global x, x_len, output_mask, y, kp_lstm
 
     def get_last_save(scan_loc):
         ret_ar = []
@@ -89,7 +85,6 @@ def load_model(sess, graph):
         x_len = graph.get_tensor_by_name('x_len:0')
         output_mask = graph.get_tensor_by_name('output_mask:0')
         y = graph.get_tensor_by_name('y:0')
-        kp_emb = graph.get_tensor_by_name('kp_emb:0')
         kp_lstm = graph.get_tensor_by_name('kp_lstm:0')
 
         # outputs
