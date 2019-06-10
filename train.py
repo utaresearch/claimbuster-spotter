@@ -12,6 +12,7 @@ x = tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x')
 x_len = tf.placeholder(tf.int32, (None,), name='x_len')
 output_mask = tf.placeholder(tf.bool, (None, FLAGS.max_len), name='output_mask')
 y = tf.placeholder(tf.int32, (None, FLAGS.num_classes), name='y')
+kp_emb = tf.placeholder(tf.float32, name='kp_emb')
 kp_lstm = tf.placeholder(tf.float32, name='kp_lstm')
 
 
@@ -51,6 +52,7 @@ def validation_stats(sess, cost, acc, batch_x, batch_y):
             x_len: [len(el) for el in batch_x],
             output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
             y: one_hot(batch_y),
+            kp_emb: 1.0,
             kp_lstm: 1.0
         }
     )
@@ -61,6 +63,7 @@ def validation_stats(sess, cost, acc, batch_x, batch_y):
             x_len: [len(el) for el in batch_x],
             output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
             y: one_hot(batch_y),
+            kp_emb: 1.0,
             kp_lstm: 1.0
         }
     )
@@ -76,6 +79,7 @@ def batch_stats(sess, batch_x, batch_y, cost, acc):
             x_len: [len(el) for el in batch_x],
             output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
             y: one_hot(batch_y),
+            kp_emb: 1.0,
             kp_lstm: 1.0
         }
     )
@@ -86,6 +90,7 @@ def batch_stats(sess, batch_x, batch_y, cost, acc):
             x_len: [len(el) for el in batch_x],
             output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
             y: one_hot(batch_y),
+            kp_emb: 1.0,
             kp_lstm: 1.0
         }
     )
@@ -101,6 +106,7 @@ def train_neural_network(sess, optimizer, batch_x, batch_y):
             x_len: [len(el) for el in batch_x],
             output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
             y: one_hot(batch_y),
+            kp_emb: FLAGS.keep_prob_emb,
             kp_lstm: FLAGS.keep_prob_lstm
         }
     )
@@ -143,7 +149,7 @@ def main():
     embed = embed_obj.construct_embeddings()
 
     lstm_model = RecurrentModel()
-    logits, cost = lstm_model.construct_model(x, x_len, output_mask, y, embed, kp_lstm, adv=FLAGS.adv_train)
+    logits, cost = lstm_model.construct_model(x, x_len, output_mask, y, embed, kp_emb, kp_lstm, adv=FLAGS.adv_train)
     optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(cost)
 
     y_pred = tf.nn.softmax(logits, axis=1, name='y_pred')
