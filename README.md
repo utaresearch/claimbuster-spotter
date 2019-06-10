@@ -6,12 +6,16 @@ This is an application of techniques described in [*Adversarial Training Methods
 ## Requirements
 
 * Python >= 3.0
-* TensorFlow == 1.8.0
-* Pycontractions == 1.0.1
-* NLTK == 3.3
-* Gensim == 3.4.0
-* Spacy == 2.0.12
-* Sklearn == 0.19.2
+* imbalanced_learn==0.4.3
+* nltk==3.3
+* pycontractions==1.0.1
+* tqdm==4.11.2
+* gensim==3.4.0
+* spacy==2.0.11
+* tensorflow==1.13.1
+* numpy==1.16.4
+* imblearn==0.0
+* scikit_learn==0.21.2
 
 ## Experimental Setup
 
