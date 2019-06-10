@@ -77,4 +77,4 @@ flags.DEFINE_string('raw_data_loc', '{}/data_small.json'.format(FLAGS.data_dir),
 
 
 def print_flags():
-    print(FLAGS.flag_values_dict())
+    tf.logging.info(FLAGS.flag_values_dict())
