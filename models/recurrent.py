@@ -9,8 +9,8 @@ class RecurrentModel:
     def __init__(self):
         pass
 
-    def construct_model(self, x, x_len, output_mask, y, embed, kp_lstm, adv=False):
-        orig_embed, yhat = self.fprop(x, x_len, output_mask, embed, kp_lstm, adv=False)
+    def construct_model(self, x, x_len, output_mask, y, embed, kp_lstm, adv):
+        orig_embed, yhat = self.fprop(x, x_len, output_mask, embed, kp_lstm)
         loss = self.ce_loss(y, yhat)
 
         if adv:
