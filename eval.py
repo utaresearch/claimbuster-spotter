@@ -76,7 +76,7 @@ def eval_stats(sess, batch_x, batch_y, cost, acc, y_pred):
 
 
 def load_model(sess, graph):
-    global x, x_len, output_mask, y, kp_emb, kp_lstm
+    global x, x_len, output_mask, y, kp_emb, kp_lstm, cls_weight
 
     def get_last_save(scan_loc):
         ret_ar = []
