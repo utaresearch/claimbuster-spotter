@@ -156,7 +156,6 @@ def transform_sentence_complete(sentence):
     changed_words = []
     for i in range(len(txt_split)):
         if txt_split[i] in dataset_specific_fixes:
-            print(txt_split[i])
             changed_words.append(txt_split[i])
             txt_split[i] = dataset_specific_fixes[txt_split[i]]
     txt = ' '.join((' '.join(txt_split)).split(' '))
