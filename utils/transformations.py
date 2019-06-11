@@ -31,6 +31,68 @@ spacy_to_nl = {
     "CARDINAL": "number"
 }
 
+dataset_specific_fixes = {
+    "itã\x8fâ‚¬s": "it is",
+    "itÃ¢â‚¬â„¢s": "it is",
+    "midgetman": "midget man",
+    "naãƒâ¯ve": "naive",
+    "1990ã\x8fâ‚¬s": "year 1990",
+    "30ã\x8fâ‚¬s": "1930",
+    "40ã\x8fâ‚¬s": "1940",
+    "'40's": "1940",
+    "'50's": "1950",
+    "'60's": "1960",
+    "'87": "1987",
+    "'81": "1981",
+    "'77": "1977",
+    "'83": "1983",
+    "'94": "1994",
+    "'93": "1993",
+    "'97": "1997",
+    "'92": "1992",
+    "ã¢â€°â¤": "",
+    "ã¢â€°â¥mr": "",
+    "Ã¢â€°Â¤": "",
+    "ã¢â€°â¥who": "who",
+    "aayuh": "",
+    "mirving": "attack with multiple independently targetable reentry vehicle",
+    "kardari": "zardari",
+    "countrypeople": "country people",
+    "bicta": "",
+    "bict": "",
+    "l949": "1949",
+    "l961": "1961",
+    "undefensible": "indefensible",
+    "198i": "1981",
+    "sholicatchvieli": "shalikashvili",
+    "ã¢â‚¬å“we": "we",
+    "ã¢â‚¬â\x9d": "",
+    "chemomyrdin": "chernomyrdin",
+    "chemomyrdin's": "chernomyrdin",
+    "revita1ize": "revitalize",
+    "arterially": "from the arteries",
+    "'80s": "1980",
+    "'60s": "1960",
+    "hmet": "heavy expanded mobility tactical truck",
+    "hmett": "heavy expanded mobility tactical truck",
+    "vietnese": "vietnamese",
+    "namese": "",
+    "''": "",
+    "d'amato": "d'amato",
+    "shinsheki": "shinseki",
+    "exager": "exaggerated",
+    "cardash": "radosh",
+    "youã¢â‚¬â„¢re": "you are",
+    "treasurey": "treasury",
+    "itã¢â‚¬â„¢s": "it is",
+    "iã¢â‚¬â„¢ll": "i will",
+    "ã‚": "",
+    "weã¢â‚¬â„¢ll": "we will",
+    "ãƒâ¢ã¢â€šâ¬ã¢â‚¬å“": "",
+    "270billion": "270 billion",
+    "youã¢â‚¬â„¢ve": "you have"
+}
+
 
 def list_to_string(list):
     ret = ""
@@ -89,6 +151,12 @@ def process_sentence_ner_spacy(sentence):
 def transform_sentence_complete(sentence):
     txt = list(cont.expand_texts([sentence], precise=True))[0]
     txt = txt.replace('-', ' ')
+
+    txt_split = txt.split(' ')
+    for i in range(len(txt_split)):
+        if txt_split[i] in dataset_specific_fixes:
+            txt_split[i] = dataset_specific_fixes[txt_split[i]]
+    txt = ' '.join(txt_split)
 
     if FLAGS.noun_rep:
         txt = process_sentence_noun_rep(txt)
