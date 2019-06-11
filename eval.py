@@ -12,6 +12,9 @@ output_mask = tf.placeholder(tf.bool, (None, FLAGS.max_len), name='output_mask')
 y = tf.placeholder(tf.int32, (None, FLAGS.num_classes), name='y')
 kp_emb = tf.placeholder(tf.float32, name='kp_emb')
 kp_lstm = tf.placeholder(tf.float32, name='kp_lstm')
+cls_weight = tf.placeholder(tf.float32, (None,), name='cls_weight')
+
+computed_cls_weights = []
 
 
 def pad_seq(inp):
@@ -25,6 +28,10 @@ def one_hot(a):
     return np.squeeze(np.eye(FLAGS.num_classes)[np.array(a).reshape(-1)])
 
 
+def get_cls_weights(batch_y):
+    return [computed_cls_weights[z] for z in batch_y]
+
+
 def eval_stats(sess, batch_x, batch_y, cost, acc, y_pred):
     if len(batch_x) == 0 and len(batch_y) == 0:
         return 0.0, 0.0, 0.0
@@ -36,7 +43,8 @@ def eval_stats(sess, batch_x, batch_y, cost, acc, y_pred):
             output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
             y: one_hot(batch_y),
             kp_emb: 1.0,
-            kp_lstm: 1.0
+            kp_lstm: 1.0,
+            cls_weight: get_cls_weights(batch_y)
         }
     )
     eval_acc = sess.run(
@@ -47,7 +55,8 @@ def eval_stats(sess, batch_x, batch_y, cost, acc, y_pred):
             output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
             y: one_hot(batch_y),
             kp_emb: 1.0,
-            kp_lstm: 1.0
+            kp_lstm: 1.0,
+            cls_weight: get_cls_weights(batch_y)
         }
     )
     preds = sess.run(
@@ -58,7 +67,8 @@ def eval_stats(sess, batch_x, batch_y, cost, acc, y_pred):
             output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
             y: one_hot(batch_y),
             kp_emb: 1.0,
-            kp_lstm: 1.0
+            kp_lstm: 1.0,
+            cls_weight: get_cls_weights(batch_y)
         }
     )
 
@@ -91,6 +101,7 @@ def load_model(sess, graph):
         y = graph.get_tensor_by_name('y:0')
         kp_emb = graph.get_tensor_by_name('kp_emb:0')
         kp_lstm = graph.get_tensor_by_name('kp_lstm:0')
+        cls_weight = graph.get_tensor_by_name('cls_weight:0')
 
         # outputs
         cost = graph.get_tensor_by_name('cost:0')
@@ -116,11 +127,14 @@ def get_batch(bid, data):
 
 
 def main():
+    global computed_cls_weights
+
     os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu_active])
 
     tf.logging.info("Loading dataset")
     data_load = DataLoader(FLAGS.custom_prc_data_loc, FLAGS.custom_vocab_loc) if FLAGS.disjoint_data else \
         DataLoader()
+    computed_cls_weights = data_load.class_weights
 
     test_data = data_load.load_all_data() if FLAGS.disjoint_data else data_load.load_testing_data()
     tf.logging.info("{} testing examples".format(test_data.get_length()))
