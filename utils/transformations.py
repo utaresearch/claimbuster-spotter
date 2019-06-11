@@ -158,7 +158,7 @@ def transform_sentence_complete(sentence):
         if txt_split[i] in dataset_specific_fixes:
             txt_split[i] = dataset_specific_fixes[txt_split[i]]
             cnt_changed += 1
-    txt = ' '.join(txt_split)
+    txt = ' '.join((' '.join(txt_split)).split(' '))
 
     if FLAGS.noun_rep:
         txt = process_sentence_noun_rep(txt)
