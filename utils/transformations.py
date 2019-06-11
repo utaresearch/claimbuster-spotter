@@ -182,10 +182,11 @@ def transform_sentence_complete(sentence):
     txt_split = txt.split(' ')
     changed_words = []
     for i in range(len(txt_split)):
-        _, temp_word, _ = strip_chars(txt_split[i], string.punctuation)
+        temp_pre, temp_word, temp_post = strip_chars(txt_split[i], string.punctuation)
+        print(temp_word)
         if temp_word in dataset_specific_fixes:
             changed_words.append(temp_word)
-            txt_split[i] = dataset_specific_fixes[temp_word]
+            txt_split[i] = temp_pre + dataset_specific_fixes[temp_word] + temp_post
     txt = ' '.join((' '.join(txt_split)).split(' '))
 
     if FLAGS.noun_rep:
