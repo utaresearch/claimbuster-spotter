@@ -21,7 +21,8 @@ FLAGS = flags.FLAGS
 
 # # Data
 # flags.DEFINE_integer('max_len', 200, 'Maximum length of input')
-# flags.DEFINE_bool('sklearn_oversample', True, 'Oversample underrepresented classes with sklearn')
+# flags.DEFINE_bool('sklearn_oversample', False, 'Oversample underrepresented classes with sklearn')
+# flags.DEFINE_bool('weight_classes_loss', True, 'Weight classes in CE loss function')
 # flags.DEFINE_list('addition_vocab', ['./data/disjoint_2000/vocab.pickle'], 'Additional corpuses to sample vocab data from')
 
 # # Eval
@@ -132,8 +133,8 @@ flags.DEFINE_float('learning_rate', 0.001, 'Learning rate while during optimiati
 
 # Regularization
 flags.DEFINE_float('l2_reg_coeff', 0.001, 'If val > 0, use L2 Regularization on weights in graph')
-flags.DEFINE_float('keep_prob_emb', 0.7, 'Keep probability of embeddings. (dummy var)')
-flags.DEFINE_float('keep_prob_lstm', 0.7, 'Keep probability LSTM network.')
+flags.DEFINE_float('keep_prob_emb', 0.6, 'Keep probability of embeddings. (dummy var)')
+flags.DEFINE_float('keep_prob_lstm', 0.6, 'Keep probability LSTM network.')
 
 # Embeddings
 flags.DEFINE_integer('embed_type', 1, '0 for word2vec, 1 for Stanford glove')
@@ -147,7 +148,7 @@ flags.DEFINE_bool('random_init_oov', False, 'Use np.random.normal init for unkno
 # Adversarial and virtual adversarial training parameters.
 flags.DEFINE_bool('adv_train', True, 'Train using adversarial perturbations')
 flags.DEFINE_float('adv_coeff', 1.0, 'Coefficient of adversarial loss')
-flags.DEFINE_float('perturb_norm_length', 10.0, 'Norm length of adversarial perturbation')
+flags.DEFINE_float('perturb_norm_length', 30.0, 'Norm length of adversarial perturbation')
 
 # Output stats
 flags.DEFINE_integer('num_classes', 3, 'Number of classes for classification (2 combines NFS and UFS)')
