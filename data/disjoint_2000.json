@@ -1113,7 +1113,7 @@
       "sentence_id": 568,
       "screening": -3,
       "label": 0,
-      "text": "He went to Philippines in the early 80Ãâ‚¬s and commended Ferdinand Macros for his commitment to democracy."
+      "text": "He went to Philippines in the early '80s and commended Ferdinand Macros for his commitment to democracy."
    },
    {
       "sentence_id": 569,
@@ -1359,7 +1359,7 @@
       "sentence_id": 699,
       "screening": -3,
       "label": 0,
-      "text": "Now, the other day, Mr. Bush said, Ã¢â€°Â¥Well, if we continue with Star War-Star Wars-we have to cut some place.Ã¢â€°Â¤ He hasn't told us where."
+      "text": "Now, the other day, Mr. Bush said, \"Well, if we continue with Star War-Star Wars-we have to cut some place.\" He hasn't told us where."
    },
    {
       "sentence_id": 700,
@@ -1617,7 +1617,7 @@
       "sentence_id": 822,
       "screening": -3,
       "label": 1,
-      "text": "He says, Ã¢â€°Â¥Well, let's concede that the administration has been doing business with Noriega."
+      "text": "He says, \"Well, let's concede that the administration has been doing business with Noriega.\""
    },
    {
       "sentence_id": 826,
@@ -1935,7 +1935,7 @@
       "sentence_id": 968,
       "screening": -3,
       "label": -1,
-      "text": "Yes, it's a tough problem as Mr. Bush says, but itÃâ‚¬s not an insolvable problem."
+      "text": "Yes, it's a tough problem as Mr. Bush says, but is not an insolvable problem."
    },
    {
       "sentence_id": 974,
@@ -9687,7 +9687,7 @@
       "sentence_id": 3763,
       "screening": -3,
       "label": -1,
-      "text": "There's no doubt itÃ¢â‚¬â„¢s gonna affect our budgets."
+      "text": "There's no doubt it's gonna affect our budgets."
    },
    {
       "sentence_id": 3764,
@@ -10821,7 +10821,7 @@
       "sentence_id": 4025,
       "screening": -3,
       "label": -1,
-      "text": "I know what thatÃ¢â‚¬â„¢s like when an army is defeated."
+      "text": "I know what that's like when an army is defeated."
    },
    {
       "sentence_id": 4026,
