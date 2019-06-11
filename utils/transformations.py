@@ -153,22 +153,6 @@ def transform_sentence_complete(sentence):
     txt = list(cont.expand_texts([sentence], precise=True))[0]
     txt = txt.replace('-', ' ')
 
-    txt_split = txt.split(' ')
-    print(txt_split)
-    changed_words = []
-    for i in range(len(txt_split)):
-        if txt_split[i] in dataset_specific_fixes:
-            changed_words.append(txt_split[i])
-            txt_split[i] = dataset_specific_fixes[txt_split[i]]
-    txt = ' '.join((' '.join(txt_split)).split(' '))
-
-    if FLAGS.noun_rep:
-        txt = process_sentence_noun_rep(txt)
-    elif FLAGS.full_tags:
-        txt = process_sentence_full_tags(txt)
-    elif FLAGS.ner_spacy:
-        txt = process_sentence_ner_spacy(txt)
-
     def strip_chars(inpstr, to_strip):
         strar = list(inpstr)
         stripped_away_front = ""
@@ -194,6 +178,23 @@ def transform_sentence_complete(sentence):
 
     def remove_possessive(st):
         return st if len(st) == 1 else (st[:-2] if st.rfind("'s") == len(st) - 2 else st)
+
+    txt_split = txt.split(' ')
+    print(txt_split)
+    changed_words = []
+    for i in range(len(txt_split)):
+        _, temp_word, _ = strip_chars(txt_split[i], string.punctuation)
+        if temp_word in dataset_specific_fixes:
+            changed_words.append(temp_word)
+            txt_split[i] = dataset_specific_fixes[temp_word]
+    txt = ' '.join((' '.join(txt_split)).split(' '))
+
+    if FLAGS.noun_rep:
+        txt = process_sentence_noun_rep(txt)
+    elif FLAGS.full_tags:
+        txt = process_sentence_full_tags(txt)
+    elif FLAGS.ner_spacy:
+        txt = process_sentence_ner_spacy(txt)
 
     words = txt.split(' ')
     ret_words = []
