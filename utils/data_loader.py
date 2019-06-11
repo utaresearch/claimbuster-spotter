@@ -52,7 +52,8 @@ class DataLoader:
         self.data.y = [(1 if self.data.y[i] == 2 else 0) for i in range(len(self.data.y))]
 
     def compute_class_weights(self):
-        return compute_class_weight('balanced', [z for z in range(FLAGS.num_classes)], self.data.y)
+        # return compute_class_weight('balanced', [z for z in range(FLAGS.num_classes)], self.data.y)
+        return compute_class_weight({0: 2 * 1.5, 1: 2 * 0.9, 2: 2 * 1.25}, [z for z in range(FLAGS.num_classes)], self.data.y)
 
     def load_training_data(self):
         ret = Dataset([], [], FLAGS.random_state)
