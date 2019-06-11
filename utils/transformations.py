@@ -154,6 +154,7 @@ def transform_sentence_complete(sentence):
     txt = txt.replace('-', ' ')
 
     txt_split = txt.split(' ')
+    print(txt_split)
     changed_words = []
     for i in range(len(txt_split)):
         if txt_split[i] in dataset_specific_fixes:
