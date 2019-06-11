@@ -20,11 +20,13 @@ def parse_json():
         1: []
     }
 
+    tot_changed = 0
     for i in tqdm(range(len(temp_data)), ascii=True):
         f = temp_data[i]
         lab = int(f["label"])
-        txt_embed = transf.transform_sentence_complete(f["text"])
+        txt_embed, cnt_changed = transf.transform_sentence_complete(f["text"])
         data_by_label[lab].append(txt_embed)
+        tot_changed += cnt_changed
 
     for key in data_by_label:
         for el in data_by_label[key]:
@@ -32,6 +34,7 @@ def parse_json():
             labels[int(key) + 1] += 1
 
     print(labels)
+    print('{} erring values were edited with dict()'.format(tot_changed))
     return dl
 
 

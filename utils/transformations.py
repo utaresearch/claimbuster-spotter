@@ -153,9 +153,11 @@ def transform_sentence_complete(sentence):
     txt = txt.replace('-', ' ')
 
     txt_split = txt.split(' ')
+    cnt_changed = 0
     for i in range(len(txt_split)):
         if txt_split[i] in dataset_specific_fixes:
             txt_split[i] = dataset_specific_fixes[txt_split[i]]
+            cnt_changed += 1
     txt = ' '.join(txt_split)
 
     if FLAGS.noun_rep:
@@ -205,7 +207,7 @@ def transform_sentence_complete(sentence):
             for ch in str_back:
                 ret_words.append(ch)
 
-    return ' '.join(ret_words)
+    return ' '.join(ret_words), cnt_changed
 
 
 def load_dependencies():
