@@ -43,8 +43,7 @@ class DataLoader:
             self.conv_3_to_2()
 
         self.class_weights = self.compute_class_weights()
-        print(self.class_weights)
-        exit()
+        print('Class weights computed to be {}'.format(self.class_weights))
 
         self.data.shuffle()
         self.post_process_flags()
