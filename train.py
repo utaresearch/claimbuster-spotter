@@ -15,9 +15,16 @@ y = tf.placeholder(tf.int32, (None, FLAGS.num_classes), name='y')
 kp_emb = tf.placeholder(tf.float32, name='kp_emb')
 kp_lstm = tf.placeholder(tf.float32, name='kp_lstm')
 
+pad_index = -1
+
 
 def pad_seq(inp):
-    ret = np.full((len(inp), FLAGS.max_len), -1, dtype=np.int32)
+    global pad_index
+
+    if pad_index == -1:
+        pad_index = len(DataLoader.get_default_vocab()) - 1
+
+    ret = np.full((len(inp), FLAGS.max_len), pad_index, dtype=np.int32)
     for i in range(len(inp)):
         ret[i][:len(inp[i])] = inp[i]
     return ret
