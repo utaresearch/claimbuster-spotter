@@ -121,7 +121,7 @@ def transform_sentence_complete(sentence):
         return stripped_away_front, ''.join(strar), stripped_away_back[::-1]
 
     def remove_possessive(st):
-        return st[:-2] if st.rfind("'s") == len(st) - 2 else st
+        return st if len(st) == 1 else (st[:-2] if st.rfind("'s") == len(st) - 2 else st)
 
     words = txt.split(' ')
     ret_words = []
@@ -181,4 +181,5 @@ def load_deps_dummy():
 
 if __name__ == '__main__':
     load_deps_dummy()
-    print(process_sentence_ner_spacy('I like Donald Trump because he has lots of $50 million.'))
+    print(process_sentence_ner_spacy(
+        'I served for eight years in the United States Senate and served on the Armed Services Committee.'))
