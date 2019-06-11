@@ -9,13 +9,13 @@ class RecurrentModel:
     def __init__(self):
         pass
 
-    def construct_model(self, x, x_len, output_mask, y, embed, kp_emb, kp_lstm, adv):
+    def construct_model(self, x, x_len, output_mask, y, embed, kp_emb, kp_lstm, cls_weight, adv):
         orig_embed, yhat = self.fprop(x, x_len, output_mask, embed, kp_emb, kp_lstm)
-        loss = self.ce_loss(y, yhat)
+        loss = self.ce_loss(y, yhat, cls_weight)
 
         if adv:
             yhat_adv = self.fprop(x, x_len, output_mask, embed, kp_emb, kp_lstm, orig_embed, loss, adv=True)
-            loss += FLAGS.adv_coeff * self.adv_loss(y, yhat_adv)
+            loss += FLAGS.adv_coeff * self.adv_loss(y, yhat_adv, cls_weight)
 
         return yhat, tf.identity(loss, name='cost')
 
@@ -61,11 +61,11 @@ class RecurrentModel:
         )
 
     @staticmethod
-    def adv_loss(y, logits):
-        return tf.identity(RecurrentModel.ce_loss(y, logits), name='adv_loss')
+    def adv_loss(y, logits, cls_weight):
+        return tf.identity(RecurrentModel.ce_loss(y, logits, cls_weight), name='adv_loss')
 
     @staticmethod
-    def ce_loss(y, logits):
+    def ce_loss(y, logits, cls_weight):
         loss = tf.nn.softmax_cross_entropy_with_logits_v2(labels=y, logits=logits)
         loss_l2 = 0
 
@@ -73,4 +73,8 @@ class RecurrentModel:
             varlist = tf.trainable_variables()
             loss_l2 = tf.add_n([tf.nn.l2_loss(v) for v in varlist if 'bias' not in v.name]) * FLAGS.l2_reg_coeff
 
-        return tf.identity(loss + loss_l2, name='reg_loss')
+        ret_loss = loss + loss_l2
+        if FLAGS.weight_classes_loss:
+            ret_loss *= cls_weight
+
+        return tf.identity(ret_loss, name='reg_loss')

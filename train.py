@@ -14,8 +14,10 @@ output_mask = tf.placeholder(tf.bool, (None, FLAGS.max_len), name='output_mask')
 y = tf.placeholder(tf.int32, (None, FLAGS.num_classes), name='y')
 kp_emb = tf.placeholder(tf.float32, name='kp_emb')
 kp_lstm = tf.placeholder(tf.float32, name='kp_lstm')
+cls_weight = tf.placeholder(tf.float32, (None,), name='cls_weight')
 
 pad_index = -1
+computed_cls_weights = []
 
 
 def pad_seq(inp):
@@ -32,6 +34,10 @@ def pad_seq(inp):
 
 def one_hot(a):
     return np.squeeze(np.eye(FLAGS.num_classes)[np.array(a).reshape(-1)])
+
+
+def get_cls_weights(batch_y):
+    return [computed_cls_weights[z] for z in batch_y]
 
 
 def execute_validation(sess, cost, acc, validation_data):
@@ -60,7 +66,8 @@ def validation_stats(sess, cost, acc, batch_x, batch_y):
             output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
             y: one_hot(batch_y),
             kp_emb: 1.0,
-            kp_lstm: 1.0
+            kp_lstm: 1.0,
+            cls_weight: get_cls_weights(batch_y)
         }
     )
     val_acc = sess.run(
@@ -71,7 +78,8 @@ def validation_stats(sess, cost, acc, batch_x, batch_y):
             output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
             y: one_hot(batch_y),
             kp_emb: 1.0,
-            kp_lstm: 1.0
+            kp_lstm: 1.0,
+            cls_weight: get_cls_weights(batch_y)
         }
     )
 
@@ -87,7 +95,8 @@ def batch_stats(sess, batch_x, batch_y, cost, acc):
             output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
             y: one_hot(batch_y),
             kp_emb: 1.0,
-            kp_lstm: 1.0
+            kp_lstm: 1.0,
+            cls_weight: get_cls_weights(batch_y)
         }
     )
     train_acc = sess.run(
@@ -98,7 +107,8 @@ def batch_stats(sess, batch_x, batch_y, cost, acc):
             output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
             y: one_hot(batch_y),
             kp_emb: 1.0,
-            kp_lstm: 1.0
+            kp_lstm: 1.0,
+            cls_weight: get_cls_weights(batch_y)
         }
     )
 
@@ -114,7 +124,8 @@ def train_neural_network(sess, optimizer, batch_x, batch_y):
             output_mask: [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x],
             y: one_hot(batch_y),
             kp_emb: FLAGS.keep_prob_emb,
-            kp_lstm: FLAGS.keep_prob_lstm
+            kp_lstm: FLAGS.keep_prob_lstm,
+            cls_weight: get_cls_weights(batch_y)
         }
     )
 
@@ -139,12 +150,15 @@ def save_model(sess, epoch):
 
 
 def main():
+    global computed_cls_weights
+
     os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu_active])
 
     print_flags()
 
     tf.logging.info("Loading dataset")
     data_load = DataLoader()
+    computed_cls_weights = data_load.class_weights
 
     train_data = data_load.load_training_data()
     validation_data = data_load.load_validation_data()
@@ -156,7 +170,8 @@ def main():
     embed = embed_obj.construct_embeddings()
 
     lstm_model = RecurrentModel()
-    logits, cost = lstm_model.construct_model(x, x_len, output_mask, y, embed, kp_emb, kp_lstm, adv=FLAGS.adv_train)
+    logits, cost = lstm_model.construct_model(x, x_len, output_mask, y, embed, kp_emb, kp_lstm, cls_weight,
+                                              adv=FLAGS.adv_train)
     optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(cost)
 
     y_pred = tf.nn.softmax(logits, axis=1, name='y_pred')

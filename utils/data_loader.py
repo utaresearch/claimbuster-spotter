@@ -7,6 +7,7 @@ import sys
 sys.path.append('..')
 from flags import FLAGS
 from sklearn.utils import shuffle
+from sklearn.utils.class_weight import compute_class_weight
 
 fail_words = set()
 
@@ -41,11 +42,18 @@ class DataLoader:
         if FLAGS.num_classes == 2:
             self.conv_3_to_2()
 
+        self.class_weights = self.compute_class_weights()
+        print(self.class_weights)
+        exit()
+
         self.data.shuffle()
         self.post_process_flags()
 
     def conv_3_to_2(self):
         self.data.y = [(1 if self.data.y[i] == 2 else 0) for i in range(len(self.data.y))]
+
+    def compute_class_weights(self):
+        return compute_class_weight('balanced', [z for z in range(FLAGS.num_classes)], self.data.y)
 
     def load_training_data(self):
         ret = Dataset([], [], FLAGS.random_state)
