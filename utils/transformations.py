@@ -180,7 +180,6 @@ def transform_sentence_complete(sentence):
         return st if len(st) == 1 else (st[:-2] if st.rfind("'s") == len(st) - 2 else st)
 
     txt_split = txt.split(' ')
-    print(txt_split)
     changed_words = []
     for i in range(len(txt_split)):
         _, temp_word, _ = strip_chars(txt_split[i], string.punctuation)
