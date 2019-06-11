@@ -158,10 +158,10 @@ def transform_sentence_complete(sentence):
         stripped_away_front = ""
         stripped_away_back = ""
 
-        for i in reversed(range(0, len(strar))):
-            if strar[i] in to_strip:
-                stripped_away_back += strar[i]
-                del strar[i]
+        for idx in reversed(range(0, len(strar))):
+            if strar[idx] in to_strip:
+                stripped_away_back += strar[idx]
+                del strar[idx]
             else:
                 break
         lcount = 0
@@ -182,11 +182,15 @@ def transform_sentence_complete(sentence):
     txt_split = txt.split(' ')
     changed_words = []
     for i in range(len(txt_split)):
-        temp_pre, temp_word, temp_post = strip_chars(txt_split[i], string.punctuation)
-        print(temp_word)
+        temp_word = txt_split[i]
         if temp_word in dataset_specific_fixes:
             changed_words.append(temp_word)
-            txt_split[i] = temp_pre + dataset_specific_fixes[temp_word] + temp_post
+            txt_split[i] = dataset_specific_fixes[temp_word]
+        else:
+            temp_pre, temp_word, temp_post = strip_chars(txt_split[i], string.punctuation)
+            if temp_word in dataset_specific_fixes:
+                changed_words.append(temp_word)
+                txt_split[i] = temp_pre + dataset_specific_fixes[temp_word] + temp_post
     txt = ' '.join((' '.join(txt_split)).split(' '))
 
     if FLAGS.noun_rep:
