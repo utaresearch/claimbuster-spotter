@@ -146,7 +146,7 @@ flags.DEFINE_bool('random_init_oov', False, 'Use np.random.normal init for unkno
 # Adversarial and virtual adversarial training parameters.
 flags.DEFINE_bool('adv_train', True, 'Train using adversarial perturbations')
 flags.DEFINE_float('adv_coeff', 1.0, 'Coefficient of adversarial loss')
-flags.DEFINE_float('perturb_norm_length', 100000.0, 'Norm length of adversarial perturbation')
+flags.DEFINE_float('perturb_norm_length', 20.0, 'Norm length of adversarial perturbation')
 
 # Output stats
 flags.DEFINE_integer('num_classes', 3, 'Number of classes for classification (2 combines NFS and UFS)')
