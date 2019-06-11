@@ -10,6 +10,7 @@ nlp = None
 cont = None
 embed_obj = None
 kill_words = ["", "uh"]
+stop_words = list(nltk.corpus.stopwords.words('english'))
 spacy_to_nl = {
     "PERSON": "person",
     "NORP": "nationality",
@@ -201,7 +202,7 @@ def transform_sentence_complete(sentence):
         if str_front not in kill_words:
             for ch in str_front:
                 ret_words.append(ch)
-        if new_word not in kill_words:
+        if new_word not in kill_words and new_word not in stop_words:
             ret_words.append(remove_possessive(new_word))
         if str_back not in kill_words:
             for ch in str_back:
