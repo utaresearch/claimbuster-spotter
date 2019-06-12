@@ -15,6 +15,7 @@ kp_lstm = tf.placeholder(tf.float32, name='kp_lstm')
 cls_weight = tf.placeholder(tf.float32, (None,), name='cls_weight')
 
 computed_cls_weights = []
+pad_index = -1
 
 
 def pad_seq(inp):
