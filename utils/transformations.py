@@ -35,7 +35,7 @@ spacy_to_nl = {
 dataset_specific_fixes = {
     "itã\x8fâ‚¬s": "it is",
     "itÃ¢â‚¬â„¢s": "it is",
-    "midgetman": "midget man",
+    "Midgetman": "",
     "naãƒâ¯ve": "naive",
     "1990ã\x8fâ‚¬s": "year 1990",
     "30ã\x8fâ‚¬s": "1930",
@@ -63,6 +63,7 @@ dataset_specific_fixes = {
     "bict": "",
     "l949": "1949",
     "l961": "1961",
+    "198I": "1981",
     "undefensible": "indefensible",
     "198i": "1981",
     "sholicatchvieli": "shalikashvili",
@@ -76,11 +77,11 @@ dataset_specific_fixes = {
     "'60s": "1960",
     "hmet": "heavy expanded mobility tactical truck",
     "hmett": "heavy expanded mobility tactical truck",
-    "vietnese": "vietnamese",
+    "Vietnese": "Vietnamese",
     "namese": "",
     "''": "",
     "d'amato": "d'amato",
-    "shinsheki": "shinseki",
+    "Shinsheki": "Shinseki",
     "exager": "exaggerated",
     "cardash": "radosh",
     "youã¢â‚¬â„¢re": "you are",
@@ -91,7 +92,11 @@ dataset_specific_fixes = {
     "weã¢â‚¬â„¢ll": "we will",
     "ãƒâ¢ã¢â€šâ¬ã¢â‚¬å“": "",
     "270billion": "270 billion",
-    "youã¢â‚¬â„¢ve": "you have"
+    "youã¢â‚¬â„¢ve": "you have",
+    "G.N.P": "gross national product",
+    "STARTer": "starter",
+    "ask/do": "ask or do",
+    "K.G.B": "security service",
 }
 
 
