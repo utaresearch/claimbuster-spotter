@@ -66,7 +66,6 @@ class RecurrentModel:
 
         return keras_bidir_object(x)
 
-
     @staticmethod
     def get_lstm(kp_lstm):
         return tf.nn.rnn_cell.DropoutWrapper(
