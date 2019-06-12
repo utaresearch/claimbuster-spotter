@@ -92,7 +92,7 @@ flags.DEFINE_list('gpu_active', [0], 'ID of GPU to use: in range [0, 4]')
 # Preprocessing
 flags.DEFINE_bool('noun_rep', False, 'Replace nouns with identifiers')
 flags.DEFINE_bool('full_tags', False, 'Replace all words with tags')
-flags.DEFINE_bool('ner_spacy', True, 'Named entity recognition with spaCy')
+flags.DEFINE_bool('ner_spacy', False, 'Named entity recognition with spaCy')
 
 # Base directories
 flags.DEFINE_string('output_dir', './output', 'Location of outputs')
@@ -101,8 +101,8 @@ flags.DEFINE_string('data_dir', './data', 'Location of data')
 
 # Data
 flags.DEFINE_integer('max_len', 200, 'Maximum length of input')
-flags.DEFINE_bool('sklearn_oversample', False, 'Oversample underrepresented classes with sklearn')
-flags.DEFINE_bool('weight_classes_loss', True, 'Weight classes in CE loss function')
+flags.DEFINE_bool('sklearn_oversample', True, 'Oversample underrepresented classes with sklearn')
+flags.DEFINE_bool('weight_classes_loss', False, 'Weight classes in CE loss function')
 flags.DEFINE_list('addition_vocab', ['./data/disjoint_2000/vocab.pickle'], 'Additional corpuses to sample vocab data from')
 
 # Eval
