@@ -4,8 +4,6 @@ from .adv_losses import apply_adversarial_perturbation
 sys.path.append('..')
 from flags import FLAGS
 
-K = tf.keras.layers
-
 
 class RecurrentModel:
     def __init__(self):
@@ -43,10 +41,11 @@ class RecurrentModel:
             if not FLAGS.bidir_lstm:
                 tf.logging.info('Building uni-directional LSTM')
                 lstm = tf.nn.rnn_cell.MultiRNNCell([self.get_lstm(kp_lstm) for _ in range(FLAGS.rnn_num_layers)])
-                output, state = tf.nn.dynamic_rnn(cell=lstm, inputs=x, sequence_length=x_len, dtype=tf.float32)
+                # output, state = tf.nn.dynamic_rnn(cell=lstm, inputs=x, sequence_length=x_len, dtype=tf.float32)
+                output, state = tf.nn.dynamic_rnn(cell=lstm, inputs=x, dtype=tf.float32)
             else:
                 tf.logging.info('Building bi-directional LSTM')
-                output = self.get_bidir_lstm(x)
+                output, state = self.build_bidir_lstm_component(x, kp_lstm)
 
             add_weight = tf.get_variable('post_lstm_weight', shape=(
                 FLAGS.rnn_cell_size * (2 if FLAGS.bidir_lstm else 1), FLAGS.num_classes),
@@ -59,12 +58,14 @@ class RecurrentModel:
             else:
                 return tf.matmul((output if FLAGS.bidir_lstm else output[-1]), add_weight) + add_bias
 
-    @staticmethod
-    def get_bidir_lstm(x):
+    def build_bidir_lstm_component(self, x, kp_lstm):
         assert FLAGS.rnn_num_layers == 1
-        keras_bidir_object = K.Bidirectional(K.LSTM(FLAGS.rnn_cell_size))
 
-        return keras_bidir_object(x)
+        fw_cell = tf.nn.rnn_cell.MultiRNNCell([self.get_lstm(kp_lstm) for _ in range(FLAGS.rnn_num_layers)])
+        bw_cell = tf.nn.rnn_cell.MultiRNNCell([self.get_lstm(kp_lstm) for _ in range(FLAGS.rnn_num_layers)])
+
+        return tf.nn.bidirectional_dynamic_rnn(fw_cell, bw_cell, inputs=x)
+
 
     @staticmethod
     def get_lstm(kp_lstm):
