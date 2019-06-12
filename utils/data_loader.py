@@ -46,7 +46,12 @@ class DataLoader:
         print('Class weights computed to be {}'.format(self.class_weights))
 
         self.data.shuffle()
-        self.post_process_flags()
+
+        if custom_prc_data_loc is not None and custom_vocab_loc is not None:
+            self.post_process_flags()
+        else:
+            FLAGS.total_examples += self.data.get_length()
+            FLAGS.validation_examples += self.data.get_length()
 
     def conv_3_to_2(self):
         self.data.y = [(1 if self.data.y[i] == 2 else 0) for i in range(len(self.data.y))]
