@@ -175,7 +175,7 @@ def main():
 
     train_data = data_load.load_training_data()
 
-    if FLAGS.eval_disjoint_training:
+    if not FLAGS.eval_disjoint_training:
         validation_data = data_load.load_validation_data()
     else:
         data_load_disjoint = DataLoader(FLAGS.custom_prc_data_loc, FLAGS.custom_vocab_loc)
