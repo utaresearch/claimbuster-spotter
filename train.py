@@ -178,6 +178,7 @@ def main():
     if not FLAGS.eval_disjoint_training:
         validation_data = data_load.load_validation_data()
     else:
+        tf.logging.info('Loading disjoint data')
         data_load_disjoint = DataLoader(FLAGS.custom_prc_data_loc, FLAGS.custom_vocab_loc)
         validation_data = data_load_disjoint.load_all_data()
 

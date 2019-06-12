@@ -1,3 +1,4 @@
+import tensorflow as tf
 from imblearn.over_sampling import SMOTE
 from sklearn.utils import resample
 import numpy as np
@@ -43,7 +44,7 @@ class DataLoader:
             self.conv_3_to_2()
 
         self.class_weights = self.compute_class_weights()
-        print('Class weights computed to be {}'.format(self.class_weights))
+        tf.logging.info('Class weights computed to be {}'.format(self.class_weights))
 
         self.data.shuffle()
 
