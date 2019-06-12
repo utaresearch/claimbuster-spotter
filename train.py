@@ -1,4 +1,5 @@
 import tensorflow as tf
+from keras.preprocessing.sequence import pad_sequences
 import numpy as np
 import math
 import time
@@ -25,10 +26,9 @@ def pad_seq(inp):
     if pad_index == -1:
         pad_index = len(DataLoader.get_default_vocab()) - 1
 
-    ret = np.full((len(inp), FLAGS.max_len), pad_index, dtype=np.int32)
-    for i in range(len(inp)):
-        ret[i][:len(inp[i])] = inp[i]
-    return ret
+    ret = pad_sequences(inp, maxlen=FLAGS.max_len)
+    print(ret)
+    exit()
 
 
 def one_hot(a):
