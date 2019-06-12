@@ -213,7 +213,7 @@ def transform_sentence_complete(sentence):
         if str_front not in kill_words:
             for ch in str_front:
                 ret_words.append(ch)
-        if new_word not in kill_words and new_word not in stop_words:
+        if new_word not in kill_words and (not FLAGS.remove_stopwords or new_word not in stop_words):
             ret_words.append(remove_possessive(new_word))
         if str_back not in kill_words:
             for ch in str_back:
