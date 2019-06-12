@@ -53,7 +53,7 @@ class RecurrentModel:
             add_bias = tf.get_variable('post_lstm_bias', shape=FLAGS.num_classes,
                                        initializer=tf.zeros_initializer())
 
-            output = (output[-1] if not FLAGS.bidir_lstm else output[1][-1])
+            output = (output[:, -1, :] if not FLAGS.bidir_lstm else output[1][:, -1, :])
             print(output)
 
             if not adv:
