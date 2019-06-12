@@ -4,6 +4,8 @@ from .adv_losses import apply_adversarial_perturbation
 sys.path.append('..')
 from flags import FLAGS
 
+K = tf.keras.layers
+
 
 class RecurrentModel:
     def __init__(self):
@@ -38,8 +40,13 @@ class RecurrentModel:
 
             x = tf.nn.dropout(x_embed, keep_prob=kp_emb)
 
-            lstm = tf.nn.rnn_cell.MultiRNNCell([self.get_lstm(kp_lstm) for _ in range(FLAGS.rnn_num_layers)])
-            output, state = tf.nn.dynamic_rnn(cell=lstm, inputs=x, sequence_length=x_len, dtype=tf.float32)
+            if not FLAGS.bidir_lstm:
+                tf.logging.info('Building uni-directional LSTM')
+                lstm = tf.nn.rnn_cell.MultiRNNCell([self.get_lstm(kp_lstm) for _ in range(FLAGS.rnn_num_layers)])
+                output, state = tf.nn.dynamic_rnn(cell=lstm, inputs=x, sequence_length=x_len, dtype=tf.float32)
+            else:
+                tf.logging.info('Building bi-directional LSTM')
+                output = self.get_bidir_lstm(x)
 
             add_weight = tf.get_variable('post_lstm_weight', shape=(FLAGS.rnn_cell_size, FLAGS.num_classes),
                                          initializer=tf.contrib.layers.xavier_initializer())
@@ -50,6 +57,14 @@ class RecurrentModel:
                 return x_embed, tf.matmul(tf.boolean_mask(output, output_mask), add_weight) + add_bias
             else:
                 return tf.matmul(tf.boolean_mask(output, output_mask), add_weight) + add_bias
+
+    @staticmethod
+    def get_bidir_lstm(x):
+        assert FLAGS.rnn_num_layers == 1
+        keras_bidir_object = K.Bidirectional(FLAGS.rnn_cell_size)
+
+        return keras_bidir_object(x)
+
 
     @staticmethod
     def get_lstm(kp_lstm):
