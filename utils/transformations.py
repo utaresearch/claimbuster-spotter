@@ -97,6 +97,7 @@ dataset_specific_fixes = {
     "STARTer": "starter",
     "ask/do": "ask or do",
     "K.G.B": "security service",
+    "your$265": "your $265",
 }
 
 

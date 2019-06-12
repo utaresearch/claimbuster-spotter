@@ -38,7 +38,7 @@ class RecurrentModel:
 
             x = tf.nn.dropout(x_embed, keep_prob=kp_emb)
 
-
+            # @TODO add convolutional layers
 
             if not FLAGS.bidir_lstm:
                 tf.logging.info('Building uni-directional LSTM')
