@@ -11,22 +11,22 @@ class RecurrentModel:
     def __init__(self):
         pass
 
-    def construct_model(self, x, x_len, output_mask, y, embed, kp_emb, kp_lstm, cls_weight, adv):
-        orig_embed, yhat = self.fprop(x, x_len, output_mask, embed, kp_emb, kp_lstm)
+    def construct_model(self, x, x_len, y, embed, kp_emb, kp_lstm, cls_weight, adv):
+        orig_embed, yhat = self.fprop(x, x_len, embed, kp_emb, kp_lstm)
         loss = self.ce_loss(y, yhat, cls_weight)
 
         if adv:
-            yhat_adv = self.fprop(x, x_len, output_mask, embed, kp_emb, kp_lstm, orig_embed, loss, adv=True)
+            yhat_adv = self.fprop(x, x_len, embed, kp_emb, kp_lstm, orig_embed, loss, adv=True)
             loss += FLAGS.adv_coeff * self.adv_loss(y, yhat_adv, cls_weight)
 
         return yhat, tf.identity(loss, name='cost')
 
-    def fprop(self, x, x_len, output_mask, embed, kp_emb, kp_lstm, orig_embed=None, reg_loss=None, adv=False):
+    def fprop(self, x, x_len, embed, kp_emb, kp_lstm, orig_embed=None, reg_loss=None, adv=False):
         if adv:
             assert (reg_loss is not None and orig_embed is not None)
-        return self.build_lstm(x, x_len, output_mask, embed, kp_emb, kp_lstm, orig_embed, reg_loss, adv)
+        return self.build_lstm(x, x_len, embed, kp_emb, kp_lstm, orig_embed, reg_loss, adv)
 
-    def build_lstm(self, x, x_len, output_mask, embed, kp_emb, kp_lstm, orig_embed, reg_loss, adv):
+    def build_lstm(self, x, x_len, embed, kp_emb, kp_lstm, orig_embed, reg_loss, adv):
         var_scope_name = 'lstm{}'.format('_adv' if adv else '')
         with tf.variable_scope(var_scope_name):
             if adv:
@@ -47,16 +47,19 @@ class RecurrentModel:
             else:
                 tf.logging.info('Building bi-directional LSTM')
                 output = self.get_bidir_lstm(x)
+                print(output)
+                exit()
 
-            add_weight = tf.get_variable('post_lstm_weight', shape=(FLAGS.rnn_cell_size, FLAGS.num_classes),
+            add_weight = tf.get_variable('post_lstm_weight', shape=(
+                FLAGS.rnn_cell_size * (2 if FLAGS.bidir_lstm else 1), FLAGS.num_classes),
                                          initializer=tf.contrib.layers.xavier_initializer())
             add_bias = tf.get_variable('post_lstm_bias', shape=FLAGS.num_classes,
                                        initializer=tf.zeros_initializer())
 
             if not adv:
-                return x_embed, tf.matmul(tf.boolean_mask(output, output_mask), add_weight) + add_bias
+                return x_embed, tf.matmul(output[-1], add_weight) + add_bias
             else:
-                return tf.matmul(tf.boolean_mask(output, output_mask), add_weight) + add_bias
+                return tf.matmul(output[-1], add_weight) + add_bias
 
     @staticmethod
     def get_bidir_lstm(x):
