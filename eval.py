@@ -1,4 +1,5 @@
 import tensorflow as tf
+from keras.preprocessing.sequence import pad_sequences
 import numpy as np
 import math
 import os
@@ -17,10 +18,12 @@ computed_cls_weights = []
 
 
 def pad_seq(inp):
-    ret = np.full((len(inp), FLAGS.max_len), -1, dtype=np.int32)
-    for i in range(len(inp)):
-        ret[i][:len(inp[i])] = inp[i]
-    return ret
+    global pad_index
+
+    if pad_index == -1:
+        pad_index = len(DataLoader.get_default_vocab()) - 1
+
+    return pad_sequences(inp, padding="pre", maxlen=FLAGS.max_len, value=pad_index)
 
 
 def one_hot(a):

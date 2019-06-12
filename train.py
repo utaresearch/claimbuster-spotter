@@ -26,7 +26,7 @@ def pad_seq(inp):
     if pad_index == -1:
         pad_index = len(DataLoader.get_default_vocab()) - 1
 
-    return pad_sequences(inp, maxlen=FLAGS.max_len, value=pad_index)
+    return pad_sequences(inp, padding="pre", maxlen=FLAGS.max_len, value=pad_index)
 
 
 def one_hot(a):
