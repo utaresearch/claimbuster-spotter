@@ -53,10 +53,13 @@ class RecurrentModel:
             add_bias = tf.get_variable('post_lstm_bias', shape=FLAGS.num_classes,
                                        initializer=tf.zeros_initializer())
 
+            print(output)
+            exit()
+
             if not adv:
-                return x_embed, tf.matmul(output[-1], add_weight) + add_bias
+                return x_embed, tf.matmul(output[:, -1, :], add_weight) + add_bias
             else:
-                return tf.matmul(output[-1], add_weight) + add_bias
+                return tf.matmul(output[:, -1, :], add_weight) + add_bias
 
     def build_bidir_lstm_component(self, x, kp_lstm):
         assert FLAGS.rnn_num_layers == 1
