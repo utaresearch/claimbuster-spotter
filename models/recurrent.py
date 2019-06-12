@@ -47,8 +47,6 @@ class RecurrentModel:
             else:
                 tf.logging.info('Building bi-directional LSTM')
                 output = self.get_bidir_lstm(x)
-                print(output)
-                exit()
 
             add_weight = tf.get_variable('post_lstm_weight', shape=(
                 FLAGS.rnn_cell_size * (2 if FLAGS.bidir_lstm else 1), FLAGS.num_classes),
@@ -57,9 +55,9 @@ class RecurrentModel:
                                        initializer=tf.zeros_initializer())
 
             if not adv:
-                return x_embed, tf.matmul(output[-1], add_weight) + add_bias
+                return x_embed, tf.matmul((output if FLAGS.bidir_lstm else output[-1]), add_weight) + add_bias
             else:
-                return tf.matmul(output[-1], add_weight) + add_bias
+                return tf.matmul((output if FLAGS.bidir_lstm else output[-1]), add_weight) + add_bias
 
     @staticmethod
     def get_bidir_lstm(x):
