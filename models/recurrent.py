@@ -64,7 +64,7 @@ class RecurrentModel:
         fw_cell = tf.nn.rnn_cell.MultiRNNCell([self.get_lstm(kp_lstm) for _ in range(FLAGS.rnn_num_layers)])
         bw_cell = tf.nn.rnn_cell.MultiRNNCell([self.get_lstm(kp_lstm) for _ in range(FLAGS.rnn_num_layers)])
 
-        return tf.nn.bidirectional_dynamic_rnn(fw_cell, bw_cell, inputs=x)
+        return tf.nn.bidirectional_dynamic_rnn(fw_cell, bw_cell, inputs=x, dtype=tf.float32)
 
 
     @staticmethod
