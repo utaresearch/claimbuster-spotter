@@ -116,8 +116,8 @@ flags.DEFINE_integer('model_save_interval', 25, 'Numbers of epochs before model 
 flags.DEFINE_bool('eval_disjoint_training', True, 'Evaluate on disjoint data while training')
 
 # Data v2
-flags.DEFINE_float('train_pct', 0.95, 'Training percentage')
-flags.DEFINE_float('validation_pct', 0.05, 'Validation percentage')
+flags.DEFINE_float('train_pct', 1.00, 'Training percentage')
+flags.DEFINE_float('validation_pct', 0.00, 'Validation percentage')
 flags.DEFINE_float('test_pct', 0.00, 'Testing percentage')
 flags.DEFINE_integer('total_examples', None, 'Total number of examples')
 flags.DEFINE_integer('train_examples', None, 'Number of training examples')
