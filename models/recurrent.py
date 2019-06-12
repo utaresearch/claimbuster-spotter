@@ -54,7 +54,6 @@ class RecurrentModel:
                                        initializer=tf.zeros_initializer())
 
             output = (output[:, -1, :] if not FLAGS.bidir_lstm else output[1][:, -1, :])
-            print(output)
 
             if not adv:
                 return x_embed, tf.matmul(output, add_weight) + add_bias
