@@ -55,6 +55,7 @@ class RecurrentModel:
 
             if FLAGS.bidir_lstm:
                 output = tf.concat([output[0], output[1]], axis=2)
+            output = output[:, -1, :]
 
             if not adv:
                 return x_embed, tf.matmul(output, add_weight) + add_bias
