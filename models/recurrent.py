@@ -61,7 +61,7 @@ class RecurrentModel:
     @staticmethod
     def get_bidir_lstm(x):
         assert FLAGS.rnn_num_layers == 1
-        keras_bidir_object = K.Bidirectional(FLAGS.rnn_cell_size)
+        keras_bidir_object = K.Bidirectional(K.LSTM(FLAGS.rnn_cell_size))
 
         return keras_bidir_object(x)
 
