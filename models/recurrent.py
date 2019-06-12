@@ -38,6 +38,8 @@ class RecurrentModel:
 
             x = tf.nn.dropout(x_embed, keep_prob=kp_emb)
 
+
+
             if not FLAGS.bidir_lstm:
                 tf.logging.info('Building uni-directional LSTM')
                 lstm = tf.nn.rnn_cell.MultiRNNCell([self.get_lstm(kp_lstm) for _ in range(FLAGS.rnn_num_layers)])
@@ -71,13 +73,12 @@ class RecurrentModel:
 
         return tf.nn.bidirectional_dynamic_rnn(fw_cell, bw_cell, inputs=x, dtype=tf.float32)
 
-
     @staticmethod
     def get_lstm(kp_lstm):
         return tf.nn.rnn_cell.DropoutWrapper(
             tf.nn.rnn_cell.LSTMCell(FLAGS.rnn_cell_size),
-            input_keep_prob=kp_lstm,
-            state_keep_prob=kp_lstm,
+            # input_keep_prob=kp_lstm,
+            # state_keep_prob=kp_lstm,
             output_keep_prob=kp_lstm
         )
 
