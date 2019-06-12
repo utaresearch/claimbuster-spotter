@@ -56,7 +56,8 @@ class RecurrentModel:
                                        initializer=tf.zeros_initializer())
 
             if FLAGS.bidir_lstm:
-                output = tf.concat([output[0][:, -1, :], output[1][:, 0, :]], axis=1)
+                # output = tf.concat([output[0][:, -1, :], output[1][:, 0, :]], axis=1)
+                output = tf.concat(output, axis=2)[:, -1, :]
             else:
                 output = output[:, -1, :]
 
