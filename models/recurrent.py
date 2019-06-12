@@ -53,6 +53,9 @@ class RecurrentModel:
             add_bias = tf.get_variable('post_lstm_bias', shape=FLAGS.num_classes,
                                        initializer=tf.zeros_initializer())
 
+            print(output)
+            exit()
+
             if not adv:
                 return x_embed, tf.matmul((output if FLAGS.bidir_lstm else output[-1]), add_weight) + add_bias
             else:
