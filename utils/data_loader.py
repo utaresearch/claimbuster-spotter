@@ -48,7 +48,7 @@ class DataLoader:
 
         self.data.shuffle()
 
-        if custom_prc_data_loc is not None and custom_vocab_loc is not None:
+        if custom_prc_data_loc is None and custom_vocab_loc is None:
             self.post_process_flags()
         else:
             FLAGS.total_examples += self.data.get_length()
