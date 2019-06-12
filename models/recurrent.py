@@ -48,12 +48,13 @@ class RecurrentModel:
                 output, state = self.build_bidir_lstm_component(x, kp_lstm)
 
             add_weight = tf.get_variable('post_lstm_weight', shape=(
-                FLAGS.rnn_cell_size * (1 if FLAGS.bidir_lstm else 1), FLAGS.num_classes),
+                FLAGS.rnn_cell_size * (2 if FLAGS.bidir_lstm else 1), FLAGS.num_classes),
                                          initializer=tf.contrib.layers.xavier_initializer())
             add_bias = tf.get_variable('post_lstm_bias', shape=FLAGS.num_classes,
                                        initializer=tf.zeros_initializer())
 
-            output = (output[:, -1, :] if not FLAGS.bidir_lstm else output[1][:, -1, :])
+            if FLAGS.bidir_lstm:
+                output = tf.concat([output[0], output[1]], axis=2)
 
             if not adv:
                 return x_embed, tf.matmul(output, add_weight) + add_bias
