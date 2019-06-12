@@ -155,6 +155,7 @@ flags.DEFINE_float('perturb_norm_length', 30.0, 'Norm length of adversarial pert
 flags.DEFINE_integer('num_classes', 3, 'Number of classes for classification (2 combines NFS and UFS)')
 
 # Training
+flags.DEFINE_bool('adam', True, 'Adam or RMSProp if False')
 flags.DEFINE_bool('restore_and_continue', False, 'Restore previous training session and continue')
 flags.DEFINE_integer('batch_size', 512, 'Size of the batch.')
 

@@ -163,7 +163,8 @@ def main():
 
     lstm_model = RecurrentModel()
     logits, cost = lstm_model.construct_model(x, x_len, y, embed, kp_emb, kp_lstm, cls_weight, adv=FLAGS.adv_train)
-    optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(cost)
+    optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(cost) if FLAGS.adam else \
+        tf.train.RMSPropOptimizer(learning_rate=FLAGS.learning_rate).minimize(cost)
 
     y_pred = tf.nn.softmax(logits, axis=1, name='y_pred')
     correct = tf.equal(tf.argmax(y, axis=1), tf.argmax(y_pred, axis=1))

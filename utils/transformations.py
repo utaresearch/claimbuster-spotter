@@ -264,5 +264,4 @@ def load_deps_dummy():
 
 if __name__ == '__main__':
     load_deps_dummy()
-    print(process_sentence_ner_spacy(
-        'I served for eight years in the United States Senate and served on the Armed Services Committee.'))
+    print(process_sentence_ner_spacy('My name is Daniel and I like to eat apples at Walmart.'))
