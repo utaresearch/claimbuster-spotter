@@ -26,7 +26,7 @@ def pad_seq(inp):
     if pad_index == -1:
         pad_index = len(DataLoader.get_default_vocab()) - 1
 
-    ret = pad_sequences(inp, maxlen=FLAGS.max_len)
+    ret = pad_sequences(inp, maxlen=FLAGS.max_len, value=pad_index)
     print(ret)
     exit()
 
