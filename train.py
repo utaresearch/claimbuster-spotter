@@ -7,6 +7,7 @@ import os
 from utils.data_loader import DataLoader
 from models.recurrent import RecurrentModel
 from models.embeddings import Embedding
+from sklearn.metrics import f1_score
 from flags import FLAGS, print_flags
 
 x = tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x')
@@ -37,24 +38,33 @@ def get_cls_weights(batch_y):
     return [computed_cls_weights[z] for z in batch_y]
 
 
-def execute_validation(sess, cost, acc, validation_data):
+def execute_validation(sess, cost, acc, y_pred, validation_data):
     n_batches = math.ceil(float(FLAGS.validation_examples) / float(FLAGS.batch_size))
     val_loss, val_acc = 0.0, 0.0
     tot_val_ex = 0
 
+    all_y_pred = []
+    all_y = []
     for batch in range(n_batches):
         batch_x, batch_y = get_batch(batch, validation_data, ver='validation')
-        tloss, tacc = validation_stats(sess, cost, acc, batch_x, batch_y)
+        tloss, tacc, tpred = validation_stats(sess, cost, acc, y_pred, batch_x, batch_y)
+
         val_loss += tloss
         val_acc += tacc * len(batch_y)
         tot_val_ex += len(batch_y)
 
+        all_y_pred = np.concatenate((all_y_pred, tpred))
+        all_y = np.concatenate((all_y, batch_y))
+
     val_loss /= tot_val_ex
     val_acc /= tot_val_ex
-    return 'Val Loss: {:>7.4f} Val Acc: {:>7.4f}% '.format(val_loss, val_acc * 100)
+    val_f1 = f1_score(all_y, all_y_pred, average='weighted')
+
+    return 'Val{}Loss: {:>7.4f} Val F1: {:>7.4f}% '.format(
+        ' Disjoint ' if FLAGS.eval_disjoint_training else ' ', val_loss, val_f1)
 
 
-def validation_stats(sess, cost, acc, batch_x, batch_y):
+def validation_stats(sess, cost, acc, y_pred, batch_x, batch_y):
     val_loss = sess.run(
         cost,
         feed_dict={
@@ -77,8 +87,19 @@ def validation_stats(sess, cost, acc, batch_x, batch_y):
             cls_weight: get_cls_weights(batch_y)
         }
     )
+    val_pred = sess.run(
+        y_pred,
+        feed_dict={
+            x: pad_seq(batch_x),
+            x_len: [len(el) for el in batch_x],
+            y: one_hot(batch_y),
+            kp_emb: 1.0,
+            kp_lstm: 1.0,
+            cls_weight: get_cls_weights(batch_y)
+        }
+    )
 
-    return np.sum(val_loss), val_acc
+    return np.sum(val_loss), val_acc, np.argmax(val_pred, axis=1)
 
 
 def batch_stats(sess, batch_x, batch_y, cost, acc):
@@ -153,7 +174,12 @@ def main():
     computed_cls_weights = data_load.class_weights
 
     train_data = data_load.load_training_data()
-    validation_data = data_load.load_validation_data()
+
+    if FLAGS.eval_disjoint_training:
+        validation_data = data_load.load_validation_data()
+    else:
+        data_load_disjoint = DataLoader(FLAGS.custom_prc_data_loc, FLAGS.custom_vocab_loc)
+        validation_data = data_load_disjoint.load_all_data()
 
     tf.logging.info("{} training examples".format(train_data.get_length()))
     tf.logging.info("{} validation examples".format(validation_data.get_length()))
@@ -202,7 +228,7 @@ def main():
                 log_string = 'Epoch {:>3} Loss: {:>7.4} Acc: {:>7.4f}% '.format(epoch + 1, epoch_loss,
                                                                                 epoch_acc * 100)
                 if validation_data.get_length() > 0:
-                    log_string += execute_validation(sess, cost, acc, validation_data)
+                    log_string += execute_validation(sess, cost, acc, y_pred, validation_data)
                 log_string += '({:3.3f} sec/epoch)'.format((time.time() - start) / epochs_trav)
 
                 tf.logging.info(log_string)
