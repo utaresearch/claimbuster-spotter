@@ -127,7 +127,7 @@ flags.DEFINE_integer('random_state', 59, 'State of pseudo-randomness')
 
 # Model architecture
 flags.DEFINE_integer('rnn_num_layers', 1, 'Number of LSTM layers.')
-flags.DEFINE_integer('rnn_cell_size', 128, 'Number of hidden units in the LSTM.')
+flags.DEFINE_integer('rnn_cell_size', 64, 'Number of hidden units in the LSTM.')
 flags.DEFINE_bool('bidir_lstm', True, 'Use bidirectional LSTM')
 
 # Optimization
@@ -151,7 +151,7 @@ flags.DEFINE_bool('random_init_oov', False, 'Use np.random.normal init for unkno
 # Adversarial and virtual adversarial training parameters.
 flags.DEFINE_bool('adv_train', True, 'Train using adversarial perturbations')
 flags.DEFINE_float('adv_coeff', 1.0, 'Coefficient of adversarial loss')
-flags.DEFINE_float('perturb_norm_length', 30.0, 'Norm length of adversarial perturbation')
+flags.DEFINE_float('perturb_norm_length', 50.0, 'Norm length of adversarial perturbation')
 
 # Output stats
 flags.DEFINE_integer('num_classes', 3, 'Number of classes for classification (2 combines NFS and UFS)')
