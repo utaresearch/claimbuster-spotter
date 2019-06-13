@@ -131,8 +131,8 @@ def main():
     os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu_active])
 
     tf.logging.info("Loading dataset")
-    data_load = DataLoader(FLAGS.custom_prc_data_loc, FLAGS.custom_vocab_loc) if FLAGS.disjoint_data else \
-        DataLoader()
+    data_load = DataLoader(FLAGS.custom_prc_data_loc, FLAGS.custom_vocab_loc, ver='eval') if FLAGS.disjoint_data else \
+        DataLoader(ver='eval')
     computed_cls_weights = data_load.class_weights
 
     test_data = data_load.load_all_data() if FLAGS.disjoint_data else data_load.load_testing_data()

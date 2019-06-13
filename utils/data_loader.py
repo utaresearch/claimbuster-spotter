@@ -33,7 +33,7 @@ class Dataset:
 
 
 class DataLoader:
-    def __init__(self, custom_prc_data_loc=None, custom_vocab_loc=None):
+    def __init__(self, custom_prc_data_loc=None, custom_vocab_loc=None, ver='train'):
         assert (custom_prc_data_loc is None and custom_prc_data_loc is None) or \
                (custom_prc_data_loc is not None and custom_prc_data_loc is not None)
         assert FLAGS.num_classes == 2 or FLAGS.num_classes == 3
@@ -48,7 +48,7 @@ class DataLoader:
 
         self.data.shuffle()
 
-        if custom_prc_data_loc is None and custom_vocab_loc is None:
+        if (custom_prc_data_loc is None and custom_vocab_loc is None) or ver == 'eval':
             self.post_process_flags()
         else:
             FLAGS.total_examples += self.data.get_length()
