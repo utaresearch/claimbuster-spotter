@@ -180,7 +180,7 @@ def main():
     else:
         tf.logging.info('Loading disjoint data')
         data_load_disjoint = DataLoader(FLAGS.custom_prc_data_loc, FLAGS.custom_vocab_loc)
-        validation_data = data_load_disjoint.load_all_data()
+        validation_data = data_load_disjoint.load_separate_validation()
 
     tf.logging.info("{} training examples".format(train_data.get_length()))
     tf.logging.info("{} validation examples".format(validation_data.get_length()))
