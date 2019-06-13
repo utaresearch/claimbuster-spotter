@@ -127,7 +127,7 @@ flags.DEFINE_integer('random_state', 59, 'State of pseudo-randomness')
 
 # Model architecture
 flags.DEFINE_integer('rnn_num_layers', 1, 'Number of LSTM layers.')
-flags.DEFINE_integer('rnn_cell_size', 16, 'Number of hidden units in the LSTM.')
+flags.DEFINE_integer('rnn_cell_size', 8, 'Number of hidden units in the LSTM.')
 flags.DEFINE_bool('bidir_lstm', True, 'Use bidirectional LSTM')
 
 # Optimization
