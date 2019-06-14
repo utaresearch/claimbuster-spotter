@@ -17,7 +17,7 @@ def adversarial_loss(embedded, loss, loss_fn):
                          aggregation_method=tf.AggregationMethod.EXPERIMENTAL_ACCUMULATE_N)
     grad = tf.stop_gradient(grad)
     perturb = _scale_l2(grad, FLAGS.perturb_norm_length)
-    return loss_fn(embedded + perturb)
+    return loss_fn(embedded - perturb)
 
 
 # def apply_random_perturbation(embedded):
