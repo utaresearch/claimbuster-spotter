@@ -190,15 +190,17 @@ class DataLoader:
         tf.logging.info('Loading preprocessing dependencies')
         transf.load_dependencies()
 
+        tf.logging.info('Processing train data')
         for i in tqdm(range(len(train_data))):
             el = train_data[i]
-            print(el)
             el[0] = (transf.process_sentence_ner_spacy(el[0]) if FLAGS.ner_spacy else el[0])
-            el[0] = transf.exp_contractions(el[0].lower())
+            el[0] = transf.exp_contractions(str(el[0]).lower())
+
+        tf.logging.info('Processing eval data')
         for i in tqdm(range(len(dj_eval_data))):
             el = dj_eval_data[i]
             el[0] = (transf.process_sentence_ner_spacy(el[0]) if FLAGS.ner_spacy else el[0])
-            el[0] = transf.exp_contractions(el[0].lower())
+            el[0] = transf.exp_contractions(str(el[0]).lower())
 
         tokenizer = Tokenizer()
 
