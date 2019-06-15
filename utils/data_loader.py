@@ -36,14 +36,10 @@ class Dataset:
 
 
 class DataLoader:
-    def __init__(self, custom_prc_data_loc=None, custom_vocab_loc=None, ver='train'):
-        assert (custom_prc_data_loc is None and custom_prc_data_loc is None) or \
-               (custom_prc_data_loc is not None and custom_prc_data_loc is not None)
+    def __init__(self):
         assert FLAGS.num_classes == 2 or FLAGS.num_classes == 3
 
-        # self.data = self.load_external() if (not custom_prc_data_loc and not custom_vocab_loc) else \
-        #     self.load_external_custom(custom_prc_data_loc, custom_vocab_loc)
-        self.data = self.load_external_raw()
+        self.data, self.eval_data, self.vocab = self.load_external_raw()
         if FLAGS.num_classes == 2:
             self.conv_3_to_2()
 
@@ -51,12 +47,7 @@ class DataLoader:
         tf.logging.info('Class weights computed to be {}'.format(self.class_weights))
 
         self.data.shuffle()
-
-        if (custom_prc_data_loc is None and custom_vocab_loc is None) or ver == 'eval':
-            self.post_process_flags()
-        else:
-            FLAGS.total_examples += self.data.get_length()
-            FLAGS.validation_examples += self.data.get_length()
+        self.post_process_flags()
 
     def conv_3_to_2(self):
         self.data.y = [(1 if self.data.y[i] == 2 else 0) for i in range(len(self.data.y))]
@@ -103,15 +94,6 @@ class DataLoader:
 
         return ret
 
-    def load_validation_data(self):
-        ret = Dataset([], [], FLAGS.random_state)
-
-        for i in range(FLAGS.train_examples, FLAGS.train_examples + FLAGS.validation_examples):
-            ret.x.append(self.data.x[i])
-            ret.y.append(self.data.y[i])
-
-        return ret
-
     def load_testing_data(self):
         ret = Dataset([], [], FLAGS.random_state)
 
@@ -130,54 +112,10 @@ class DataLoader:
 
         return ret
 
-    def load_separate_validation(self):
-        ret = Dataset([], [], FLAGS.random_state)
-
-        for i in range(FLAGS.validation_examples):
-            ret.x.append(self.data.x[i])
-            ret.y.append(self.data.y[i])
-
-        return ret
-
     def post_process_flags(self):
-        FLAGS.total_examples = self.data.get_length()
-        FLAGS.train_examples = int(math.ceil(float(FLAGS.total_examples) * FLAGS.train_pct))
-        FLAGS.validation_examples = int(math.floor(float(FLAGS.total_examples) * FLAGS.validation_pct))
-        FLAGS.test_examples = FLAGS.total_examples - FLAGS.train_examples - FLAGS.validation_examples
-
-    @staticmethod
-    def load_external():
-        with open(FLAGS.prc_data_loc, 'rb') as f:
-            data = pickle.load(f)
-        with open(FLAGS.vocab_loc, 'rb') as f:
-            vc = pickle.load(f)
-
-        return Dataset([[vc.index(ch) for ch in x[1].split(' ')] for x in data],
-                       [int(x[0]) + 1 for x in data], FLAGS.random_state)
-
-    @staticmethod
-    def load_external_custom(custom_prc_data_loc, custom_vocab_loc):
-        with open(custom_prc_data_loc, 'rb') as f:
-            data = pickle.load(f)
-        with open(custom_vocab_loc, 'rb') as f:
-            vc = pickle.load(f)
-
-        default_vocab = DataLoader.get_default_vocab()
-
-        def vocab_idx(ch):
-            global fail_words
-            try:
-                return default_vocab.index(ch)
-            except:
-                fail_words.add(ch)
-                return -1
-
-        ret = Dataset([[vocab_idx(ch) for ch in x[1].split(' ')] for x in data],
-                      [int(x[0]) + 1 for x in data], FLAGS.random_state)
-
-        print(fail_words)
-        print('{} out of {} words were not found are defaulted to -1.'.format(len(fail_words), len(vc)))
-        return ret
+         FLAGS.train_examples = self.data.get_length()
+         FLAGS.test_examples = self.eval_data.get_length()
+         FLAGS.total_examples = FLAGS.train_examples + FLAGS.test_examples
 
     @staticmethod
     def load_external_raw():
@@ -186,6 +124,8 @@ class DataLoader:
 
         train_txt = [z[0] for z in train_data]
         eval_txt = [z[0] for z in train_data]
+        train_lab = [z[1] for z in train_data]
+        eval_lab = [z[1] for z in train_data]
 
         tf.logging.info('Loading preprocessing dependencies')
         transf.load_dependencies()
@@ -207,15 +147,12 @@ class DataLoader:
         tokenizer.fit_on_texts(np.concatenate((train_txt, eval_txt)))
         train_seq = tokenizer.texts_to_sequences(train_txt)
         eval_seq = tokenizer.texts_to_sequences(eval_txt)
+
+        train_data = Dataset(train_seq, train_lab, random_state=FLAGS.random_state)
+        eval_data = Dataset(eval_seq, eval_lab, random_state=FLAGS.random_state)
         vocab = tokenizer.word_index
 
-        print(train_seq)
-        print(eval_seq)
-        print(vocab)
-
-        exit()
-
-        return train_seq, eval_seq, vocab
+        return train_data, eval_data, vocab
 
     @staticmethod
     def parse_json(json_loc):
@@ -234,8 +171,3 @@ class DataLoader:
 
         print('{}: {}'.format(json_loc, labels))
         return dl
-
-    @staticmethod
-    def get_default_vocab():
-        with open(FLAGS.vocab_loc, 'rb') as f:
-            return pickle.load(f)

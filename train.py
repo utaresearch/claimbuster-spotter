@@ -16,17 +16,11 @@ kp_emb = tf.placeholder(tf.float32, name='kp_emb')
 kp_lstm = tf.placeholder(tf.float32, name='kp_lstm')
 cls_weight = tf.placeholder(tf.float32, (None,), name='cls_weight')
 
-pad_index = -1
 computed_cls_weights = []
 
 
 def pad_seq(inp):
-    global pad_index
-
-    if pad_index == -1:
-        pad_index = len(DataLoader.get_default_vocab()) - 1
-
-    return pad_sequences(inp, padding="pre", maxlen=FLAGS.max_len, value=pad_index)
+    return pad_sequences(inp, padding="pre", maxlen=FLAGS.max_len)
 
 
 def one_hot(a):
@@ -168,13 +162,7 @@ def main():
     computed_cls_weights = data_load.class_weights
 
     train_data = data_load.load_training_data()
-
-    if not FLAGS.eval_disjoint_training:
-        validation_data = data_load.load_validation_data()
-    else:
-        tf.logging.info('Loading disjoint data')
-        data_load_disjoint = DataLoader(FLAGS.custom_prc_data_loc, FLAGS.custom_vocab_loc)
-        validation_data = data_load_disjoint.load_separate_validation()
+    validation_data = data_load.load_testing_data()
 
     tf.logging.info("{} training examples".format(train_data.get_length()))
     tf.logging.info("{} validation examples".format(validation_data.get_length()))

@@ -96,7 +96,6 @@ flags.DEFINE_bool('ner_spacy', False, 'Named entity recognition with spaCy')
 
 # Base directories
 flags.DEFINE_string('output_dir', './output', 'Location of outputs')
-# flags.DEFINE_string('output_dir', './data/disjoint_2000', 'Location of outputs')
 flags.DEFINE_string('data_dir', './data', 'Location of data')
 
 # Data
@@ -107,21 +106,12 @@ flags.DEFINE_bool('weight_classes_loss', False, 'Weight classes in CE loss funct
 flags.DEFINE_list('addition_vocab', ['./data/disjoint_2000/vocab.pickle'], 'Additional corpuses to sample vocab data from')
 
 # Eval
-flags.DEFINE_bool('disjoint_data', True, 'Use custom non-train set data to evaluate model')
-flags.DEFINE_string('custom_prc_data_loc', './data/disjoint_2000/prc_data.pickle', 'Location of custom data file')
-flags.DEFINE_string('custom_vocab_loc', './data/disjoint_2000/vocab.pickle', 'Location of custom vocab file')
-
 flags.DEFINE_integer('stat_print_interval', 1, 'Numbers of epochs before stats are printed again')
 flags.DEFINE_integer('model_save_interval', 25, 'Numbers of epochs before model is saved again')
-flags.DEFINE_bool('eval_disjoint_training', True, 'Evaluate on disjoint data while training')
 
 # Data v2
-flags.DEFINE_float('train_pct', 1.00, 'Training percentage')
-flags.DEFINE_float('validation_pct', 0.00, 'Validation percentage')
-flags.DEFINE_float('test_pct', 0.00, 'Testing percentage')
 flags.DEFINE_integer('total_examples', None, 'Total number of examples')
 flags.DEFINE_integer('train_examples', None, 'Number of training examples')
-flags.DEFINE_integer('validation_examples', None, 'Number of validation examples')
 flags.DEFINE_integer('test_examples', None, 'Number of testing examples')
 flags.DEFINE_integer('random_state', 59, 'State of pseudo-randomness')
 
@@ -162,12 +152,8 @@ flags.DEFINE_bool('restore_and_continue', False, 'Restore previous training sess
 flags.DEFINE_integer('batch_size', 512, 'Size of the batch.')
 
 # Locations (must be last due to customization)
-flags.DEFINE_string('vocab_loc', '{}/vocab.pickle'.format(FLAGS.output_dir), 'Path to pre-calculated vocab data')
-flags.DEFINE_string('prc_data_loc', '{}/prc_data.pickle'.format(FLAGS.output_dir), 'Location of processed data')
-
 flags.DEFINE_string('raw_data_loc', '{}/data_small.json'.format(FLAGS.data_dir), 'Location of raw data')
 flags.DEFINE_string('raw_dj_eval_loc', '{}/disjoint_2000.json'.format(FLAGS.data_dir), 'Location of raw data')
-# flags.DEFINE_string('raw_data_loc', './data/disjoint_2000.json', 'Location of raw data')
 
 
 def print_flags():
