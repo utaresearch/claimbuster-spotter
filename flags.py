@@ -92,7 +92,7 @@ flags.DEFINE_list('gpu_active', [0], 'ID of GPU to use: in range [0, 4]')
 # Preprocessing
 flags.DEFINE_bool('noun_rep', False, 'Replace nouns with identifiers')
 flags.DEFINE_bool('full_tags', False, 'Replace all words with tags')
-flags.DEFINE_bool('ner_spacy', False, 'Named entity recognition with spaCy')
+flags.DEFINE_bool('ner_spacy', True, 'Named entity recognition with spaCy')
 
 # Base directories
 flags.DEFINE_string('output_dir', './output', 'Location of outputs')

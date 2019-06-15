@@ -141,7 +141,6 @@ class DataLoader:
             el[0] = (transf.process_sentence_ner_spacy(el[0]) if FLAGS.ner_spacy else el[0])
             el[0] = transf.remove_possessives(el[0])
 
-
         tokenizer = Tokenizer()
 
         tokenizer.fit_on_texts(np.concatenate((train_txt, eval_txt)))
