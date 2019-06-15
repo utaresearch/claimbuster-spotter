@@ -259,6 +259,11 @@ def expand_contractions(txt):
     return ' '.join([(exp_contractions[word] if word in exp_contractions else word) for word in txt.split(' ')])
 
 
+def remove_possessives(sentence):
+    return ' '.join(
+        [(st if len(st) == 1 else (st[:-2] if st.rfind("'s") == len(st) - 2 else st)) for st in sentence.split(' ')])
+
+
 def process_sentence_noun_rep(sentence):
     prc_res = get_tags(sentence)
     ret = []
@@ -319,9 +324,6 @@ def transform_sentence_complete(sentence):
             lcount += 1
 
         return stripped_away_front, ''.join(strar), stripped_away_back[::-1]
-
-    def remove_possessive(st):
-        return st if len(st) == 1 else (st[:-2] if st.rfind("'s") == len(st) - 2 else st)
 
     txt_split = txt.split(' ')
     changed_words = []

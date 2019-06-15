@@ -14,16 +14,10 @@ kp_lstm = tf.placeholder(tf.float32, name='kp_lstm')
 cls_weight = tf.placeholder(tf.float32, (None,), name='cls_weight')
 
 computed_cls_weights = []
-pad_index = -1
 
 
 def pad_seq(inp):
-    global pad_index
-
-    if pad_index == -1:
-        pad_index = len(DataLoader.get_default_vocab()) - 1
-
-    return pad_sequences(inp, padding="pre", maxlen=FLAGS.max_len, value=pad_index)
+    return pad_sequences(inp, padding="pre", maxlen=FLAGS.max_len)
 
 
 def one_hot(a):
@@ -112,7 +106,7 @@ def get_batch(bid, data):
 
     for i in range(FLAGS.batch_size):
         idx = bid * FLAGS.batch_size + i
-        if idx >= (FLAGS.total_examples if FLAGS.disjoint_data else FLAGS.test_examples):
+        if idx >= FLAGS.test_examples:
             break
         batch_x.append(data.x[idx])
         batch_y.append(data.y[idx])
@@ -126,11 +120,10 @@ def main():
     os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu_active])
 
     tf.logging.info("Loading dataset")
-    data_load = DataLoader(FLAGS.custom_prc_data_loc, FLAGS.custom_vocab_loc, ver='eval') if FLAGS.disjoint_data else \
-        DataLoader(ver='eval')
+    data_load = DataLoader()
     computed_cls_weights = data_load.class_weights
 
-    test_data = data_load.load_all_data() if FLAGS.disjoint_data else data_load.load_testing_data()
+    test_data = data_load.load_testing_data()
     tf.logging.info("{} testing examples".format(test_data.get_length()))
 
     graph = tf.Graph()
