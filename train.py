@@ -31,7 +31,7 @@ def get_cls_weights(batch_y):
     return [computed_cls_weights[z] for z in batch_y]
 
 
-def execute_validation(sess, cost, acc, y_pred, validation_data):
+def execute_validation(sess, cost, acc, y_pred, test_data):
     n_batches = math.ceil(float(FLAGS.validation_examples) / float(FLAGS.batch_size))
     val_loss, val_acc = 0.0, 0.0
     tot_val_ex = 0
@@ -39,7 +39,7 @@ def execute_validation(sess, cost, acc, y_pred, validation_data):
     all_y_pred = []
     all_y = []
     for batch in range(n_batches):
-        batch_x, batch_y = get_batch(batch, validation_data, ver='validation')
+        batch_x, batch_y = get_batch(batch, test_data, ver='validation')
         tloss, tacc, tpred = validation_stats(sess, cost, acc, y_pred, batch_x, batch_y)
 
         val_loss += tloss
@@ -162,10 +162,10 @@ def main():
     computed_cls_weights = data_load.class_weights
 
     train_data = data_load.load_training_data()
-    validation_data = data_load.load_testing_data()
+    test_data = data_load.load_testing_data()
 
     tf.logging.info("{} training examples".format(train_data.get_length()))
-    tf.logging.info("{} validation examples".format(validation_data.get_length()))
+    tf.logging.info("{} validation examples".format(test_data.get_length()))
 
     embed_obj = Embedding()
     embed = embed_obj.construct_embeddings()
@@ -210,8 +210,8 @@ def main():
             if epoch % FLAGS.stat_print_interval == 0:
                 log_string = 'Epoch {:>3} Loss: {:>7.4} Acc: {:>7.4f}% '.format(epoch + 1, epoch_loss,
                                                                                 epoch_acc * 100)
-                if validation_data.get_length() > 0:
-                    log_string += execute_validation(sess, cost, acc, y_pred, validation_data)
+                if test_data.get_length() > 0:
+                    log_string += execute_validation(sess, cost, acc, y_pred, test_data)
                 log_string += '({:3.3f} sec/epoch)'.format((time.time() - start) / epochs_trav)
 
                 tf.logging.info(log_string)

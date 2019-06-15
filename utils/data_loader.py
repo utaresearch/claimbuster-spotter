@@ -97,25 +97,16 @@ class DataLoader:
     def load_testing_data(self):
         ret = Dataset([], [], FLAGS.random_state)
 
-        for i in range(FLAGS.train_examples + FLAGS.validation_examples, FLAGS.total_examples):
-            ret.x.append(self.data.x[i])
-            ret.y.append(self.data.y[i])
-
-        return ret
-
-    def load_all_data(self):
-        ret = Dataset([], [], FLAGS.random_state)
-
-        for i in range(FLAGS.total_examples):
-            ret.x.append(self.data.x[i])
-            ret.y.append(self.data.y[i])
+        for i in range(FLAGS.test_examples):
+            ret.x.append(self.eval_data.x[i])
+            ret.y.append(self.eval_data.y[i])
 
         return ret
 
     def post_process_flags(self):
-         FLAGS.train_examples = self.data.get_length()
-         FLAGS.test_examples = self.eval_data.get_length()
-         FLAGS.total_examples = FLAGS.train_examples + FLAGS.test_examples
+        FLAGS.train_examples = self.data.get_length()
+        FLAGS.test_examples = self.eval_data.get_length()
+        FLAGS.total_examples = FLAGS.train_examples + FLAGS.test_examples
 
     @staticmethod
     def load_external_raw():
