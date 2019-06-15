@@ -265,6 +265,14 @@ def remove_possessives(sentence):
         [(st if len(st) == 1 else (st[:-2] if st.rfind("'s") == len(st) - 2 else st)) for st in sentence.split(' ')])
 
 
+def remove_kill_words(sentence):
+    ret = []
+    for word in sentence:
+        if word not in kill_words:
+            ret.append(word)
+    return ' '.join(ret)
+
+
 def process_sentence_noun_rep(sentence):
     prc_res = get_tags(sentence)
     ret = []
