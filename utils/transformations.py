@@ -272,7 +272,7 @@ def remove_possessives(sentence):
 
 def remove_kill_words(sentence):
     ret = []
-    for word in sentence:
+    for word in sentence.split(' '):
         if word not in kill_words:
             ret.append(word)
     return ' '.join(ret)
