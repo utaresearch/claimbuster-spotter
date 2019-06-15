@@ -41,8 +41,9 @@ class DataLoader:
                (custom_prc_data_loc is not None and custom_prc_data_loc is not None)
         assert FLAGS.num_classes == 2 or FLAGS.num_classes == 3
 
-        self.data = self.load_external() if (not custom_prc_data_loc and not custom_vocab_loc) else \
-            self.load_external_custom(custom_prc_data_loc, custom_vocab_loc)
+        # self.data = self.load_external() if (not custom_prc_data_loc and not custom_vocab_loc) else \
+        #     self.load_external_custom(custom_prc_data_loc, custom_vocab_loc)
+        self.data = self.load_external_raw()
         if FLAGS.num_classes == 2:
             self.conv_3_to_2()
 
