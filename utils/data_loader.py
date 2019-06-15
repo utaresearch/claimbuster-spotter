@@ -181,7 +181,7 @@ class DataLoader:
 
     @staticmethod
     def load_external_raw():
-        train_data = DataLoader.parse_json(FLAGS.raw_json_loc)
+        train_data = DataLoader.parse_json(FLAGS.raw_data_loc)
         dj_eval_loc = DataLoader.parse_json(FLAGS.raw_dj_eval_loc)
 
         train_txt = [z[0] for z in train_data]
