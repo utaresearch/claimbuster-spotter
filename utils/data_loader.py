@@ -40,6 +40,7 @@ class DataLoader:
         assert FLAGS.num_classes == 2 or FLAGS.num_classes == 3
 
         self.data, self.eval_data, self.vocab = self.load_external_raw()
+        print(self.vocab)
         if FLAGS.num_classes == 2:
             self.conv_3_to_2()
 
@@ -51,6 +52,7 @@ class DataLoader:
 
     def conv_3_to_2(self):
         self.data.y = [(1 if self.data.y[i] == 2 else 0) for i in range(len(self.data.y))]
+        self.eval_data.y = [(1 if self.eval_data.y[i] == 2 else 0) for i in range(len(self.eval_data.y))]
 
     def compute_class_weights(self):
         return compute_class_weight('balanced', [z for z in range(FLAGS.num_classes)], self.data.y)

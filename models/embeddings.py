@@ -41,7 +41,7 @@ class Embedding:
         embedding_matrix = np.random.normal(loc=0, scale=0.1, size=self.embed_shape).astype(np.float32) \
             if FLAGS.random_init_oov else np.zeros(self.embed_shape, dtype=np.dtype('float32'))
 
-        embedding_matrix[-1] = np.zeros(FLAGS.embedding_dims)
+        embedding_matrix[0] = np.zeros(FLAGS.embedding_dims)
 
         tf.logging.info("Loading {} model...".format('word2vec' if FLAGS.embed_type == 0 else 'glove'))
         model = KeyedVectors.load_word2vec_format(FLAGS.w2v_loc if FLAGS.embed_type == 0 else FLAGS.glove_loc,
@@ -79,10 +79,6 @@ class Embedding:
         target_file = os.path.join(FLAGS.output_dir, "embedding_matrix_tf.ckpt")
         tf.logging.info("Attempting to restore embedding matrix backup from {}...".format(target_file))
 
-        """Useful debugging tool"""
-        # from tensorflow.python.tools import inspect_checkpoint as chkp
-        # chkp.print_tensors_in_checkpoint_file(target_file, tensor_name='', all_tensors=True)
-
         var_to_return = tf.Variable(np.zeros(self.embed_shape, dtype=np.dtype('float32')))
 
         try:
@@ -93,43 +89,6 @@ class Embedding:
         except:
             sess.run(tf.global_variables_initializer())
             return var_to_return.eval()
-
-    @staticmethod
-    def get_vocab():
-        with open(FLAGS.vocab_loc, 'rb') as f:
-            return pickle.load(f)
-
-
-class EmbeddingHelper:
-    def __init__(self):
-        self.vocab_list = self.get_vocab()
-        self.embed_shape = (len(self.vocab_list) + 1, FLAGS.embedding_dims)
-        self.embedding_matrix = self.create_embedding_matrix()
-
-    def query(self, word_idx):
-        return self.embedding_matrix[word_idx]
-
-    def words_to_embeddings(self, word_list):
-        def vocab_idx(ch):
-            try:
-                return self.vocab_list.index(ch)
-            except:
-                return -1
-
-        return self.word_idx_to_embeddings([vocab_idx(z) for z in word_list])
-
-    def word_idx_to_embeddings(self, idx_list):
-        ret = [self.query(word_idx) for word_idx in idx_list]
-        return ret
-
-    @staticmethod
-    def create_embedding_matrix():
-        fop = open(FLAGS.w2v_loc if FLAGS.embed_type == 0 else FLAGS.glove_loc, 'r')
-        fop.readline()  # flush out first line that denotes embedding dims
-        ret = [[float(f) for f in line.split(' ')[1:]] for line in fop]
-        fop.close()
-
-        return ret
 
     @staticmethod
     def get_vocab():
