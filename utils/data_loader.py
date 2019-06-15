@@ -210,16 +210,6 @@ class DataLoader:
         return train_data, dj_eval_loc, train_vocab,
 
     @staticmethod
-    def process_dataset(parsed_data):
-        for el in parsed_data:
-            el[0] = (transf.process_sentence_ner_spacy(el[0]) if FLAGS.ner_spacy else el[0])
-            el[0] = transf.exp_contractions(el[0].lower())
-
-        tokenizer = Tokenizer()
-        tokenizer.fit_on_texts([z[0] for z in parsed_data])
-        sequences = tokenizer.texts_to_sequences(texts)
-
-    @staticmethod
     def parse_json(json_loc):
         with open(json_loc) as f:
             temp_data = json.load(f)
@@ -229,7 +219,7 @@ class DataLoader:
 
         for el in temp_data:
             lab = int(el["label"]) + 1
-            txt = f["text"]
+            txt = el["text"]
 
             labels[lab] += 1
             dl.append((txt, lab))
