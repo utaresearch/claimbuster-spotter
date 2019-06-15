@@ -182,17 +182,20 @@ class DataLoader:
     @staticmethod
     def load_external_raw():
         train_data = DataLoader.parse_json(FLAGS.raw_data_loc)
-        dj_eval_loc = DataLoader.parse_json(FLAGS.raw_dj_eval_loc)
+        dj_eval_data = DataLoader.parse_json(FLAGS.raw_dj_eval_loc)
 
         train_txt = [z[0] for z in train_data]
         eval_txt = [z[0] for z in train_data]
 
+        tf.logging.info('Loading preprocessing dependencies')
         transf.load_dependencies()
 
-        for el in train_data:
+        for i in tqdm(range(len(train_data))):
+            el = train_data[i]
             el[0] = (transf.process_sentence_ner_spacy(el[0]) if FLAGS.ner_spacy else el[0])
             el[0] = transf.exp_contractions(el[0].lower())
-        for el in dj_eval_loc:
+        for i in tqdm(range(len(dj_eval_data))):
+            el = dj_eval_data[i]
             el[0] = (transf.process_sentence_ner_spacy(el[0]) if FLAGS.ner_spacy else el[0])
             el[0] = transf.exp_contractions(el[0].lower())
 
@@ -224,7 +227,7 @@ class DataLoader:
             labels[lab] += 1
             dl.append([txt, lab])
 
-        print(labels)
+        print('{}: {}'.format(json_loc, labels))
         return dl
 
     @staticmethod
