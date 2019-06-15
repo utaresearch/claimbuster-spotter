@@ -127,8 +127,8 @@ class DataLoader:
             for i in tqdm(range(len(inp_data))):
                 inp_data[i] = transf.correct_mistakes(inp_data[i])
                 inp_data[i] = transf.expand_contractions(inp_data[i])
-                inp_data[i] = (
-                    transf.process_sentence_ner_spacy(inp_data[i]) if FLAGS.ner_spacy else inp_data[i])
+                inp_data[i] = (transf.process_sentence_ner_spacy(inp_data[i])
+                               if FLAGS.ner_spacy else inp_data[i])
                 inp_data[i] = transf.remove_possessives(inp_data[i])
                 inp_data[i] = transf.remove_kill_words(inp_data[i])
             return inp_data
@@ -137,6 +137,8 @@ class DataLoader:
         train_txt = process_dataset(train_txt)
         tf.logging.info('Processing eval data')
         eval_txt = process_dataset(eval_txt)
+
+        print(train_txt)
 
         tokenizer = Tokenizer()
 
