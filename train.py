@@ -53,9 +53,7 @@ def execute_validation(sess, cost, acc, y_pred, test_data):
     val_acc /= tot_val_ex
     val_f1 = f1_score(all_y, all_y_pred, average='weighted')
 
-    return '{}Val Loss: {:>7.4f} {}Val F1: {:>7.4f} '.format(
-        'DJ ' if FLAGS.eval_disjoint_training else '', val_loss,
-        'DJ ' if FLAGS.eval_disjoint_training else ' ', val_f1)
+    return 'DJ Val Loss: {:>7.4f} DJ Val F1: {:>7.4f} '.format(val_loss, val_f1)
 
 
 def validation_stats(sess, cost, acc, y_pred, batch_x, batch_y):
