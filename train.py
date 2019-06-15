@@ -32,7 +32,7 @@ def get_cls_weights(batch_y):
 
 
 def execute_validation(sess, cost, acc, y_pred, test_data):
-    n_batches = math.ceil(float(FLAGS.validation_examples) / float(FLAGS.batch_size))
+    n_batches = math.ceil(float(FLAGS.test_examples) / float(FLAGS.batch_size))
     val_loss, val_acc = 0.0, 0.0
     tot_val_ex = 0
 
@@ -137,7 +137,7 @@ def get_batch(bid, data, ver='train'):
 
     for i in range(FLAGS.batch_size):
         idx = bid * FLAGS.batch_size + i
-        if idx >= (FLAGS.train_examples if ver == 'train' else FLAGS.validation_examples):
+        if idx >= (FLAGS.train_examples if ver == 'train' else FLAGS.test_examples):
             break
         batch_x.append(data.x[idx])
         batch_y.append(data.y[idx])
