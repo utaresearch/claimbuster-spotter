@@ -138,8 +138,6 @@ class DataLoader:
         tf.logging.info('Processing eval data')
         eval_txt = process_dataset(eval_txt)
 
-        print(train_txt)
-
         tokenizer = Tokenizer()
 
         tokenizer.fit_on_texts(np.concatenate((train_txt, eval_txt)))
@@ -149,8 +147,6 @@ class DataLoader:
         train_data = Dataset(train_seq, train_lab, random_state=FLAGS.random_state)
         eval_data = Dataset(eval_seq, eval_lab, random_state=FLAGS.random_state)
         vocab = tokenizer.word_index
-
-        print(vocab)
 
         return train_data, eval_data, vocab
 
