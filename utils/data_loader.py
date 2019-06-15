@@ -40,7 +40,6 @@ class DataLoader:
         assert FLAGS.num_classes == 2 or FLAGS.num_classes == 3
 
         self.data, self.eval_data, self.vocab = self.load_external_raw()
-        print(self.vocab)
         if FLAGS.num_classes == 2:
             self.conv_3_to_2()
 

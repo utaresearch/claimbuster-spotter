@@ -9,9 +9,9 @@ from flags import FLAGS
 
 
 class Embedding:
-    def __init__(self):
-        self.vocab_list = self.get_vocab()
-        self.embed_shape = (len(self.vocab_list) + 1, FLAGS.embedding_dims)
+    def __init__(self, vocab):
+        self.vocab = vocab
+        self.embed_shape = (len(self.vocab) + 1, FLAGS.embedding_dims)
         self.embed = None
 
     def construct_embeddings(self):
@@ -48,18 +48,17 @@ class Embedding:
                                                   binary=False)
         tf.logging.info("Model loaded.")
 
-        idx, fail_cnt, fail_words = 0, 0, []
-        for word in self.vocab_list:
+        fail_cnt, fail_words = 0, []
+        for word, idx in self.vocab.items():
             try:
                 embedding_vector = model[word]
                 embedding_matrix[idx] = embedding_vector
             except:
                 fail_cnt = fail_cnt + 1
                 fail_words.append(word)
-            idx = idx + 1
 
         fail_words.sort()
-        tf.logging.info(str(fail_cnt) + " out of " + str(idx) +
+        tf.logging.info(str(fail_cnt) + " out of " + str(len(self.vocab)) +
                         " strings were not found in word2vec and were initialized with random_normal_initializer.")
         tf.logging.info(fail_words)
 

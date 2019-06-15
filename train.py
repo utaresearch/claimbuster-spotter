@@ -167,7 +167,7 @@ def main():
     tf.logging.info("{} training examples".format(train_data.get_length()))
     tf.logging.info("{} validation examples".format(test_data.get_length()))
 
-    embed_obj = Embedding()
+    embed_obj = Embedding(data_load.vocab)
     embed = embed_obj.construct_embeddings()
 
     lstm_model = RecurrentModel()
