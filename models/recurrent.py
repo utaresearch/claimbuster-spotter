@@ -9,22 +9,22 @@ class RecurrentModel:
     def __init__(self):
         pass
 
-    def construct_model(self, x, x_len, y, embed, kp_emb, kp_lstm, cls_weight, adv):
-        orig_embed, yhat = self.fprop(x, x_len, embed, kp_emb, kp_lstm)
+    def construct_model(self, x, y, embed, kp_emb, kp_lstm, cls_weight, adv):
+        orig_embed, yhat = self.fprop(x, embed, kp_emb, kp_lstm)
         loss = self.ce_loss(y, yhat, cls_weight)
 
         if adv:
-            yhat_adv = self.fprop(x, x_len, embed, kp_emb, kp_lstm, orig_embed, loss, adv=True)
+            yhat_adv = self.fprop(x, embed, kp_emb, kp_lstm, orig_embed, loss, adv=True)
             loss += FLAGS.adv_coeff * self.adv_loss(y, yhat_adv, cls_weight)
 
         return yhat, tf.identity(loss, name='cost')
 
-    def fprop(self, x, x_len, embed, kp_emb, kp_lstm, orig_embed=None, reg_loss=None, adv=False):
+    def fprop(self, x, embed, kp_emb, kp_lstm, orig_embed=None, reg_loss=None, adv=False):
         if adv:
             assert (reg_loss is not None and orig_embed is not None)
-        return self.build_lstm(x, x_len, embed, kp_emb, kp_lstm, orig_embed, reg_loss, adv)
+        return self.build_lstm(x, embed, kp_emb, kp_lstm, orig_embed, reg_loss, adv)
 
-    def build_lstm(self, x, x_len, embed, kp_emb, kp_lstm, orig_embed, reg_loss, adv):
+    def build_lstm(self, x, embed, kp_emb, kp_lstm, orig_embed, reg_loss, adv):
         with tf.variable_scope('lstm', reuse=tf.AUTO_REUSE):
             if adv:
                 x_embed = apply_adversarial_perturbation(orig_embed, reg_loss)
@@ -42,7 +42,6 @@ class RecurrentModel:
             if not FLAGS.bidir_lstm:
                 tf.logging.info('Building uni-directional LSTM')
                 lstm = tf.nn.rnn_cell.MultiRNNCell([self.get_lstm(kp_lstm) for _ in range(FLAGS.rnn_num_layers)])
-                # output, state = tf.nn.dynamic_rnn(cell=lstm, inputs=x, sequence_length=x_len, dtype=tf.float32)
                 output, state = tf.nn.dynamic_rnn(cell=lstm, inputs=x, dtype=tf.float32)
             else:
                 tf.logging.info('Building bi-directional LSTM')

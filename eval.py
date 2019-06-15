@@ -8,7 +8,6 @@ from sklearn.metrics import f1_score, classification_report
 from flags import FLAGS
 
 x = tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x')
-x_len = tf.placeholder(tf.int32, (None,), name='x_len')
 y = tf.placeholder(tf.int32, (None, FLAGS.num_classes), name='y')
 kp_emb = tf.placeholder(tf.float32, name='kp_emb')
 kp_lstm = tf.placeholder(tf.float32, name='kp_lstm')
@@ -42,7 +41,6 @@ def eval_stats(sess, batch_x, batch_y, cost, acc, y_pred):
         cost,
         feed_dict={
             x: pad_seq(batch_x),
-            x_len: [len(el) for el in batch_x],
             y: one_hot(batch_y),
             kp_emb: 1.0,
             kp_lstm: 1.0,
@@ -53,7 +51,6 @@ def eval_stats(sess, batch_x, batch_y, cost, acc, y_pred):
         acc,
         feed_dict={
             x: pad_seq(batch_x),
-            x_len: [len(el) for el in batch_x],
             y: one_hot(batch_y),
             kp_emb: 1.0,
             kp_lstm: 1.0,
@@ -64,7 +61,6 @@ def eval_stats(sess, batch_x, batch_y, cost, acc, y_pred):
         y_pred,
         feed_dict={
             x: pad_seq(batch_x),
-            x_len: [len(el) for el in batch_x],
             y: one_hot(batch_y),
             kp_emb: 1.0,
             kp_lstm: 1.0,
@@ -76,7 +72,7 @@ def eval_stats(sess, batch_x, batch_y, cost, acc, y_pred):
 
 
 def load_model(sess, graph):
-    global x, x_len, y, kp_emb, kp_lstm, cls_weight
+    global x, y, kp_emb, kp_lstm, cls_weight
 
     def get_last_save(scan_loc):
         ret_ar = []
@@ -96,7 +92,6 @@ def load_model(sess, graph):
 
         # inputs
         x = graph.get_tensor_by_name('x:0')
-        x_len = graph.get_tensor_by_name('x_len:0')
         y = graph.get_tensor_by_name('y:0')
         kp_emb = graph.get_tensor_by_name('kp_emb:0')
         kp_lstm = graph.get_tensor_by_name('kp_lstm:0')
