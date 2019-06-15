@@ -148,6 +148,8 @@ class DataLoader:
         eval_data = Dataset(eval_seq, eval_lab, random_state=FLAGS.random_state)
         vocab = tokenizer.word_index
 
+        print(vocab)
+
         return train_data, eval_data, vocab
 
     @staticmethod
