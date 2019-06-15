@@ -116,6 +116,7 @@ class DataLoader:
 
         train_txt = [z[0] for z in train_data]
         eval_txt = [z[0] for z in dj_eval_data]
+
         train_lab = [z[1] for z in train_data]
         eval_lab = [z[1] for z in dj_eval_data]
 

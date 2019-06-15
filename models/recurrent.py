@@ -25,7 +25,7 @@ class RecurrentModel:
         return self.build_lstm(x, embed, kp_emb, kp_lstm, orig_embed, reg_loss, adv)
 
     def build_lstm(self, x, embed, kp_emb, kp_lstm, orig_embed, reg_loss, adv):
-        with tf.variable_scope('lstm', reuse=tf.AUTO_REUSE):
+        with tf.variable_scope('lstm', reuse=True):
             if adv:
                 x_embed = apply_adversarial_perturbation(orig_embed, reg_loss)
             else:
