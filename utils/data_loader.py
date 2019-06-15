@@ -7,7 +7,7 @@ import math
 from tqdm import tqdm
 import json
 import sys
-import transformations as transf
+from . import transformations as transf
 sys.path.append('..')
 from flags import FLAGS
 from sklearn.utils import shuffle
