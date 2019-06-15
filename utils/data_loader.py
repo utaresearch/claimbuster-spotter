@@ -134,7 +134,9 @@ class DataLoader:
         for i in tqdm(range(len(dj_eval_data))):
             el = dj_eval_data[i]
 
+            print(el[0])
             el[0] = transf.remove_possessives(el[0])
+            print(el[0])
             el[0] = (transf.process_sentence_ner_spacy(el[0]) if FLAGS.ner_spacy else el[0])
             el[0] = transf.expand_contractions(el[0].lower())
 
