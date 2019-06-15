@@ -164,7 +164,9 @@ flags.DEFINE_integer('batch_size', 512, 'Size of the batch.')
 # Locations (must be last due to customization)
 flags.DEFINE_string('vocab_loc', '{}/vocab.pickle'.format(FLAGS.output_dir), 'Path to pre-calculated vocab data')
 flags.DEFINE_string('prc_data_loc', '{}/prc_data.pickle'.format(FLAGS.output_dir), 'Location of processed data')
+
 flags.DEFINE_string('raw_data_loc', '{}/data_small.json'.format(FLAGS.data_dir), 'Location of raw data')
+flags.DEFINE_string('raw_eval_loc', '{}/data_small.json'.format(FLAGS.data_dir), 'Location of raw data')
 # flags.DEFINE_string('raw_data_loc', './data/disjoint_2000.json', 'Location of raw data')
 
 
