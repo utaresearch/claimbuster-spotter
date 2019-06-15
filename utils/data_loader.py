@@ -207,13 +207,15 @@ class DataLoader:
         tokenizer.fit_on_texts(np.concatenate((train_txt, eval_txt)))
         train_seq = tokenizer.texts_to_sequences(train_txt)
         eval_seq = tokenizer.texts_to_sequences(eval_txt)
+        vocab = tokenizer.word_index
 
         print(train_seq)
         print(eval_seq)
+        print(vocab)
 
         exit()
 
-        return train_data, dj_eval_loc, train_vocab,
+        return train_seq, eval_seq, vocab
 
     @staticmethod
     def parse_json(json_loc):
