@@ -266,8 +266,10 @@ def expand_contractions(sentence):
 
 
 def remove_possessives(sentence):
-    return ' '.join(
+    sentence = ' '.join(
         [(st if len(st) == 1 else (st[:-2] if st.rfind("'s") == len(st) - 2 else st)) for st in sentence.split(' ')])
+    return ' '.join(
+        [(st if len(st) == 1 else (st[:-2] if st.rfind("s'") == len(st) - 2 else st)) for st in sentence.split(' ')])
 
 
 def remove_kill_words(sentence):
