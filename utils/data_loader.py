@@ -1,10 +1,13 @@
 import tensorflow as tf
-from imblearn.over_sampling import SMOTE
+from keras.preprocessing.text import Tokenizer
 from sklearn.utils import resample
 import numpy as np
 import pickle
 import math
+from tqdm import tqdm
+import json
 import sys
+import transformations as transf
 sys.path.append('..')
 from flags import FLAGS
 from sklearn.utils import shuffle
@@ -174,6 +177,64 @@ class DataLoader:
         print(fail_words)
         print('{} out of {} words were not found are defaulted to -1.'.format(len(fail_words), len(vc)))
         return ret
+
+    @staticmethod
+    def load_external_raw():
+        train_data = DataLoader.parse_json(FLAGS.raw_json_loc)
+        dj_eval_loc = DataLoader.parse_json(FLAGS.raw_dj_eval_loc)
+
+        train_txt = [z[0] for z in train_data]
+        eval_txt = [z[0] for z in train_data]
+
+        transf.load_dependencies()
+
+        for el in train_data:
+            el[0] = (transf.process_sentence_ner_spacy(el[0]) if FLAGS.ner_spacy else el[0])
+            el[0] = transf.exp_contractions(el[0].lower())
+        for el in dj_eval_loc:
+            el[0] = (transf.process_sentence_ner_spacy(el[0]) if FLAGS.ner_spacy else el[0])
+            el[0] = transf.exp_contractions(el[0].lower())
+
+        tokenizer = Tokenizer()
+
+        tokenizer.fit_on_texts(np.concatenate((train_txt, eval_txt)))
+        train_seq = tokenizer.texts_to_sequences(train_txt)
+        eval_seq = tokenizer.texts_to_sequences(eval_txt)
+
+        print(train_seq)
+        print(eval_seq)
+
+        exit()
+
+        return train_data, dj_eval_loc, train_vocab,
+
+    @staticmethod
+    def process_dataset(parsed_data):
+        for el in parsed_data:
+            el[0] = (transf.process_sentence_ner_spacy(el[0]) if FLAGS.ner_spacy else el[0])
+            el[0] = transf.exp_contractions(el[0].lower())
+
+        tokenizer = Tokenizer()
+        tokenizer.fit_on_texts([z[0] for z in parsed_data])
+        sequences = tokenizer.texts_to_sequences(texts)
+
+    @staticmethod
+    def parse_json(json_loc):
+        with open(json_loc) as f:
+            temp_data = json.load(f)
+
+        dl = []
+        labels = [0, 0, 0]
+
+        for el in temp_data:
+            lab = int(el["label"]) + 1
+            txt = f["text"]
+
+            labels[lab] += 1
+            dl.append((txt, lab))
+
+        print(labels)
+        return dl
 
     @staticmethod
     def get_default_vocab():
