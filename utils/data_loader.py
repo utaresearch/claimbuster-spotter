@@ -125,12 +125,12 @@ class DataLoader:
 
         def process_dataset(inp_data):
             for i in tqdm(range(len(inp_data))):
-                inp_data[i][0] = transf.correct_mistakes(inp_data[i][0])
-                inp_data[i][0] = transf.expand_contractions(inp_data[i][0])
-                inp_data[i][0] = (
-                    transf.process_sentence_ner_spacy(inp_data[i][0]) if FLAGS.ner_spacy else inp_data[i][0])
-                inp_data[i][0] = transf.remove_possessives(inp_data[i][0])
-                inp_data[i][0] = transf.remove_kill_words(inp_data[i][0])
+                inp_data[i] = transf.correct_mistakes(inp_data[i])
+                inp_data[i] = transf.expand_contractions(inp_data[i])
+                inp_data[i] = (
+                    transf.process_sentence_ner_spacy(inp_data[i]) if FLAGS.ner_spacy else inp_data[i])
+                inp_data[i] = transf.remove_possessives(inp_data[i])
+                inp_data[i] = transf.remove_kill_words(inp_data[i])
             return inp_data
 
         tf.logging.info('Processing train data')
