@@ -222,7 +222,7 @@ class DataLoader:
             txt = el["text"]
 
             labels[lab] += 1
-            dl.append((txt, lab))
+            dl.append([txt, lab])
 
         print(labels)
         return dl
