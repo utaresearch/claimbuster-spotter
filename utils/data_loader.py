@@ -138,6 +138,7 @@ class DataLoader:
             el[0] = transf.expand_contractions(el[0])
             el[0] = (transf.process_sentence_ner_spacy(el[0]) if FLAGS.ner_spacy else el[0])
             el[0] = transf.remove_possessives(el[0])
+            el[0] = transf.remove_kill_words(el[0])
 
         tokenizer = Tokenizer()
 
