@@ -131,11 +131,12 @@ class DataLoader:
                     transf.process_sentence_ner_spacy(inp_data[i][0]) if FLAGS.ner_spacy else inp_data[i][0])
                 inp_data[i][0] = transf.remove_possessives(inp_data[i][0])
                 inp_data[i][0] = transf.remove_kill_words(inp_data[i][0])
+            return inp_data
 
         tf.logging.info('Processing train data')
-        process_dataset(train_data)
+        train_txt = process_dataset(train_txt)
         tf.logging.info('Processing eval data')
-        process_dataset(dj_eval_data)
+        eval_txt = process_dataset(eval_txt)
 
         tokenizer = Tokenizer()
 
