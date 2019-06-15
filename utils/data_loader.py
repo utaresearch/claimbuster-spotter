@@ -126,20 +126,21 @@ class DataLoader:
         for i in tqdm(range(len(train_data))):
             el = train_data[i]
 
-            el[0] = transf.remove_possessives(el[0])
+            dbg = el[0]
+            el[0] = transf.expand_contractions(el[0])
             el[0] = (transf.process_sentence_ner_spacy(el[0]) if FLAGS.ner_spacy else el[0])
-            el[0] = transf.expand_contractions(el[0].lower())
+            el[0] = transf.remove_possessives(el[0])
+            if el[0] != dbg:
+                print(dbg, el[0])
 
         tf.logging.info('Processing eval data')
         for i in tqdm(range(len(dj_eval_data))):
             el = dj_eval_data[i]
 
-            debug = el[0]
-            el[0] = transf.remove_possessives(el[0])
-            if el[0] != debug:
-                print(el[0])
+            el[0] = transf.expand_contractions(el[0])
             el[0] = (transf.process_sentence_ner_spacy(el[0]) if FLAGS.ner_spacy else el[0])
-            el[0] = transf.expand_contractions(el[0].lower())
+            el[0] = transf.remove_possessives(el[0])
+
 
         tokenizer = Tokenizer()
 

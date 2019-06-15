@@ -235,16 +235,16 @@ exp_contractions = {
 }
 
 
-def list_to_string(list):
+def list_to_string(lst):
     ret = ""
-    for f in list:
+    for f in lst:
         ret = ret + f + " "
     return ret.rstrip()
 
 
-def char_list_to_string(list):
+def char_list_to_string(lst):
     ret = ""
-    for f in list:
+    for f in lst:
         ret = ret + f
     return ret
 
@@ -255,8 +255,9 @@ def get_tags(sentence):
     return res
 
 
-def expand_contractions(txt):
-    return ' '.join([(exp_contractions[word] if word in exp_contractions else word) for word in txt.split(' ')])
+def expand_contractions(sentence):
+    return ' '.join([(exp_contractions[word.lower()] if word.lower() in exp_contractions else word)
+                     for word in sentence.split(' ')])
 
 
 def remove_possessives(sentence):
