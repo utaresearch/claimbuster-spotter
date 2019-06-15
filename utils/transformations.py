@@ -255,6 +255,10 @@ def get_tags(sentence):
     return res
 
 
+def correct_mistakes(sentence):
+    return ' '.join([(dataset_specific_fixes[word] if word in dataset_specific_fixes) for word in sentence.split(' ')])
+
+
 def expand_contractions(sentence):
     return ' '.join([(exp_contractions[word.lower()] if word.lower() in exp_contractions else word)
                      for word in sentence.split(' ')])

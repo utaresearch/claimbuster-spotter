@@ -123,23 +123,19 @@ class DataLoader:
         tf.logging.info('Loading preprocessing dependencies')
         transf.load_dependencies()
 
+        def process_dataset(inp_data):
+            for i in tqdm(range(len(inp_data))):
+                inp_data[i][0] = transf.correct_mistakes(inp_data[i][0])
+                inp_data[i][0] = transf.expand_contractions(inp_data[i][0])
+                inp_data[i][0] = (
+                    transf.process_sentence_ner_spacy(inp_data[i][0]) if FLAGS.ner_spacy else inp_data[i][0])
+                inp_data[i][0] = transf.remove_possessives(inp_data[i][0])
+                inp_data[i][0] = transf.remove_kill_words(inp_data[i][0])
+
         tf.logging.info('Processing train data')
-        for i in tqdm(range(len(train_data))):
-            el = train_data[i]
-
-            el[0] = transf.expand_contractions(el[0])
-            el[0] = (transf.process_sentence_ner_spacy(el[0]) if FLAGS.ner_spacy else el[0])
-            el[0] = transf.remove_possessives(el[0])
-            el[0] = transf.remove_kill_words(el[0])
-
+        process_dataset(train_data)
         tf.logging.info('Processing eval data')
-        for i in tqdm(range(len(dj_eval_data))):
-            el = dj_eval_data[i]
-
-            el[0] = transf.expand_contractions(el[0])
-            el[0] = (transf.process_sentence_ner_spacy(el[0]) if FLAGS.ner_spacy else el[0])
-            el[0] = transf.remove_possessives(el[0])
-            el[0] = transf.remove_kill_words(el[0])
+        process_dataset(dj_eval_data)
 
         tokenizer = Tokenizer()
 
