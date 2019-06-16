@@ -25,9 +25,7 @@ def pad_seq(inp):
 
 
 def one_hot(a):
-    print(a)
-    print(to_categorical(a))
-    return to_categorical(a)
+    return to_categorical(a, num_classes=FLAGS.num_classes)
 
 
 def get_cls_weights(batch_y):
