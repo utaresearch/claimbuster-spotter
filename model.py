@@ -49,18 +49,25 @@ class ClaimBusterModel:
     def fprop(self, orig_embed=None, reg_loss=None, adv=False):
         if adv: assert (reg_loss is not None and orig_embed is not None)
 
-        with tf.variable_scope('cb_model', reuse=(True if adv else False)):
-            lstm_out = RecurrentModel.build_lstm(self.x, self.x_len, self.output_mask, self.embed, self.kp_emb,
-                                                 self.kp_lstm, orig_embed, reg_loss, adv)
-            if not adv:
-                orig_embed, lstm_out = lstm_out
+        with tf.variable_scope('cb_model'):
+            with tf.variable_scope('natural_lang_lstm', reuse=adv):
+                nl_lstm_out = RecurrentModel.build_lstm(self.x, self.x_len, self.output_mask, self.embed, self.kp_emb,
+                                                        self.kp_lstm, orig_embed, reg_loss, adv)
+                if not adv:
+                    orig_embed, nl_lstm_out = nl_lstm_out
 
-            output_weights = tf.get_variable('cb_output_weights', shape=(FLAGS.rnn_cell_size * (2 if FLAGS.bidir_lstm else 1), FLAGS.num_classes),
-                                             initializer=tf.contrib.layers.xavier_initializer())
-            output_biases = tf.get_variable('cb_output_biases', shape=FLAGS.num_classes,
-                                            initializer=tf.zeros_initializer())
+            with tf.variable_scope('pos_lstm', reuse=adv):
+                pass
 
-            cb_out = tf.matmul(lstm_out, output_weights) + output_biases
+            with tf.variable_scope('fc_output', reuse=adv):
+                output_weights = tf.get_variable('cb_output_weights', shape=(
+                    FLAGS.rnn_cell_size * (2 if FLAGS.bidir_lstm else 1), FLAGS.num_classes),
+                                                 initializer=tf.contrib.layers.xavier_initializer())
+                output_biases = tf.get_variable('cb_output_biases', shape=FLAGS.num_classes,
+                                                initializer=tf.zeros_initializer())
+
+                # cb_out = tf.matmul(lstm_out, output_weights) + output_biases
+                cb_out = tf.matmul(nl_lstm_out, output_weights) + output_biases
 
             return (orig_embed, cb_out) if not adv else cb_out
 
