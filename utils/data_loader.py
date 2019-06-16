@@ -164,6 +164,8 @@ class DataLoader:
             with open(FLAGS.prc_data_loc, 'rb') as f:
                 train_data, eval_data, vocab = pickle.load(f)
 
+        print(train_data.y)
+
         return train_data, eval_data, vocab
 
     @staticmethod
@@ -176,7 +178,6 @@ class DataLoader:
 
         for el in temp_data:
             lab = int(el["label"]) + 1
-            print(lab, end=' ', flush=True)
             txt = el["text"]
 
             labels[lab] += 1
