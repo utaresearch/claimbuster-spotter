@@ -9,22 +9,22 @@ class RecurrentModel:
     def __init__(self):
         pass
 
-    def construct_model(self, x, y, embed, kp_emb, kp_lstm, cls_weight, adv):
-        orig_embed, yhat = self.fprop(x, embed, kp_emb, kp_lstm)
+    def construct_model(self, x, x_len, y, output_mask, embed, kp_emb, kp_lstm, cls_weight, adv):
+        orig_embed, yhat = self.fprop(x, x_len, output_mask, embed, kp_emb, kp_lstm)
         loss = self.ce_loss(y, yhat, cls_weight)
 
         if adv:
-            yhat_adv = self.fprop(x, embed, kp_emb, kp_lstm, orig_embed, loss, adv=True)
+            yhat_adv = self.fprop(x, x_len, output_mask, embed, kp_emb, kp_lstm, orig_embed, loss, adv=True)
             loss += FLAGS.adv_coeff * self.adv_loss(y, yhat_adv, cls_weight)
 
         return yhat, tf.identity(loss, name='cost')
 
-    def fprop(self, x, embed, kp_emb, kp_lstm, orig_embed=None, reg_loss=None, adv=False):
+    def fprop(self, x, x_len, output_mask, embed, kp_emb, kp_lstm, orig_embed=None, reg_loss=None, adv=False):
         if adv:
             assert (reg_loss is not None and orig_embed is not None)
-        return self.build_lstm(x, embed, kp_emb, kp_lstm, orig_embed, reg_loss, adv)
+        return self.build_lstm(x, x_len, output_mask, embed, kp_emb, kp_lstm, orig_embed, reg_loss, adv)
 
-    def build_lstm(self, x, embed, kp_emb, kp_lstm, orig_embed, reg_loss, adv):
+    def build_lstm(self, x, x_len, output_mask, embed, kp_emb, kp_lstm, orig_embed, reg_loss, adv):
         with tf.variable_scope('lstm', reuse=(True if adv else False)):
             if adv:
                 x_embed = apply_adversarial_perturbation(orig_embed, reg_loss)
@@ -41,11 +41,10 @@ class RecurrentModel:
 
             if not FLAGS.bidir_lstm:
                 tf.logging.info('Building uni-directional LSTM')
-                lstm = tf.nn.rnn_cell.MultiRNNCell([self.get_lstm(kp_lstm) for _ in range(FLAGS.rnn_num_layers)])
-                output, state = tf.nn.dynamic_rnn(cell=lstm, inputs=x, dtype=tf.float32)
+                output, _ = self.build_unidir_lstm_component(x, x_len, kp_lstm)
             else:
                 tf.logging.info('Building bi-directional LSTM')
-                output, state = self.build_bidir_lstm_component(x, kp_lstm)
+                output, _ = self.build_bidir_lstm_component(x, x_len, kp_lstm)
 
             add_weight = tf.get_variable('post_lstm_weight', shape=(
                 FLAGS.rnn_cell_size * (2 if FLAGS.bidir_lstm else 1), FLAGS.num_classes),
@@ -54,8 +53,10 @@ class RecurrentModel:
                                        initializer=tf.zeros_initializer())
 
             if FLAGS.bidir_lstm:
-                output = tf.concat([output[0][:, -1, :], output[1][:, 0, :]], axis=1)
-                # output = tf.concat(output, axis=2)[:, -1, :]
+                output_fw, output_bw = output
+                output_fw = tf.boolean_mask(output_fw, output_mask)
+                output_bw = output_bw[:, 0, :]
+                output = tf.concat([output_fw, output_bw], axis=1)
             else:
                 output = output[:, -1, :]
 
@@ -64,13 +65,17 @@ class RecurrentModel:
             else:
                 return tf.matmul(output, add_weight) + add_bias
 
-    def build_bidir_lstm_component(self, x, kp_lstm):
+    def build_unidir_lstm_component(self, x, x_len, kp_lstm):
+        lstm = tf.nn.rnn_cell.MultiRNNCell([self.get_lstm(kp_lstm) for _ in range(FLAGS.rnn_num_layers)])
+        return tf.nn.dynamic_rnn(cell=lstm, sequence_length=x_len, inputs=x, dtype=tf.float32)
+
+    def build_bidir_lstm_component(self, x, x_len, kp_lstm):
         assert FLAGS.rnn_num_layers == 1
 
         fw_cell = tf.nn.rnn_cell.MultiRNNCell([self.get_lstm(kp_lstm) for _ in range(FLAGS.rnn_num_layers)])
         bw_cell = tf.nn.rnn_cell.MultiRNNCell([self.get_lstm(kp_lstm) for _ in range(FLAGS.rnn_num_layers)])
 
-        return tf.nn.bidirectional_dynamic_rnn(fw_cell, bw_cell, inputs=x, dtype=tf.float32)
+        return tf.nn.bidirectional_dynamic_rnn(fw_cell, bw_cell, inputs=x, sequence_length=x_len, dtype=tf.float32)
 
     @staticmethod
     def get_lstm(kp_lstm):

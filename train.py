@@ -12,6 +12,8 @@ from sklearn.metrics import f1_score
 from flags import FLAGS, print_flags
 
 x = tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x')
+x_len = tf.placeholder(tf.int32, (None,), name='x_len')
+output_mask = tf.placeholder(tf.bool, (None, FLAGS.max_len), name='output_mask')
 y = tf.placeholder(tf.int32, (None, FLAGS.num_classes), name='y')
 kp_emb = tf.placeholder(tf.float32, name='kp_emb')
 kp_lstm = tf.placeholder(tf.float32, name='kp_lstm')
@@ -21,11 +23,19 @@ computed_cls_weights = []
 
 
 def pad_seq(inp):
-    return pad_sequences(inp, padding="pre", maxlen=FLAGS.max_len)
+    return pad_sequences(inp, padding="post", maxlen=FLAGS.max_len)
 
 
 def one_hot(a):
     return to_categorical(a, num_classes=FLAGS.num_classes)
+
+
+def gen_output_mask(batch_x):
+    return [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x]
+
+
+def gen_x_len(batch_x):
+    return [len(el) for el in batch_x]
 
 
 def get_cls_weights(batch_y):
@@ -62,7 +72,9 @@ def validation_stats(sess, cost, acc, y_pred, batch_x, batch_y):
         cost,
         feed_dict={
             x: pad_seq(batch_x),
+            x_len: gen_x_len(output_mask),
             y: one_hot(batch_y),
+            output_mask: gen_x_len(output_mask),
             kp_emb: 1.0,
             kp_lstm: 1.0,
             cls_weight: get_cls_weights(batch_y)
@@ -72,7 +84,9 @@ def validation_stats(sess, cost, acc, y_pred, batch_x, batch_y):
         acc,
         feed_dict={
             x: pad_seq(batch_x),
+            x_len: gen_x_len(output_mask),
             y: one_hot(batch_y),
+            output_mask: gen_x_len(output_mask),
             kp_emb: 1.0,
             kp_lstm: 1.0,
             cls_weight: get_cls_weights(batch_y)
@@ -82,7 +96,9 @@ def validation_stats(sess, cost, acc, y_pred, batch_x, batch_y):
         y_pred,
         feed_dict={
             x: pad_seq(batch_x),
+            x_len: gen_x_len(output_mask),
             y: one_hot(batch_y),
+            output_mask: gen_x_len(output_mask),
             kp_emb: 1.0,
             kp_lstm: 1.0,
             cls_weight: get_cls_weights(batch_y)
@@ -97,7 +113,9 @@ def batch_stats(sess, batch_x, batch_y, cost, acc):
         cost,
         feed_dict={
             x: pad_seq(batch_x),
+            x_len: gen_x_len(output_mask),
             y: one_hot(batch_y),
+            output_mask: gen_x_len(output_mask),
             kp_emb: 1.0,
             kp_lstm: 1.0,
             cls_weight: get_cls_weights(batch_y)
@@ -107,7 +125,9 @@ def batch_stats(sess, batch_x, batch_y, cost, acc):
         acc,
         feed_dict={
             x: pad_seq(batch_x),
+            x_len: gen_x_len(output_mask),
             y: one_hot(batch_y),
+            output_mask: gen_x_len(output_mask),
             kp_emb: 1.0,
             kp_lstm: 1.0,
             cls_weight: get_cls_weights(batch_y)
@@ -122,7 +142,9 @@ def train_neural_network(sess, optimizer, batch_x, batch_y):
         optimizer,
         feed_dict={
             x: pad_seq(batch_x),
+            x_len: gen_x_len(output_mask),
             y: one_hot(batch_y),
+            output_mask: gen_x_len(output_mask),
             kp_emb: FLAGS.keep_prob_emb,
             kp_lstm: FLAGS.keep_prob_lstm,
             cls_weight: get_cls_weights(batch_y)
@@ -170,7 +192,7 @@ def main():
     embed = embed_obj.construct_embeddings()
 
     lstm_model = RecurrentModel()
-    logits, cost = lstm_model.construct_model(x, y, embed, kp_emb, kp_lstm, cls_weight, adv=FLAGS.adv_train)
+    logits, cost = lstm_model.construct_model(x, x_len, y, output_mask, embed, kp_emb, kp_lstm, cls_weight, adv=FLAGS.adv_train)
     optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(cost) if FLAGS.adam else \
         tf.train.RMSPropOptimizer(learning_rate=FLAGS.learning_rate).minimize(cost)
 
