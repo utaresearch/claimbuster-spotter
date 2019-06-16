@@ -1,11 +1,23 @@
 import pickle as p
-import argparse
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--toggle', default=False, help='Toggle b/w output and disjoint')
-args = parser.parse_args()
 
-with open('../output/prc_data.pickle' if not args.toggle else '../data/disjoint_2000/prc_data.pickle', 'rb') as f:
+with open('../data/all_data.pickle', 'rb') as f:
     data = p.load(f)
 
-print(data)
+train_data = data[0]
+eval_data = data[1]
+vocab = data[2]
+
+print('######################### TRAIN DATA #########################')
+
+print(train_data.x)
+print(train_data.y)
+
+print('######################### EVAL DATA #########################')
+
+print(eval_data.x)
+print(eval_data.y)
+
+print('######################### VOCAB #########################')
+
+print(vocab)
