@@ -72,9 +72,9 @@ def validation_stats(sess, cost, acc, y_pred, batch_x, batch_y):
         cost,
         feed_dict={
             x: pad_seq(batch_x),
-            x_len: gen_x_len(output_mask),
+            x_len: gen_x_len(batch_x),
             y: one_hot(batch_y),
-            output_mask: gen_x_len(output_mask),
+            output_mask: gen_output_mask(batch_x),
             kp_emb: 1.0,
             kp_lstm: 1.0,
             cls_weight: get_cls_weights(batch_y)
@@ -84,9 +84,9 @@ def validation_stats(sess, cost, acc, y_pred, batch_x, batch_y):
         acc,
         feed_dict={
             x: pad_seq(batch_x),
-            x_len: gen_x_len(output_mask),
+            x_len: gen_x_len(batch_x),
             y: one_hot(batch_y),
-            output_mask: gen_x_len(output_mask),
+            output_mask: gen_output_mask(batch_x),
             kp_emb: 1.0,
             kp_lstm: 1.0,
             cls_weight: get_cls_weights(batch_y)
@@ -96,9 +96,9 @@ def validation_stats(sess, cost, acc, y_pred, batch_x, batch_y):
         y_pred,
         feed_dict={
             x: pad_seq(batch_x),
-            x_len: gen_x_len(output_mask),
+            x_len: gen_x_len(batch_x),
             y: one_hot(batch_y),
-            output_mask: gen_x_len(output_mask),
+            output_mask: gen_output_mask(batch_x),
             kp_emb: 1.0,
             kp_lstm: 1.0,
             cls_weight: get_cls_weights(batch_y)
@@ -113,9 +113,9 @@ def batch_stats(sess, batch_x, batch_y, cost, acc):
         cost,
         feed_dict={
             x: pad_seq(batch_x),
-            x_len: gen_x_len(output_mask),
+            x_len: gen_x_len(batch_x),
             y: one_hot(batch_y),
-            output_mask: gen_x_len(output_mask),
+            output_mask: gen_output_mask(batch_x),
             kp_emb: 1.0,
             kp_lstm: 1.0,
             cls_weight: get_cls_weights(batch_y)
@@ -125,9 +125,9 @@ def batch_stats(sess, batch_x, batch_y, cost, acc):
         acc,
         feed_dict={
             x: pad_seq(batch_x),
-            x_len: gen_x_len(output_mask),
+            x_len: gen_x_len(batch_x),
             y: one_hot(batch_y),
-            output_mask: gen_x_len(output_mask),
+            output_mask: gen_output_mask(batch_x),
             kp_emb: 1.0,
             kp_lstm: 1.0,
             cls_weight: get_cls_weights(batch_y)
@@ -142,9 +142,9 @@ def train_neural_network(sess, optimizer, batch_x, batch_y):
         optimizer,
         feed_dict={
             x: pad_seq(batch_x),
-            x_len: gen_x_len(output_mask),
+            x_len: gen_x_len(batch_x),
             y: one_hot(batch_y),
-            output_mask: gen_x_len(output_mask),
+            output_mask: gen_output_mask(batch_x),
             kp_emb: FLAGS.keep_prob_emb,
             kp_lstm: FLAGS.keep_prob_lstm,
             cls_weight: get_cls_weights(batch_y)
