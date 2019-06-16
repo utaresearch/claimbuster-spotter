@@ -25,6 +25,7 @@ def pad_seq(inp):
 
 
 def one_hot(a):
+    print(a)
     return to_categorical(a, num_classes=FLAGS.num_classes)
 
 
