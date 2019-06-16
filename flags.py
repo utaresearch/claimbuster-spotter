@@ -23,6 +23,7 @@ flags.DEFINE_string('output_dir', './output', 'Location of outputs')
 flags.DEFINE_string('data_dir', './data', 'Location of data')
 
 # Data
+flags.DEFINE_bool('refresh_data', False, 'Re-process ./data/all_data.pickle')
 flags.DEFINE_integer('max_len', 200, 'Maximum length of input')
 flags.DEFINE_bool('remove_stopwords', False, 'Remove stop words (e.g. the, a, etc.)')
 flags.DEFINE_bool('sklearn_oversample', True, 'Oversample underrepresented classes with sklearn')
