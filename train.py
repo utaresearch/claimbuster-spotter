@@ -1,5 +1,6 @@
 import tensorflow as tf
 from keras.preprocessing.sequence import pad_sequences
+from keras.utils import to_categorical
 import numpy as np
 import math
 import time
@@ -24,7 +25,7 @@ def pad_seq(inp):
 
 
 def one_hot(a):
-    return np.squeeze(np.eye(FLAGS.num_classes)[np.array(a).reshape(-1)])
+    return to_categorical(a)
 
 
 def get_cls_weights(batch_y):
