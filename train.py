@@ -58,7 +58,6 @@ def execute_validation(sess, cost, acc, y_pred, test_data):
 
 
 def validation_stats(sess, cost, acc, y_pred, batch_x, batch_y):
-    print(batch_y)
     val_loss = sess.run(
         cost,
         feed_dict={
@@ -119,6 +118,7 @@ def batch_stats(sess, batch_x, batch_y, cost, acc):
 
 
 def train_neural_network(sess, optimizer, batch_x, batch_y):
+    print(batch_y)
     sess.run(
         optimizer,
         feed_dict={
