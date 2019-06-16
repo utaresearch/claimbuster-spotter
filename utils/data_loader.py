@@ -160,6 +160,7 @@ class DataLoader:
             shutil.rmtree(FLAGS.output_dir)
             os.mkdir(FLAGS.output_dir)
         else:
+            tf.logging.info('Restoring data from {}'.format(FLAGS.prc_data_loc))
             with open(FLAGS.prc_data_loc, 'rb') as f:
                 train_data, eval_data, vocab = pickle.load(f)
 
