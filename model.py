@@ -11,7 +11,7 @@ from flags import FLAGS
 
 
 class ClaimBusterModel:
-    def __init__(self, vocab, cls_weights):
+    def __init__(self, vocab, cls_weights, restore=False):
         self.x = tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x')
         self.x_len = tf.placeholder(tf.int32, (None,), name='x_len')
         self.output_mask = tf.placeholder(tf.bool, (None, FLAGS.max_len), name='output_mask')
@@ -25,13 +25,16 @@ class ClaimBusterModel:
 
         self.computed_cls_weights = cls_weights
 
-        self.logits, self.cost = self.construct_model(adv=FLAGS.adv_train)
-        self.optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(self.cost)\
-            if FLAGS.adam else tf.train.RMSPropOptimizer(learning_rate=FLAGS.learning_rate).minimize(self.cost)
+        if not restore:
+            self.logits, self.cost = self.construct_model(adv=FLAGS.adv_train)
+            self.optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(self.cost) \
+                if FLAGS.adam else tf.train.RMSPropOptimizer(learning_rate=FLAGS.learning_rate).minimize(self.cost)
 
-        self.y_pred = tf.nn.softmax(self.logits, axis=1, name='y_pred')
-        self.correct = tf.equal(tf.argmax(self.y, axis=1), tf.argmax(self.y_pred, axis=1))
-        self.acc = tf.reduce_mean(tf.cast(self.correct, tf.float32), name='acc')
+            self.y_pred = tf.nn.softmax(self.logits, axis=1, name='y_pred')
+            self.correct = tf.equal(tf.argmax(self.y, axis=1), tf.argmax(self.y_pred, axis=1))
+            self.acc = tf.reduce_mean(tf.cast(self.correct, tf.float32), name='acc')
+        else:
+            self.cost, self.y_pred, self.acc = None, None, None
 
     def construct_model(self, adv):
         orig_embed, logits = self.fprop()
@@ -193,3 +196,27 @@ class ClaimBusterModel:
             batch_y.append(data.y[idx])
 
         return batch_x, batch_y
+
+    def load_model(self, sess, graph):
+        def get_last_save(scan_loc):
+            ret_ar = []
+            directory = os.fsencode(scan_loc)
+            for fstr in os.listdir(directory):
+                if '.meta' in os.fsdecode(fstr) and 'cb.ckpt-' in os.fsdecode(fstr):
+                    ret_ar.append(os.fsdecode(fstr))
+            ret_ar.sort()
+            return ret_ar[-1]
+
+        model_dir = os.path.join(FLAGS.output_dir, get_last_save(FLAGS.output_dir))
+        tf.logging.info('Attempting to restore from {}'.format(model_dir))
+
+        with graph.as_default():
+            saver = tf.train.import_meta_graph(model_dir)
+            saver.restore(sess, tf.train.latest_checkpoint(FLAGS.output_dir))
+
+            # outputs
+            self.cost = graph.get_tensor_by_name('cost:0')
+            self.y_pred = graph.get_tensor_by_name('y_pred:0')
+            self.acc = graph.get_tensor_by_name('acc:0')
+
+            tf.logging.info('Model successfully restored.')
