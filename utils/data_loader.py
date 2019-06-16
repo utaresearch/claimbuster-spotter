@@ -129,7 +129,7 @@ class DataLoader:
                 inp_data[i] = (transf.process_sentence_ner_spacy(inp_data[i])
                                if FLAGS.ner_spacy else inp_data[i])
 
-                inp_data[i] = text_to_word_sequence(inp_data[i])
+                inp_data[i] = ' '.join(text_to_word_sequence(inp_data[i]))
 
                 inp_data[i] = transf.expand_contractions(inp_data[i])
                 inp_data[i] = transf.remove_possessives(inp_data[i])
