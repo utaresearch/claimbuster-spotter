@@ -1,4 +1,5 @@
 import tensorflow as tf
+import os
 
 flags = tf.flags
 FLAGS = flags.FLAGS
@@ -81,6 +82,9 @@ flags.DEFINE_integer('batch_size', 512, 'Size of the batch.')
 flags.DEFINE_string('raw_data_loc', '{}/data_small.json'.format(FLAGS.data_dir), 'Location of raw data')
 flags.DEFINE_string('raw_dj_eval_loc', '{}/disjoint_2000.json'.format(FLAGS.data_dir), 'Location of raw data')
 flags.DEFINE_string('prc_data_loc', '{}/all_data.pickle'.format(FLAGS.data_dir), 'Location of saved processed data')
+
+if os.path.isfile(FLAGS.prc_data_loc):
+    FLAGS.refresh_data = True
 
 
 def print_flags():
