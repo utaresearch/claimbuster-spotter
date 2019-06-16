@@ -49,7 +49,7 @@ class ClaimBusterModel:
         with tf.variable_scope('cb_model', reuse=(True if adv else False)):
             lstm_out = RecurrentModel.build_lstm(self.x, self.x_len, self.output_mask, self.embed, self.kp_emb,
                                                  self.kp_lstm, orig_embed, reg_loss, adv)
-            if adv:
+            if not adv:
                 orig_embed, lstm_out = lstm_out
 
             output_weights = tf.get_variable('cb_output_weights', shape=(FLAGS.rnn_cell_size * (2 if FLAGS.bidir_lstm else 1), FLAGS.num_classes),
