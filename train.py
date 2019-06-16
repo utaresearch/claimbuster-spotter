@@ -163,8 +163,6 @@ def main():
     train_data = data_load.load_training_data()
     test_data = data_load.load_testing_data()
 
-    print(train_data.y)
-
     tf.logging.info("{} training examples".format(train_data.get_length()))
     tf.logging.info("{} validation examples".format(test_data.get_length()))
 
