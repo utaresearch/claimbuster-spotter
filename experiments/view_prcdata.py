@@ -10,9 +10,11 @@ with open('../data/all_data.pickle', 'rb') as f:
 train_data = data[0]
 eval_data = data[1]
 vocab = data[2]
+inv_vocab = {v: k for k, v in vocab.iteritems()}
 
-train_data = [' '.join([vocab[z] for z in sentence]) for sentence in train_data.x]
-eval_data = [' '.join([vocab[z] for z in sentence]) for sentence in eval_data.x]
+
+train_data = [' '.join([inv_vocab[z] for z in sentence]) for sentence in train_data.x]
+eval_data = [' '.join([inv_vocab[z] for z in sentence]) for sentence in eval_data.x]
 
 print('######################### TRAIN DATA #########################')
 
