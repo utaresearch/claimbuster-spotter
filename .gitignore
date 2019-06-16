@@ -2,6 +2,14 @@ data/word2vec/w2v3b_gensim.bin
 data/word2vec/w2v3b_gensim.txt
 data/glove/glove840b_gensim.txt
 data/glove/glove840b.txt
+data/glove/glove6b50d_gensim.txt
+data/glove/glove6b50d.txt
+data/glove/glove6b100d_gensim.txt
+data/glove/glove6b100d.txt
+data/glove/glove6b200d_gensim.txt
+data/glove/glove6b200d.txt
+data/glove/glove6b300d_gensim.txt
+data/glove/glove6b300d.txt
 
 output/
 *output1*
