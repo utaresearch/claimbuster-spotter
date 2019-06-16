@@ -13,17 +13,17 @@ vocab = data[2]
 inv_vocab = {v: k for k, v in vocab.items()}
 
 
-train_data = [' '.join([inv_vocab[z] for z in sentence]) for sentence in train_data.x]
-eval_data = [' '.join([inv_vocab[z] for z in sentence]) for sentence in eval_data.x]
+train_data_x = [' '.join([inv_vocab[z] for z in sentence]) for sentence in train_data.x]
+eval_data_x = [' '.join([inv_vocab[z] for z in sentence]) for sentence in eval_data.x]
 
 print('######################### TRAIN DATA #########################')
 
-print(train_data.x)
+print(train_data_x)
 print(train_data.y)
 
 print('######################### EVAL DATA #########################')
 
-print([vocab[z] for z in eval_data.x])
+print(eval_data_x)
 print(eval_data.y)
 
 print('######################### VOCAB #########################')
@@ -31,11 +31,11 @@ print('######################### VOCAB #########################')
 print(vocab)
 
 with open('./prcdata_out.txt', 'w') as f:
-    f.write(str(train_data.x))
+    f.write(str(train_data_x))
     f.write('\n')
     f.write(str(train_data.y))
     f.write('\n')
-    f.write(str(eval_data.x))
+    f.write(str(eval_data_x))
     f.write('\n')
     f.write(str(eval_data.y))
     f.write('\n')
