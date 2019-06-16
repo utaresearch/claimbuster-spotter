@@ -158,6 +158,7 @@ class DataLoader:
 
             with open(FLAGS.prc_data_loc, 'wb') as f:
                 pickle.dump((train_data, eval_data, vocab), f)
+            tf.logging.info('Refreshed data successfully dumped at {}'.format(FLAGS.prc_data_loc))
 
             shutil.rmtree(FLAGS.output_dir)
             os.mkdir(FLAGS.output_dir)
