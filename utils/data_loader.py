@@ -4,6 +4,8 @@ from sklearn.utils import resample
 import numpy as np
 import pickle
 import math
+import os
+import shutil
 from tqdm import tqdm
 import json
 import sys
@@ -154,6 +156,9 @@ class DataLoader:
 
             with open(FLAGS.prc_data_loc, 'wb') as f:
                 pickle.dump((train_data, eval_data, vocab), f)
+
+            shutil.rmtree(FLAGS.output_dir)
+            os.mkdir(FLAGS.output_dir)
         else:
             with open(FLAGS.prc_data_loc, 'rb') as f:
                 train_data, eval_data, vocab = pickle.load(f)
