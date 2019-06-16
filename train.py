@@ -118,7 +118,6 @@ def batch_stats(sess, batch_x, batch_y, cost, acc):
 
 
 def train_neural_network(sess, optimizer, batch_x, batch_y):
-    print(batch_y)
     sess.run(
         optimizer,
         feed_dict={
@@ -163,6 +162,8 @@ def main():
 
     train_data = data_load.load_training_data()
     test_data = data_load.load_testing_data()
+
+    print(train_data.y)
 
     tf.logging.info("{} training examples".format(train_data.get_length()))
     tf.logging.info("{} validation examples".format(test_data.get_length()))
