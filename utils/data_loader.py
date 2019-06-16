@@ -111,45 +111,52 @@ class DataLoader:
 
     @staticmethod
     def load_external_raw():
-        train_data = DataLoader.parse_json(FLAGS.raw_data_loc)
-        dj_eval_data = DataLoader.parse_json(FLAGS.raw_dj_eval_loc)
+        if FLAGS.refresh_data:
+            train_data = DataLoader.parse_json(FLAGS.raw_data_loc)
+            dj_eval_data = DataLoader.parse_json(FLAGS.raw_dj_eval_loc)
 
-        train_txt = [z[0] for z in train_data]
-        eval_txt = [z[0] for z in dj_eval_data]
+            train_txt = [z[0] for z in train_data]
+            eval_txt = [z[0] for z in dj_eval_data]
 
-        train_lab = [z[1] for z in train_data]
-        eval_lab = [z[1] for z in dj_eval_data]
+            train_lab = [z[1] for z in train_data]
+            eval_lab = [z[1] for z in dj_eval_data]
 
-        tf.logging.info('Loading preprocessing dependencies')
-        transf.load_dependencies()
+            tf.logging.info('Loading preprocessing dependencies')
+            transf.load_dependencies()
 
-        def process_dataset(inp_data):
-            for i in tqdm(range(len(inp_data))):
-                inp_data[i] = transf.correct_mistakes(inp_data[i])
-                inp_data[i] = (transf.process_sentence_ner_spacy(inp_data[i])
-                               if FLAGS.ner_spacy else inp_data[i])
+            def process_dataset(inp_data):
+                for i in tqdm(range(len(inp_data))):
+                    inp_data[i] = transf.correct_mistakes(inp_data[i])
+                    inp_data[i] = (transf.process_sentence_ner_spacy(inp_data[i])
+                                   if FLAGS.ner_spacy else inp_data[i])
 
-                inp_data[i] = ' '.join(text_to_word_sequence(inp_data[i]))
+                    inp_data[i] = ' '.join(text_to_word_sequence(inp_data[i]))
 
-                inp_data[i] = transf.expand_contractions(inp_data[i])
-                inp_data[i] = transf.remove_possessives(inp_data[i])
-                inp_data[i] = transf.remove_kill_words(inp_data[i])
-            return inp_data
+                    inp_data[i] = transf.expand_contractions(inp_data[i])
+                    inp_data[i] = transf.remove_possessives(inp_data[i])
+                    inp_data[i] = transf.remove_kill_words(inp_data[i])
+                return inp_data
 
-        tf.logging.info('Processing train data')
-        train_txt = process_dataset(train_txt)
-        tf.logging.info('Processing eval data')
-        eval_txt = process_dataset(eval_txt)
+            tf.logging.info('Processing train data')
+            train_txt = process_dataset(train_txt)
+            tf.logging.info('Processing eval data')
+            eval_txt = process_dataset(eval_txt)
 
-        tokenizer = Tokenizer()
+            tokenizer = Tokenizer()
 
-        tokenizer.fit_on_texts(np.concatenate((train_txt, eval_txt)))
-        train_seq = tokenizer.texts_to_sequences(train_txt)
-        eval_seq = tokenizer.texts_to_sequences(eval_txt)
+            tokenizer.fit_on_texts(np.concatenate((train_txt, eval_txt)))
+            train_seq = tokenizer.texts_to_sequences(train_txt)
+            eval_seq = tokenizer.texts_to_sequences(eval_txt)
 
-        train_data = Dataset(train_seq, train_lab, random_state=FLAGS.random_state)
-        eval_data = Dataset(eval_seq, eval_lab, random_state=FLAGS.random_state)
-        vocab = tokenizer.word_index
+            train_data = Dataset(train_seq, train_lab, random_state=FLAGS.random_state)
+            eval_data = Dataset(eval_seq, eval_lab, random_state=FLAGS.random_state)
+            vocab = tokenizer.word_index
+
+            with open(FLAGS.prc_data_loc, 'wb') as f:
+                pickle.dump((train_data, eval_data, vocab), f)
+        else:
+            with open(FLAGS.prc_data_loc, 'rb') as f:
+                train_data, eval_data, vocab = pickle.load(f)
 
         return train_data, eval_data, vocab
 
