@@ -240,9 +240,9 @@ def expand_sentence(sentence):
 
 
 def correct_mistakes(sentence):
-    sentence = expand_sentence(sentence)
+    sentence_list = expand_sentence(sentence)
     return ' '.join([pre + (dataset_specific_fixes[word] if word in dataset_specific_fixes else word) + post
-                     for pre, word, post in sentence])
+                     for pre, word, post in sentence_list])
 
 
 def expand_contractions(sentence):
