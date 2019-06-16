@@ -48,17 +48,16 @@ class Embedding:
                                                   binary=False)
         tf.logging.info("Model loaded.")
 
-        fail_cnt, fail_words = 0, []
+        fail_words = []
         for word, idx in self.vocab.items():
             try:
                 embedding_vector = model[word]
                 embedding_matrix[idx] = embedding_vector
             except:
-                fail_cnt = fail_cnt + 1
                 fail_words.append(word)
 
         fail_words.sort()
-        tf.logging.info(str(fail_cnt) + " out of " + str(len(self.vocab)) +
+        tf.logging.info(str(len(fail_words)) + " out of " + str(len(self.vocab)) +
                         " strings were not found and were defaulted.")
         tf.logging.info(fail_words)
 
