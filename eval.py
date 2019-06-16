@@ -37,7 +37,7 @@ def main():
         pred_all = []
 
         for i in range(n_batches):
-            batch_x, batch_y = cb_model.get_batch(i, test_data)
+            batch_x, batch_y = cb_model.get_batch(i, test_data, ver='test')
 
             b_loss, b_acc, b_pred = cb_model.stats_from_run(sess, batch_x, batch_y)
             if b_loss == 0 and b_acc == 0 and b_pred == 0:
