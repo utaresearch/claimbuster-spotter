@@ -25,6 +25,8 @@ def pad_seq(inp):
 
 
 def one_hot(a):
+    print(a)
+    print(to_categorical(a))
     return to_categorical(a)
 
 
