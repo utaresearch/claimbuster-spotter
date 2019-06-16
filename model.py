@@ -30,7 +30,7 @@ class ClaimBusterModel:
             if FLAGS.adam else tf.train.RMSPropOptimizer(learning_rate=FLAGS.learning_rate).minimize(self.cost)
 
         self.y_pred = tf.nn.softmax(self.logits, axis=1, name='y_pred')
-        self.correct = tf.equal(tf.argmax(y, axis=1), tf.argmax(self.y_pred, axis=1))
+        self.correct = tf.equal(tf.argmax(self.y, axis=1), tf.argmax(self.y_pred, axis=1))
         self.acc = tf.reduce_mean(tf.cast(self.correct, tf.float32), name='acc')
 
     def construct_model(self, adv):
