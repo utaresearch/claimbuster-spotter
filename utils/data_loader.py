@@ -95,6 +95,8 @@ class DataLoader:
             FLAGS.total_examples += ret.get_length() - FLAGS.train_examples
             FLAGS.train_examples = ret.get_length()
 
+        ret.shuffle()
+
         return ret
 
     def load_testing_data(self):
