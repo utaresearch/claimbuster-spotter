@@ -103,6 +103,7 @@ class DataLoader:
         for i in range(FLAGS.test_examples):
             ret.x.append(self.eval_data.x[i])
             ret.y.append(self.eval_data.y[i])
+            print(self.eval_data.y[i])
 
         return ret
 
