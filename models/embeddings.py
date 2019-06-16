@@ -53,8 +53,7 @@ class Embedding:
             try:
                 embedding_vector = model[word]
                 embedding_matrix[idx] = embedding_vector
-            except Exception as e:
-                print(e)
+            except Exception:
                 fail_words.append(word)
 
         fail_words.sort()
