@@ -21,6 +21,7 @@ computed_cls_weights = []
 
 
 def pad_seq(inp):
+    print(inp)
     return pad_sequences(inp, padding="pre", maxlen=FLAGS.max_len)
 
 
