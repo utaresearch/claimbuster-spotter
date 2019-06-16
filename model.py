@@ -62,7 +62,7 @@ class ClaimBusterModel:
             return (orig_embed, cb_out) if not adv else cb_out
 
     def adv_loss(self, logits, cls_weight):
-        return tf.identity(ClaimBusterModel.ce_loss(self.y, logits, cls_weight), name='adv_loss')
+        return tf.identity(ClaimBusterModel.ce_loss(logits, cls_weight), name='adv_loss')
 
     def ce_loss(self, logits, cls_weight):
         loss = tf.nn.softmax_cross_entropy_with_logits_v2(labels=self.y, logits=logits)
