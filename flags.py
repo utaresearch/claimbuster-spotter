@@ -46,7 +46,7 @@ flags.DEFINE_bool('bidir_lstm', True, 'Use bidirectional LSTM')
 
 # Optimization
 flags.DEFINE_integer('max_steps', 1000, 'Number of epochs to run.')
-flags.DEFINE_float('learning_rate', 0.001, 'Learning rate while during optimiation.')
+flags.DEFINE_float('learning_rate', 0.01, 'Learning rate while during optimiation.')
 
 # Regularization
 flags.DEFINE_float('l2_reg_coeff', 0.001, 'If val > 0, use L2 Regularization on weights in graph')
@@ -66,7 +66,7 @@ flags.DEFINE_bool('random_init_oov', False, 'Use np.random.normal init for unkno
 # Adversarial and virtual adversarial training parameters.
 flags.DEFINE_bool('adv_train', True, 'Train using adversarial perturbations')
 flags.DEFINE_float('adv_coeff', 1.0, 'Coefficient of adversarial loss')
-flags.DEFINE_float('perturb_norm_length', 10.0, 'Norm length of adversarial perturbation')
+flags.DEFINE_float('perturb_norm_length', 5.0, 'Norm length of adversarial perturbation')
 
 # Output stats
 flags.DEFINE_integer('num_classes', 3, 'Number of classes for classification (2 combines NFS and UFS)')
