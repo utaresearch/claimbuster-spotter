@@ -176,6 +176,7 @@ class DataLoader:
 
         for el in temp_data:
             lab = int(el["label"]) + 1
+            print(lab, end=' ', flush=True)
             txt = el["text"]
 
             labels[lab] += 1
