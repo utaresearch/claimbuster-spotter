@@ -236,7 +236,7 @@ exp_contractions = {
 
 
 def expand_sentence(sentence):
-    return [(strip_chars(word)) for word in sentence]
+    return [(strip_chars(word)) for word in sentence.split(' ')]
 
 
 def correct_mistakes(sentence):
