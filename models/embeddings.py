@@ -44,12 +44,13 @@ class Embedding:
         embedding_matrix[0] = np.zeros(FLAGS.embedding_dims)
 
         tf.logging.info("Loading {} model...".format('word2vec' if FLAGS.embed_type == 0 else 'glove'))
-        model = KeyedVectors.load_word2vec_format(FLAGS.w2v_loc if FLAGS.embed_type == 0 else FLAGS.glove_loc,
-                                                  binary=False)
-        tf.logging.info("Model loaded.")
+        # model = KeyedVectors.load_word2vec_format(FLAGS.w2v_loc if FLAGS.embed_type == 0 else FLAGS.glove_loc,
+        #                                           binary=False)
+        # tf.logging.info("Model loaded.")
 
         fail_words = []
         for word, idx in self.vocab.items():
+            print(word, idx)
             try:
                 embedding_vector = model[word]
                 embedding_matrix[idx] = embedding_vector
