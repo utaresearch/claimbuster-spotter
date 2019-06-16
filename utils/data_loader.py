@@ -1,5 +1,5 @@
 import tensorflow as tf
-from keras.preprocessing.text import Tokenizer
+from keras.preprocessing.text import Tokenizer, text_to_word_sequence
 from sklearn.utils import resample
 import numpy as np
 import pickle
@@ -126,9 +126,12 @@ class DataLoader:
         def process_dataset(inp_data):
             for i in tqdm(range(len(inp_data))):
                 inp_data[i] = transf.correct_mistakes(inp_data[i])
-                inp_data[i] = transf.expand_contractions(inp_data[i])
                 inp_data[i] = (transf.process_sentence_ner_spacy(inp_data[i])
                                if FLAGS.ner_spacy else inp_data[i])
+
+                inp_data[i] = text_to_word_sequence(inp_data[i])
+
+                inp_data[i] = transf.expand_contractions(inp_data[i])
                 inp_data[i] = transf.remove_possessives(inp_data[i])
                 inp_data[i] = transf.remove_kill_words(inp_data[i])
             return inp_data

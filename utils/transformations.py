@@ -132,11 +132,11 @@ exp_contractions = {
     "I'll've": "I will have",
     "I'm": "I am",
     "I've": "I have",
-    "i'd": "would",
+    "i'd": "i would",
     "i'd've": "i would have",
-    "i'll": " will",
+    "i'll": "i will",
     "i'll've": "i will have",
-    "i'm": "i am ",
+    "i'm": "i am",
     "i've": "i have",
     "isn't": "is not",
     "it'd": "it would",
@@ -235,29 +235,14 @@ exp_contractions = {
 }
 
 
-def list_to_string(lst):
-    ret = ""
-    for f in lst:
-        ret = ret + f + " "
-    return ret.rstrip()
-
-
-def char_list_to_string(lst):
-    ret = ""
-    for f in lst:
-        ret = ret + f
-    return ret
-
-
-def get_tags(sentence):
-    text = nltk.tokenize.word_tokenize(sentence)
-    res = nltk.pos_tag(text)
-    return res
+def expand_sentence(sentence):
+    return [(strip_chars(word)) for word in sentence]
 
 
 def correct_mistakes(sentence):
-    return ' '.join([(dataset_specific_fixes[word] if word in dataset_specific_fixes else word)
-                     for word in sentence.split(' ')])
+    sentence = expand_sentence(sentence)
+    return ' '.join([pre + (dataset_specific_fixes[word] if word in dataset_specific_fixes else word) + post
+                     for pre, word, post in sentence])
 
 
 def expand_contractions(sentence):
@@ -278,6 +263,58 @@ def remove_kill_words(sentence):
         if word not in kill_words:
             ret.append(word)
     return ' '.join(ret)
+
+
+def strip_chars(inpstr, to_strip=string.punctuation):
+    strar = list(inpstr)
+
+    stripped_away_front = ""
+    stripped_away_back = ""
+
+    for idx in reversed(range(0, len(strar))):
+        if strar[idx] in to_strip:
+            stripped_away_back += strar[idx]
+            del strar[idx]
+        else:
+            break
+    lcount = 0
+    while lcount < len(strar):
+        if strar[lcount] in to_strip:
+            stripped_away_front += strar[lcount]
+            del strar[lcount]
+            lcount -= 1
+        else:
+            break
+        lcount += 1
+
+    return stripped_away_front, ''.join(strar), stripped_away_back[::-1]
+
+
+###########################################################################
+
+# ORIGINAL TRANSFORMATIONS
+
+###########################################################################
+
+
+def list_to_string(lst):
+    ret = ""
+    for f in lst:
+        ret = ret + f + " "
+    return ret.rstrip()
+
+
+def char_list_to_string(lst):
+    ret = ""
+    for f in lst:
+        ret = ret + f
+    return ret
+
+
+def get_tags(sentence):
+    text = nltk.tokenize.word_tokenize(sentence)
+    res = nltk.pos_tag(text)
+    return res
 
 
 def process_sentence_noun_rep(sentence):
