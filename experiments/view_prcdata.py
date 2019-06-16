@@ -1,4 +1,7 @@
 import pickle as p
+import sys
+sys.path.append('..')
+from utils.data_loader import Dataset
 
 
 with open('../data/all_data.pickle', 'rb') as f:
