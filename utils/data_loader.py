@@ -50,8 +50,8 @@ class DataLoader:
         if FLAGS.num_classes == 2:
             self.conv_3_to_2()
 
-        print(np.shape(self.data.get_length()))
-        print(np.shape(self.eval_data.get_length()))
+        print(self.data.get_length())
+        print(self.eval_data.get_length())
 
         self.class_weights = self.compute_class_weights()
         tf.logging.info('Class weights computed to be {}'.format(self.class_weights))
@@ -174,7 +174,7 @@ class DataLoader:
 
             with open(FLAGS.prc_data_loc, 'wb') as f:
                 pickle.dump((train_data, eval_data, vocab), f)
-            tf.logging.info('Refreshed data successfully dumped at {}'.format(FLAGS.prc_data_loc))
+            tf.logging.info('Refreshed data, successfully dumped at {}'.format(FLAGS.prc_data_loc))
 
             if os.path.exists(FLAGS.output_dir):
                 shutil.rmtree(FLAGS.output_dir)
