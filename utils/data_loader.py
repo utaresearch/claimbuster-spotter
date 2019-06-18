@@ -67,17 +67,14 @@ class DataLoader:
         return compute_class_weight('balanced', [z for z in range(FLAGS.num_classes)], self.data.y)
 
     def load_training_data(self):
-        ret = Dataset([], [], FLAGS.random_state)
-
-        for i in range(FLAGS.train_examples):
-            ret.x.append(self.data.x[i])
-            ret.y.append(self.data.y[i])
+        ret = Dataset([(self.data.x[0][i], self.data.x[1][i]) for i in range(len(self.data.x[0]))],
+                      [self.data.y], FLAGS.random_state)
 
         if FLAGS.sklearn_oversample:
             classes = [[] for _ in range(FLAGS.num_classes)]
 
             for i in range(len(ret.x)):
-                classes[ret.y[i]].append([(ret.x[0][i], ret.x[1][i]) for i in range(len(ret.x[0]))])
+                classes[ret.y[i]].append(ret.x[i])
 
             if FLAGS.num_classes == 3:
                 maj_len = len(classes[2])
