@@ -90,7 +90,7 @@ class DataLoader:
                 # classes[0] = resample(classes[0], n_samples=int(maj_len), random_state=FLAGS.random_state)
                 classes[1] = resample(classes[1], n_samples=int(maj_len * 0.40), random_state=FLAGS.random_state)
 
-            ret.x, ret.y = [], []
+            ret = Dataset([], [], random_state=FLAGS.random_state)
             del self.data.x[:FLAGS.train_examples]
             del self.data.y[:FLAGS.train_examples]
 
