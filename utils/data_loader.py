@@ -22,19 +22,23 @@ class Dataset:
     x = []
     y = []
 
-    def __init__(self, x, y, random_state):
+    def __init__(self, x, y, random_state, ver=2):
         self.x = x
         self.y = y
         self.random_state = random_state
+        self.ver = ver
         self.shuffle()
 
     def shuffle(self):
-        if len(self.x) == 0:
-            return
+        if self.ver == 1:
+            self.x, self.y = shuffle(self.x, self.y, random_state=self.random_state)
+        if self.ver == 2:
+            if len(self.x) == 0:
+                return
 
-        temp_x, self.y = shuffle([(self.x[0][i], self.x[1][i]) for i in range(len(self.x[0]))], self.y,
-                                 random_state=self.random_state)
-        self.x = [[z[0] for z in temp_x], [z[1] for z in temp_x]]
+            temp_x, self.y = shuffle([(self.x[0][i], self.x[1][i]) for i in range(len(self.x[0]))], self.y,
+                                     random_state=self.random_state)
+            self.x = [[z[0] for z in temp_x], [z[1] for z in temp_x]]
 
     def get_length(self):
         if len(self.x[0]) != len(self.y):
@@ -68,7 +72,7 @@ class DataLoader:
 
     def load_training_data(self):
         ret = Dataset([(self.data.x[0][i], self.data.x[1][i]) for i in range(len(self.data.x[0]))],
-                      [self.data.y], FLAGS.random_state)
+                      [self.data.y], FLAGS.random_state, ver=1)
 
         print(np.shape(ret.x))
 
