@@ -34,9 +34,9 @@ class Dataset:
         self.x = [[z[0] for z in temp_x], [z[1] for z in temp_x]]
 
     def get_length(self):
-        if len(self.x) != len(self.y):
-            raise ValueError("size of x != size of y ({} != {})".format(len(self.x), len(self.y)))
-        return len(self.x)
+        if len(self.x[0]) != len(self.y):
+            raise ValueError("size of x != size of y ({} != {})".format(len(self.x[0]), len(self.y)))
+        return len(self.x[0])
 
 
 class DataLoader:
