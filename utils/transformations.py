@@ -301,7 +301,7 @@ def strip_chars(inpstr, to_strip=string.punctuation):
 def list_to_string(lst):
     ret = ""
     for f in lst:
-        ret = ret + f + " "
+        ret = ret + str(f) + " "
     return ret.rstrip()
 
 
