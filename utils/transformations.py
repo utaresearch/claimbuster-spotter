@@ -10,7 +10,7 @@ cont = None
 embed_obj = None
 kill_words = ["", "uh"]
 stop_words = list(nltk.corpus.stopwords.words('english'))
-pos_labels = nltk.help.upenn_tagset()
+pos_labels = nltk.load("help/tagsets/upenn_tagset.pickle").keys()
 print(pos_labels)
 spacy_to_nl = {
     "PERSON": "person",
