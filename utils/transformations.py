@@ -460,7 +460,3 @@ if __name__ == '__main__':
     load_deps_dummy()
     print(process_sentence_ner_spacy('Donald Trump is the 45th president of the United States and Acme Corp'))
     print(get_tags('Donald Trump is the 45th president of the United States and Acme Corp'))
-
-
-# INFO:tensorflow:30 out of 7364 strings were not found and were defaulted.
-# INFO:tensorflow:["'number", 'adesh', "again''", 'appropri', 'avell', 'cosigner', "country'", 'debative', 'democ', 'direc', 'divise', 'ener1', 'exemply', 'insolvable', 'l975', 'l985', 'livingrooms', "nationality'", 'overcommitting', 'proabortion', 'quaffers', 'recallable', 'rectly', 'reenlisting', 'refix', "resort''", 'retrains', 'undertaxed', 'unlistened', "we''"]
