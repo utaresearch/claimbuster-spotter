@@ -29,7 +29,9 @@ class Dataset:
         self.shuffle()
 
     def shuffle(self):
-        print(np.shape(self.x))
+        if len(self.x) == 0:
+            continue
+
         temp_x, self.y = shuffle([(self.x[0][i], self.x[1][i]) for i in range(len(self.x[0]))], self.y,
                                  random_state=self.random_state)
         self.x = [[z[0] for z in temp_x], [z[1] for z in temp_x]]
