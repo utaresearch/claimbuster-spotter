@@ -308,7 +308,7 @@ def list_to_string(lst):
 def char_list_to_string(lst):
     ret = ""
     for f in lst:
-        ret = ret + f
+        ret = ret + str(f)
     return ret
 
 
