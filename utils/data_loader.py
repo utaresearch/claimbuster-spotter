@@ -50,6 +50,9 @@ class DataLoader:
         if FLAGS.num_classes == 2:
             self.conv_3_to_2()
 
+        print(np.shape(self.data))
+        print(np.shape(self.eval_data))
+
         self.class_weights = self.compute_class_weights()
         tf.logging.info('Class weights computed to be {}'.format(self.class_weights))
 
