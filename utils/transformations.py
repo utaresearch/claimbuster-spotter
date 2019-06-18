@@ -418,7 +418,6 @@ def transform_sentence_complete(sentence):
 def load_dependencies():
     global nlp, cont, embed_obj
 
-    # Load NLTK deps
     if FLAGS.noun_rep or FLAGS.full_tags or FLAGS.ner_spacy:
         print("Loading NLTK Dependencies...")
         nltk.download('punkt')
