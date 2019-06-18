@@ -50,8 +50,8 @@ class DataLoader:
         if FLAGS.num_classes == 2:
             self.conv_3_to_2()
 
-        print(np.shape(self.data))
-        print(np.shape(self.eval_data))
+        print(np.shape(self.data.get_length()))
+        print(np.shape(self.eval_data.get_length()))
 
         self.class_weights = self.compute_class_weights()
         tf.logging.info('Class weights computed to be {}'.format(self.class_weights))
@@ -173,7 +173,7 @@ class DataLoader:
             vocab = tokenizer.word_index
 
             with open(FLAGS.prc_data_loc, 'wb') as f:
-                pickle.dump((train_data, train_pos, eval_data, eval_pos, vocab), f)
+                pickle.dump((train_data, eval_data, vocab), f)
             tf.logging.info('Refreshed data successfully dumped at {}'.format(FLAGS.prc_data_loc))
 
             if os.path.exists(FLAGS.output_dir):
@@ -182,7 +182,7 @@ class DataLoader:
         else:
             tf.logging.info('Restoring data from {}'.format(FLAGS.prc_data_loc))
             with open(FLAGS.prc_data_loc, 'rb') as f:
-                train_data, train_pos, eval_data, eval_pos, vocab = pickle.load(f)
+                train_data, eval_data, vocab = pickle.load(f)
 
         return train_data, eval_data, vocab
 
