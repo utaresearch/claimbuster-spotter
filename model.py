@@ -12,8 +12,8 @@ from flags import FLAGS
 
 class ClaimBusterModel:
     def __init__(self, vocab, cls_weights, restore=False):
-        self.x = tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x')
-        self.x_len = tf.placeholder(tf.int32, (None,), name='x_len')
+        self.x = tf.placeholder(tf.int32, (None, 2, FLAGS.max_len), name='x')
+        self.x_len = tf.placeholder(tf.int32, (None, 2), name='x_len')
         self.output_mask = tf.placeholder(tf.bool, (None, FLAGS.max_len), name='output_mask')
         self.y = tf.placeholder(tf.int32, (None, FLAGS.num_classes), name='y')
         self.kp_emb = tf.placeholder(tf.float32, name='kp_emb')
@@ -89,6 +89,8 @@ class ClaimBusterModel:
         return tf.identity(ret_loss, name='reg_loss')
 
     def train_neural_network(self, sess, batch_x, batch_y):
+        print(np.shape(batch_x))
+        exit()
         sess.run(
             self.optimizer,
             feed_dict={

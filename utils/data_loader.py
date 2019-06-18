@@ -129,7 +129,11 @@ class DataLoader:
             transf.load_dependencies()
 
             def process_dataset(inp_data):
+                pos_tagged = []
+
                 for i in tqdm(range(len(inp_data))):
+                    pos_tagged.append(transf.process_sentence_full_tags(inp_data[i]))
+
                     inp_data[i] = transf.correct_mistakes(inp_data[i])
                     inp_data[i] = (transf.process_sentence_ner_spacy(inp_data[i])
                                    if FLAGS.ner_spacy else inp_data[i])
@@ -139,12 +143,13 @@ class DataLoader:
                     inp_data[i] = transf.expand_contractions(inp_data[i])
                     inp_data[i] = transf.remove_possessives(inp_data[i])
                     inp_data[i] = transf.remove_kill_words(inp_data[i])
-                return inp_data
+
+                return inp_data, pos_tagged
 
             tf.logging.info('Processing train data')
-            train_txt = process_dataset(train_txt)
+            train_txt, train_pos = process_dataset(train_txt)
             tf.logging.info('Processing eval data')
-            eval_txt = process_dataset(eval_txt)
+            eval_txt, eval_pos = process_dataset(eval_txt)
 
             tokenizer = Tokenizer()
 
@@ -152,8 +157,8 @@ class DataLoader:
             train_seq = tokenizer.texts_to_sequences(train_txt)
             eval_seq = tokenizer.texts_to_sequences(eval_txt)
 
-            train_data = Dataset(train_seq, train_lab, random_state=FLAGS.random_state)
-            eval_data = Dataset(eval_seq, eval_lab, random_state=FLAGS.random_state)
+            train_data = Dataset([train_seq, train_pos], train_lab, random_state=FLAGS.random_state)
+            eval_data = Dataset([eval_seq, eval_pos], eval_lab, random_state=FLAGS.random_state)
             vocab = tokenizer.word_index
 
             with open(FLAGS.prc_data_loc, 'wb') as f:

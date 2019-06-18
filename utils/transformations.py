@@ -10,6 +10,7 @@ cont = None
 embed_obj = None
 kill_words = ["", "uh"]
 stop_words = list(nltk.corpus.stopwords.words('english'))
+pos_labels = ["ADJ","ADV","CNJ","DET","EX","FW","MOD","N","NNP","NUM","PRO","P","TO","UH","V","VD","VG","VN","WH"]
 spacy_to_nl = {
     "PERSON": "person",
     "NORP": "nationality",
@@ -333,7 +334,7 @@ def process_sentence_full_tags(sentence):
     prc_res = get_tags(sentence)
     ret = []
     for f in prc_res:
-        ret.append(f[1])
+        ret.append(pos_labels.index(f[1]))
     return list_to_string(ret)
 
 
@@ -383,3 +384,4 @@ if __name__ == '__main__':
     load_deps_dummy()
     print(process_sentence_ner_spacy('Donald Trump is the 45th president of the United States and Acme Corp'))
     print(get_tags('Donald Trump is the 45th president of the United States and Acme Corp'))
+    print(process_sentence_full_tags('Donald Trump is the 45th president of the United States and Acme Corp'))
