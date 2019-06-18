@@ -173,7 +173,7 @@ class DataLoader:
             vocab = tokenizer.word_index
 
             with open(FLAGS.prc_data_loc, 'wb') as f:
-                pickle.dump((train_data, eval_data, vocab), f)
+                pickle.dump((train_data, train_pos, eval_data, eval_pos, vocab), f)
             tf.logging.info('Refreshed data successfully dumped at {}'.format(FLAGS.prc_data_loc))
 
             if os.path.exists(FLAGS.output_dir):
@@ -182,7 +182,7 @@ class DataLoader:
         else:
             tf.logging.info('Restoring data from {}'.format(FLAGS.prc_data_loc))
             with open(FLAGS.prc_data_loc, 'rb') as f:
-                train_data, eval_data, vocab = pickle.load(f)
+                train_data, train_pos, eval_data, eval_pos, vocab = pickle.load(f)
 
         return train_data, eval_data, vocab
 
