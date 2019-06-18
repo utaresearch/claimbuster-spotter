@@ -70,6 +70,8 @@ class DataLoader:
         ret = Dataset([(self.data.x[0][i], self.data.x[1][i]) for i in range(len(self.data.x[0]))],
                       [self.data.y], FLAGS.random_state)
 
+        print(np.shape(ret.x))
+
         if FLAGS.sklearn_oversample:
             classes = [[] for _ in range(FLAGS.num_classes)]
 
