@@ -4,7 +4,6 @@ import string
 import sys
 sys.path.append('..')
 from flags import FLAGS
-from pycontractions import Contractions
 
 nlp = None
 cont = None
@@ -431,16 +430,6 @@ def load_dependencies():
             nlp = spacy.load("en_core_web_lg")
             print("Tagger loaded.")
         print("NLTK dependencies Loaded.")
-
-    # Load word2vec model for contraction expansion
-    # print("Loading model from " + FLAGS.w2v_loc_bin)
-    # cont = Contractions(FLAGS.w2v_loc_bin)
-    #
-    # try:
-    #     cont.load_models()
-    #     print("Model Loaded.")
-    # except:
-    #     raise Exception("Error: Model does not exist")
 
 
 def load_deps_dummy():
