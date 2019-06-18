@@ -12,9 +12,9 @@ from flags import FLAGS
 
 class ClaimBusterModel:
     def __init__(self, vocab, cls_weights, restore=False):
-        self.x = tf.placeholder(tf.int32, (None, FLAGS.max_len, 2), name='x')
+        self.x = tf.placeholder(tf.int32, (None, 2, FLAGS.max_len), name='x')
         self.x_len = tf.placeholder(tf.int32, (None, 2), name='x_len')
-        self.output_mask = tf.placeholder(tf.bool, (None, FLAGS.max_len, 2), name='output_mask')
+        self.output_mask = tf.placeholder(tf.bool, (None, 2, FLAGS.max_len), name='output_mask')
         self.y = tf.placeholder(tf.int32, (None, FLAGS.num_classes), name='y')
         self.kp_emb = tf.placeholder(tf.float32, name='kp_emb')
         self.kp_lstm = tf.placeholder(tf.float32, name='kp_lstm')
@@ -51,18 +51,18 @@ class ClaimBusterModel:
 
         with tf.variable_scope('cb_model'):
             with tf.variable_scope('natural_lang_lstm', reuse=adv):
-                nl_lstm_x = self.x[:, :, 0]
-                nl_lstm_x_len = self.x_len[:, :, 0]
-                nl_lstm_output_mask = self.output_mask[:, :, 0]
+                nl_lstm_x = self.x[:, 0]
+                nl_lstm_x_len = self.x_len[:, 0]
+                nl_lstm_output_mask = self.output_mask[:, 0]
                 nl_lstm_out = RecurrentModel.build_lstm(nl_lstm_x, nl_lstm_x_len, nl_lstm_output_mask, self.embed,
                                                         self.kp_emb, self.kp_lstm, orig_embed, reg_loss, adv)
                 if not adv:
                     orig_embed, nl_lstm_out = nl_lstm_out
 
             with tf.variable_scope('pos_lstm', reuse=adv):
-                pos_lstm_x = self.x[:, :, 1]
-                pos_lstm_x_len = self.x_len[:, :, 1]
-                pos_lstm_output_mask = self.output_mask[:, :, 1]
+                pos_lstm_x = self.x[:, 1]
+                pos_lstm_x_len = self.x_len[:, 1]
+                pos_lstm_output_mask = self.output_mask[:, 1]
                 pos_lstm_out = RecurrentModel.build_lstm(pos_lstm_x, pos_lstm_x_len, pos_lstm_output_mask, self.embed,
                                                          self.kp_emb, self.kp_lstm, orig_embed, reg_loss, adv)
 
@@ -181,9 +181,9 @@ class ClaimBusterModel:
 
     @staticmethod
     def pad_seq(inp):
-        return np.concatenate((pad_sequences(inp[:, :, 0], padding="post", maxlen=FLAGS.max_len),
-                               pad_sequences(inp[:, :, 1], padding="post", maxlen=FLAGS.max_len)),
-                              axis=2)
+        return np.concatenate((pad_sequences(inp[:, 0], padding="post", maxlen=FLAGS.max_len),
+                               pad_sequences(inp[:, 1], padding="post", maxlen=FLAGS.max_len)),
+                              axis=1)
 
     @staticmethod
     def one_hot(a):
@@ -195,9 +195,9 @@ class ClaimBusterModel:
 
     @staticmethod
     def gen_x_len(batch_x):
-        return np.concatenate(([len(el) for el in batch_x[:, :, 0]],
-                               [len(el) for el in batch_x[:, :, 1]]),
-                              axis=2)
+        return np.concatenate(([len(el) for el in batch_x[:, 0]],
+                               [len(el) for el in batch_x[:, 1]]),
+                              axis=1)
 
     @staticmethod
     def save_model(sess, epoch):
