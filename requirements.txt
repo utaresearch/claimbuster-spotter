@@ -1,6 +1,5 @@
 imbalanced_learn==0.4.3
 nltk==3.3
-pycontractions==1.0.1
 tqdm==4.11.2
 gensim==3.4.0
 spacy==2.0.11
