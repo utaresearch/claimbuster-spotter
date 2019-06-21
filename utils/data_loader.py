@@ -57,8 +57,8 @@ class DataLoader:
         print(np.shape(self.data.x))
         print(np.shape(self.eval_data.x))
 
-        print(len(self.data[0][0]), len(self.data[0][1]), len(self.data[0][2]))
-        print(len(self.data[1][0]), len(self.data[1][1]), len(self.data[1][2]))
+        print(len(self.data.x[0][0]), len(self.data.x[0][1]), len(self.data.x[0][2]))
+        print(len(self.data.x[1][0]), len(self.data.x[1][1]), len(self.data.x[1][2]))
 
         self.class_weights = self.compute_class_weights()
         tf.logging.info('Class weights computed to be {}'.format(self.class_weights))
