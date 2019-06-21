@@ -27,18 +27,18 @@ class Dataset:
         self.y = y
         self.random_state = random_state
         self.ver = ver
-        self.shuffle()
+        # self.shuffle()
 
-    def shuffle(self):
-        if self.ver == 1:
-            self.x, self.y = shuffle(self.x, self.y, random_state=self.random_state)
-        if self.ver == 2:
-            if len(self.x) == 0:
-                return
-
-            temp_x, self.y = shuffle([(self.x[0][i], self.x[1][i]) for i in range(len(self.x[0]))], self.y,
-                                     random_state=self.random_state)
-            self.x = [[z[0] for z in temp_x], [z[1] for z in temp_x]]
+    # def shuffle(self):
+    #     if self.ver == 1:
+    #         self.x, self.y = shuffle(self.x, self.y, random_state=self.random_state)
+    #     if self.ver == 2:
+    #         if len(self.x) == 0:
+    #             return
+    #
+    #         temp_x, self.y = shuffle([(self.x[0][i], self.x[1][i]) for i in range(len(self.x[0]))], self.y,
+    #                                  random_state=self.random_state)
+    #         self.x = [[z[0] for z in temp_x], [z[1] for z in temp_x]]
 
     def get_length(self):
         if len(self.x[0]) != len(self.y):
@@ -52,7 +52,7 @@ class DataLoader:
 
         self.data, self.eval_data, self.vocab = self.load_external_raw()
         if FLAGS.num_classes == 2:
-            self.conv_3_to_2()
+            self.convert_3_to_2()
 
         print(self.data.get_length())
         print(self.eval_data.get_length())
@@ -63,7 +63,7 @@ class DataLoader:
         self.data.shuffle()
         self.post_process_flags()
 
-    def conv_3_to_2(self):
+    def convert_3_to_2(self):
         self.data.y = [(1 if self.data.y[i] == 2 else 0) for i in range(len(self.data.y))]
         self.eval_data.y = [(1 if self.eval_data.y[i] == 2 else 0) for i in range(len(self.eval_data.y))]
 
@@ -173,6 +173,9 @@ class DataLoader:
             eval_data = Dataset([eval_seq, eval_pos], eval_lab, random_state=FLAGS.random_state)
             vocab = tokenizer.word_index
 
+            print(np.shape(train_data.x))
+            exit()
+
             with open(FLAGS.prc_data_loc, 'wb') as f:
                 pickle.dump((train_data, eval_data, vocab), f)
             tf.logging.info('Refreshed data, successfully dumped at {}'.format(FLAGS.prc_data_loc))
@@ -186,6 +189,16 @@ class DataLoader:
                 train_data, eval_data, vocab = pickle.load(f)
 
         return train_data, eval_data, vocab
+
+    @staticmethod
+    def convert_ar_to_tuplear(ar):  # input: [2, num_samples], output: [num_samples]
+        ret = []
+
+
+
+    @staticmethod
+    def convert_tuplear_to_ar(tuple_ar):  # inverse of ↑ function
+
 
     @staticmethod
     def parse_json(json_loc):
