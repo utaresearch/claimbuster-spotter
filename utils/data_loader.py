@@ -190,14 +190,14 @@ class DataLoader:
 
         return train_data, eval_data, vocab
 
-    @staticmethod
-    def convert_ar_to_tuplear(ar):  # input: [2, num_samples], output: [num_samples]
-        ret = []
-
-
-
-    @staticmethod
-    def convert_tuplear_to_ar(tuple_ar):  # inverse of ↑ function
+    # @staticmethod
+    # def convert_ar_to_tuplear(ar):  # input: [2, num_samples], output: [num_samples]
+    #     ret = []
+    #
+    #
+    #
+    # @staticmethod
+    # def convert_tuplear_to_ar(tuple_ar):  # inverse of ↑ function
 
 
     @staticmethod
