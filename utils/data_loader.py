@@ -54,8 +54,8 @@ class DataLoader:
         if FLAGS.num_classes == 2:
             self.convert_3_to_2()
 
-        print(self.data.get_length())
-        print(self.eval_data.get_length())
+        print(np.shape(self.data.x))
+        print(np.shape(self.eval_data.x))
 
         self.class_weights = self.compute_class_weights()
         tf.logging.info('Class weights computed to be {}'.format(self.class_weights))
@@ -172,9 +172,6 @@ class DataLoader:
             train_data = Dataset([train_seq, train_pos], train_lab, random_state=FLAGS.random_state)
             eval_data = Dataset([eval_seq, eval_pos], eval_lab, random_state=FLAGS.random_state)
             vocab = tokenizer.word_index
-
-            print(np.shape(train_data.x))
-            exit()
 
             with open(FLAGS.prc_data_loc, 'wb') as f:
                 pickle.dump((train_data, eval_data, vocab), f)
