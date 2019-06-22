@@ -252,9 +252,9 @@ python3 -u evaluate.py \
 
 ## Contributors
 
-* Original Implementation in Research Paper
+* Code written by
+    * Kevin Meng, @kmeng01
+* Original implementation of adversarial training in research paper by
     * Ryan Sepassi, @rsepassi
     * Andrew M. Dai, @a-dai
     * Takeru Miyato, @takerum
-* Application to Detection of Salient Factual Statements
-    * Kevin Meng, @kmeng01
