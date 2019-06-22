@@ -143,6 +143,7 @@ class DataLoader:
             eval_txt = [z[0] for z in dj_eval_data]
 
             train_lab = [z[1] for z in train_data]
+            print(train_lab)
             eval_lab = [z[1] for z in dj_eval_data]
 
             tf.logging.info('Loading preprocessing dependencies')
