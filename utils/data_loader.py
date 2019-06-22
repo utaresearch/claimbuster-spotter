@@ -92,8 +92,7 @@ class DataLoader:
 
             for lab in range(len(classes)):
                 for inp_x in classes[lab]:
-                    print(np.shape(inp_x))
-                    inp_x = self.toggle_ar_tuplear(inp_x)
+                    inp_x = (inp_x[0], inp_x[1])
 
                     ret.x.append(inp_x)
                     ret.y.append(lab)
