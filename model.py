@@ -215,7 +215,7 @@ class ClaimBusterModel:
             idx = bid * FLAGS.batch_size + i
             if idx >= (FLAGS.train_examples if ver == 'train' else FLAGS.test_examples):
                 break
-            batch_x.append(data.x[idx])
+            batch_x.append(ClaimBusterModel.transform_dl_data(data.x[idx]))
             batch_y.append(data.y[idx])
 
         return batch_x, batch_y
