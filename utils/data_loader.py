@@ -36,9 +36,9 @@ class Dataset:
             if len(self.x) == 0:
                 return
 
-            temp_x, self.y = shuffle([(self.x[0][i], self.x[1][i]) for i in range(len(self.x[0]))], self.y,
-                                     random_state=self.random_state)
-            self.x = [[z[0] for z in temp_x], [z[1] for z in temp_x]]
+            # temp_x, self.y = shuffle([(self.x[0][i], self.x[1][i]) for i in range(len(self.x[0]))], self.y,
+            #                          random_state=self.random_state)
+            # self.x = [[z[0] for z in temp_x], [z[1] for z in temp_x]]
 
     def get_length(self):
         if len(self.x[0]) != len(self.y):
@@ -53,9 +53,6 @@ class DataLoader:
         self.data, self.eval_data, self.vocab = self.load_external_raw()
         if FLAGS.num_classes == 2:
             self.convert_3_to_2()
-
-        print(np.shape(self.data.x))
-        print(np.shape(self.eval_data.x))
 
         print(len(self.data.x[0][0]), len(self.data.x[0][1]), len(self.data.x[0][2]))
         print(len(self.data.x[1][0]), len(self.data.x[1][1]), len(self.data.x[1][2]))
@@ -74,7 +71,7 @@ class DataLoader:
         return compute_class_weight('balanced', [z for z in range(FLAGS.num_classes)], self.data.y)
 
     def load_training_data(self):
-        ret = Dataset([(self.data.x[0][i], self.data.x[1][i]) for i in range(len(self.data.x[0]))],
+        ret = Dataset(self.toggle_ar_tuplear(self.data.x),
                       [self.data.y], FLAGS.random_state, ver=1)
 
         if FLAGS.sklearn_oversample:
@@ -82,6 +79,8 @@ class DataLoader:
 
             for i in range(len(ret.x)):
                 classes[ret.y[i]].append(ret.x[i])
+                print(np.shape(ret.x))
+                exit()
 
             if FLAGS.num_classes == 3:
                 maj_len = len(classes[2])
@@ -99,7 +98,7 @@ class DataLoader:
 
             for lab in range(len(classes)):
                 for inp_x in classes[lab]:
-                    inp_x = [[z[0] for z in inp_x], [z[1] for z in inp_x]]
+                    inp_x = self.toggle_ar_tuplear(inp_x)
 
                     ret.x.append(inp_x)
                     ret.y.append(lab)
@@ -190,15 +189,9 @@ class DataLoader:
 
         return train_data, eval_data, vocab
 
-    # @staticmethod
-    # def convert_ar_to_tuplear(ar):  # input: [2, num_samples], output: [num_samples]
-    #     ret = []
-    #
-    #
-    #
-    # @staticmethod
-    # def convert_tuplear_to_ar(tuple_ar):  # inverse of ↑ function
-
+    @staticmethod
+    def toggle_ar_tuplear(ar):  # i/o: [2, num_samples], i/o: [num_samples]
+        return np.swapaxes(ar, 0, 1)
 
     @staticmethod
     def parse_json(json_loc):
