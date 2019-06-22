@@ -178,8 +178,8 @@ class ClaimBusterModel:
 
     @staticmethod
     def pad_seq(inp):
-        return [pad_sequences([z[0] for z in inp], padding="post", maxlen=FLAGS.max_len),
-                pad_sequences([z[1] for z in inp], padding="post", maxlen=FLAGS.max_len)]
+        return np.swapaxes([pad_sequences([z[0] for z in inp], padding="post", maxlen=FLAGS.max_len),
+                pad_sequences([z[1] for z in inp], padding="post", maxlen=FLAGS.max_len)], 0, 1)
 
     @staticmethod
     def one_hot(a):
