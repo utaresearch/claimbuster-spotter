@@ -179,20 +179,21 @@ class ClaimBusterModel:
     @staticmethod
     def pad_seq(inp):
         return np.swapaxes([pad_sequences([z[0] for z in inp], padding="post", maxlen=FLAGS.max_len),
-                pad_sequences([z[1] for z in inp], padding="post", maxlen=FLAGS.max_len)], 0, 1)
+                            pad_sequences([z[1] for z in inp], padding="post", maxlen=FLAGS.max_len)], 0, 1)
 
     @staticmethod
     def one_hot(a):
         return to_categorical(a, num_classes=FLAGS.num_classes)
 
     @staticmethod
-    def gen_output_mask(batch_x):
-        return [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x]
+    def gen_output_mask(inp):
+        return np.swapaxes([[[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in [z[0] for z in inp]],
+                [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in [z[1] for z in inp]]], 0, 1)
 
     @staticmethod
     def gen_x_len(inp):
         return np.swapaxes([[len(el) for el in [z[0] for z in inp]],
-                [len(el) for el in [z[1] for z in inp]]], 0, 1)
+                            [len(el) for el in [z[1] for z in inp]]], 0, 1)
 
     @staticmethod
     def save_model(sess, epoch):
