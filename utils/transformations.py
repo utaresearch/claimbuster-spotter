@@ -336,7 +336,7 @@ def process_sentence_full_tags(sentence):
     ret = []
     for f in prc_res:
         ret.append(pos_labels.index(f[1]))
-    return list_to_string(ret)
+    return ret
 
 
 def process_sentence_ner_spacy(sentence):
