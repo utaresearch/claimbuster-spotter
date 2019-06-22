@@ -159,6 +159,7 @@ class DataLoader:
             eval_seq = tokenizer.texts_to_sequences(eval_txt)
 
             train_data = Dataset(list(zip([train_seq, train_pos])), train_lab, random_state=FLAGS.random_state)
+            print(np.shape(train_data.x))
             eval_data = Dataset(list(zip([eval_seq, eval_pos])), eval_lab, random_state=FLAGS.random_state)
             vocab = tokenizer.word_index
 
