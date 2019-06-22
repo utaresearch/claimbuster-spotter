@@ -30,7 +30,6 @@ class Dataset:
         self.shuffle()
 
     def shuffle(self):
-        print(np.shape(self.x))
         print(np.shape(self.y))
 
         if self.ver == 1:
@@ -74,11 +73,7 @@ class DataLoader:
         return compute_class_weight('balanced', [z for z in range(FLAGS.num_classes)], self.data.y)
 
     def load_training_data(self):
-        print(np.shape(self.ar_tuplear(self.data.x)))
-        print(self.ar_tuplear(self.data.x))
-
-        ret = Dataset(self.ar_tuplear(self.data.x),
-                      [self.data.y], FLAGS.random_state, ver=1)
+        ret = Dataset(self.ar_tuplear(self.data.x), self.data.y, FLAGS.random_state, ver=1)
 
         if FLAGS.sklearn_oversample:
             classes = [[] for _ in range(FLAGS.num_classes)]
@@ -176,8 +171,6 @@ class DataLoader:
             tokenizer.fit_on_texts(np.concatenate((train_txt, eval_txt)))
             train_seq = tokenizer.texts_to_sequences(train_txt)
             eval_seq = tokenizer.texts_to_sequences(eval_txt)
-
-            print(np.shape(train_lab))
 
             train_data = Dataset([train_seq, train_pos], train_lab, random_state=FLAGS.random_state)
             eval_data = Dataset([eval_seq, eval_pos], eval_lab, random_state=FLAGS.random_state)
