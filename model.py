@@ -214,13 +214,10 @@ class ClaimBusterModel:
             if idx >= (FLAGS.train_examples if ver == 'train' else FLAGS.test_examples):
                 break
 
-            print(np.shape(data.x[idx]))
             batch_x.append(data.x[idx])
             batch_y.append(data.y[idx])
 
-        print(np.shape(batch_x))
-
-        return ClaimBusterModel.transform_dl_data(batch_x), batch_y
+        return batch_x, batch_y
 
     def load_model(self, sess, graph):
         def get_last_save(scan_loc):
