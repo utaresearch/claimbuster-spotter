@@ -10,7 +10,7 @@ class RecurrentModel:
         pass
 
     @staticmethod
-    def build_lstm(x, x_len, output_mask, embed, kp_emb, kp_lstm, orig_embed, reg_loss, adv):
+    def build_embed_lstm(x, x_len, output_mask, embed, kp_emb, kp_lstm, orig_embed, reg_loss, adv):
         if adv:
             x_embed = apply_adversarial_perturbation(orig_embed, reg_loss)
         else:
@@ -40,6 +40,25 @@ class RecurrentModel:
             output = output[:, -1, :]
 
         return (x_embed, output) if not adv else output
+
+    @staticmethod
+    def build_lstm(x, x_len, output_mask, kp_emb, kp_lstm, orig_embed, reg_loss, adv):
+        if not FLAGS.bidir_lstm:
+            tf.logging.info('Building uni-directional LSTM')
+            output, _ = RecurrentModel.build_unidir_lstm_component(x, x_len, kp_lstm)
+        else:
+            tf.logging.info('Building bi-directional LSTM')
+            output, _ = RecurrentModel.build_bidir_lstm_component(x, x_len, kp_lstm)
+
+        if FLAGS.bidir_lstm:
+            output_fw, output_bw = output
+            output_fw = tf.boolean_mask(output_fw, output_mask)
+            output_bw = output_bw[:, 0, :]
+            output = tf.concat([output_fw, output_bw], axis=1)
+        else:
+            output = output[:, -1, :]
+
+        return output
 
     @staticmethod
     def build_unidir_lstm_component(x, x_len, kp_lstm):
