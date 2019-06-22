@@ -30,18 +30,10 @@ class Dataset:
         self.shuffle()
 
     def shuffle(self):
-        if self.ver == 1:
-            self.x, self.y = shuffle(self.x, self.y, random_state=self.random_state)
-        if self.ver == 2:
-            if len(self.x) == 0:
-                return
-
-            # temp_x, self.y = shuffle([(self.x[0][i], self.x[1][i]) for i in range(len(self.x[0]))], self.y,
-            #                          random_state=self.random_state)
-            # self.x = [[z[0] for z in temp_x], [z[1] for z in temp_x]]
+        self.x, self.y = shuffle(self.x, self.y, random_state=self.random_state)
 
     def get_length(self):
-        xlen, ylen = len(self.x[0]) if self.ver ==1 else len(self.x), len(self.y)
+        xlen, ylen = len(self.x), len(self.y)
         if xlen != ylen:
             raise ValueError("size of x != size of y ({} != {})".format(xlen, ylen)
         return xlen
@@ -166,8 +158,8 @@ class DataLoader:
             train_seq = tokenizer.texts_to_sequences(train_txt)
             eval_seq = tokenizer.texts_to_sequences(eval_txt)
 
-            train_data = Dataset([train_seq, train_pos], train_lab, random_state=FLAGS.random_state)
-            eval_data = Dataset([eval_seq, eval_pos], eval_lab, random_state=FLAGS.random_state)
+            train_data = Dataset(list(zip([train_seq, train_pos])), train_lab, random_state=FLAGS.random_state)
+            eval_data = Dataset(list(zip([eval_seq, eval_pos])), eval_lab, random_state=FLAGS.random_state)
             vocab = tokenizer.word_index
 
             with open(FLAGS.prc_data_loc, 'wb') as f:
