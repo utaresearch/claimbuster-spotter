@@ -73,7 +73,7 @@ class DataLoader:
         return compute_class_weight('balanced', [z for z in range(FLAGS.num_classes)], self.data.y)
 
     def load_training_data(self):
-        ret = Dataset(self.ar_tuplear(self.data.x), self.data.y, FLAGS.random_state, ver=1)
+        ret = Dataset(self.toggle_ar_tuplear(self.data.x), self.data.y, FLAGS.random_state, ver=1)
 
         if FLAGS.sklearn_oversample:
             classes = [[] for _ in range(FLAGS.num_classes)]
@@ -99,7 +99,7 @@ class DataLoader:
 
             for lab in range(len(classes)):
                 for inp_x in classes[lab]:
-                    inp_x = self.tuplear_ar(inp_x)
+                    inp_x = self.toggle_ar_tuplear(inp_x)
 
                     ret.x.append(inp_x)
                     ret.y.append(lab)
@@ -191,15 +191,8 @@ class DataLoader:
         return train_data, eval_data, vocab
 
     @staticmethod
-    def ar_tuplear(ar):  # i/o: [2, num_samples], i/o: [num_samples]
-        temp = np.swapaxes(ar, 0, 1)
-        return [(z[0], z[1]) for z in temp]
-
-    @staticmethod
-    def tuplear_ar(ar):  # i/o: [num_samples], i/o: [2, num_samples]
-        temp = zip(*[ar[0], ar[1]])
-        print(np.shape(temp))
-        return np.swapaxes(temp, 0, 1)
+    def toggle_ar_tuplear(ar):  # i/o: [2, num_samples], i/o: [num_samples]
+        return np.swapaxes(ar, 0, 1)
 
     @staticmethod
     def parse_json(json_loc):
