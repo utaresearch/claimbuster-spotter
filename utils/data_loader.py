@@ -34,7 +34,7 @@ class Dataset:
     def get_length(self):
         xlen, ylen = len(self.x), len(self.y)
         if xlen != ylen:
-            raise ValueError("size of x != size of y ({} != {})".format(xlen, ylen)
+            raise ValueError("size of x != size of y ({} != {})".format(xlen, ylen))
         return xlen
 
 
