@@ -318,19 +318,6 @@ def get_tags(sentence):
     return res
 
 
-def process_sentence_noun_rep(sentence):
-    prc_res = get_tags(sentence)
-    ret = []
-    for p in prc_res:
-        if p[1] == "POS":
-            continue
-        elif "NN" in p[1]:
-            ret.append("noun")
-        else:
-            ret.append(p[0])
-    return list_to_string(ret)
-
-
 def process_sentence_full_tags(sentence):
     prc_res = get_tags(sentence)
     ret = []
