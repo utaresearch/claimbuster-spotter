@@ -54,7 +54,7 @@ class Embedding:
                 embedding_vector = model[word]
                 embedding_matrix[idx] = embedding_vector
             except Exception as e:
-                if "not in vocab" not in e:
+                if "not in vocab" not in str(e):
                     print(e)
                 fail_words.append(word)
 
