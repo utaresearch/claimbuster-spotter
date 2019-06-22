@@ -72,6 +72,7 @@ class DataLoader:
 
     def load_training_data(self):
         print(np.shape(self.ar_tuplear(self.data.x)))
+        print(self.ar_tuplear(self.data.x))
 
         ret = Dataset(self.ar_tuplear(self.data.x),
                       [self.data.y], FLAGS.random_state, ver=1)
