@@ -205,6 +205,11 @@ class ClaimBusterModel:
         saver.save(sess, os.path.join(FLAGS.output_dir, 'cb.ckpt'), global_step=epoch)
 
     @staticmethod
+    def transform_dl_data(data_xlist):
+        temp = [[z[0] for z in data_xlist], [z[1] for z in data_xlist]]
+        return np.swapaxes(temp, 0, 1)
+
+    @staticmethod
     def get_batch(bid, data, ver='train'):
         batch_x = []
         batch_y = []
