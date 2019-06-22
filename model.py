@@ -178,9 +178,8 @@ class ClaimBusterModel:
 
     @staticmethod
     def pad_seq(inp):
-        return np.concatenate((pad_sequences(inp[:, 0], padding="post", maxlen=FLAGS.max_len),
-                               pad_sequences(inp[:, 1], padding="post", maxlen=FLAGS.max_len)),
-                              axis=1)
+        return [pad_sequences(inp[:, 0], padding="post", maxlen=FLAGS.max_len),
+                pad_sequences(inp[:, 1], padding="post", maxlen=FLAGS.max_len)]
 
     @staticmethod
     def one_hot(a):
@@ -192,9 +191,8 @@ class ClaimBusterModel:
 
     @staticmethod
     def gen_x_len(batch_x):
-        return np.concatenate(([len(el) for el in batch_x[:, 0]],
-                               [len(el) for el in batch_x[:, 1]]),
-                              axis=1)
+        return [[len(el) for el in batch_x[:, 0]],
+                [len(el) for el in batch_x[:, 1]]]
 
     @staticmethod
     def save_model(sess, epoch):
