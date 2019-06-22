@@ -80,8 +80,6 @@ class DataLoader:
 
             for i in range(len(ret.x)):
                 classes[ret.y[i]].append(ret.x[i])
-                print(np.shape(ret.x))
-                exit()
 
             if FLAGS.num_classes == 3:
                 maj_len = len(classes[2])
