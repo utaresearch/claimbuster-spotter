@@ -66,10 +66,7 @@ class ClaimBusterModel:
                 pos_lstm_out = RecurrentModel.build_lstm(pos_lstm_x, pos_lstm_x_len, pos_lstm_output_mask, self.kp_lstm)
 
             with tf.variable_scope('fc_output', reuse=adv):
-                print(nl_lstm_out, pos_lstm_out)
                 lstm_out = tf.concat([nl_lstm_out, pos_lstm_out], axis=1)
-                print(lstm_out)
-                exit()
 
                 output_weights = tf.get_variable('cb_output_weights', shape=(
                     FLAGS.rnn_cell_size * 2 * (2 if FLAGS.bidir_lstm else 1), FLAGS.num_classes),
