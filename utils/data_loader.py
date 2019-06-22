@@ -30,8 +30,6 @@ class Dataset:
         self.shuffle()
 
     def shuffle(self):
-        print(np.shape(self.y))
-
         if self.ver == 1:
             self.x, self.y = shuffle(self.x, self.y, random_state=self.random_state)
         if self.ver == 2:
@@ -55,9 +53,6 @@ class DataLoader:
         self.data, self.eval_data, self.vocab = self.load_external_raw()
         if FLAGS.num_classes == 2:
             self.convert_3_to_2()
-
-        print(len(self.data.x[0][0]), len(self.data.x[0][1]), len(self.data.x[0][2]))
-        print(len(self.data.x[1][0]), len(self.data.x[1][1]), len(self.data.x[1][2]))
 
         self.class_weights = self.compute_class_weights()
         tf.logging.info('Class weights computed to be {}'.format(self.class_weights))
@@ -97,6 +92,7 @@ class DataLoader:
 
             for lab in range(len(classes)):
                 for inp_x in classes[lab]:
+                    print(np.shape(inp_x))
                     inp_x = self.toggle_ar_tuplear(inp_x)
 
                     ret.x.append(inp_x)
