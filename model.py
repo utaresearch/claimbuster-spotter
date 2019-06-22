@@ -217,6 +217,8 @@ class ClaimBusterModel:
             batch_x.append(data.x[idx])
             batch_y.append(data.y[idx])
 
+        print(np.shape(batch_x))
+
         return ClaimBusterModel.transform_dl_data(batch_x), batch_y
 
     def load_model(self, sess, graph):
