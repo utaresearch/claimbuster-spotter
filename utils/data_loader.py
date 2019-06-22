@@ -71,6 +71,8 @@ class DataLoader:
         return compute_class_weight('balanced', [z for z in range(FLAGS.num_classes)], self.data.y)
 
     def load_training_data(self):
+        print(np.shape(self.ar_tuplear(self.data.x)))
+
         ret = Dataset(self.ar_tuplear(self.data.x),
                       [self.data.y], FLAGS.random_state, ver=1)
 
