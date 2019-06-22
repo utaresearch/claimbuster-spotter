@@ -25,6 +25,10 @@ class Dataset:
     def __init__(self, x, y, random_state):
         self.x = x
         self.y = y
+
+        print(np.shape(x))
+        print(np.shape(y))
+
         self.random_state = random_state
         self.shuffle()
 
