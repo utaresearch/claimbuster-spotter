@@ -73,8 +73,8 @@ class DataLoader:
             if FLAGS.num_classes == 3:
                 maj_len = len(classes[2])
                 classes[0] = resample(classes[0], n_samples=int(maj_len * 2.75), random_state=FLAGS.random_state)
-                classes[1] = resample(classes[1], n_samples=int(maj_len * 0.95), random_state=FLAGS.random_state)
-                classes[2] = resample(classes[2], n_samples=int(maj_len * 1.55), random_state=FLAGS.random_state)
+                classes[1] = resample(classes[1], n_samples=int(maj_len * 0.90), random_state=FLAGS.random_state)
+                classes[2] = resample(classes[2], n_samples=int(maj_len * 1.50), random_state=FLAGS.random_state)
             else:
                 maj_len = len(classes[0])
                 # classes[0] = resample(classes[0], n_samples=int(maj_len), random_state=FLAGS.random_state)
