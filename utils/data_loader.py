@@ -30,6 +30,9 @@ class Dataset:
         self.shuffle()
 
     def shuffle(self):
+        print(np.shape(self.x))
+        print(np.shape(self.y))
+
         if self.ver == 1:
             self.x, self.y = shuffle(self.x, self.y, random_state=self.random_state)
         if self.ver == 2:
