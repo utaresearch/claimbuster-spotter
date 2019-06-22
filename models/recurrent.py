@@ -43,7 +43,7 @@ class RecurrentModel:
 
     @staticmethod
     def build_lstm(x, x_len, output_mask, kp_lstm):
-        x = tf.expand_dims(x)
+        x = tf.expand_dims(x, -1)
 
         if not FLAGS.bidir_lstm:
             tf.logging.info('Building uni-directional LSTM')
