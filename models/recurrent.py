@@ -42,7 +42,7 @@ class RecurrentModel:
         return (x_embed, output) if not adv else output
 
     @staticmethod
-    def build_lstm(x, x_len, output_mask, kp_emb, kp_lstm, orig_embed, reg_loss, adv):
+    def build_lstm(x, x_len, output_mask, kp_lstm):
         if not FLAGS.bidir_lstm:
             tf.logging.info('Building uni-directional LSTM')
             output, _ = RecurrentModel.build_unidir_lstm_component(x, x_len, kp_lstm)

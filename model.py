@@ -54,7 +54,7 @@ class ClaimBusterModel:
                 nl_lstm_x = self.x[:, 0]
                 nl_lstm_x_len = self.x_len[:, 0]
                 nl_lstm_output_mask = self.output_mask[:, 0]
-                nl_lstm_out = RecurrentModel.build_lstm(nl_lstm_x, nl_lstm_x_len, nl_lstm_output_mask, self.embed,
+                nl_lstm_out = RecurrentModel.build_embed_lstm(nl_lstm_x, nl_lstm_x_len, nl_lstm_output_mask, self.embed,
                                                         self.kp_emb, self.kp_lstm, orig_embed, reg_loss, adv)
                 if not adv:
                     orig_embed, nl_lstm_out = nl_lstm_out
@@ -63,8 +63,7 @@ class ClaimBusterModel:
                 pos_lstm_x = self.x[:, 1]
                 pos_lstm_x_len = self.x_len[:, 1]
                 pos_lstm_output_mask = self.output_mask[:, 1]
-                pos_lstm_out = RecurrentModel.build_lstm(pos_lstm_x, pos_lstm_x_len, pos_lstm_output_mask, self.embed,
-                                                         self.kp_emb, self.kp_lstm, orig_embed, reg_loss, adv)
+                pos_lstm_out = RecurrentModel.build_lstm(pos_lstm_x, pos_lstm_x_len, pos_lstm_output_mask, self.kp_lstm)
 
             with tf.variable_scope('fc_output', reuse=adv):
                 print(nl_lstm_out, pos_lstm_out)
