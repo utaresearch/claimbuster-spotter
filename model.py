@@ -214,7 +214,7 @@ class ClaimBusterModel:
             if idx >= (FLAGS.train_examples if ver == 'train' else FLAGS.test_examples):
                 break
 
-            batch_x.append(data.x[idx])
+            batch_x.append(list(data.x[idx]))
             batch_y.append(data.y[idx])
 
         return batch_x, batch_y
