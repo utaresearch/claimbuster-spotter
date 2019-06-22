@@ -67,6 +67,7 @@ class ClaimBusterModel:
                                                          self.kp_emb, self.kp_lstm, orig_embed, reg_loss, adv)
 
             with tf.variable_scope('fc_output', reuse=adv):
+                print(nl_lstm_out, pos_lstm_out)
                 lstm_out = tf.concat([nl_lstm_out, pos_lstm_out], axis=1)
                 print(lstm_out)
                 exit()
