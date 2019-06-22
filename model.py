@@ -178,7 +178,6 @@ class ClaimBusterModel:
 
     @staticmethod
     def pad_seq(inp):
-        print(inp)
         return [pad_sequences([z[0] for z in inp], padding="post", maxlen=FLAGS.max_len),
                 pad_sequences([z[1] for z in inp], padding="post", maxlen=FLAGS.max_len)]
 
@@ -191,9 +190,9 @@ class ClaimBusterModel:
         return [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in batch_x]
 
     @staticmethod
-    def gen_x_len(batch_x):
-        return [[len(el) for el in batch_x[:, 0]],
-                [len(el) for el in batch_x[:, 1]]]
+    def gen_x_len(inp):
+        return [[len(el) for el in [z[0] for z in inp]],
+                [len(el) for el in [z[1] for z in inp]]]
 
     @staticmethod
     def save_model(sess, epoch):
