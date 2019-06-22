@@ -32,6 +32,7 @@ class Dataset:
     def shuffle(self):
         print(np.shape(self.x))
         print(np.shape(self.y))
+        print(self.y)
 
         if self.ver == 1:
             self.x, self.y = shuffle(self.x, self.y, random_state=self.random_state)
@@ -143,7 +144,6 @@ class DataLoader:
             eval_txt = [z[0] for z in dj_eval_data]
 
             train_lab = [z[1] for z in train_data]
-            print(train_lab)
             eval_lab = [z[1] for z in dj_eval_data]
 
             tf.logging.info('Loading preprocessing dependencies')
