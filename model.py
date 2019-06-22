@@ -191,8 +191,9 @@ class ClaimBusterModel:
 
     @staticmethod
     def gen_x_len(inp):
-        return np.concatenate([[len(el) for el in [z[0] for z in inp]],
-                [len(el) for el in [z[1] for z in inp]]], axis=1)
+        print(np.shape([[len(el) for el in [z[0] for z in inp]],
+                [len(el) for el in [z[1] for z in inp]]]))
+        return np.concatenate([], axis=1)
 
     @staticmethod
     def save_model(sess, epoch):
