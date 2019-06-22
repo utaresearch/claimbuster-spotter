@@ -32,7 +32,6 @@ class Dataset:
     def shuffle(self):
         print(np.shape(self.x))
         print(np.shape(self.y))
-        print(self.y)
 
         if self.ver == 1:
             self.x, self.y = shuffle(self.x, self.y, random_state=self.random_state)
@@ -177,6 +176,8 @@ class DataLoader:
             tokenizer.fit_on_texts(np.concatenate((train_txt, eval_txt)))
             train_seq = tokenizer.texts_to_sequences(train_txt)
             eval_seq = tokenizer.texts_to_sequences(eval_txt)
+
+            print(np.shape(train_lab))
 
             train_data = Dataset([train_seq, train_pos], train_lab, random_state=FLAGS.random_state)
             eval_data = Dataset([eval_seq, eval_pos], eval_lab, random_state=FLAGS.random_state)
