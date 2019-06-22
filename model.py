@@ -179,8 +179,8 @@ class ClaimBusterModel:
     @staticmethod
     def pad_seq(inp):
         print(inp)
-        return [pad_sequences(inp[:, 0], padding="post", maxlen=FLAGS.max_len),
-                pad_sequences(inp[:, 1], padding="post", maxlen=FLAGS.max_len)]
+        return [pad_sequences([z[0] for z in inp], padding="post", maxlen=FLAGS.max_len),
+                pad_sequences([z[1] for z in inp], padding="post", maxlen=FLAGS.max_len)]
 
     @staticmethod
     def one_hot(a):
