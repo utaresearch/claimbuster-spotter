@@ -198,6 +198,7 @@ class DataLoader:
     @staticmethod
     def tuplear_ar(ar):  # i/o: [num_samples], i/o: [2, num_samples]
         temp = zip(*[ar[0], ar[1]])
+        print(np.shape(temp))
         return np.swapaxes(temp, 0, 1)
 
     @staticmethod
