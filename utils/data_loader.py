@@ -22,11 +22,10 @@ class Dataset:
     x = []
     y = []
 
-    def __init__(self, x, y, random_state, ver=2):
+    def __init__(self, x, y, random_state):
         self.x = x
         self.y = y
         self.random_state = random_state
-        self.ver = ver
         self.shuffle()
 
     def shuffle(self):
@@ -61,7 +60,7 @@ class DataLoader:
         return compute_class_weight('balanced', [z for z in range(FLAGS.num_classes)], self.data.y)
 
     def load_training_data(self):
-        ret = Dataset(self.toggle_ar_tuplear(self.data.x), self.data.y, FLAGS.random_state, ver=1)
+        ret = Dataset(self.data.x, self.data.y, FLAGS.random_state)
 
         if FLAGS.sklearn_oversample:
             classes = [[] for _ in range(FLAGS.num_classes)]
@@ -85,8 +84,6 @@ class DataLoader:
 
             for lab in range(len(classes)):
                 for inp_x in classes[lab]:
-                    inp_x = (inp_x[0], inp_x[1])
-
                     ret.x.append(inp_x)
                     ret.y.append(lab)
 
@@ -175,10 +172,6 @@ class DataLoader:
                 train_data, eval_data, vocab = pickle.load(f)
 
         return train_data, eval_data, vocab
-
-    @staticmethod
-    def toggle_ar_tuplear(ar):  # i/o: [2, num_samples], i/o: [num_samples]
-        return np.swapaxes(ar, 0, 1)
 
     @staticmethod
     def parse_json(json_loc):
