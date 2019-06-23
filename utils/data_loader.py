@@ -61,7 +61,7 @@ class DataLoader:
     def compute_class_weights(self):
         ret = compute_class_weight('balanced', [z for z in range(FLAGS.num_classes)], self.data.y)
 
-        if FLAGS.num_classe == 3:
+        if FLAGS.num_classes == 3:
             ret[1] /= 2
 
         return ret
