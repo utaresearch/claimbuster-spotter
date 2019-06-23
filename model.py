@@ -55,7 +55,7 @@ class ClaimBusterModel:
                 nl_lstm_x_len = self.x_len[:, 0]
                 nl_lstm_output_mask = self.output_mask[:, 0]
                 nl_lstm_out = RecurrentModel.build_embed_lstm(nl_lstm_x, nl_lstm_x_len, nl_lstm_output_mask, self.embed,
-                                                              self.kp_cls, self.kp_lstm, orig_embed, reg_loss, adv)
+                                                              self.kp_lstm, orig_embed, reg_loss, adv)
                 if not adv:
                     orig_embed, nl_lstm_out = nl_lstm_out
 
