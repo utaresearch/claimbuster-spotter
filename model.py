@@ -16,7 +16,7 @@ class ClaimBusterModel:
         self.x_len = tf.placeholder(tf.int32, (None, 2), name='x_len')
         self.output_mask = tf.placeholder(tf.bool, (None, 2, FLAGS.max_len), name='output_mask')
         self.y = tf.placeholder(tf.int32, (None, FLAGS.num_classes), name='y')
-        self.kp_emb = tf.placeholder(tf.float32, name='kp_emb')
+        self.kp_cls = tf.placeholder(tf.float32, name='kp_cls')
         self.kp_lstm = tf.placeholder(tf.float32, name='kp_lstm')
         self.cls_weight = tf.placeholder(tf.float32, (None,), name='cls_weight')
 
@@ -55,7 +55,7 @@ class ClaimBusterModel:
                 nl_lstm_x_len = self.x_len[:, 0]
                 nl_lstm_output_mask = self.output_mask[:, 0]
                 nl_lstm_out = RecurrentModel.build_embed_lstm(nl_lstm_x, nl_lstm_x_len, nl_lstm_output_mask, self.embed,
-                                                        self.kp_emb, self.kp_lstm, orig_embed, reg_loss, adv)
+                                                              self.kp_cls, self.kp_lstm, orig_embed, reg_loss, adv)
                 if not adv:
                     orig_embed, nl_lstm_out = nl_lstm_out
 
@@ -75,6 +75,7 @@ class ClaimBusterModel:
                                                 initializer=tf.zeros_initializer())
 
                 cb_hidden = tf.matmul(lstm_out, hidden_weights) + hidden_biases
+                cb_hidden = tf.nn.dropout(cb_hidden, keep_prob=FLAGS.keep_prob_cls)
 
                 output_weights = tf.get_variable('cb_output_weights', shape=(FLAGS.cls_hidden, FLAGS.num_classes),
                                                  initializer=tf.contrib.layers.xavier_initializer())
@@ -110,7 +111,7 @@ class ClaimBusterModel:
                 self.x_len: self.gen_x_len(batch_x),
                 self.y: self.one_hot(batch_y),
                 self.output_mask: self.gen_output_mask(batch_x),
-                self.kp_emb: 1.0,
+                self.kp_cls: 1.0,
                 self.kp_lstm: 1.0,
                 self.cls_weight: self.get_cls_weights(batch_y)
             }
@@ -148,7 +149,7 @@ class ClaimBusterModel:
                 self.x_len: self.gen_x_len(batch_x),
                 self.y: self.one_hot(batch_y),
                 self.output_mask: self.gen_output_mask(batch_x),
-                self.kp_emb: 1.0,
+                self.kp_cls: 1.0,
                 self.kp_lstm: 1.0,
                 self.cls_weight: self.get_cls_weights(batch_y)
             }
@@ -160,7 +161,7 @@ class ClaimBusterModel:
                 self.x_len: self.gen_x_len(batch_x),
                 self.y: self.one_hot(batch_y),
                 self.output_mask: self.gen_output_mask(batch_x),
-                self.kp_emb: 1.0,
+                self.kp_cls: 1.0,
                 self.kp_lstm: 1.0,
                 self.cls_weight: self.get_cls_weights(batch_y)
             }
@@ -172,7 +173,7 @@ class ClaimBusterModel:
                 self.x_len: self.gen_x_len(batch_x),
                 self.y: self.one_hot(batch_y),
                 self.output_mask: self.gen_output_mask(batch_x),
-                self.kp_emb: 1.0,
+                self.kp_cls: 1.0,
                 self.kp_lstm: 1.0,
                 self.cls_weight: self.get_cls_weights(batch_y)
             }
@@ -249,7 +250,7 @@ class ClaimBusterModel:
             self.x_len = graph.get_tensor_by_name('x_len:0')
             self.y = graph.get_tensor_by_name('y:0')
             self.output_mask = graph.get_tensor_by_name('output_mask:0')
-            self.kp_emb = graph.get_tensor_by_name('kp_emb:0')
+            self.kp_cls = graph.get_tensor_by_name('kp_cls:0')
             self.kp_lstm = graph.get_tensor_by_name('kp_lstm:0')
             self.cls_weight = graph.get_tensor_by_name('cls_weight:0')
 

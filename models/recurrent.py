@@ -10,7 +10,7 @@ class RecurrentModel:
         pass
 
     @staticmethod
-    def build_embed_lstm(x, x_len, output_mask, embed, kp_emb, kp_lstm, orig_embed, reg_loss, adv):
+    def build_embed_lstm(x, x_len, output_mask, embed, kp_lstm, orig_embed, reg_loss, adv):
         if adv:
             x_embed = apply_adversarial_perturbation(orig_embed, reg_loss)
         else:
@@ -20,7 +20,7 @@ class RecurrentModel:
             x = tf.stack(x, axis=1)
             x_embed = tf.identity(x, name='x_embed')
 
-        x = tf.nn.dropout(x_embed, keep_prob=kp_emb)
+        x = x_embed
 
         # @TODO add convolutional layers
 
