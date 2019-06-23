@@ -15,7 +15,6 @@ FLAGS = flags.FLAGS
 flags.DEFINE_list('gpu_active', [0], 'ID of GPU to use: in range [0, 4]')
 
 # Preprocessing
-flags.DEFINE_bool('full_tags', False, 'Replace all words with tags')
 flags.DEFINE_bool('ner_spacy', True, 'Named entity recognition with spaCy')
 
 # Base directories
