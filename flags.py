@@ -53,7 +53,7 @@ flags.DEFINE_float('learning_rate', 0.001, 'Learning rate while during optimiati
 
 # Regularization
 flags.DEFINE_float('l2_reg_coeff', 0.001, 'If val > 0, use L2 Regularization on weights in graph')
-flags.DEFINE_float('keep_prob_cls', 1.0, 'Keep probability of classification layer.')
+flags.DEFINE_float('keep_prob_cls', 0.8, 'Keep probability of classification layer.')
 flags.DEFINE_float('keep_prob_lstm', 0.6, 'Keep probability LSTM network.')
 
 # Embeddings
