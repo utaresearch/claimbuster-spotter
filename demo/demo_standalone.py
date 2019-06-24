@@ -3,8 +3,6 @@ import numpy as np
 import os
 from keras.preprocessing.sequence import pad_sequences
 from keras.utils import to_categorical
-from models.recurrent import RecurrentModel
-from models.embeddings import Embedding
 from sklearn.metrics import f1_score
 import math
 from flags import FLAGS
@@ -586,156 +584,9 @@ class ClaimBusterModel:
         self.computed_cls_weights = cls_weights if cls_weights is not None else [1 for _ in range(FLAGS.num_classes)]
 
         if not restore:
-            if not FLAGS.elmo_embed:
-                self.embed_obj = Embedding(vocab)
-                self.embed = self.embed_obj.construct_embeddings()
-
-            self.logits, self.cost = self.construct_model(adv=FLAGS.adv_train)
-            self.optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(self.cost) \
-                if FLAGS.adam else tf.train.RMSPropOptimizer(learning_rate=FLAGS.learning_rate).minimize(self.cost)
-
-            self.y_pred = tf.nn.softmax(self.logits, axis=1, name='y_pred')
-            self.correct = tf.equal(tf.argmax(self.y, axis=1), tf.argmax(self.y_pred, axis=1))
-            self.acc = tf.reduce_mean(tf.cast(self.correct, tf.float32), name='acc')
+            exit()
         else:
             self.cost, self.y_pred, self.acc = None, None, None
-
-    def construct_model(self, adv):
-        with tf.variable_scope('cb_model/'):
-            orig_embed, logits = self.fprop()
-            loss = self.ce_loss(logits, self.cls_weight)
-
-            if adv:
-                logits_adv = self.fprop(orig_embed, loss, adv=True)
-                loss += FLAGS.adv_coeff * self.adv_loss(logits_adv, self.cls_weight)
-
-            return logits, tf.identity(loss, name='cost')
-
-    def fprop(self, orig_embed=None, reg_loss=None, adv=False):
-        if adv: assert (reg_loss is not None and orig_embed is not None)
-
-        with tf.variable_scope('natural_lang_lstm/', reuse=adv):
-            nl_lstm_out = RecurrentModel.build_embed_lstm(self.x_nl, self.nl_len, self.nl_output_mask, self.embed,
-                                                          self.kp_lstm, orig_embed, reg_loss, adv) \
-                if not FLAGS.elmo_embed else RecurrentModel.build_bert_lstm(self.x_nl, self.nl_len,
-                                                                            self.nl_output_mask,
-                                                                            self.kp_lstm, orig_embed, reg_loss, adv)
-            if not adv:
-                orig_embed, nl_lstm_out = nl_lstm_out
-
-        with tf.variable_scope('pos_lstm/', reuse=adv):
-            pos_lstm_out = RecurrentModel.build_lstm(self.x_pos, self.pos_len, self.pos_output_mask, self.kp_lstm,
-                                                     adv)
-
-        with tf.variable_scope('fc_output/', reuse=adv):
-            lstm_out = tf.concat([nl_lstm_out, pos_lstm_out, self.x_sent], axis=1)
-            lstm_out = tf.nn.dropout(lstm_out, keep_prob=FLAGS.keep_prob_cls)
-
-            output_weights = tf.get_variable('cb_output_weights', shape=(lstm_out.get_shape()[1], FLAGS.num_classes),
-                                             initializer=tf.contrib.layers.xavier_initializer())
-            output_biases = tf.get_variable('cb_output_biases', shape=FLAGS.num_classes,
-                                            initializer=tf.zeros_initializer())
-
-            cb_out = tf.matmul(lstm_out, output_weights) + output_biases
-
-        return (orig_embed, cb_out) if not adv else cb_out
-
-    def adv_loss(self, logits, cls_weight):
-        return tf.identity(self.ce_loss(logits, cls_weight), name='adv_loss')
-
-    def ce_loss(self, logits, cls_weight):
-        loss = tf.nn.softmax_cross_entropy_with_logits_v2(labels=self.y, logits=logits)
-        loss_l2 = 0
-
-        # if FLAGS.l2_reg_coeff > 0.0:
-        #     varlist = tf.trainable_variables()
-        #     loss_l2 = tf.add_n([tf.nn.l2_loss(v) for v in varlist if 'bias' not in v.name]) * FLAGS.l2_reg_coeff
-
-        ret_loss = loss + loss_l2
-
-        if FLAGS.weight_classes_loss:
-            ret_loss *= cls_weight
-
-        return tf.identity(ret_loss, name='regular_loss')
-
-    def train_neural_network(self, sess, batch_x, batch_y):
-        x_nl = [z[0] for z in batch_x]
-        x_pos = [z[1] for z in batch_x]
-        x_sent = [z[2] for z in batch_x]
-
-        sess.run(
-            self.optimizer,
-            feed_dict={
-                self.x_nl: self.pad_seq(x_nl, ver=(0 if not FLAGS.elmo_embed else 1)),
-                self.x_pos: self.prc_pos(self.pad_seq(x_pos)),
-                self.x_sent: x_sent,
-
-                self.nl_len: self.gen_x_len(x_nl),
-                self.pos_len: self.gen_x_len(x_pos),
-
-                self.nl_output_mask: self.gen_output_mask(x_nl),
-                self.pos_output_mask: self.gen_output_mask(x_pos),
-
-                self.y: self.one_hot(batch_y),
-
-                self.kp_cls: 1.0,
-                self.kp_lstm: 1.0,
-                self.cls_weight: self.get_cls_weights(batch_y)
-            }
-        )
-
-    def execute_validation(self, sess, test_data):
-        n_batches = math.ceil(float(FLAGS.test_examples) / float(FLAGS.batch_size))
-        val_loss, val_acc = 0.0, 0.0
-        tot_val_ex = 0
-
-        all_y_pred = []
-        all_y = []
-        for batch in range(n_batches):
-            batch_x, batch_y = self.get_batch(batch, test_data, ver='validation')
-            tloss, tacc, tpred = self.stats_from_run(sess, batch_x, batch_y)
-
-            val_loss += tloss
-            val_acc += tacc * len(batch_y)
-            tot_val_ex += len(batch_y)
-
-            all_y_pred = np.concatenate((all_y_pred, tpred))
-            all_y = np.concatenate((all_y, batch_y))
-
-        val_loss /= tot_val_ex
-        val_acc /= tot_val_ex
-        val_f1 = f1_score(all_y, all_y_pred, average='weighted')
-
-        return 'DJ Val Loss: {:>7.4f} DJ Val F1: {:>7.4f} '.format(val_loss, val_f1)
-
-    def stats_from_run(self, sess, batch_x, batch_y):
-        x_nl = [z[0] for z in batch_x]
-        x_pos = [z[1] for z in batch_x]
-        x_sent = [z[2] for z in batch_x]
-
-        feed_dict = {
-            self.x_nl: self.pad_seq(x_nl, ver=(0 if not FLAGS.elmo_embed else 1)),
-            self.x_pos: self.prc_pos(self.pad_seq(x_pos)),
-            self.x_sent: x_sent,
-
-            self.nl_len: self.gen_x_len(x_nl),
-            self.pos_len: self.gen_x_len(x_pos),
-
-            self.nl_output_mask: self.gen_output_mask(x_nl),
-            self.pos_output_mask: self.gen_output_mask(x_pos),
-
-            self.y: self.one_hot(batch_y),
-
-            self.kp_cls: 1.0,
-            self.kp_lstm: 1.0,
-            self.cls_weight: self.get_cls_weights(batch_y)
-        }
-
-        run_loss = sess.run(self.cost, feed_dict=feed_dict)
-        run_acc = sess.run(self.acc, feed_dict=feed_dict)
-        run_pred = sess.run(self.y_pred, feed_dict=feed_dict)
-
-        return np.sum(run_loss), run_acc, np.argmax(run_pred, axis=1)
 
     def get_preds(self, sess, sentence_tuple):
         x_nl = self.pad_seq([sentence_tuple[0]], ver=(0 if not FLAGS.elmo_embed else 1))
