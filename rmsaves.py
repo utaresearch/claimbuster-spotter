@@ -11,7 +11,7 @@ def list_del(location):
     for fstr in os.listdir(directory):
         if not args.clear_embeddings and 'embedding_matrix' in os.fsdecode(fstr):
             continue
-        elif os.fsdecode(fstr) == 'checkpoint':
+        elif os.fsdecode(fstr) == 'checkpoint' or os.fsdecode(fstr) == 'tblogs':
             ret_ar.append(os.fsdecode(fstr))
         for ext in extension_list:
             if ext in os.fsdecode(fstr):
