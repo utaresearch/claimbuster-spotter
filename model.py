@@ -119,6 +119,8 @@ class ClaimBusterModel:
         return tf.identity(ret_loss, name='regular_loss')
 
     def train_neural_network(self, sess, batch_x, batch_y):
+        print(np.shape(batch_x))
+
         x_nl = batch_x[:, 0]
         x_pos = batch_x[:, 1]
 
