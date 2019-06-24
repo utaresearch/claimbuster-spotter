@@ -15,6 +15,7 @@ class RecurrentModel:
         if adv:
             x_embed = apply_adversarial_perturbation(orig_embed, reg_loss)
         else:
+            tf.logging.info('Building ELMO embeddings')
             elmo = hub.Module("https://tfhub.dev/google/elmo/2", trainable=True)
             x_embed = elmo(x, signature='default', as_dict=True)['elmo']
 
