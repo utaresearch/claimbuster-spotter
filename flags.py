@@ -31,7 +31,7 @@ flags.DEFINE_list('addition_vocab', ['./data/disjoint_2000/vocab.pickle'], 'Addi
 
 # Eval
 flags.DEFINE_integer('stat_print_interval', 1, 'Numbers of epochs before stats are printed again')
-flags.DEFINE_integer('model_save_interval', 25, 'Numbers of epochs before model is saved again')
+flags.DEFINE_integer('model_save_interval', 1, 'Numbers of epochs before model is saved again')
 
 # Data v2
 flags.DEFINE_integer('total_examples', None, 'Total number of examples')
