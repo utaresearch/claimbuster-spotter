@@ -283,7 +283,7 @@ class ClaimBusterModel:
             self.cls_weight = graph.get_tensor_by_name('cls_weight:0')
 
             # outputs
-            self.cost = graph.get_tensor_by_name('cost:0')
+            self.cost = graph.get_tensor_by_name('cb_model/cost:0')
             self.y_pred = graph.get_tensor_by_name('y_pred:0')
             self.acc = graph.get_tensor_by_name('acc:0')
 
