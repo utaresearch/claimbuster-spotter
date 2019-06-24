@@ -37,7 +37,7 @@ class ClaimBusterModel:
             self.cost, self.y_pred, self.acc = None, None, None
 
     def construct_model(self, adv):
-        with tf.variable_scope('cb_model/', reuse=adv):
+        with tf.variable_scope('cb_model/'):
             orig_embed, logits = self.fprop()
             loss = self.ce_loss(logits, self.cls_weight)
 
