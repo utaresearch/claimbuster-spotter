@@ -320,7 +320,8 @@ def process_dataset(inp_data):
 def get_sentiment(inp_data):
     ret = []
 
-    for sentence in inp_data:
+    for i in tqdm(range(len(inp_data))):
+        sentence = inp_data[i]
         blob = TextBlob(sentence)
         ret.append([blob.polarity, blob.subjectivity])
 
