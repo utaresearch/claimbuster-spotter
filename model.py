@@ -13,10 +13,17 @@ from flags import FLAGS
 
 class ClaimBusterModel:
     def __init__(self, vocab, cls_weights, restore=False):
-        self.x = tf.placeholder(tf.int32, (None, 2, FLAGS.max_len), name='x')
-        self.x_len = tf.placeholder(tf.int32, (None, 2), name='x_len')
-        self.output_mask = tf.placeholder(tf.bool, (None, 2, FLAGS.max_len), name='output_mask')
+        self.x_nl = tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x_nl')
+        self.x_pos = tf.placeholder(tf.int32, (None, FLAGS.max_len, len(pos_labels) + 1), name='x_pos')
+
+        self.nl_len = tf.placeholder(tf.int32, (None, 2), name='nl_len')
+        self.pos_len = tf.placeholder(tf.int32, (None, 2), name='pos_len')
+
+        self.nl_output_mask = tf.placeholder(tf.bool, (None, 2, FLAGS.max_len), name='nl_output_mask')
+        self.pos_output_mask = tf.placeholder(tf.bool, (None, 2, FLAGS.max_len), name='pos_output_mask')
+
         self.y = tf.placeholder(tf.int32, (None, FLAGS.num_classes), name='y')
+
         self.kp_cls = tf.placeholder(tf.float32, name='kp_cls')
         self.kp_lstm = tf.placeholder(tf.float32, name='kp_lstm')
         self.cls_weight = tf.placeholder(tf.float32, (None,), name='cls_weight')
@@ -52,19 +59,13 @@ class ClaimBusterModel:
         if adv: assert (reg_loss is not None and orig_embed is not None)
 
         with tf.variable_scope('natural_lang_lstm/', reuse=adv):
-            nl_lstm_x = self.x[:, 0]
-            nl_lstm_x_len = self.x_len[:, 0]
-            nl_lstm_output_mask = self.output_mask[:, 0]
-            nl_lstm_out = RecurrentModel.build_embed_lstm(nl_lstm_x, nl_lstm_x_len, nl_lstm_output_mask, self.embed,
+            nl_lstm_out = RecurrentModel.build_embed_lstm(self.x_nl, self.nl_len, self.nl_output_mask, self.embed,
                                                           self.kp_lstm, orig_embed, reg_loss, adv)
             if not adv:
                 orig_embed, nl_lstm_out = nl_lstm_out
 
         with tf.variable_scope('pos_lstm/', reuse=adv):
-            pos_lstm_x = self.x[:, 1]
-            pos_lstm_x_len = self.x_len[:, 1]
-            pos_lstm_output_mask = self.output_mask[:, 1]
-            pos_lstm_out = RecurrentModel.build_lstm(pos_lstm_x, pos_lstm_x_len, pos_lstm_output_mask, self.kp_lstm,
+            pos_lstm_out = RecurrentModel.build_lstm(self.x_pos, self.pos_len, self.pos_output_mask, self.kp_lstm,
                                                      adv)
 
         with tf.variable_scope('fc_output/', reuse=adv):
@@ -118,13 +119,23 @@ class ClaimBusterModel:
         return tf.identity(ret_loss, name='regular_loss')
 
     def train_neural_network(self, sess, batch_x, batch_y):
+        x_nl = batch_x[:, 0]
+        x_pos = batch_x[:, 1]
+
         sess.run(
             self.optimizer,
             feed_dict={
-                self.x: self.prc_pos(self.pad_seq(batch_x)),
-                self.x_len: self.gen_x_len(batch_x),
+                self.x_nl: self.pad_seq(x_nl),
+                self.x_pos: self.prc_pos(self.pad_seq(x_pos)),
+
+                self.nl_len: self.gen_x_len(x_nl),
+                self.pos_len: self.gen_x_len(x_pos),
+
+                self.nl_output_mask: self.gen_output_mask(x_nl),
+                self.pos_output_mask: self.gen_output_mask(x_pos),
+
                 self.y: self.one_hot(batch_y),
-                self.output_mask: self.gen_output_mask(batch_x),
+
                 self.kp_cls: 1.0,
                 self.kp_lstm: 1.0,
                 self.cls_weight: self.get_cls_weights(batch_y)
@@ -156,42 +167,29 @@ class ClaimBusterModel:
         return 'DJ Val Loss: {:>7.4f} DJ Val F1: {:>7.4f} '.format(val_loss, val_f1)
 
     def stats_from_run(self, sess, batch_x, batch_y):
-        run_loss = sess.run(
-            self.cost,
-            feed_dict={
-                self.x: self.prc_pos(self.pad_seq(batch_x)),
-                self.x_len: self.gen_x_len(batch_x),
-                self.y: self.one_hot(batch_y),
-                self.output_mask: self.gen_output_mask(batch_x),
-                self.kp_cls: 1.0,
-                self.kp_lstm: 1.0,
-                self.cls_weight: self.get_cls_weights(batch_y)
-            }
-        )
-        run_acc = sess.run(
-            self.acc,
-            feed_dict={
-                self.x: self.prc_pos(self.pad_seq(batch_x)),
-                self.x_len: self.gen_x_len(batch_x),
-                self.y: self.one_hot(batch_y),
-                self.output_mask: self.gen_output_mask(batch_x),
-                self.kp_cls: 1.0,
-                self.kp_lstm: 1.0,
-                self.cls_weight: self.get_cls_weights(batch_y)
-            }
-        )
-        run_pred = sess.run(
-            self.y_pred,
-            feed_dict={
-                self.x: self.prc_pos(self.pad_seq(batch_x)),
-                self.x_len: self.gen_x_len(batch_x),
-                self.y: self.one_hot(batch_y),
-                self.output_mask: self.gen_output_mask(batch_x),
-                self.kp_cls: 1.0,
-                self.kp_lstm: 1.0,
-                self.cls_weight: self.get_cls_weights(batch_y)
-            }
-        )
+        x_nl = batch_x[:, 0]
+        x_pos = batch_x[:, 1]
+
+        feed_dict = {
+            self.x_nl: self.pad_seq(x_nl),
+            self.x_pos: self.prc_pos(self.pad_seq(x_pos)),
+
+            self.nl_len: self.gen_x_len(x_nl),
+            self.pos_len: self.gen_x_len(x_pos),
+
+            self.nl_output_mask: self.gen_output_mask(x_nl),
+            self.pos_output_mask: self.gen_output_mask(x_pos),
+
+            self.y: self.one_hot(batch_y),
+
+            self.kp_cls: 1.0,
+            self.kp_lstm: 1.0,
+            self.cls_weight: self.get_cls_weights(batch_y)
+        }
+
+        run_loss = sess.run(self.cost, feed_dict=feed_dict)
+        run_acc = sess.run(self.acc, feed_dict=feed_dict)
+        run_pred = sess.run(self.y_pred, feed_dict=feed_dict)
 
         return np.sum(run_loss), run_acc, np.argmax(run_pred, axis=1)
 
@@ -199,24 +197,20 @@ class ClaimBusterModel:
         return [self.computed_cls_weights[z] for z in batch_y]
 
     @staticmethod
-    def prc_pos(inp):
-        pos_data = inp[1]
+    def prc_pos(pos_data):
+        ret = np.zeros(shape=(len(pos_data), FLAGS.max_len, len(pos_labels) + 1))
+
         for i in range(len(pos_data)):
             sentence = pos_data[i]
-
             for j in range(len(sentence)):
-                code = sentence[j]
-                sentence[j] = [0] * (len(pos_labels) + 1)
-                sentence[j][code + 1] = 1
+                code = sentence[j] + 1
+                ret[i][j][code] = 1
 
-            pos_data[i] = sentence
-
-        return [inp[0], pos_data]
+        return ret
 
     @staticmethod
     def pad_seq(inp):
-        return np.swapaxes([pad_sequences([z[0] for z in inp], padding="post", maxlen=FLAGS.max_len),
-                            pad_sequences([z[1] for z in inp], padding="post", maxlen=FLAGS.max_len)], 0, 1)
+        return pad_sequences(inp, padding="post", maxlen=FLAGS.max_len)
 
     @staticmethod
     def one_hot(a, nc=FLAGS.num_classes):
@@ -224,13 +218,11 @@ class ClaimBusterModel:
 
     @staticmethod
     def gen_output_mask(inp):
-        return np.swapaxes([[[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in [z[0] for z in inp]],
-                [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in [z[1] for z in inp]]], 0, 1)
+        return [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in inp]
 
     @staticmethod
     def gen_x_len(inp):
-        return np.swapaxes([[len(el) for el in [z[0] for z in inp]],
-                            [len(el) for el in [z[1] for z in inp]]], 0, 1)
+        return [len(el) for el in inp]
 
     @staticmethod
     def save_model(sess, epoch):
