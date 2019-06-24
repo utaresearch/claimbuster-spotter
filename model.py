@@ -64,7 +64,7 @@ class ClaimBusterModel:
         with tf.variable_scope('natural_lang_lstm/', reuse=adv):
             nl_lstm_out = RecurrentModel.build_embed_lstm(self.x_nl, self.nl_len, self.nl_output_mask, self.embed,
                                                           self.kp_lstm, orig_embed, reg_loss, adv) \
-                if not FLAGS.elmo_embed else RecurrentModel.build_elmo_lstm(self.x_nl, self.nl_len,
+                if not FLAGS.elmo_embed else RecurrentModel.build_bert_lstm(self.x_nl, self.nl_len,
                                                                             self.nl_output_mask,
                                                                             self.kp_lstm, orig_embed, reg_loss, adv)
             if not adv:
