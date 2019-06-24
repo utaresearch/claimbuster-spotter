@@ -27,6 +27,8 @@ def main():
         sess.run(tf.global_variables_initializer())
         cb_model.embed_obj.init_embeddings(sess)
 
+        summary_writer = tf.summary.FileWriter('output/tblogs', sess.graph)
+
         start = time.time()
         epochs_trav = 0
 
