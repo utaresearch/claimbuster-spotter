@@ -93,7 +93,7 @@ class ClaimBusterModel:
 
                 cb_out = tf.matmul(lstm_out, output_weights) + output_biases
 
-            for v in tf.all_variables():
+            for v in tf.global_variables(scope=None):
                 print(v.name)
 
             return (orig_embed, cb_out) if not adv else cb_out
