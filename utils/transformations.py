@@ -395,14 +395,12 @@ def load_deps_dummy():
     nltk.download('averaged_perceptron_tagger')
     nltk.download('tagsets')
     nltk.download('stopwords')
-    print("Loading Spacy NER Tagger...")
-    nlp = spacy.load("en_core_web_lg")
-    print("Tagger loaded.")
+    # print("Loading Spacy NER Tagger...")
+    # nlp = spacy.load("en_core_web_lg")
+    # print("Tagger loaded.")
     print("NLTK dependencies Loaded.")
 
 
 if __name__ == '__main__':
     load_deps_dummy()
-    print(process_sentence_ner_spacy('Donald Trump is the 45th president of the United States and Acme Corp'))
-    print(get_tags('Donald Trump is the 45th president of the United States and Acme Corp'))
-    print(process_sentence_full_tags('Donald Trump is the 45th president of the United States and Acme Corp'))
+    print(get_tags('I like %^*%(^(*%^#(^#^^#$#^#$^#^ $^4 7*$6 89$*(^ #*($^  $ $$$$$$$ $1343025823 million dollars'))

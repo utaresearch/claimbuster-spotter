@@ -16,9 +16,11 @@ def prc_sentence(sentence, vocab):
         else:
             return 0
 
+    sentence = transf.transform_sentence_complete(sentence)
+
     sent = transf.get_sentiment(sentence)
     pos = transf.process_sentence_full_tags(sentence)
-    sentence = [get_idx(z) for z in transf.transform_sentence_complete(sentence).split(' ')]
+    sentence = [get_idx(z) for z in sentence.split(' ')]
 
     return sentence, pos, sent
 
