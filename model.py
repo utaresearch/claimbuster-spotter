@@ -112,6 +112,8 @@ class ClaimBusterModel:
         x_pos = [z[1] for z in batch_x]
         x_sent = [z[2] for z in batch_x]
 
+        print(x_nl)
+
         sess.run(
             self.optimizer,
             feed_dict={
