@@ -136,13 +136,9 @@ class DataLoader:
             transf.load_dependencies()
 
             tf.logging.info('Processing train data')
-            train_txt, train_pos = transf.process_dataset(train_txt)
+            train_txt, train_pos, train_sent = transf.process_dataset(train_txt)
             tf.logging.info('Processing eval data')
-            eval_txt, eval_pos = transf.process_dataset(eval_txt)
-
-            tf.logging.info('Analyzing sentiment')
-            train_sent = transf.get_sentiment(train_txt)
-            eval_sent = transf.get_sentiment(eval_txt)
+            eval_txt, eval_pos, eval_sent = transf.process_dataset(eval_txt)
 
             if not FLAGS.elmo_embed:
                 tokenizer = Tokenizer()

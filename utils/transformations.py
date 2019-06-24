@@ -309,23 +309,19 @@ def transform_sentence_complete(sentence):
 
 def process_dataset(inp_data):
     pos_tagged = []
+    sentiments = []
 
     for i in tqdm(range(len(inp_data))):
+        sentiments.append(inp_data[i])
         pos_tagged.append(process_sentence_full_tags(inp_data[i]))
         inp_data[i] = transform_sentence_complete(inp_data[i])
 
-    return inp_data, pos_tagged
+    return inp_data, pos_tagged, sentiments
 
 
 def get_sentiment(inp_data):
-    ret = []
-
-    for i in tqdm(range(len(inp_data))):
-        sentence = inp_data[i]
-        blob = TextBlob(sentence)
-        ret.append([blob.polarity, blob.subjectivity])
-
-    return ret
+    blob = TextBlob(inp_data)
+    return [blob.polarity, blob.subjectivity]
 
 
 ###########################################################################
