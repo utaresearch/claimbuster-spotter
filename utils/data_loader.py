@@ -152,10 +152,10 @@ class DataLoader:
                 vocab = tokenizer.word_index
             else:
                 train_txt = [z.split(' ') for z in train_txt]
-                test_txt = [z.split(' ') for z in test_txt]
+                eval_txt = [z.split(' ') for z in eval_txt]
 
                 train_data = Dataset(list(zip(train_txt, train_pos)), train_lab, random_state=FLAGS.random_state)
-                eval_data = Dataset(list(zip(train_txt, eval_pos)), eval_lab, random_state=FLAGS.random_state)
+                eval_data = Dataset(list(zip(eval_txt, eval_pos)), eval_lab, random_state=FLAGS.random_state)
 
             with open(FLAGS.prc_data_loc, 'wb') as f:
                 pickle.dump((train_data, eval_data, vocab), f)
