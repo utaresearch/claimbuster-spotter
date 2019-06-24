@@ -25,7 +25,8 @@ def main():
 
     with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as sess:
         sess.run(tf.global_variables_initializer())
-        cb_model.embed_obj.init_embeddings(sess)
+        if not FLAGS.elmo_embed:
+            cb_model.embed_obj.init_embeddings(sess)
 
         _ = tf.summary.FileWriter('output/tblogs', sess.graph)
 
