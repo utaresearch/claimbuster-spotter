@@ -1,8 +1,6 @@
 import tensorflow as tf
 import numpy as np
-import math
 import os
-from utils.data_loader import DataLoader
 from model import ClaimBusterModel
 from utils import transformations as transf
 from flags import FLAGS
@@ -12,7 +10,7 @@ return_strings = ['Non-factual statement', 'Unimportant factual statement', 'Sal
 
 def prc_sentence(sentence):
     sentence = transf.transform_sentence_complete(sentence)
-    pos = transf.process_sentence_full_tags(sentenec)
+    pos = transf.process_sentence_full_tags(sentence)
     return sentence, pos
 
 
