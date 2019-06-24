@@ -1,5 +1,4 @@
 import tensorflow as tf
-import tensorflow_hub as hub
 import sys
 from .adv_losses import apply_adversarial_perturbation
 sys.path.append('..')
@@ -17,6 +16,8 @@ class RecurrentModel:
         if adv:
             x_embed = apply_adversarial_perturbation(orig_embed, reg_loss)
         else:
+            import tensorflow_hub as hub
+
             tf.logging.info('Building ELMO embeddings')
             elmo = hub.Module("https://tfhub.dev/google/elmo/2", trainable=True)
             tf.logging.info('ELMO successfully built')
