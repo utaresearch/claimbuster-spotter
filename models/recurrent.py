@@ -84,7 +84,7 @@ class RecurrentModel:
         bw_cell = tf.nn.rnn_cell.MultiRNNCell([RecurrentModel.get_lstm(cell_num, kp_lstm, adv, direc=1)
                                                for cell_num in range(FLAGS.rnn_num_layers)])
 
-        print(tf.get_variable_scope())
+        print(tf.get_variable_scope().name)
 
         return tf.nn.bidirectional_dynamic_rnn(fw_cell, bw_cell, inputs=x, sequence_length=x_len, dtype=tf.float32,
                                                scope='dynamic_bidir_rnn/')
