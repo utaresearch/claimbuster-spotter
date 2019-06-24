@@ -1,4 +1,5 @@
 import tensorflow as tf
+import tensorflow_hub as hub
 import sys
 from .adv_losses import apply_adversarial_perturbation
 sys.path.append('..')
@@ -8,6 +9,33 @@ from flags import FLAGS
 class RecurrentModel:
     def __init__(self):
         pass
+
+    @staticmethod
+    def build_elmo_lstm(x, x_len, output_mask, kp_lstm, orig_embed, reg_loss, adv):
+        if adv:
+            x_embed = apply_adversarial_perturbation(orig_embed, reg_loss)
+        else:
+            elmo = hub.Module("https://tfhub.dev/google/elmo/2", trainable=True)
+            x_embed = elmo(x, signature='default', as_dict=True)['elmo']
+
+        x = x_embed
+
+        if not FLAGS.bidir_lstm:
+            tf.logging.info('Building uni-directional LSTM')
+            output, _ = RecurrentModel.build_unidir_lstm_component(x, x_len, kp_lstm, adv)
+        else:
+            tf.logging.info('Building bi-directional LSTM')
+            output, _ = RecurrentModel.build_bidir_lstm_component(x, x_len, kp_lstm, adv)
+
+        if FLAGS.bidir_lstm:
+            output_fw, output_bw = output
+            output_fw = tf.boolean_mask(output_fw, output_mask)
+            output_bw = output_bw[:, 0, :]
+            output = tf.concat([output_fw, output_bw], axis=1)
+        else:
+            output = output[:, -1, :]
+
+        return (x_embed, output) if not adv else output
 
     @staticmethod
     def build_embed_lstm(x, x_len, output_mask, embed, kp_lstm, orig_embed, reg_loss, adv):

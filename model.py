@@ -13,7 +13,8 @@ from flags import FLAGS
 
 class ClaimBusterModel:
     def __init__(self, vocab, cls_weights, restore=False):
-        self.x_nl = tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x_nl')
+        self.x_nl = tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x_nl') if not FLAGS.elmo_embed \
+            else tf.placeholder(tf.string, (None,))
         self.x_pos = tf.placeholder(tf.int32, (None, FLAGS.max_len, len(pos_labels) + 1), name='x_pos')
 
         self.nl_len = tf.placeholder(tf.int32, (None,), name='nl_len')
@@ -60,7 +61,10 @@ class ClaimBusterModel:
 
         with tf.variable_scope('natural_lang_lstm/', reuse=adv):
             nl_lstm_out = RecurrentModel.build_embed_lstm(self.x_nl, self.nl_len, self.nl_output_mask, self.embed,
-                                                          self.kp_lstm, orig_embed, reg_loss, adv)
+                                                          self.kp_lstm, orig_embed, reg_loss, adv) \
+                if not FLAGS.elmo_embed else RecurrentModel.build_elmo_lstm(self.x_nl, self.nl_len,
+                                                                            self.nl_output_mask,
+                                                                            self.kp_lstm, orig_embed, reg_loss, adv)
             if not adv:
                 orig_embed, nl_lstm_out = nl_lstm_out
 
