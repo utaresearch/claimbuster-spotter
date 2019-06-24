@@ -9,7 +9,7 @@ tokens_input = [["the", "cat", "is", "on", "the", "mat"],
                 ["dogs", "are", "in", "the", "fog", ""]]
 tokens_length = [200 for _ in tokens_input]
 elmo_output = elmo(
-    inputs={"tokens": pl, "sequence_len": tokens_length},
+    inputs={"tokens": pl, "sequence_len": 200},
     signature="tokens",
     as_dict=True)
 
