@@ -76,7 +76,7 @@ flags.DEFINE_integer('num_classes', 3, 'Number of classes for classification (2 
 # Training
 flags.DEFINE_bool('adam', True, 'Adam or RMSProp if False')
 flags.DEFINE_bool('restore_and_continue', False, 'Restore previous training session and continue')
-flags.DEFINE_integer('batch_size', 64, 'Size of the batch.')
+flags.DEFINE_integer('batch_size', 128, 'Size of the batch.')
 
 # Locations (must be last due to customization)
 flags.DEFINE_string('raw_data_loc', '{}/data_small.json'.format(FLAGS.data_dir), 'Location of raw data')
