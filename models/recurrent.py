@@ -10,6 +10,10 @@ class RecurrentModel:
         pass
 
     @staticmethod
+    def build_elmo_lstm(x, x_len, output_mask, embed, kp_lstm, orig_embed, reg_loss, adv):
+        pass
+
+    @staticmethod
     def build_embed_lstm(x, x_len, output_mask, embed, kp_lstm, orig_embed, reg_loss, adv):
         if adv:
             x_embed = apply_adversarial_perturbation(orig_embed, reg_loss)
