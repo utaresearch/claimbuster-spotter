@@ -132,7 +132,7 @@ class ClaimBusterModel:
         sess.run(
             self.optimizer,
             feed_dict={
-                self.x_nl: self.pad_seq(x_nl) if not FLAGS.elmo_embed else x_nl,
+                self.x_nl: self.pad_seq(x_nl, ver=(0 if not FLAGS.elmo_embed else 1)),
                 self.x_pos: self.prc_pos(self.pad_seq(x_pos)),
 
                 self.nl_len: self.gen_x_len(x_nl),
@@ -178,7 +178,7 @@ class ClaimBusterModel:
         x_pos = [z[1] for z in batch_x]
 
         feed_dict = {
-            self.x_nl: self.pad_seq(x_nl) if not FLAGS.elmo_embed else x_nl,
+            self.x_nl: self.pad_seq(x_nl, ver=(0 if not FLAGS.elmo_embed else 1)),
             self.x_pos: self.prc_pos(self.pad_seq(x_pos)),
 
             self.nl_len: self.gen_x_len(x_nl),
@@ -216,8 +216,9 @@ class ClaimBusterModel:
         return ret
 
     @staticmethod
-    def pad_seq(inp):
-        return pad_sequences(inp, padding="post", maxlen=FLAGS.max_len)
+    def pad_seq(inp, ver=0):  # 0 is int, 1 is string
+        return pad_sequences(inp, padding="post", maxlen=FLAGS.max_len) if ver == 0 else \
+            pad_sequences(inp, padding="post", maxlen=FLAGS.max_len, dtype='string', value='')
 
     @staticmethod
     def one_hot(a, nc=FLAGS.num_classes):
