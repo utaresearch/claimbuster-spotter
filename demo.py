@@ -2,28 +2,37 @@ import tensorflow as tf
 import numpy as np
 import os
 from model import ClaimBusterModel
+from utils.data_loader import DataLoader
 from utils import transformations as transf
 from flags import FLAGS
 
 return_strings = ['Non-factual statement', 'Unimportant factual statement', 'Salient factual statement']
 
 
-def prc_sentence(sentence):
-    sentence = transf.transform_sentence_complete(sentence)
+def prc_sentence(sentence, vocab):
+    def get_idx(str):
+        if str in vocab:
+            return vocab[str]
+        else:
+            return 0
+
+    sentence = [get_idx(z) for z in transf.transform_sentence_complete(sentence).split(' ')]
     pos = transf.process_sentence_full_tags(sentence)
-    print(sentence, pos)
 
     return sentence, pos
 
 
-def subscribe_query(sess, cb_model):
+def subscribe_query(sess, cb_model, vocab):
     print('Enter a sentence to process')
-    sentence_tuple = prc_sentence(input().strip('\n\r\t '))
+    sentence_tuple = prc_sentence(input().strip('\n\r\t '), vocab)
     return cb_model.get_preds(sess, sentence_tuple)
 
 
 def main():
     os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu_active])
+
+    data_load = DataLoader()
+    vocab = data_load.vocab
 
     transf.load_dependencies()
     cb_model = ClaimBusterModel(restore=True)
@@ -33,7 +42,7 @@ def main():
         sess.run(tf.global_variables_initializer())
 
         while True:
-            res = subscribe_query(sess, cb_model)
+            res = subscribe_query(sess, cb_model, vocab)
             idx = np.argmax(res, axis=1)
 
             print('{} with probability {}'.format(np.array(return_strings)[idx][0], res[0][idx][0]))
