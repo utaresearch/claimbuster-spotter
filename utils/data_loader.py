@@ -170,7 +170,7 @@ class DataLoader:
                 train_data, eval_data, vocab = pickle.load(f)
 
         if not FLAGS.elmo_embed:
-            assert vocab is None
+            assert vocab is not None
 
         return train_data, eval_data, vocab
 
