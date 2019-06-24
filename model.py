@@ -49,7 +49,7 @@ class ClaimBusterModel:
     def fprop(self, orig_embed=None, reg_loss=None, adv=False):
         if adv: assert (reg_loss is not None and orig_embed is not None)
 
-        with tf.variable_scope('cb_model'):
+        with tf.variable_scope('cb_model', reuse=adv):
             with tf.variable_scope('natural_lang_lstm', reuse=adv):
                 nl_lstm_x = self.x[:, 0]
                 nl_lstm_x_len = self.x_len[:, 0]
