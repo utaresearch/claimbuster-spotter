@@ -37,62 +37,62 @@ class ClaimBusterModel:
             self.cost, self.y_pred, self.acc = None, None, None
 
     def construct_model(self, adv):
-        with tf.variable_scope('cb_model'):
-            orig_embed, logits = self.fprop()
-            loss = self.ce_loss(logits, self.cls_weight)
+        orig_embed, logits = self.fprop()
+        loss = self.ce_loss(logits, self.cls_weight)
 
-            if adv:
-                logits_adv = self.fprop(orig_embed, loss, adv=True)
-                loss += FLAGS.adv_coeff * self.adv_loss(logits_adv, self.cls_weight)
+        if adv:
+            logits_adv = self.fprop(orig_embed, loss, adv=True)
+            loss += FLAGS.adv_coeff * self.adv_loss(logits_adv, self.cls_weight)
 
-            return logits, tf.identity(loss, name='cost')
+        return logits, tf.identity(loss, name='cost')
 
     def fprop(self, orig_embed=None, reg_loss=None, adv=False):
         if adv: assert (reg_loss is not None and orig_embed is not None)
 
-        with tf.variable_scope('natural_lang_lstm', reuse=adv):
-            nl_lstm_x = self.x[:, 0]
-            nl_lstm_x_len = self.x_len[:, 0]
-            nl_lstm_output_mask = self.output_mask[:, 0]
-            nl_lstm_out = RecurrentModel.build_embed_lstm(nl_lstm_x, nl_lstm_x_len, nl_lstm_output_mask, self.embed,
-                                                          self.kp_lstm, orig_embed, reg_loss, adv)
-            if not adv:
-                orig_embed, nl_lstm_out = nl_lstm_out
+        with tf.variable_scope('cb_model/', reuse=adv):
+            with tf.variable_scope('natural_lang_lstm/', reuse=adv):
+                nl_lstm_x = self.x[:, 0]
+                nl_lstm_x_len = self.x_len[:, 0]
+                nl_lstm_output_mask = self.output_mask[:, 0]
+                nl_lstm_out = RecurrentModel.build_embed_lstm(nl_lstm_x, nl_lstm_x_len, nl_lstm_output_mask, self.embed,
+                                                              self.kp_lstm, orig_embed, reg_loss, adv)
+                if not adv:
+                    orig_embed, nl_lstm_out = nl_lstm_out
 
-        with tf.variable_scope('pos_lstm', reuse=adv):
-            pos_lstm_x = self.x[:, 1]
-            pos_lstm_x_len = self.x_len[:, 1]
-            pos_lstm_output_mask = self.output_mask[:, 1]
-            pos_lstm_out = RecurrentModel.build_lstm(pos_lstm_x, pos_lstm_x_len, pos_lstm_output_mask, self.kp_lstm)
+            with tf.variable_scope('pos_lstm/', reuse=adv):
+                pos_lstm_x = self.x[:, 1]
+                pos_lstm_x_len = self.x_len[:, 1]
+                pos_lstm_output_mask = self.output_mask[:, 1]
+                pos_lstm_out = RecurrentModel.build_lstm(pos_lstm_x, pos_lstm_x_len, pos_lstm_output_mask, self.kp_lstm)
 
-        with tf.variable_scope('fc_output', reuse=adv):
-            lstm_out = tf.concat([nl_lstm_out, pos_lstm_out], axis=1)
+            with tf.variable_scope('fc_output/', reuse=adv):
+                lstm_out = tf.concat([nl_lstm_out, pos_lstm_out], axis=1)
 
-            # hidden_weights = tf.get_variable('cb_hidden_weights', shape=(
-            #     FLAGS.rnn_cell_size * 2 * (2 if FLAGS.bidir_lstm else 1), FLAGS.cls_hidden),
-            #                                  initializer=tf.contrib.layers.xavier_initializer())
-            # hidden_biases = tf.get_variable('cb_hidden_biases', shape=FLAGS.cls_hidden,
-            #                                 initializer=tf.zeros_initializer())
-            #
-            # cb_hidden = tf.matmul(lstm_out, hidden_weights) + hidden_biases
-            # cb_hidden = tf.nn.dropout(cb_hidden, keep_prob=FLAGS.keep_prob_cls)
+                # hidden_weights = tf.get_variable('cb_hidden_weights', shape=(
+                #     FLAGS.rnn_cell_size * 2 * (2 if FLAGS.bidir_lstm else 1), FLAGS.cls_hidden),
+                #                                  initializer=tf.contrib.layers.xavier_initializer())
+                # hidden_biases = tf.get_variable('cb_hidden_biases', shape=FLAGS.cls_hidden,
+                #                                 initializer=tf.zeros_initializer())
+                #
+                # cb_hidden = tf.matmul(lstm_out, hidden_weights) + hidden_biases
+                # cb_hidden = tf.nn.dropout(cb_hidden, keep_prob=FLAGS.keep_prob_cls)
 
-            # output_weights = tf.get_variable('cb_output_weights', shape=(FLAGS.cls_hidden, FLAGS.num_classes),
-            #                                  initializer=tf.contrib.layers.xavier_initializer())
-            # output_biases = tf.get_variable('cb_output_biases', shape=FLAGS.num_classes,
-            #                                 initializer=tf.zeros_initializer())
+                # output_weights = tf.get_variable('cb_output_weights', shape=(FLAGS.cls_hidden, FLAGS.num_classes),
+                #                                  initializer=tf.contrib.layers.xavier_initializer())
+                # output_biases = tf.get_variable('cb_output_biases', shape=FLAGS.num_classes,
+                #                                 initializer=tf.zeros_initializer())
 
-            # cb_out = tf.matmul(cb_hidden, output_weights) + output_biases
+                # cb_out = tf.matmul(cb_hidden, output_weights) + output_biases
 
-            output_weights = tf.get_variable('cb_output_weights', shape=(
-                FLAGS.rnn_cell_size * 2 * (2 if FLAGS.bidir_lstm else 1), FLAGS.num_classes),
-                                             initializer=tf.contrib.layers.xavier_initializer())
-            output_biases = tf.get_variable('cb_output_biases', shape=FLAGS.num_classes,
-                                            initializer=tf.zeros_initializer())
+                output_weights = tf.get_variable('cb_output_weights', shape=(
+                    FLAGS.rnn_cell_size * 2 * (2 if FLAGS.bidir_lstm else 1), FLAGS.num_classes),
+                                                 initializer=tf.contrib.layers.xavier_initializer())
+                output_biases = tf.get_variable('cb_output_biases', shape=FLAGS.num_classes,
+                                                initializer=tf.zeros_initializer())
 
-            cb_out = tf.matmul(lstm_out, output_weights) + output_biases
+                cb_out = tf.matmul(lstm_out, output_weights) + output_biases
 
-        return (orig_embed, cb_out) if not adv else cb_out
+            return (orig_embed, cb_out) if not adv else cb_out
 
     def adv_loss(self, logits, cls_weight):
         return tf.identity(self.ce_loss(logits, cls_weight), name='adv_loss')
