@@ -717,7 +717,7 @@ def main():
             res = subscribe_query(sess, cb_model, vocab)
             idx = np.argmax(res, axis=1)
 
-            print('Probability of CFS: {}'.format(res[2]))
+            print('Probability of CFS: {}'.format(res[0][2]))
 
             # print('{} with probability {}'.format(np.array(return_strings)[idx][0], res[0][idx][0]))
 
