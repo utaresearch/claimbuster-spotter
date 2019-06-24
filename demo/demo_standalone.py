@@ -686,9 +686,11 @@ def prc_sentence(sentence, vocab):
         else:
             return 0
 
+    sentence = transform_sentence_complete(sentence)
+
     sent = get_sentiment(sentence)
     pos = process_sentence_full_tags(sentence)
-    sentence = [get_idx(z) for z in transform_sentence_complete(sentence).split(' ')]
+    sentence = [get_idx(z) for z in sentence.split(' ')]
 
     return sentence, pos, sent
 
@@ -715,11 +717,7 @@ def main():
 
         while True:
             res = subscribe_query(sess, cb_model, vocab)
-            idx = np.argmax(res, axis=1)
-
             print('Probability of CFS: {}'.format(res[0][2]))
-
-            # print('{} with probability {}'.format(np.array(return_strings)[idx][0], res[0][idx][0]))
 
 
 if __name__ == '__main__':
