@@ -267,10 +267,17 @@ class ClaimBusterModel:
             saver.restore(sess, tf.train.latest_checkpoint(FLAGS.output_dir))
 
             # inputs
-            self.x = graph.get_tensor_by_name('x:0')
-            self.x_len = graph.get_tensor_by_name('x_len:0')
+            self.x_nl = graph.get_tensor_by_name('x_nl:0')
+            self.x_pos = graph.get_tensor_by_name('x_pos:0')
+
+            self.nl_len = graph.get_tensor_by_name('nl_len:0')
+            self.pos_len = graph.get_tensor_by_name('pos_len:0')
+
+            self.nl_output_mask = graph.get_tensor_by_name('nl_output_mask:0')
+            self.pos_output_mask = graph.get_tensor_by_name('pos_output_mask:0')
+
             self.y = graph.get_tensor_by_name('y:0')
-            self.output_mask = graph.get_tensor_by_name('output_mask:0')
+
             self.kp_cls = graph.get_tensor_by_name('kp_cls:0')
             self.kp_lstm = graph.get_tensor_by_name('kp_lstm:0')
             self.cls_weight = graph.get_tensor_by_name('cls_weight:0')
