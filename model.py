@@ -127,7 +127,7 @@ class ClaimBusterModel:
         x_nl = [z[0] for z in batch_x]
         x_pos = [z[1] for z in batch_x]
 
-        print(x_nl)
+        print(np.shape(x_nl))
 
         sess.run(
             self.optimizer,
