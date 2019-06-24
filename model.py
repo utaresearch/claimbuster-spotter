@@ -114,7 +114,7 @@ class ClaimBusterModel:
         if FLAGS.weight_classes_loss:
             ret_loss *= cls_weight
 
-        return tf.identity(ret_loss, name='reg_loss')
+        return tf.identity(ret_loss, name='regular_loss')
 
     def train_neural_network(self, sess, batch_x, batch_y):
         sess.run(
