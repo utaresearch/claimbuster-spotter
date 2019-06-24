@@ -28,8 +28,6 @@ def main():
         if not FLAGS.elmo_embed:
             cb_model.embed_obj.init_embeddings(sess)
 
-        _ = tf.summary.FileWriter('output/tblogs', sess.graph)
-
         start = time.time()
         epochs_trav = 0
 
