@@ -1,4 +1,5 @@
 import tensorflow as tf
+import tensorflow_hub as hub
 import sys
 from .adv_losses import apply_adversarial_perturbation
 sys.path.append('..')
@@ -7,11 +8,12 @@ from flags import FLAGS
 
 class RecurrentModel:
     def __init__(self):
-        pass
+        if FLAGS.elmo_rnn:
+            self.elmo = hub.Module("https://tfhub.dev/google/elmo/2", trainable=True)
 
     @staticmethod
     def build_elmo_lstm(x, x_len, output_mask, embed, kp_lstm, orig_embed, reg_loss, adv):
-        pass
+        elmo_output = elmo()
 
     @staticmethod
     def build_embed_lstm(x, x_len, output_mask, embed, kp_lstm, orig_embed, reg_loss, adv):
