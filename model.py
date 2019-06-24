@@ -182,8 +182,8 @@ class ClaimBusterModel:
         return np.sum(run_loss), run_acc, np.argmax(run_pred, axis=1)
 
     def get_preds(self, sess, sentence_tuple):
-        x_nl = self.pad_seq(sentence_tuple[0], ver=(0 if not FLAGS.elmo_embed else 1))
-        x_pos = self.prc_pos(self.pad_seq(sentence_tuple[1]))
+        x_nl = self.pad_seq([sentence_tuple[0]], ver=(0 if not FLAGS.elmo_embed else 1))
+        x_pos = self.prc_pos(self.pad_seq([sentence_tuple[1]]))
 
         feed_dict = {
             self.x_nl: x_nl,
