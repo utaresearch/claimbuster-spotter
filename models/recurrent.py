@@ -39,6 +39,8 @@ class RecurrentModel:
         else:
             output = output[:, -1, :]
 
+        print(output)
+
         return (x_embed, output) if not adv else output
 
     @staticmethod
@@ -59,6 +61,8 @@ class RecurrentModel:
             output = tf.concat([output_fw, output_bw], axis=1)
         else:
             output = output[:, -1, :]
+
+        print(output)
 
         return output
 
