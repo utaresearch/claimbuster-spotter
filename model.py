@@ -100,9 +100,6 @@ class ClaimBusterModel:
 
             cb_out = tf.matmul(lstm_out, output_weights) + output_biases
 
-        for v in tf.trainable_variables():
-            print(v.name)
-
         return (orig_embed, cb_out) if not adv else cb_out
 
     def adv_loss(self, logits, cls_weight):
@@ -126,8 +123,6 @@ class ClaimBusterModel:
     def train_neural_network(self, sess, batch_x, batch_y):
         x_nl = [z[0] for z in batch_x]
         x_pos = [z[1] for z in batch_x]
-
-        print(np.shape(x_nl))
 
         sess.run(
             self.optimizer,
