@@ -124,7 +124,7 @@ class ClaimBusterModel:
         return tf.identity(ret_loss, name='regular_loss')
 
     def train_neural_network(self, sess, batch_x, batch_y):
-        x_nl = [z[0] for z in batch_x]
+        x_nl = [z[0] for z in batch_x] if not FLAGS.elmo_embed else batch_x
         x_pos = [z[1] for z in batch_x]
 
         sess.run(
@@ -172,7 +172,7 @@ class ClaimBusterModel:
         return 'DJ Val Loss: {:>7.4f} DJ Val F1: {:>7.4f} '.format(val_loss, val_f1)
 
     def stats_from_run(self, sess, batch_x, batch_y):
-        x_nl = [z[0] for z in batch_x]
+        x_nl = [z[0] for z in batch_x] if not FLAGS.elmo_embed else batch_x
         x_pos = [z[1] for z in batch_x]
 
         feed_dict = {
