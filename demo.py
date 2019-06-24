@@ -16,10 +16,11 @@ def prc_sentence(sentence, vocab):
         else:
             return 0
 
+    sent = transf.get_sentiment(sentence)
     pos = transf.process_sentence_full_tags(sentence)
     sentence = [get_idx(z) for z in transf.transform_sentence_complete(sentence).split(' ')]
 
-    return sentence, pos
+    return sentence, pos, sent
 
 
 def subscribe_query(sess, cb_model, vocab):

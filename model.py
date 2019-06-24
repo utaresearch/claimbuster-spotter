@@ -189,11 +189,12 @@ class ClaimBusterModel:
     def get_preds(self, sess, sentence_tuple):
         x_nl = self.pad_seq([sentence_tuple[0]], ver=(0 if not FLAGS.elmo_embed else 1))
         x_pos = self.prc_pos(self.pad_seq([sentence_tuple[1]]))
-        x_sent = [z[2] for z in x_nl]
+        x_sent = [sentence_tuple[2]]
 
         feed_dict = {
             self.x_nl: x_nl,
             self.x_pos: x_pos,
+            self.x_sent: x_sent,
 
             self.nl_len: self.gen_x_len(x_nl),
             self.pos_len: self.gen_x_len(x_pos),
@@ -284,6 +285,7 @@ class ClaimBusterModel:
             # inputs
             self.x_nl = graph.get_tensor_by_name('x_nl:0')
             self.x_pos = graph.get_tensor_by_name('x_pos:0')
+            self.x_sent = graph.get_tensor_by_name('x_sent:0')
 
             self.nl_len = graph.get_tensor_by_name('nl_len:0')
             self.pos_len = graph.get_tensor_by_name('pos_len:0')
