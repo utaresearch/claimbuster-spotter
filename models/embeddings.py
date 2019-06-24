@@ -1,4 +1,5 @@
 import tensorflow as tf
+import tensorflow_hub as hub
 import numpy as np
 import pickle
 import sys
@@ -43,25 +44,38 @@ class Embedding:
 
         embedding_matrix[0] = np.zeros(FLAGS.embedding_dims)
 
-        tf.logging.info("Loading {} model...".format('word2vec' if FLAGS.embed_type == 0 else 'glove'))
-        model = KeyedVectors.load_word2vec_format(FLAGS.w2v_loc if FLAGS.embed_type == 0 else FLAGS.glove_loc,
-                                                  binary=False)
-        tf.logging.info("Model loaded.")
+        if not FLAGS.elmo_embed:
+            tf.logging.info("Loading {} model...".format('word2vec' if FLAGS.embed_type == 0 else 'glove'))
+            model = KeyedVectors.load_word2vec_format(FLAGS.w2v_loc if FLAGS.embed_type == 0 else FLAGS.glove_loc,
+                                                      binary=False)
 
-        fail_words = []
-        for word, idx in self.vocab.items():
-            try:
-                embedding_vector = model[word]
-                embedding_matrix[idx] = embedding_vector
-            except Exception as e:
-                if "not in vocab" not in str(e):
-                    print(e)
-                fail_words.append(word)
+            tf.logging.info("Model loaded.")
 
-        fail_words.sort()
-        tf.logging.info(str(len(fail_words)) + " out of " + str(len(self.vocab)) +
-                        " strings were not found and were defaulted.")
-        tf.logging.info(fail_words)
+            fail_words = []
+            for word, idx in self.vocab.items():
+                try:
+                    embedding_vector = model[word]
+                    embedding_matrix[idx] = embedding_vector
+                    fail_words.sort()
+                    tf.logging.info(str(len(fail_words)) + " out of " + str(len(self.vocab)) +
+                                    " strings were not found and were defaulted.")
+                    tf.logging.info(fail_words)
+                except Exception as e:
+                    if "not in vocab" not in str(e):
+                        print(e)
+                    fail_words.append(word)
+        else:
+            tf.logging.info("Loading ELMO model...")
+            elmo = hub.Module("https://tfhub.dev/google/elmo/2", trainable=True)
+
+            embeddings = elmo(
+                [word for word, idx in self.vocab.items()],
+                signature='default',
+                as_dict=True
+            )
+
+            print(sess.run(embeddings))
+            exit()
 
         var_to_return = tf.Variable(embedding_matrix)
 
