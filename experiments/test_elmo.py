@@ -5,14 +5,17 @@ x = tf.placeholder(tf.string, (None, None))
 x_len = tf.placeholder(tf.int32, (None,))
 
 elmo = hub.Module("https://tfhub.dev/google/elmo/2", trainable=True)
-# elmo_output = elmo(
-#     ["the cat is on the mat", "dogs are in the fog"],
-#     signature="default",
-#     as_dict=True)
 
-elmo_output = elmo(
-    inputs={"tokens": x, "sequence_len": x_len},
-    signature="default",
-    as_dict=True)
 
-print(elmo_output)
+tokens_input = [["the", "cat", "is", "on", "the", "mat"],
+                ["dogs", "are", "in", "the", "fog", ""]]
+tokens_length = [6, 5]
+embeddings = elmo(
+    inputs={
+        "tokens": x,
+        "sequence_len": x_len
+    },
+    signature="tokens",
+    as_dict=True)["elmo"]
+
+print(embeddings)
