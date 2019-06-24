@@ -1,7 +1,7 @@
 import tensorflow as tf
 import tensorflow_hub as hub
 
-pl = tf.placeholder(tf.string, (None,))
+pl = tf.placeholder(tf.string, (None, None))
 
 elmo = hub.Module("https://tfhub.dev/google/elmo/2", trainable=True)
 
