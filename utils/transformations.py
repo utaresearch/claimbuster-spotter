@@ -312,7 +312,7 @@ def process_dataset(inp_data):
     sentiments = []
 
     for i in tqdm(range(len(inp_data))):
-        sentiments.append(inp_data[i])
+        sentiments.append(get_sentiment(inp_data[i]))
         pos_tagged.append(process_sentence_full_tags(inp_data[i]))
         inp_data[i] = transform_sentence_complete(inp_data[i])
 
