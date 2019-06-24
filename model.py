@@ -197,6 +197,26 @@ class ClaimBusterModel:
 
         return np.sum(run_loss), run_acc, np.argmax(run_pred, axis=1)
 
+    def get_preds(self, sess, sentence_tuple):
+        x_nl = self.pad_seq(sentence_tuple[0], ver=(0 if not FLAGS.elmo_embed else 1))
+        x_pos = self.prc_pos(self.pad_seq(sentence_tuple[1]))
+
+        feed_dict = {
+            self.x_nl: x_nl,
+            self.x_pos: x_pos,
+
+            self.nl_len: self.gen_x_len(x_nl),
+            self.pos_len: self.gen_x_len(x_pos),
+
+            self.nl_output_mask: self.gen_output_mask(x_nl),
+            self.pos_output_mask: self.gen_output_mask(x_pos),
+
+            self.kp_cls: 1.0,
+            self.kp_lstm: 1.0,
+        }
+
+        return sess.run(self.y_pred, feed_dict=feed_dict)
+
     def get_cls_weights(self, batch_y):
         return [self.computed_cls_weights[z] for z in batch_y]
 

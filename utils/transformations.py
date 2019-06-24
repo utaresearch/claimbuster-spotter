@@ -293,21 +293,25 @@ def strip_chars(inpstr, to_strip=string.punctuation):
     return stripped_away_front, ''.join(strar), stripped_away_back[::-1]
 
 
+def transform_sentence_complete(sentence):
+    sentence = correct_mistakes(sentence)
+    sentence = (process_sentence_ner_spacy(sentence) if FLAGS.ner_spacy else sentence)
+
+    sentence = ' '.join(text_to_word_sequence(sentence))
+
+    sentence = expand_contractions(sentence)
+    sentence = remove_possessives(sentence)
+    sentence = remove_kill_words(sentence)
+
+    return sentence
+
+
 def process_dataset(inp_data):
     pos_tagged = []
 
     for i in tqdm(range(len(inp_data))):
         pos_tagged.append(process_sentence_full_tags(inp_data[i]))
-
-        inp_data[i] = correct_mistakes(inp_data[i])
-        inp_data[i] = (process_sentence_ner_spacy(inp_data[i])
-                       if FLAGS.ner_spacy else inp_data[i])
-
-        inp_data[i] = ' '.join(text_to_word_sequence(inp_data[i]))
-
-        inp_data[i] = expand_contractions(inp_data[i])
-        inp_data[i] = remove_possessives(inp_data[i])
-        inp_data[i] = remove_kill_words(inp_data[i])
+        inp_data[i] = transform_sentence_complete(inp_data[i])
 
     return inp_data, pos_tagged
 
