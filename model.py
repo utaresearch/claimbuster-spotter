@@ -60,22 +60,21 @@ class ClaimBusterModel:
     def fprop(self, orig_embed=None, reg_loss=None, adv=False):
         if adv: assert (reg_loss is not None and orig_embed is not None)
 
-        # with tf.variable_scope('natural_lang_lstm/', reuse=adv):
-        #     nl_lstm_out = RecurrentModel.build_embed_lstm(self.x_nl, self.nl_len, self.nl_output_mask, self.embed,
-        #                                                   self.kp_lstm, orig_embed, reg_loss, adv) \
-        #         if not FLAGS.elmo_embed else RecurrentModel.build_elmo_lstm(self.x_nl, self.nl_len,
-        #                                                                     self.nl_output_mask,
-        #                                                                     self.kp_lstm, orig_embed, reg_loss, adv)
-        #     if not adv:
-        #         orig_embed, nl_lstm_out = nl_lstm_out
+        with tf.variable_scope('natural_lang_lstm/', reuse=adv):
+            nl_lstm_out = RecurrentModel.build_embed_lstm(self.x_nl, self.nl_len, self.nl_output_mask, self.embed,
+                                                          self.kp_lstm, orig_embed, reg_loss, adv) \
+                if not FLAGS.elmo_embed else RecurrentModel.build_elmo_lstm(self.x_nl, self.nl_len,
+                                                                            self.nl_output_mask,
+                                                                            self.kp_lstm, orig_embed, reg_loss, adv)
+            if not adv:
+                orig_embed, nl_lstm_out = nl_lstm_out
 
         with tf.variable_scope('pos_lstm/', reuse=adv):
             pos_lstm_out = RecurrentModel.build_lstm(self.x_pos, self.pos_len, self.pos_output_mask, self.kp_lstm,
                                                      adv)
 
         with tf.variable_scope('fc_output/', reuse=adv):
-            # lstm_out = tf.concat([nl_lstm_out, pos_lstm_out], axis=1)
-            lstm_out = pos_lstm_out
+            lstm_out = tf.concat([nl_lstm_out, pos_lstm_out], axis=1)
 
             # hidden_weights = tf.get_variable('cb_hidden_weights', shape=(
             #     FLAGS.rnn_cell_size * 2 * (2 if FLAGS.bidir_lstm else 1), FLAGS.cls_hidden),
@@ -94,7 +93,7 @@ class ClaimBusterModel:
             # cb_out = tf.matmul(cb_hidden, output_weights) + output_biases
 
             output_weights = tf.get_variable('cb_output_weights', shape=(
-                FLAGS.rnn_cell_size * 2 / 2 * (2 if FLAGS.bidir_lstm else 1), FLAGS.num_classes),
+                FLAGS.rnn_cell_size * 2 * (2 if FLAGS.bidir_lstm else 1), FLAGS.num_classes),
                                              initializer=tf.contrib.layers.xavier_initializer())
             output_biases = tf.get_variable('cb_output_biases', shape=FLAGS.num_classes,
                                             initializer=tf.zeros_initializer())
