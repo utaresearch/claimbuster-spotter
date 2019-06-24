@@ -84,4 +84,5 @@ class RecurrentModel:
     def get_lstm(cell_id, kp_lstm, adv, dir):
         rnn_cell = tf.nn.rnn_cell.LSTMCell(FLAGS.rnn_cell_size, reuse=adv,
                                            name='lstm_cell_{}_{}'.format(cell_id, ('fwd' if dir == 0 else 'bwd')))
+        print(rnn_cell)
         return tf.nn.rnn_cell.DropoutWrapper(rnn_cell, output_keep_prob=kp_lstm)
