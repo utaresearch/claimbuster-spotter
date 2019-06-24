@@ -14,7 +14,7 @@ from flags import FLAGS
 class ClaimBusterModel:
     def __init__(self, vocab, cls_weights, restore=False):
         self.x_nl = tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x_nl') if not FLAGS.elmo_embed \
-            else tf.placeholder(tf.string, (None,))
+            else tf.placeholder(tf.string, (None, None))
         self.x_pos = tf.placeholder(tf.int32, (None, FLAGS.max_len, len(pos_labels) + 1), name='x_pos')
 
         self.nl_len = tf.placeholder(tf.int32, (None,), name='nl_len')
@@ -130,7 +130,7 @@ class ClaimBusterModel:
         sess.run(
             self.optimizer,
             feed_dict={
-                self.x_nl: self.pad_seq(x_nl),
+                self.x_nl: self.pad_seq(x_nl) if not FLAGS.elmo_embed else x_nl,
                 self.x_pos: self.prc_pos(self.pad_seq(x_pos)),
 
                 self.nl_len: self.gen_x_len(x_nl),
@@ -176,7 +176,7 @@ class ClaimBusterModel:
         x_pos = [z[1] for z in batch_x]
 
         feed_dict = {
-            self.x_nl: self.pad_seq(x_nl),
+            self.x_nl: self.pad_seq(x_nl) if not FLAGS.elmo_embed else x_nl,
             self.x_pos: self.prc_pos(self.pad_seq(x_pos)),
 
             self.nl_len: self.gen_x_len(x_nl),

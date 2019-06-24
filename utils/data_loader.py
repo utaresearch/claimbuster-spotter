@@ -151,6 +151,9 @@ class DataLoader:
                 eval_data = Dataset(list(zip(eval_seq, eval_pos)), eval_lab, random_state=FLAGS.random_state)
                 vocab = tokenizer.word_index
             else:
+                train_txt = [z.split(' ') for z in train_txt]
+                test_txt = [z.split(' ') for z in test_txt]
+
                 train_data = Dataset(list(zip(train_txt, train_pos)), train_lab, random_state=FLAGS.random_state)
                 eval_data = Dataset(list(zip(train_txt, eval_pos)), eval_lab, random_state=FLAGS.random_state)
 
