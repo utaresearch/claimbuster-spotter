@@ -10,35 +10,8 @@ class RecurrentModel:
         pass
 
     @staticmethod
-    def build_elmo_lstm(x, x_len, output_mask, kp_lstm, orig_embed, reg_loss, adv):
-        x_embed, output = None, None
-
-        if adv:
-            x_embed = apply_adversarial_perturbation(orig_embed, reg_loss)
-        else:
-            import tensorflow_hub as hub
-
-            tf.logging.info('Building ELMO embeddings')
-            elmo = hub.Module("https://tfhub.dev/google/elmo/2", trainable=True)
-            tf.logging.info('ELMO successfully built')
-
-            elmo_output = elmo(
-                inputs={
-                    "tokens": x,
-                    "sequence_len": x_len
-                },
-                signature="tokens",
-                as_dict=True)
-
-            lstm1 = elmo_output["lstm_outputs1"]
-            lstm2 = elmo_output["lstm_outputs2"]
-
-            output1 = tf.boolean_mask(lstm1, output_mask)
-            output2 = lstm2[:, 0, :]
-
-            output = tf.concat([output1, output2], axis=1)
-
-        return (x_embed, output) if not adv else output
+    def build_bert_transformer(x, x_len, output_mask, kp_lstm, orig_embed, reg_loss, adv):
+        pass
 
     @staticmethod
     def build_embed_lstm(x, x_len, output_mask, embed, kp_lstm, orig_embed, reg_loss, adv):

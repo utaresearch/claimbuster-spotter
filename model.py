@@ -16,7 +16,7 @@ class ClaimBusterModel:
         self.x_nl = tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x_nl') if not FLAGS.elmo_embed \
             else tf.placeholder(tf.string, (None, None))
         self.x_pos = tf.placeholder(tf.int32, (None, FLAGS.max_len, len(pos_labels) + 1), name='x_pos')
-        self.x_sent = tf.placeholder(tf.float32, (None, 2))
+        self.x_sent = tf.placeholder(tf.float32, (None, 2), name='x_sent')
 
         self.nl_len = tf.placeholder(tf.int32, (None,), name='nl_len')
         self.pos_len = tf.placeholder(tf.int32, (None,), name='pos_len')
