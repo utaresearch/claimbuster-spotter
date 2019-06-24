@@ -16,11 +16,11 @@ class ClaimBusterModel:
         self.x_nl = tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x_nl')
         self.x_pos = tf.placeholder(tf.int32, (None, FLAGS.max_len, len(pos_labels) + 1), name='x_pos')
 
-        self.nl_len = tf.placeholder(tf.int32, (None, 2), name='nl_len')
-        self.pos_len = tf.placeholder(tf.int32, (None, 2), name='pos_len')
+        self.nl_len = tf.placeholder(tf.int32, (None,), name='nl_len')
+        self.pos_len = tf.placeholder(tf.int32, (None,), name='pos_len')
 
-        self.nl_output_mask = tf.placeholder(tf.bool, (None, 2, FLAGS.max_len), name='nl_output_mask')
-        self.pos_output_mask = tf.placeholder(tf.bool, (None, 2, FLAGS.max_len), name='pos_output_mask')
+        self.nl_output_mask = tf.placeholder(tf.bool, (None, FLAGS.max_len), name='nl_output_mask')
+        self.pos_output_mask = tf.placeholder(tf.bool, (None, FLAGS.max_len), name='pos_output_mask')
 
         self.y = tf.placeholder(tf.int32, (None, FLAGS.num_classes), name='y')
 
