@@ -13,7 +13,14 @@ def main():
 
     os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu_active])
 
-    cb_model = ClaimBusterModel(restore=True)
+    tf.logging.info("Loading dataset")
+    data_load = DataLoader()
+    computed_cls_weights = data_load.class_weights
+
+    test_data = data_load.load_testing_data()
+    tf.logging.info("{} testing examples".format(test_data.get_length()))
+
+    cb_model = ClaimBusterModel(data_load.vocab, data_load.class_weights, restore=True)
 
     graph = tf.Graph()
     with tf.Session(graph=graph, config=tf.ConfigProto(allow_soft_placement=True)) as sess:
