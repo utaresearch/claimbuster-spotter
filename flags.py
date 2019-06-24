@@ -66,7 +66,7 @@ flags.DEFINE_integer('embedding_dims', 100, 'Dimensions of embedded vector.')
 flags.DEFINE_bool('random_init_oov', False, 'Use np.random.normal init for unknown embeddings. 0-fill if False')
 
 # Adversarial and virtual adversarial training parameters.
-flags.DEFINE_bool('adv_train', True, 'Train using adversarial perturbations')
+flags.DEFINE_bool('adv_train', False, 'Train using adversarial perturbations')
 flags.DEFINE_float('adv_coeff', 1.0, 'Coefficient of adversarial loss')
 flags.DEFINE_float('perturb_norm_length', 6.0, 'Norm length of adversarial perturbation')
 
@@ -76,7 +76,7 @@ flags.DEFINE_integer('num_classes', 3, 'Number of classes for classification (2 
 # Training
 flags.DEFINE_bool('adam', True, 'Adam or RMSProp if False')
 flags.DEFINE_bool('restore_and_continue', False, 'Restore previous training session and continue')
-flags.DEFINE_integer('batch_size', 512, 'Size of the batch.')
+flags.DEFINE_integer('batch_size', 256, 'Size of the batch.')
 
 # Locations (must be last due to customization)
 flags.DEFINE_string('raw_data_loc', '{}/data_small.json'.format(FLAGS.data_dir), 'Location of raw data')

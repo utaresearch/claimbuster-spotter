@@ -12,7 +12,7 @@ from flags import FLAGS
 
 
 class ClaimBusterModel:
-    def __init__(self, vocab, cls_weights, restore=False):
+    def __init__(self, vocab=None, cls_weights=None, restore=False):
         self.x_nl = tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x_nl') if not FLAGS.elmo_embed \
             else tf.placeholder(tf.string, (None, None))
         self.x_pos = tf.placeholder(tf.int32, (None, FLAGS.max_len, len(pos_labels) + 1), name='x_pos')
@@ -29,7 +29,7 @@ class ClaimBusterModel:
         self.kp_lstm = tf.placeholder(tf.float32, name='kp_lstm')
         self.cls_weight = tf.placeholder(tf.float32, (None,), name='cls_weight')
 
-        self.computed_cls_weights = cls_weights
+        self.computed_cls_weights = cls_weights if cls_weights is not None else [1 for _ in range(FLAGS.num_classes)]
 
         if not restore:
             if not FLAGS.elmo_embed:
