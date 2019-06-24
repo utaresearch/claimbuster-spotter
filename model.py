@@ -63,7 +63,8 @@ class ClaimBusterModel:
                 pos_lstm_x = self.x[:, 1]
                 pos_lstm_x_len = self.x_len[:, 1]
                 pos_lstm_output_mask = self.output_mask[:, 1]
-                pos_lstm_out = RecurrentModel.build_lstm(pos_lstm_x, pos_lstm_x_len, pos_lstm_output_mask, self.kp_lstm)
+                pos_lstm_out = RecurrentModel.build_lstm(pos_lstm_x, pos_lstm_x_len, pos_lstm_output_mask, self.kp_lstm,
+                                                         adv)
 
             with tf.variable_scope('fc_output/', reuse=adv):
                 lstm_out = tf.concat([nl_lstm_out, pos_lstm_out], axis=1)
