@@ -1,4 +1,5 @@
 import os
+from shutil import rmtree
 import argparse
 
 
@@ -23,7 +24,11 @@ def list_del(location):
 def main():
     to_del = list_del(args.folder_to_clean)
     for el in to_del:
-        os.remove(os.path.join(args.folder_to_clean, el))
+        path = os.path.join(args.folder_to_clean, el)
+        if os.path.isdir(path):
+            rmtree(path)
+        else:
+            os.remove(path)
     print('Process completed.')
 
 
