@@ -72,7 +72,8 @@ class RecurrentModel:
     def build_unidir_lstm_component(x, x_len, kp_lstm, adv):
         lstm = tf.nn.rnn_cell.MultiRNNCell([RecurrentModel.get_lstm(cell_num, kp_lstm, adv, direc=0)
                                             for cell_num in range(FLAGS.rnn_num_layers)])
-        return tf.nn.dynamic_rnn(cell=lstm, sequence_length=x_len, inputs=x, dtype=tf.float32)
+        return tf.nn.dynamic_rnn(cell=lstm, sequence_length=x_len, inputs=x, dtype=tf.float32,
+                                 scope='dynamic_rnn/')
 
     @staticmethod
     def build_bidir_lstm_component(x, x_len, kp_lstm, adv):
@@ -83,7 +84,8 @@ class RecurrentModel:
         bw_cell = tf.nn.rnn_cell.MultiRNNCell([RecurrentModel.get_lstm(cell_num, kp_lstm, adv, direc=1)
                                                for cell_num in range(FLAGS.rnn_num_layers)])
 
-        return tf.nn.bidirectional_dynamic_rnn(fw_cell, bw_cell, inputs=x, sequence_length=x_len, dtype=tf.float32)
+        return tf.nn.bidirectional_dynamic_rnn(fw_cell, bw_cell, inputs=x, sequence_length=x_len, dtype=tf.float32,
+                                               scope='dynamic_bidir_rnn/')
 
     @staticmethod
     def get_lstm(cell_id, kp_lstm, adv, direc):
