@@ -59,8 +59,6 @@ class RecurrentModel:
 
         x = x_embed
 
-        # @TODO add convolutional layers
-
         if not FLAGS.bidir_lstm:
             tf.logging.info('Building uni-directional LSTM')
             output, _ = RecurrentModel.build_unidir_lstm_component(x, x_len, kp_lstm, adv)
