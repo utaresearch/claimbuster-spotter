@@ -76,9 +76,7 @@ class ClaimBusterModel:
         with tf.variable_scope('fc_output/', reuse=adv):
             lstm_out = tf.concat([nl_lstm_out, pos_lstm_out], axis=1)
 
-            print(tf.shape(lstm_out))
-
-            output_weights = tf.get_variable('cb_output_weights', shape=(tf.shape(lstm_out)[1], FLAGS.num_classes),
+            output_weights = tf.get_variable('cb_output_weights', shape=(lstm_out.get_shape()[1], FLAGS.num_classes),
                                              initializer=tf.contrib.layers.xavier_initializer())
             output_biases = tf.get_variable('cb_output_biases', shape=FLAGS.num_classes,
                                             initializer=tf.zeros_initializer())
