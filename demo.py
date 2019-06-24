@@ -11,6 +11,8 @@ return_strings = ['Non-factual statement', 'Unimportant factual statement', 'Sal
 def prc_sentence(sentence):
     sentence = transf.transform_sentence_complete(sentence)
     pos = transf.process_sentence_full_tags(sentence)
+    print(sentence, pos)
+
     return sentence, pos
 
 
