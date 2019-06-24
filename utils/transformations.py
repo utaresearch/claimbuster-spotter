@@ -9,8 +9,8 @@ nlp = None
 cont = None
 embed_obj = None
 kill_words = ["", "uh"]
-stop_words = None
-pos_labels = None
+stop_words = list(nltk.corpus.stopwords.words('english'))
+pos_labels = list(nltk.load("help/tagsets/upenn_tagset.pickle").keys())
 
 spacy_to_nl = {
     "PERSON": "person",
@@ -340,7 +340,7 @@ def process_sentence_ner_spacy(sentence):
 
 
 def load_dependencies():
-    global nlp, cont, embed_obj, stop_words, pos_labels
+    global nlp, cont, embed_obj
 
     print("Loading NLTK Dependencies...")
     nltk.download('punkt')
@@ -352,9 +352,6 @@ def load_dependencies():
         nlp = spacy.load("en_core_web_lg")
         print("Tagger loaded.")
     print("NLTK dependencies Loaded.")
-
-    stop_words = list(nltk.corpus.stopwords.words('english'))
-    pos_labels = list(nltk.load("help/tagsets/upenn_tagset.pickle").keys())
 
 
 def load_deps_dummy():
