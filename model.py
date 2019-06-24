@@ -130,13 +130,6 @@ class ClaimBusterModel:
             }
         )
 
-        variables_names = [v.name for v in tf.trainable_variables()]
-        values = sess.run(variables_names)
-        for k, v in zip(variables_names, values):
-            print("Variable: ", k)
-            print("Shape: ", v.shape)
-            # print(v)
-
     def execute_validation(self, sess, test_data):
         n_batches = math.ceil(float(FLAGS.test_examples) / float(FLAGS.batch_size))
         val_loss, val_acc = 0.0, 0.0
