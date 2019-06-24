@@ -75,8 +75,10 @@ class RecurrentModel:
     def build_bidir_lstm_component(x, x_len, kp_lstm, adv):
         assert FLAGS.rnn_num_layers == 1
 
-        fw_cell = tf.nn.rnn_cell.MultiRNNCell([RecurrentModel.get_lstm(cell_num, kp_lstm, adv, direc=0) for cell_num in range(FLAGS.rnn_num_layers)])
-        bw_cell = tf.nn.rnn_cell.MultiRNNCell([RecurrentModel.get_lstm(cell_num, kp_lstm, adv, direc=1) for cell_num in range(FLAGS.rnn_num_layers)])
+        fw_cell = tf.nn.rnn_cell.MultiRNNCell([RecurrentModel.get_lstm(cell_num, kp_lstm, adv, direc=0)
+                                               for cell_num in range(FLAGS.rnn_num_layers)])
+        bw_cell = tf.nn.rnn_cell.MultiRNNCell([RecurrentModel.get_lstm(cell_num, kp_lstm, adv, direc=1)
+                                               for cell_num in range(FLAGS.rnn_num_layers)])
 
         return tf.nn.bidirectional_dynamic_rnn(fw_cell, bw_cell, inputs=x, sequence_length=x_len, dtype=tf.float32)
 
@@ -85,5 +87,5 @@ class RecurrentModel:
         rnn_cell = tf.nn.rnn_cell.LSTMCell(FLAGS.rnn_cell_size, reuse=adv,
                                            name='lstm_cell_{}_{}'.format(cell_id, ('fwd' if direc == 0 else 'bwd')))
         print(rnn_cell)
-        print('lstm_cell_{}_{}'.format(cell_id, ('fwd' if dir == 0 else 'bwd')))
+        print('lstm_cell_{}_{}'.format(cell_id, ('fwd' if direc == 0 else 'bwd')))
         return tf.nn.rnn_cell.DropoutWrapper(rnn_cell, output_keep_prob=kp_lstm)
