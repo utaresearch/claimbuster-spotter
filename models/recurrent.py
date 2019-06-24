@@ -30,7 +30,6 @@ class RecurrentModel:
         else:
             tf.logging.info('Building bi-directional LSTM')
             output, _ = RecurrentModel.build_bidir_lstm_component(x, x_len, kp_lstm, adv)
-            print(output)
 
         if FLAGS.bidir_lstm:
             output_fw, output_bw = output
@@ -39,8 +38,6 @@ class RecurrentModel:
             output = tf.concat([output_fw, output_bw], axis=1)
         else:
             output = output[:, -1, :]
-
-        print(output)
 
         return (x_embed, output) if not adv else output
 
@@ -54,7 +51,6 @@ class RecurrentModel:
         else:
             tf.logging.info('Building bi-directional LSTM')
             output, _ = RecurrentModel.build_bidir_lstm_component(x, x_len, kp_lstm, adv)
-            print(output)
 
         if FLAGS.bidir_lstm:
             output_fw, output_bw = output
@@ -64,16 +60,13 @@ class RecurrentModel:
         else:
             output = output[:, -1, :]
 
-        print(output)
-
         return output
 
     @staticmethod
     def build_unidir_lstm_component(x, x_len, kp_lstm, adv):
         lstm = tf.nn.rnn_cell.MultiRNNCell([RecurrentModel.get_lstm(cell_num, kp_lstm, adv, direc=0)
                                             for cell_num in range(FLAGS.rnn_num_layers)])
-        return tf.nn.dynamic_rnn(cell=lstm, sequence_length=x_len, inputs=x, dtype=tf.float32,
-                                 scope='{}dynamic_rnn/'.format(tf.get_variable_scope().name))
+        return tf.nn.dynamic_rnn(cell=lstm, sequence_length=x_len, inputs=x, dtype=tf.float32)
 
     @staticmethod
     def build_bidir_lstm_component(x, x_len, kp_lstm, adv):
@@ -86,8 +79,7 @@ class RecurrentModel:
 
         print()
 
-        return tf.nn.bidirectional_dynamic_rnn(fw_cell, bw_cell, inputs=x, sequence_length=x_len, dtype=tf.float32,
-                                               scope='{}dynamic_bidir_rnn/'.format(tf.get_variable_scope().name))
+        return tf.nn.bidirectional_dynamic_rnn(fw_cell, bw_cell, inputs=x, sequence_length=x_len, dtype=tf.float32)
 
     @staticmethod
     def get_lstm(cell_id, kp_lstm, adv, direc):
