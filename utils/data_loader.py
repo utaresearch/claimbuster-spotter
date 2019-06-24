@@ -1,12 +1,11 @@
 import tensorflow as tf
-from keras.preprocessing.text import Tokenizer, text_to_word_sequence
+from keras.preprocessing.text import Tokenizer
 from sklearn.utils import resample
 import numpy as np
 import pickle
 import math
 import os
 import shutil
-from tqdm import tqdm
 import json
 import sys
 from . import transformations as transf
@@ -121,6 +120,8 @@ class DataLoader:
 
     @staticmethod
     def load_external_raw():
+        train_data, test_data, vocab = None, None, None
+
         if FLAGS.refresh_data:
             train_data = DataLoader.parse_json(FLAGS.raw_data_loc)
             dj_eval_data = DataLoader.parse_json(FLAGS.raw_dj_eval_loc)
@@ -134,38 +135,24 @@ class DataLoader:
             tf.logging.info('Loading preprocessing dependencies')
             transf.load_dependencies()
 
-            def process_dataset(inp_data):
-                pos_tagged = []
-
-                for i in tqdm(range(len(inp_data))):
-                    pos_tagged.append(transf.process_sentence_full_tags(inp_data[i]))
-
-                    inp_data[i] = transf.correct_mistakes(inp_data[i])
-                    inp_data[i] = (transf.process_sentence_ner_spacy(inp_data[i])
-                                   if FLAGS.ner_spacy else inp_data[i])
-
-                    inp_data[i] = ' '.join(text_to_word_sequence(inp_data[i]))
-
-                    inp_data[i] = transf.expand_contractions(inp_data[i])
-                    inp_data[i] = transf.remove_possessives(inp_data[i])
-                    inp_data[i] = transf.remove_kill_words(inp_data[i])
-
-                return inp_data, pos_tagged
-
             tf.logging.info('Processing train data')
-            train_txt, train_pos = process_dataset(train_txt)
+            train_txt, train_pos = transf.process_dataset(train_txt)
             tf.logging.info('Processing eval data')
-            eval_txt, eval_pos = process_dataset(eval_txt)
+            eval_txt, eval_pos = transf.process_dataset(eval_txt)
 
-            tokenizer = Tokenizer()
+            if not FLAGS.elmo_embed:
+                tokenizer = Tokenizer()
 
-            tokenizer.fit_on_texts(np.concatenate((train_txt, eval_txt)))
-            train_seq = tokenizer.texts_to_sequences(train_txt)
-            eval_seq = tokenizer.texts_to_sequences(eval_txt)
+                tokenizer.fit_on_texts(np.concatenate((train_txt, eval_txt)))
+                train_seq = tokenizer.texts_to_sequences(train_txt)
+                eval_seq = tokenizer.texts_to_sequences(eval_txt)
 
-            train_data = Dataset(list(zip(train_seq, train_pos)), train_lab, random_state=FLAGS.random_state)
-            eval_data = Dataset(list(zip(eval_seq, eval_pos)), eval_lab, random_state=FLAGS.random_state)
-            vocab = tokenizer.word_index
+                train_data = Dataset(list(zip(train_seq, train_pos)), train_lab, random_state=FLAGS.random_state)
+                eval_data = Dataset(list(zip(eval_seq, eval_pos)), eval_lab, random_state=FLAGS.random_state)
+                vocab = tokenizer.word_index
+            else:
+                train_data = Dataset(list(zip(train_txt, train_pos)), train_lab, random_state=FLAGS.random_state)
+                eval_data = Dataset(list(zip(train_txt, eval_pos)), eval_lab, random_state=FLAGS.random_state)
 
             with open(FLAGS.prc_data_loc, 'wb') as f:
                 pickle.dump((train_data, eval_data, vocab), f)
@@ -178,6 +165,9 @@ class DataLoader:
             tf.logging.info('Restoring data from {}'.format(FLAGS.prc_data_loc))
             with open(FLAGS.prc_data_loc, 'rb') as f:
                 train_data, eval_data, vocab = pickle.load(f)
+
+        if not FLAGS.elmo_embed:
+            assert vocab is None
 
         return train_data, eval_data, vocab
 
