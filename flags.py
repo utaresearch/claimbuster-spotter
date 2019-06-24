@@ -43,7 +43,7 @@ flags.DEFINE_integer('random_state', 59, 'State of pseudo-randomness')
 flags.DEFINE_integer('rnn_num_layers', 1, 'Number of LSTM layers.')
 flags.DEFINE_integer('rnn_cell_size', 16, 'Number of hidden units in the LSTM.')
 flags.DEFINE_bool('bidir_lstm', True, 'Use bidirectional LSTM')
-flags.DEFINE_integer('cls_hidden', 16, 'Number of hidden units in classification synthesis layer.')
+flags.DEFINE_integer('cls_hidden', 8, 'Number of hidden units in classification synthesis layer.')
 
 # Optimization
 flags.DEFINE_integer('max_steps', 1000, 'Number of epochs to run.')
@@ -51,7 +51,7 @@ flags.DEFINE_float('learning_rate', 0.001, 'Learning rate while during optimiati
 
 # Regularization
 flags.DEFINE_float('l2_reg_coeff', 0.001, 'If val > 0, use L2 Regularization on weights in graph')
-flags.DEFINE_float('keep_prob_cls', 0.7, 'Keep probability of classification layer.')
+flags.DEFINE_float('keep_prob_cls', 0.6, 'Keep probability of classification layer.')
 flags.DEFINE_float('keep_prob_lstm', 0.6, 'Keep probability LSTM network.')
 
 # Embeddings
