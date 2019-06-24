@@ -30,6 +30,7 @@ class RecurrentModel:
         else:
             tf.logging.info('Building bi-directional LSTM')
             output, _ = RecurrentModel.build_bidir_lstm_component(x, x_len, kp_lstm, adv)
+            print(output)
 
         if FLAGS.bidir_lstm:
             output_fw, output_bw = output
@@ -53,6 +54,7 @@ class RecurrentModel:
         else:
             tf.logging.info('Building bi-directional LSTM')
             output, _ = RecurrentModel.build_bidir_lstm_component(x, x_len, kp_lstm, adv)
+            print(output)
 
         if FLAGS.bidir_lstm:
             output_fw, output_bw = output
@@ -68,7 +70,8 @@ class RecurrentModel:
 
     @staticmethod
     def build_unidir_lstm_component(x, x_len, kp_lstm, adv):
-        lstm = tf.nn.rnn_cell.MultiRNNCell([RecurrentModel.get_lstm(cell_num, kp_lstm, adv, direc=0) for cell_num in range(FLAGS.rnn_num_layers)])
+        lstm = tf.nn.rnn_cell.MultiRNNCell([RecurrentModel.get_lstm(cell_num, kp_lstm, adv, direc=0)
+                                            for cell_num in range(FLAGS.rnn_num_layers)])
         return tf.nn.dynamic_rnn(cell=lstm, sequence_length=x_len, inputs=x, dtype=tf.float32)
 
     @staticmethod
@@ -86,6 +89,4 @@ class RecurrentModel:
     def get_lstm(cell_id, kp_lstm, adv, direc):
         rnn_cell = tf.nn.rnn_cell.LSTMCell(FLAGS.rnn_cell_size, reuse=adv,
                                            name='lstm_cell_{}_{}'.format(cell_id, ('fwd' if direc == 0 else 'bwd')))
-        print(rnn_cell)
-        print('lstm_cell_{}_{}'.format(cell_id, ('fwd' if direc == 0 else 'bwd')))
         return tf.nn.rnn_cell.DropoutWrapper(rnn_cell, output_keep_prob=kp_lstm)
