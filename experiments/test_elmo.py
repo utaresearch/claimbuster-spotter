@@ -1,7 +1,7 @@
 import tensorflow as tf
 import tensorflow_hub as hub
 
-pl = tf.placeholder(tf.string, (None, ))
+x = tf.placeholder(tf.string, (None, ))
 
 elmo = hub.Module("https://tfhub.dev/google/elmo/2", trainable=True)
 # elmo_output = elmo(
@@ -10,7 +10,7 @@ elmo = hub.Module("https://tfhub.dev/google/elmo/2", trainable=True)
 #     as_dict=True)
 
 elmo_output = elmo(
-    ["the cat is on the mat", "dogs are in the fog"],
+    x,
     signature="default",
     as_dict=True)
 
