@@ -218,7 +218,7 @@ class ClaimBusterModel:
     @staticmethod
     def pad_seq(inp, ver=0):  # 0 is int, 1 is string
         return pad_sequences(inp, padding="post", maxlen=FLAGS.max_len) if ver == 0 else \
-            pad_sequences(inp, padding="post", maxlen=FLAGS.max_len, dtype='string', value='')
+            pad_sequences(inp, padding="post", maxlen=FLAGS.max_len, dtype='object', value='')
 
     @staticmethod
     def one_hot(a, nc=FLAGS.num_classes):
