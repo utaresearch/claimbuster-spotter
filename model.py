@@ -32,8 +32,9 @@ class ClaimBusterModel:
         self.computed_cls_weights = cls_weights
 
         if not restore:
-            self.embed_obj = Embedding(vocab)
-            self.embed = self.embed_obj.construct_embeddings()
+            if not FLAGS.elmo_embed:
+                self.embed_obj = Embedding(vocab)
+                self.embed = self.embed_obj.construct_embeddings()
 
             self.logits, self.cost = self.construct_model(adv=FLAGS.adv_train)
             self.optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(self.cost) \
