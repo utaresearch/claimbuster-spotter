@@ -75,7 +75,6 @@ class ClaimBusterModel:
 
         with tf.variable_scope('fc_output/', reuse=adv):
             lstm_out = tf.concat([nl_lstm_out, pos_lstm_out], axis=1)
-
             lstm_out = tf.nn.dropout(lstm_out, keep_prob=FLAGS.keep_prob_cls)
 
             output_weights = tf.get_variable('cb_output_weights', shape=(lstm_out.get_shape()[1], FLAGS.num_classes),
