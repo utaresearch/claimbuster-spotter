@@ -76,24 +76,7 @@ class ClaimBusterModel:
         with tf.variable_scope('fc_output/', reuse=adv):
             lstm_out = tf.concat([nl_lstm_out, pos_lstm_out], axis=1)
 
-            # hidden_weights = tf.get_variable('cb_hidden_weights', shape=(
-            #     FLAGS.rnn_cell_size * 2 * (2 if FLAGS.bidir_lstm else 1), FLAGS.cls_hidden),
-            #                                  initializer=tf.contrib.layers.xavier_initializer())
-            # hidden_biases = tf.get_variable('cb_hidden_biases', shape=FLAGS.cls_hidden,
-            #                                 initializer=tf.zeros_initializer())
-            #
-            # cb_hidden = tf.matmul(lstm_out, hidden_weights) + hidden_biases
-            # cb_hidden = tf.nn.dropout(cb_hidden, keep_prob=FLAGS.keep_prob_cls)
-            #
-            # output_weights = tf.get_variable('cb_output_weights', shape=(FLAGS.cls_hidden, FLAGS.num_classes),
-            #                                  initializer=tf.contrib.layers.xavier_initializer())
-            # output_biases = tf.get_variable('cb_output_biases', shape=FLAGS.num_classes,
-            #                                 initializer=tf.zeros_initializer())
-            #
-            # cb_out = tf.matmul(cb_hidden, output_weights) + output_biases
-
-            output_weights = tf.get_variable('cb_output_weights', shape=(
-                FLAGS.rnn_cell_size * 2 * (2 if FLAGS.bidir_lstm else 1), FLAGS.num_classes),
+            output_weights = tf.get_variable('cb_output_weights', shape=(tf.shape(lstm_out)[1], FLAGS.num_classes),
                                              initializer=tf.contrib.layers.xavier_initializer())
             output_biases = tf.get_variable('cb_output_biases', shape=FLAGS.num_classes,
                                             initializer=tf.zeros_initializer())
