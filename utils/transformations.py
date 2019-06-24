@@ -2,6 +2,7 @@ import nltk
 import spacy
 import string
 import sys
+from textblob import TextBlob
 from keras.preprocessing.text import text_to_word_sequence
 from tqdm import tqdm
 sys.path.append('..')
@@ -314,6 +315,17 @@ def process_dataset(inp_data):
         inp_data[i] = transform_sentence_complete(inp_data[i])
 
     return inp_data, pos_tagged
+
+
+def get_sentiment(inp_data):
+    ret = []
+
+    for sentence in inp_data:
+        blob = TextBlob(sentence)
+        ret.append([blob.polarity, blob.subjectivity])
+
+    return ret
+
 
 ###########################################################################
 

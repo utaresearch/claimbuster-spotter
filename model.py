@@ -16,6 +16,7 @@ class ClaimBusterModel:
         self.x_nl = tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x_nl') if not FLAGS.elmo_embed \
             else tf.placeholder(tf.string, (None, None))
         self.x_pos = tf.placeholder(tf.int32, (None, FLAGS.max_len, len(pos_labels) + 1), name='x_pos')
+        self.x_sent = tf.placeholder(tf.float32, (None, 2))
 
         self.nl_len = tf.placeholder(tf.int32, (None,), name='nl_len')
         self.pos_len = tf.placeholder(tf.int32, (None,), name='pos_len')
@@ -74,7 +75,7 @@ class ClaimBusterModel:
                                                      adv)
 
         with tf.variable_scope('fc_output/', reuse=adv):
-            lstm_out = tf.concat([nl_lstm_out, pos_lstm_out], axis=1)
+            lstm_out = tf.concat([nl_lstm_out, pos_lstm_out, self.x_sent], axis=1)
             lstm_out = tf.nn.dropout(lstm_out, keep_prob=FLAGS.keep_prob_cls)
 
             output_weights = tf.get_variable('cb_output_weights', shape=(lstm_out.get_shape()[1], FLAGS.num_classes),
@@ -109,12 +110,14 @@ class ClaimBusterModel:
 
         x_nl = [z[0] for z in batch_x]
         x_pos = [z[1] for z in batch_x]
+        x_sent = [z[2] for z in batch_x]
 
         sess.run(
             self.optimizer,
             feed_dict={
                 self.x_nl: self.pad_seq(x_nl, ver=(0 if not FLAGS.elmo_embed else 1)),
                 self.x_pos: self.prc_pos(self.pad_seq(x_pos)),
+                self.x_sent: x_sent,
 
                 self.nl_len: self.gen_x_len(x_nl),
                 self.pos_len: self.gen_x_len(x_pos),
@@ -157,10 +160,12 @@ class ClaimBusterModel:
     def stats_from_run(self, sess, batch_x, batch_y):
         x_nl = [z[0] for z in batch_x]
         x_pos = [z[1] for z in batch_x]
+        x_sent = [z[2] for z in batch_x]
 
         feed_dict = {
             self.x_nl: self.pad_seq(x_nl, ver=(0 if not FLAGS.elmo_embed else 1)),
             self.x_pos: self.prc_pos(self.pad_seq(x_pos)),
+            self.x_sent: x_sent,
 
             self.nl_len: self.gen_x_len(x_nl),
             self.pos_len: self.gen_x_len(x_pos),
@@ -184,6 +189,7 @@ class ClaimBusterModel:
     def get_preds(self, sess, sentence_tuple):
         x_nl = self.pad_seq([sentence_tuple[0]], ver=(0 if not FLAGS.elmo_embed else 1))
         x_pos = self.prc_pos(self.pad_seq([sentence_tuple[1]]))
+        x_sent = [z[2] for z in x_nl]
 
         feed_dict = {
             self.x_nl: x_nl,
