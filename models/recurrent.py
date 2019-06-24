@@ -17,6 +17,8 @@ class RecurrentModel:
         else:
             tf.logging.info('Building ELMO embeddings')
             elmo = hub.Module("https://tfhub.dev/google/elmo/2", trainable=True)
+            tf.logging.info('ELMO successfully built')
+
             x_embed = elmo(
                 inputs={
                     "tokens": x,
