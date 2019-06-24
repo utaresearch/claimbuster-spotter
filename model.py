@@ -6,6 +6,7 @@ from keras.utils import to_categorical
 from models.recurrent import RecurrentModel
 from models.embeddings import Embedding
 from sklearn.metrics import f1_score
+from utils.transformations import pos_labels
 import math
 from flags import FLAGS
 
@@ -120,7 +121,7 @@ class ClaimBusterModel:
         sess.run(
             self.optimizer,
             feed_dict={
-                self.x: self.pad_seq(batch_x),
+                self.x: self.prc_pos(self.pad_seq(batch_x)),
                 self.x_len: self.gen_x_len(batch_x),
                 self.y: self.one_hot(batch_y),
                 self.output_mask: self.gen_output_mask(batch_x),
@@ -158,7 +159,7 @@ class ClaimBusterModel:
         run_loss = sess.run(
             self.cost,
             feed_dict={
-                self.x: self.pad_seq(batch_x),
+                self.x: self.prc_pos(self.pad_seq(batch_x)),
                 self.x_len: self.gen_x_len(batch_x),
                 self.y: self.one_hot(batch_y),
                 self.output_mask: self.gen_output_mask(batch_x),
@@ -170,7 +171,7 @@ class ClaimBusterModel:
         run_acc = sess.run(
             self.acc,
             feed_dict={
-                self.x: self.pad_seq(batch_x),
+                self.x: self.prc_pos(self.pad_seq(batch_x)),
                 self.x_len: self.gen_x_len(batch_x),
                 self.y: self.one_hot(batch_y),
                 self.output_mask: self.gen_output_mask(batch_x),
@@ -182,7 +183,7 @@ class ClaimBusterModel:
         run_pred = sess.run(
             self.y_pred,
             feed_dict={
-                self.x: self.pad_seq(batch_x),
+                self.x: self.prc_pos(self.pad_seq(batch_x)),
                 self.x_len: self.gen_x_len(batch_x),
                 self.y: self.one_hot(batch_y),
                 self.output_mask: self.gen_output_mask(batch_x),
@@ -198,13 +199,28 @@ class ClaimBusterModel:
         return [self.computed_cls_weights[z] for z in batch_y]
 
     @staticmethod
+    def prc_pos(inp):
+        pos_data = inp[1]
+        for i in range(len(pos_data)):
+            sentence = pos_data[i]
+
+            for j in range(len(sentence)):
+                code = sentence[j]
+                sentence[j] = [0] * (len(pos_labels) + 1)
+                sentence[j][code + 1] = 1
+
+            pos_data[i] = sentence
+
+        return [inp[0], pos_data]
+
+    @staticmethod
     def pad_seq(inp):
         return np.swapaxes([pad_sequences([z[0] for z in inp], padding="post", maxlen=FLAGS.max_len),
                             pad_sequences([z[1] for z in inp], padding="post", maxlen=FLAGS.max_len)], 0, 1)
 
     @staticmethod
-    def one_hot(a):
-        return to_categorical(a, num_classes=FLAGS.num_classes)
+    def one_hot(a, nc=FLAGS.num_classes):
+        return to_categorical(a, num_classes=nc)
 
     @staticmethod
     def gen_output_mask(inp):
