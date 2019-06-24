@@ -17,7 +17,13 @@ class RecurrentModel:
         else:
             tf.logging.info('Building ELMO embeddings')
             elmo = hub.Module("https://tfhub.dev/google/elmo/2", trainable=True)
-            x_embed = elmo(inputs={"tokens": x, "sequence_len": x_len}, signature='default', as_dict=True)['elmo']
+            x_embed = elmo(
+                inputs={
+                    "tokens": x,
+                    "sequence_len": x_len
+                },
+                signature="tokens",
+                as_dict=True)["elmo"]
 
         x = x_embed
 
