@@ -94,7 +94,7 @@ class ClaimBusterModel:
             # cb_out = tf.matmul(cb_hidden, output_weights) + output_biases
 
             output_weights = tf.get_variable('cb_output_weights', shape=(
-                FLAGS.rnn_cell_size * 2 * (2 if FLAGS.bidir_lstm else 1), FLAGS.num_classes),
+                FLAGS.rnn_cell_size * 2 / 2 * (2 if FLAGS.bidir_lstm else 1), FLAGS.num_classes),
                                              initializer=tf.contrib.layers.xavier_initializer())
             output_biases = tf.get_variable('cb_output_biases', shape=FLAGS.num_classes,
                                             initializer=tf.zeros_initializer())
