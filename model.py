@@ -107,6 +107,8 @@ class ClaimBusterModel:
         return tf.identity(ret_loss, name='regular_loss')
 
     def get_feed_dict(self, x_nl, x_pos, x_sent, batch_y=None, ver='train'):
+        print(x_nl)
+
         if not FLAGS.bert_model:
             feed_dict = {
                 self.x_nl: self.pad_seq(x_nl),
@@ -153,9 +155,11 @@ class ClaimBusterModel:
         x_pos = [z[1] for z in batch_x]
         x_sent = [z[2] for z in batch_x]
 
+        feed_dict = self.get_feed_dict(x_nl, x_pos, x_sent, batch_y, ver='train')
+
         sess.run(
             self.optimizer,
-            feed_dict=self.get_feed_dict(x_nl, x_pos, x_sent, batch_y, ver='train')
+            feed_dict=feed_dict
         )
 
     def execute_validation(self, sess, test_data):
