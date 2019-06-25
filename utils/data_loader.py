@@ -156,9 +156,6 @@ class DataLoader:
                 eval_data = Dataset(list(zip(eval_seq, eval_pos, eval_sent)), eval_lab, random_state=FLAGS.random_state)
                 vocab = tokenizer.word_index
             else:
-                train_txt = [z.split(' ') for z in train_txt]
-                eval_txt = [z.split(' ') for z in eval_txt]
-
                 train_df = pd.DataFrame(data=zip(train_txt, train_lab), columns=['x', 'y'])
                 eval_df = pd.DataFrame(data=zip(eval_txt, eval_lab), columns=['x', 'y'])
 
