@@ -160,17 +160,11 @@ class DataLoader:
                 train_df = pd.DataFrame(data=zip(train_txt, train_lab), columns=['x', 'y'])
                 eval_df = pd.DataFrame(data=zip(eval_txt, eval_lab), columns=['x', 'y'])
 
-                train_df = train_df.apply(lambda x: run_classifier.InputExample(guid=None,
-                                                                                text_a=x['x'],
-                                                                                text_b=None,
-                                                                                label=x['y']),
-                                          axis=1)
+                train_df = train_df.apply(lambda x: run_classifier.InputExample(guid=None, text_a=x['x'], text_b=None,
+                                                                                label=x['y']), axis=1)
 
-                eval_df = eval_df.apply(lambda x: run_classifier.InputExample(guid=None,
-                                                                              text_a=x['x'],
-                                                                              text_b=None,
-                                                                              label=x['y']),
-                                        axis=1)
+                eval_df = eval_df.apply(lambda x: run_classifier.InputExample(guid=None, text_a=x['x'], text_b=None,
+                                                                              label=x['y']), axis=1)
 
                 tokenizer = DataLoader.create_tokenizer_from_hub_module()
 
