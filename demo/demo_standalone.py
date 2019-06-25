@@ -3,10 +3,7 @@ import numpy as np
 import os
 from keras.preprocessing.sequence import pad_sequences
 from keras.utils import to_categorical
-from sklearn.metrics import f1_score
-import math
 import nltk
-import spacy
 import string
 from textblob import TextBlob
 from keras.preprocessing.text import text_to_word_sequence
