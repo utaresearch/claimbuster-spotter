@@ -26,7 +26,7 @@ class LanguageModel:
             segment_ids=x_segment)
         bert_outputs = bert_module(bert_inputs, signature="tokens", as_dict=True)
 
-        return None, bert_outputs["pooled_output"] if not adv else output
+        return None, bert_outputs["pooled_output"] if not adv else bert_outputs
 
     @staticmethod
     def build_embed_lstm(x, x_len, output_mask, embed, kp_lstm, orig_embed, reg_loss, adv):
