@@ -14,7 +14,7 @@ class LanguageModel:
         pass
 
     @staticmethod
-    def build_bert_transformer(x_id, x_mask, x_segment):
+    def build_bert_transformer(x_id, x_mask, x_segment, adv):
         tf.logging.info('Building BERT transformer')
 
         import tensorflow_hub as hub
@@ -26,7 +26,7 @@ class LanguageModel:
             segment_ids=x_segment)
         bert_outputs = bert_module(bert_inputs, signature="tokens", as_dict=True)
 
-        return bert_outputs["pooled_output"]
+        return None, bert_outputs["pooled_output"] if not adv else output
 
     @staticmethod
     def build_embed_lstm(x, x_len, output_mask, embed, kp_lstm, orig_embed, reg_loss, adv):

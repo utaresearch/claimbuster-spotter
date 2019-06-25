@@ -67,7 +67,7 @@ class ClaimBusterModel:
             nl_lstm_out = LanguageModel.build_embed_lstm(self.x_nl, self.nl_len, self.nl_output_mask, self.embed,
                                                          self.kp_lstm, orig_embed, reg_loss, adv) \
                 if not FLAGS.bert_model else LanguageModel.build_bert_transformer(self.x_nl[0], self.x_nl[1],
-                                                                                   self.x_nl[2])
+                                                                                  self.x_nl[2], adv)
             if not adv:
                 orig_embed, nl_lstm_out = nl_lstm_out
 
