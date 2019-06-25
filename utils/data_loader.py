@@ -1,11 +1,12 @@
 import tensorflow as tf
 import tensorflow_hub as hub
+from bert import run_classifier
+from bert import tokenization
 from keras.preprocessing.text import Tokenizer
 from sklearn.utils import resample
 import numpy as np
 import pandas as pd
 import pickle
-import bert
 import os
 import shutil
 import json
@@ -161,23 +162,23 @@ class DataLoader:
 
                 print(train_df)
 
-                train_df = train_df.apply(lambda x: bert.run_classifier.InputExample(guid=None,
-                                                                                     text_a=x['x'],
-                                                                                     text_b=None,
-                                                                                     label=x['y']),
+                train_df = train_df.apply(lambda x: run_classifier.InputExample(guid=None,
+                                                                                text_a=x['x'],
+                                                                                text_b=None,
+                                                                                label=x['y']),
                                           axis=1)
 
-                eval_df = eval_df.apply(lambda x: bert.run_classifier.InputExample(guid=None,
-                                                                                   text_a=x['x'],
-                                                                                   text_b=None,
-                                                                                   label=x['y']),
+                eval_df = eval_df.apply(lambda x: run_classifier.InputExample(guid=None,
+                                                                              text_a=x['x'],
+                                                                              text_b=None,
+                                                                              label=x['y']),
                                         axis=1)
 
                 tokenizer = DataLoader.create_tokenizer_from_hub_module()
 
-                train_features = bert.run_classifier.convert_examples_to_features(train_df, [z for z in range(FLAGS.num_classes)],
+                train_features = run_classifier.convert_examples_to_features(train_df, [z for z in range(FLAGS.num_classes)],
                                                                                   FLAGS.max_len, tokenizer)
-                eval_features = bert.run_classifier.convert_examples_to_features(eval_df, [z for z in range(FLAGS.num_classes)],
+                eval_features = run_classifier.convert_examples_to_features(eval_df, [z for z in range(FLAGS.num_classes)],
                                                                                  FLAGS.max_len, tokenizer)
 
                 print(train_features)
@@ -212,7 +213,7 @@ class DataLoader:
             vocab_file, do_lower_case = sess.run([tokenization_info["vocab_file"],
                                                   tokenization_info["do_lower_case"]])
 
-        return bert.tokenization.FullTokenizer(
+        return tokenization.FullTokenizer(
             vocab_file=vocab_file, do_lower_case=do_lower_case)
 
     @staticmethod
