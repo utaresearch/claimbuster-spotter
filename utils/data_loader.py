@@ -162,6 +162,8 @@ class DataLoader:
                 train_df = pd.DataFrame(data=zip(train_txt, train_lab), columns=['x', 'y'])
                 eval_df = pd.DataFrame(data=zip(eval_txt, eval_lab), columns=['x', 'y'])
 
+                print(train_df)
+
                 train_df = train_df.apply(lambda x: bert.run_classifier.InputExample(guid=None,
                                                                                      text_a=x['x'],
                                                                                      text_b=None,
