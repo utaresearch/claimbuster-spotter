@@ -15,7 +15,7 @@ class LanguageModel:
 
         import tensorflow_hub as hub
 
-        bert_module = hub.Module(FLAGS.bert_model_hub, trainable=False)
+        bert_module = hub.Module(FLAGS.bert_model_hub, trainable=FLAGS.bert_trainable)
         bert_inputs = dict(
             input_ids=x_id,
             input_mask=x_mask,
