@@ -47,7 +47,7 @@ flags.DEFINE_bool('bidir_lstm', True, 'Use bidirectional LSTM')
 
 # Optimization
 flags.DEFINE_integer('max_steps', 1000, 'Number of epochs to run.')
-flags.DEFINE_float('learning_rate', 0.001, 'Learning rate while during optimiation.')
+# flags.DEFINE_float('learning_rate', 0.001, 'Learning rate while during optimiation.')
 
 # Regularization
 flags.DEFINE_float('l2_reg_coeff', 0.001, 'If val > 0, use L2 Regularization on weights in graph')

@@ -9,12 +9,14 @@ sys.path.append('..')
 from flags import FLAGS
 
 
-class RecurrentModel:
+class LanguageModel:
     def __init__(self):
         pass
 
     @staticmethod
     def build_bert_transformer(x_id, x_mask, x_segment):
+        tf.logging.info('Building BERT transformer')
+
         import tensorflow_hub as hub
 
         bert_module = hub.Module("https://tfhub.dev/google/bert_uncased_L-12_H-768_A-12/1", trainable=False)
@@ -41,10 +43,10 @@ class RecurrentModel:
 
         if not FLAGS.bidir_lstm:
             tf.logging.info('Building uni-directional LSTM')
-            output, _ = RecurrentModel.build_unidir_lstm_component(x, x_len, kp_lstm, adv)
+            output, _ = LanguageModel.build_unidir_lstm_component(x, x_len, kp_lstm, adv)
         else:
             tf.logging.info('Building bi-directional LSTM')
-            output, _ = RecurrentModel.build_bidir_lstm_component(x, x_len, kp_lstm, adv)
+            output, _ = LanguageModel.build_bidir_lstm_component(x, x_len, kp_lstm, adv)
 
         if FLAGS.bidir_lstm:
             output_fw, output_bw = output
@@ -62,10 +64,10 @@ class RecurrentModel:
 
         if not FLAGS.bidir_lstm:
             tf.logging.info('Building uni-directional LSTM')
-            output, _ = RecurrentModel.build_unidir_lstm_component(x, x_len, kp_lstm, adv)
+            output, _ = LanguageModel.build_unidir_lstm_component(x, x_len, kp_lstm, adv)
         else:
             tf.logging.info('Building bi-directional LSTM')
-            output, _ = RecurrentModel.build_bidir_lstm_component(x, x_len, kp_lstm, adv)
+            output, _ = LanguageModel.build_bidir_lstm_component(x, x_len, kp_lstm, adv)
 
         if FLAGS.bidir_lstm:
             output_fw, output_bw = output
@@ -79,7 +81,7 @@ class RecurrentModel:
 
     @staticmethod
     def build_unidir_lstm_component(x, x_len, kp_lstm, adv):
-        lstm = tf.nn.rnn_cell.MultiRNNCell([RecurrentModel.get_lstm(cell_num, kp_lstm, adv, direc=0)
+        lstm = tf.nn.rnn_cell.MultiRNNCell([LanguageModel.get_lstm(cell_num, kp_lstm, adv, direc=0)
                                             for cell_num in range(FLAGS.rnn_num_layers)])
         return tf.nn.dynamic_rnn(cell=lstm, sequence_length=x_len, inputs=x, dtype=tf.float32)
 
@@ -87,9 +89,9 @@ class RecurrentModel:
     def build_bidir_lstm_component(x, x_len, kp_lstm, adv):
         assert FLAGS.rnn_num_layers == 1
 
-        fw_cell = tf.nn.rnn_cell.MultiRNNCell([RecurrentModel.get_lstm(cell_num, kp_lstm, adv, direc=0)
+        fw_cell = tf.nn.rnn_cell.MultiRNNCell([LanguageModel.get_lstm(cell_num, kp_lstm, adv, direc=0)
                                                for cell_num in range(FLAGS.rnn_num_layers)])
-        bw_cell = tf.nn.rnn_cell.MultiRNNCell([RecurrentModel.get_lstm(cell_num, kp_lstm, adv, direc=1)
+        bw_cell = tf.nn.rnn_cell.MultiRNNCell([LanguageModel.get_lstm(cell_num, kp_lstm, adv, direc=1)
                                                for cell_num in range(FLAGS.rnn_num_layers)])
 
         return tf.nn.bidirectional_dynamic_rnn(fw_cell, bw_cell, inputs=x, sequence_length=x_len, dtype=tf.float32)

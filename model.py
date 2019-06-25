@@ -3,7 +3,7 @@ import numpy as np
 import os
 from keras.preprocessing.sequence import pad_sequences
 from keras.utils import to_categorical
-from models.recurrent import RecurrentModel
+from models.lang_model import LanguageModel
 from models.embeddings import Embedding
 from sklearn.metrics import f1_score
 from utils.transformations import pos_labels
@@ -62,16 +62,16 @@ class ClaimBusterModel:
         if adv: assert (reg_loss is not None and orig_embed is not None)
 
         with tf.variable_scope('natural_lang_lstm/', reuse=adv):
-            nl_lstm_out = RecurrentModel.build_embed_lstm(self.x_nl, self.nl_len, self.nl_output_mask, self.embed,
-                                                          self.kp_lstm, orig_embed, reg_loss, adv) \
-                if not FLAGS.bert_model else RecurrentModel.build_bert_transformer(self.x_nl[0], self.x_nl[1],
+            nl_lstm_out = LanguageModel.build_embed_lstm(self.x_nl, self.nl_len, self.nl_output_mask, self.embed,
+                                                         self.kp_lstm, orig_embed, reg_loss, adv) \
+                if not FLAGS.bert_model else LanguageModel.build_bert_transformer(self.x_nl[0], self.x_nl[1],
                                                                                    self.x_nl[2])
             if not adv:
                 orig_embed, nl_lstm_out = nl_lstm_out
 
         with tf.variable_scope('pos_lstm/', reuse=adv):
-            pos_lstm_out = RecurrentModel.build_lstm(self.x_pos, self.pos_len, self.pos_output_mask, self.kp_lstm,
-                                                     adv)
+            pos_lstm_out = LanguageModel.build_lstm(self.x_pos, self.pos_len, self.pos_output_mask, self.kp_lstm,
+                                                    adv)
 
         with tf.variable_scope('fc_output/', reuse=adv):
             lstm_out = tf.concat([nl_lstm_out, pos_lstm_out, self.x_sent], axis=1)
