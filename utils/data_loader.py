@@ -1,9 +1,11 @@
 import tensorflow as tf
+import tensorflow_hub as hub
 from keras.preprocessing.text import Tokenizer
 from sklearn.utils import resample
 import numpy as np
+import pandas as pd
 import pickle
-import math
+import bert
 import os
 import shutil
 import json
@@ -154,6 +156,32 @@ class DataLoader:
                 train_txt = [z.split(' ') for z in train_txt]
                 eval_txt = [z.split(' ') for z in eval_txt]
 
+                train_df = pd.DataFrame(data=np.concatenate(train_txt, train_lab, axis=1), columns=['x', 'y'])
+                eval_df = pd.DataFrame(data=np.concatenate(eval_txt, eval_lab, axis=1), columns=['x', 'y'])
+
+                train_df = train_df.apply(lambda x: bert.run_classifier.InputExample(guid=None,
+                                                                                     text_a=x['x'],
+                                                                                     text_b=None,
+                                                                                     label=x['y']),
+                                          axis=1)
+
+                eval_df = eval_df.apply(lambda x: bert.run_classifier.InputExample(guid=None,
+                                                                                   text_a=x['x'],
+                                                                                   text_b=None,
+                                                                                   label=x['y']),
+                                        axis=1)
+
+                tokenizer = DataLoader.create_tokenizer_from_hub_module()
+
+                train_features = bert.run_classifier.convert_examples_to_features(train_df, [z for z in range(FLAGS.num_classes)],
+                                                                                  FLAGS.max_len, tokenizer)
+                eval_features = bert.run_classifier.convert_examples_to_features(eval_df, [z for z in range(FLAGS.num_classes)],
+                                                                                 FLAGS.max_len, tokenizer)
+
+                print(train_features)
+                # print (eval_features)
+                exit()
+
                 train_data = Dataset(list(zip(train_txt, train_pos, train_sent)), train_lab, random_state=FLAGS.random_state)
                 eval_data = Dataset(list(zip(eval_txt, eval_pos, eval_sent)), eval_lab, random_state=FLAGS.random_state)
 
@@ -173,6 +201,19 @@ class DataLoader:
             assert vocab is not None
 
         return train_data, eval_data, vocab
+
+    @staticmethod
+    def create_tokenizer_from_hub_module():
+        bert_module = hub.Module(FLAGS.bert_model_hub)
+        tokenization_info = bert_module(signature="tokenization_info", as_dict=True)
+        with tf.Session() as sess:
+            vocab_file, do_lower_case = sess.run([tokenization_info["vocab_file"],
+                                                  tokenization_info["do_lower_case"]])
+
+        return bert.tokenization.FullTokenizer(
+            vocab_file=vocab_file, do_lower_case=do_lower_case)
+
+    tokenizer = create_tokenizer_from_hub_module()
 
     @staticmethod
     def parse_json(json_loc):
