@@ -310,4 +310,7 @@ class ClaimBusterModel:
             self.y_pred = graph.get_tensor_by_name('y_pred:0')
             self.acc = graph.get_tensor_by_name('acc:0')
 
+            for v in tf.global_variables():
+                print(v.name)
+
             tf.logging.info('Model successfully restored.')
