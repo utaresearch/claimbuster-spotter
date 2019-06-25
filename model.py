@@ -46,8 +46,10 @@ class ClaimBusterModel:
                 self.optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(self.cost) \
                     if FLAGS.adam else tf.train.RMSPropOptimizer(learning_rate=FLAGS.learning_rate).minimize(self.cost)
             else:
-                self.optimizer = optimization.create_optimizer(
-                    self.cost, FLAGS.learning_rate, num_train_steps, num_warmup_steps, use_tpu=False)
+                self.optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(self.cost) \
+                    if FLAGS.adam else tf.train.RMSPropOptimizer(learning_rate=FLAGS.learning_rate).minimize(self.cost)
+                # self.optimizer = optimization.create_optimizer(
+                #     self.cost, FLAGS.learning_rate, num_train_steps, num_warmup_steps, use_tpu=False)
 
             self.y_pred = tf.nn.softmax(self.logits, axis=1, name='y_pred')
             self.correct = tf.equal(tf.argmax(self.y, axis=1), tf.argmax(self.y_pred, axis=1))
