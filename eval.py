@@ -13,6 +13,7 @@ def main():
 
     os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu])
 
+    print(','.join([str(z) for z in FLAGS.gpu]))
     print(os.environ['CUDA_VISIBLE_DEVICES'])
 
     tf.logging.info("Loading dataset")
