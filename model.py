@@ -276,6 +276,9 @@ class ClaimBusterModel:
 
         with graph.as_default():
             saver = tf.train.import_meta_graph(model_dir)
+
+            print(FLAGS.cb_output_dir)
+
             saver.restore(sess, tf.train.latest_checkpoint(FLAGS.cb_output_dir))
 
             # inputs
