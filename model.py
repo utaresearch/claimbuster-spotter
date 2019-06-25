@@ -279,14 +279,18 @@ class ClaimBusterModel:
             saver.restore(sess, tf.train.latest_checkpoint(FLAGS.cb_output_dir))
 
             # inputs
-            self.x_nl = graph.get_tensor_by_name('x_nl:0')
+            if not FLAGS.bert_model:
+                self.x_nl = graph.get_tensor_by_name('x_nl:0')
+                self.nl_len = graph.get_tensor_by_name('nl_len:0')
+                self.nl_output_mask = graph.get_tensor_by_name('nl_output_mask:0')
+            else:
+                self.x_nl = [graph.get_tensor_by_name('x_mask:0'), graph.get_tensor_by_name('x_mask:0'),
+                             graph.get_tensor_by_name('x_segment:0')]
+
             self.x_pos = graph.get_tensor_by_name('x_pos:0')
             self.x_sent = graph.get_tensor_by_name('x_sent:0')
 
-            self.nl_len = graph.get_tensor_by_name('nl_len:0')
             self.pos_len = graph.get_tensor_by_name('pos_len:0')
-
-            self.nl_output_mask = graph.get_tensor_by_name('nl_output_mask:0')
             self.pos_output_mask = graph.get_tensor_by_name('pos_output_mask:0')
 
             self.y = graph.get_tensor_by_name('y:0')
