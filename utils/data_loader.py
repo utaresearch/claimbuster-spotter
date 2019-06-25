@@ -213,8 +213,6 @@ class DataLoader:
         return bert.tokenization.FullTokenizer(
             vocab_file=vocab_file, do_lower_case=do_lower_case)
 
-    tokenizer = create_tokenizer_from_hub_module()
-
     @staticmethod
     def parse_json(json_loc):
         with open(json_loc) as f:
