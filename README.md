@@ -169,7 +169,7 @@ python3 -u gen_data.py \
 ```bash
 python3 -u pretrain.py \
     --train_dir=$PTDIR \
-    --data_dir=$GENDIR \
+    --cb_data_dir=$GENDIR \
     --embedding_dims=300 \
     --rnn_cell_size=1024 \
     --num_candidate_samples=64 \
@@ -201,7 +201,7 @@ training and classification.
 python3 -u train_classifier.py \
     --train_dir=$TDIR \
     --pretrained_model_dir=$PTDIR \
-    --data_dir=$GENDIR \
+    --cb_data_dir=$GENDIR \
     --embedding_dims=300 \
     --rnn_cell_size=1024 \
     --cl_num_layers=1 \
@@ -233,7 +233,7 @@ python3 -u evaluate.py \
     --checkpoint_dir=$TDIR \
     --eval_data=test \
     --run_once \
-    --data_dir=$GENDIR \
+    --cb_data_dir=$GENDIR \
     --cb_input_dir=$RAWDIR \
     --num_classes=3 \
     --embedding_dims=300 \
