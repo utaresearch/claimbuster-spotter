@@ -37,7 +37,7 @@ flags.DEFINE_list('gpu', [0], 'ID of GPU to use: in range [0, 4]')
 flags.DEFINE_bool('ner_spacy', False, 'Named entity recognition with spaCy')
 
 # Base directories
-flags.DEFINE_string('cb_output_dir', './output', 'Location of outputs')
+flags.DEFINE_string('cb_output_dir', './model', 'Location of outputs')
 flags.DEFINE_string('cb_data_dir', './data', 'Location of data')
 
 # Data
