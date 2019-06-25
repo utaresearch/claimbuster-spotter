@@ -128,6 +128,9 @@ class DataLoader:
             train_data = DataLoader.parse_json(FLAGS.raw_data_loc)
             dj_eval_data = DataLoader.parse_json(FLAGS.raw_dj_eval_loc)
 
+            train_data = resample(train_data, n_samples=10, random_state=FLAGS.random_state)
+            dj_eval_data = resample(dj_eval_data, n_samples=10, random_state=FLAGS.random_state)
+
             train_txt = [z[0] for z in train_data]
             eval_txt = [z[0] for z in dj_eval_data]
 
