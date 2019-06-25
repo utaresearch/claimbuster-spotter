@@ -13,7 +13,7 @@ from flags import FLAGS
 
 class ClaimBusterModel:
     def __init__(self, vocab=None, cls_weights=None, restore=False):
-        self.x_nl = tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x_nl') if not FLAGS.elmo_embed \
+        self.x_nl = tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x_nl') if not FLAGS.bert_model \
             else tf.placeholder(tf.string, (None, None))
         self.x_pos = tf.placeholder(tf.int32, (None, FLAGS.max_len, len(pos_labels) + 1), name='x_pos')
         self.x_sent = tf.placeholder(tf.float32, (None, 2), name='x_sent')
@@ -33,7 +33,7 @@ class ClaimBusterModel:
         self.computed_cls_weights = cls_weights if cls_weights is not None else [1 for _ in range(FLAGS.num_classes)]
 
         if not restore:
-            if not FLAGS.elmo_embed:
+            if not FLAGS.bert_model:
                 self.embed_obj = Embedding(vocab)
                 self.embed = self.embed_obj.construct_embeddings()
 
@@ -64,9 +64,8 @@ class ClaimBusterModel:
         with tf.variable_scope('natural_lang_lstm/', reuse=adv):
             nl_lstm_out = RecurrentModel.build_embed_lstm(self.x_nl, self.nl_len, self.nl_output_mask, self.embed,
                                                           self.kp_lstm, orig_embed, reg_loss, adv) \
-                if not FLAGS.elmo_embed else RecurrentModel.build_bert_lstm(self.x_nl, self.nl_len,
-                                                                            self.nl_output_mask,
-                                                                            self.kp_lstm, orig_embed, reg_loss, adv)
+                if not FLAGS.bert_model else RecurrentModel.build_bert_transformer(self.x_bert[0], self.x_bert[1],
+                                                                                   self.x_bert[2])
             if not adv:
                 orig_embed, nl_lstm_out = nl_lstm_out
 
@@ -113,7 +112,7 @@ class ClaimBusterModel:
         sess.run(
             self.optimizer,
             feed_dict={
-                self.x_nl: self.pad_seq(x_nl, ver=(0 if not FLAGS.elmo_embed else 1)),
+                self.x_nl: self.pad_seq(x_nl, ver=(0 if not FLAGS.bert_model else 1)),
                 self.x_pos: self.prc_pos(self.pad_seq(x_pos)),
                 self.x_sent: x_sent,
 
@@ -161,7 +160,7 @@ class ClaimBusterModel:
         x_sent = [z[2] for z in batch_x]
 
         feed_dict = {
-            self.x_nl: self.pad_seq(x_nl, ver=(0 if not FLAGS.elmo_embed else 1)),
+            self.x_nl: self.pad_seq(x_nl, ver=(0 if not FLAGS.bert_model else 1)),
             self.x_pos: self.prc_pos(self.pad_seq(x_pos)),
             self.x_sent: x_sent,
 
@@ -185,7 +184,7 @@ class ClaimBusterModel:
         return np.sum(run_loss), run_acc, np.argmax(run_pred, axis=1)
 
     def get_preds(self, sess, sentence_tuple):
-        x_nl = self.pad_seq([sentence_tuple[0]], ver=(0 if not FLAGS.elmo_embed else 1))
+        x_nl = self.pad_seq([sentence_tuple[0]], ver=(0 if not FLAGS.bert_model else 1))
         x_pos = self.prc_pos(self.pad_seq([sentence_tuple[1]]))
         x_sent = [sentence_tuple[2]]
 

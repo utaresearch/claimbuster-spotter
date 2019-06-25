@@ -140,7 +140,7 @@ class DataLoader:
             tf.logging.info('Processing eval data')
             eval_txt, eval_pos, eval_sent = transf.process_dataset(eval_txt)
 
-            if not FLAGS.elmo_embed:
+            if not FLAGS.bert_model:
                 tokenizer = Tokenizer()
 
                 tokenizer.fit_on_texts(np.concatenate((train_txt, eval_txt)))
@@ -169,7 +169,7 @@ class DataLoader:
             with open(FLAGS.prc_data_loc, 'rb') as f:
                 train_data, eval_data, vocab = pickle.load(f)
 
-        if not FLAGS.elmo_embed:
+        if not FLAGS.bert_model:
             assert vocab is not None
 
         return train_data, eval_data, vocab

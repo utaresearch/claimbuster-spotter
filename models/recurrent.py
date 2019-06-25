@@ -1,4 +1,8 @@
 import tensorflow as tf
+import bert
+from bert import run_classifier
+from bert import optimization
+from bert import tokenization
 import sys
 from .adv_losses import apply_adversarial_perturbation
 sys.path.append('..')
@@ -10,8 +14,17 @@ class RecurrentModel:
         pass
 
     @staticmethod
-    def build_bert_transformer(x, x_len, output_mask, kp_lstm, orig_embed, reg_loss, adv):
-        pass
+    def build_bert_transformer(x_id, x_mask, x_segment):
+        import tensorflow_hub as hub
+
+        bert_module = hub.Module("https://tfhub.dev/google/bert_uncased_L-12_H-768_A-12/1", trainable=False)
+        bert_inputs = dict(
+            input_ids=x_id,
+            input_mask=x_mask,
+            segment_ids=x_segment)
+        bert_outputs = bert_module(bert_inputs, signature="tokens", as_dict=True)
+
+        return bert_outputs["pooled_output"]
 
     @staticmethod
     def build_embed_lstm(x, x_len, output_mask, embed, kp_lstm, orig_embed, reg_loss, adv):

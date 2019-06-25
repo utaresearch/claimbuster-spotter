@@ -233,7 +233,7 @@ class DataLoader:
             tf.logging.info('Processing eval data')
             eval_txt, eval_pos, eval_sent = process_dataset(eval_txt)
 
-            if not FLAGS.elmo_embed:
+            if not FLAGS.bert_model:
                 tokenizer = Tokenizer()
 
                 tokenizer.fit_on_texts(np.concatenate((train_txt, eval_txt)))
@@ -262,7 +262,7 @@ class DataLoader:
             with open(FLAGS.prc_data_loc, 'rb') as f:
                 train_data, eval_data, vocab = pickle.load(f)
 
-        if not FLAGS.elmo_embed:
+        if not FLAGS.bert_model:
             assert vocab is not None
 
         return train_data, eval_data, vocab
@@ -653,7 +653,7 @@ def get_sentiment(inp_data):
 
 class ClaimBusterModel:
     def __init__(self, vocab=None, cls_weights=None, restore=False):
-        self.x_nl = tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x_nl') if not FLAGS.elmo_embed \
+        self.x_nl = tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x_nl') if not FLAGS.bert_model \
             else tf.placeholder(tf.string, (None, None))
         self.x_pos = tf.placeholder(tf.int32, (None, FLAGS.max_len, len(pos_labels) + 1), name='x_pos')
         self.x_sent = tf.placeholder(tf.float32, (None, 2), name='x_sent')
@@ -678,7 +678,7 @@ class ClaimBusterModel:
             self.cost, self.y_pred, self.acc = None, None, None
 
     def get_preds(self, sess, sentence_tuple):
-        x_nl = self.pad_seq([sentence_tuple[0]], ver=(0 if not FLAGS.elmo_embed else 1))
+        x_nl = self.pad_seq([sentence_tuple[0]], ver=(0 if not FLAGS.bert_model else 1))
         x_pos = self.prc_pos(self.pad_seq([sentence_tuple[1]]))
         x_sent = [sentence_tuple[2]]
 

@@ -25,7 +25,7 @@ def main():
 
     with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as sess:
         sess.run(tf.global_variables_initializer())
-        if not FLAGS.elmo_embed:
+        if not FLAGS.bert_model:
             cb_model.embed_obj.init_embeddings(sess)
 
         start = time.time()

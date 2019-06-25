@@ -55,7 +55,6 @@ flags.DEFINE_float('keep_prob_cls', 0.6, 'Keep probability of classification lay
 flags.DEFINE_float('keep_prob_lstm', 0.6, 'Keep probability LSTM network.')
 
 # Embeddings
-flags.DEFINE_bool('elmo_embed', False, 'dummy flag')
 flags.DEFINE_integer('embed_type', 1, '0 for word2vec, 1 for Stanford glove')
 flags.DEFINE_string('w2v_loc', './data/word2vec/w2v3b_gensim.txt', 'Location of w2v embeddings')
 # flags.DEFINE_string('glove_loc', './data/glove/glove840b_gensim.txt', 'Location of glove embeddings')
