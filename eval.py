@@ -11,7 +11,7 @@ from flags import FLAGS
 def main():
     global computed_cls_weights
 
-    os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu_active])
+    os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu])
 
     tf.logging.info("Loading dataset")
     data_load = DataLoader()

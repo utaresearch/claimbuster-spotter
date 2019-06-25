@@ -31,7 +31,7 @@ FLAGS = flags.FLAGS
 # ------------------------- FLAGS FOR 3-CLASS TRAINING -------------------------
 
 # Hardware
-flags.DEFINE_list('gpu_active', [0], 'ID of GPU to use: in range [0, 4]')
+flags.DEFINE_list('gpu', [0], 'ID of GPU to use: in range [0, 4]')
 
 # Preprocessing
 flags.DEFINE_bool('ner_spacy', False, 'Named entity recognition with spaCy')
@@ -824,7 +824,7 @@ def subscribe_query(sess, cb_model, vocab):
 
 
 def main():
-    os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu_active])
+    os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu])
 
     data_load = DataLoader()
     vocab = data_load.vocab

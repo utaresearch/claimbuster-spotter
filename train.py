@@ -8,7 +8,7 @@ from flags import FLAGS, print_flags
 
 
 def main():
-    os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu_active])
+    os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu])
 
     print_flags()
 

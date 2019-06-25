@@ -12,7 +12,7 @@ FLAGS = flags.FLAGS
 # ------------------------- FLAGS FOR 3-CLASS TRAINING -------------------------
 
 # Hardware
-flags.DEFINE_list('gpu_active', [0], 'ID of GPU to use: in range [0, 4]')
+flags.DEFINE_list('gpu', [0], 'ID of GPU to use: in range [0, 4]')
 
 # Preprocessing
 flags.DEFINE_bool('ner_spacy', False, 'Named entity recognition with spaCy')

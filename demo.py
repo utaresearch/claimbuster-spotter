@@ -32,7 +32,7 @@ def subscribe_query(sess, cb_model, vocab):
 
 
 def main():
-    os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu_active])
+    os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu])
 
     data_load = DataLoader()
     vocab = data_load.vocab
