@@ -83,11 +83,11 @@ class ClaimBusterModel:
             if FLAGS.pos_lstm:
                 pos_lstm_out = LanguageModel.build_lstm(self.x_pos, self.pos_len, self.pos_output_mask, self.kp_lstm,
                                                         adv)
-            else:
-                pos_lstm_out = None
 
         with tf.variable_scope('fc_output/', reuse=adv):
-            lstm_out = tf.concat([nl_lstm_out, pos_lstm_out, self.x_sent], axis=1)
+            to_concat = [nl_lstm_out, pos_lstm_out, self.x_sent] if FLAGS.pos_lstm else [nl_lstm_out, self.x_sent]
+
+            lstm_out = tf.concat(to_concat, axis=1)
             lstm_out = tf.nn.dropout(lstm_out, keep_prob=FLAGS.keep_prob_cls)
 
             output_weights = tf.get_variable('cb_output_weights', shape=(lstm_out.get_shape()[1], FLAGS.num_classes),
