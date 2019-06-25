@@ -13,10 +13,6 @@ def main():
 
     os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu])
 
-    print(FLAGS.gpu)
-    print(','.join(['1', '2', '3']))
-    print(os.environ['CUDA_VISIBLE_DEVICES'])
-
     tf.logging.info("Loading dataset")
     data_load = DataLoader()
     computed_cls_weights = data_load.class_weights
