@@ -13,6 +13,7 @@ def main():
 
     os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu])
 
+    print(FLAGS.gpu)
     print(','.join(['1', '2', '3']))
     print(os.environ['CUDA_VISIBLE_DEVICES'])
 
