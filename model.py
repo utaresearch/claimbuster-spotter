@@ -284,7 +284,7 @@ class ClaimBusterModel:
                 self.nl_len = graph.get_tensor_by_name('nl_len:0')
                 self.nl_output_mask = graph.get_tensor_by_name('nl_output_mask:0')
             else:
-                self.x_nl = [graph.get_tensor_by_name('x_mask:0'), graph.get_tensor_by_name('x_mask:0'),
+                self.x_nl = [graph.get_tensor_by_name('x_id:0'), graph.get_tensor_by_name('x_mask:0'),
                              graph.get_tensor_by_name('x_segment:0')]
 
             self.x_pos = graph.get_tensor_by_name('x_pos:0')
