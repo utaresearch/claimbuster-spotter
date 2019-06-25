@@ -106,11 +106,7 @@ class ClaimBusterModel:
 
         return tf.identity(ret_loss, name='regular_loss')
 
-    def train_neural_network(self, sess, batch_x, batch_y):
-        x_nl = [z[0] for z in batch_x]
-        x_pos = [z[1] for z in batch_x]
-        x_sent = [z[2] for z in batch_x]
-
+    def get_feed_dict(self, x_nl, x_pos, x_sent, batch_y=None, ver='train'):
         if not FLAGS.bert_model:
             feed_dict = {
                 self.x_nl: self.pad_seq(x_nl),
@@ -125,9 +121,9 @@ class ClaimBusterModel:
 
                 self.y: self.one_hot(batch_y),
 
-                self.kp_cls: FLAGS.keep_prob_cls,
-                self.kp_lstm: FLAGS.keep_prob_lstm,
-                self.cls_weight: self.get_cls_weights(batch_y)
+                self.kp_cls: FLAGS.keep_prob_cls if ver == 'train' else 1.0,
+                self.kp_lstm: FLAGS.keep_prob_lstm if ver == 'train' else 1.0,
+                self.cls_weight: self.get_cls_weights(batch_y) if batch_y is not None else None
             }
         else:
             feed_dict = {
@@ -145,14 +141,21 @@ class ClaimBusterModel:
 
                 self.y: self.one_hot(batch_y),
 
-                self.kp_cls: FLAGS.keep_prob_cls,
-                self.kp_lstm: FLAGS.keep_prob_lstm,
-                self.cls_weight: self.get_cls_weights(batch_y)
+                self.kp_cls: FLAGS.keep_prob_cls if ver == 'train' else 1.0,
+                self.kp_lstm: FLAGS.keep_prob_lstm if ver == 'train' else 1.0,
+                self.cls_weight: self.get_cls_weights(batch_y) if batch_y is not None else None
             }
+
+        return feed_dict
+
+    def train_neural_network(self, sess, batch_x, batch_y):
+        x_nl = [z[0] for z in batch_x]
+        x_pos = [z[1] for z in batch_x]
+        x_sent = [z[2] for z in batch_x]
 
         sess.run(
             self.optimizer,
-            feed_dict=feed_dict
+            feed_dict=self.get_feed_dict(x_nl, x_pos, x_sent, batch_y, ver='train')
         )
 
     def execute_validation(self, sess, test_data):
@@ -184,44 +187,7 @@ class ClaimBusterModel:
         x_pos = [z[1] for z in batch_x]
         x_sent = [z[2] for z in batch_x]
 
-        if not FLAGS.bert_model:
-            feed_dict = {
-                self.x_nl: self.pad_seq(x_nl),
-                self.x_pos: self.prc_pos(self.pad_seq(x_pos)),
-                self.x_sent: x_sent,
-
-                self.nl_len: self.gen_x_len(x_nl),
-                self.pos_len: self.gen_x_len(x_pos),
-
-                self.nl_output_mask: self.gen_output_mask(x_nl),
-                self.pos_output_mask: self.gen_output_mask(x_pos),
-
-                self.y: self.one_hot(batch_y),
-
-                self.kp_cls: 1.0,
-                self.kp_lstm: 1.0,
-                self.cls_weight: self.get_cls_weights(batch_y)
-            }
-        else:
-            feed_dict = {
-                self.x_nl[0]: x_nl[0],
-                self.x_nl[1]: x_nl[1],
-                self.x_nl[2]: x_nl[2],
-                self.x_pos: self.prc_pos(self.pad_seq(x_pos)),
-                self.x_sent: x_sent,
-
-                self.nl_len: None,
-                self.pos_len: self.gen_x_len(x_pos),
-
-                self.nl_output_mask: None,
-                self.pos_output_mask: self.gen_output_mask(x_pos),
-
-                self.y: self.one_hot(batch_y),
-
-                self.kp_cls: 1.0,
-                self.kp_lstm: 1.0,
-                self.cls_weight: self.get_cls_weights(batch_y)
-            }
+        feed_dict = self.get_feed_dict(x_nl, x_pos, x_sent, batch_y, ver='test')
 
         run_loss = sess.run(self.cost, feed_dict=feed_dict)
         run_acc = sess.run(self.acc, feed_dict=feed_dict)
@@ -234,38 +200,7 @@ class ClaimBusterModel:
         x_pos = self.prc_pos(self.pad_seq([sentence_tuple[1]]))
         x_sent = [sentence_tuple[2]]
 
-        if not FLAGS.bert_model:
-            feed_dict = {
-                self.x_nl: self.pad_seq(x_nl),
-                self.x_pos: self.prc_pos(self.pad_seq(x_pos)),
-                self.x_sent: x_sent,
-
-                self.nl_len: self.gen_x_len(x_nl),
-                self.pos_len: self.gen_x_len(x_pos),
-
-                self.nl_output_mask: self.gen_output_mask(x_nl),
-                self.pos_output_mask: self.gen_output_mask(x_pos),
-
-                self.kp_cls: 1.0,
-                self.kp_lstm: 1.0,
-            }
-        else:
-            feed_dict = {
-                self.x_nl[0]: x_nl[0],
-                self.x_nl[1]: x_nl[1],
-                self.x_nl[2]: x_nl[2],
-                self.x_pos: self.prc_pos(self.pad_seq(x_pos)),
-                self.x_sent: x_sent,
-
-                self.nl_len: None,
-                self.pos_len: self.gen_x_len(x_pos),
-
-                self.nl_output_mask: None,
-                self.pos_output_mask: self.gen_output_mask(x_pos),
-
-                self.kp_cls: 1.0,
-                self.kp_lstm: 1.0,
-            }
+        feed_dict = self.get_feed_dict(x_nl, x_pos, x_sent, ver='test')
 
         return sess.run(self.y_pred, feed_dict=feed_dict)
 
