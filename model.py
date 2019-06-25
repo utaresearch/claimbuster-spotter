@@ -107,10 +107,6 @@ class ClaimBusterModel:
         return tf.identity(ret_loss, name='regular_loss')
 
     def get_feed_dict(self, x_nl, x_pos, x_sent, batch_y=None, ver='train'):
-        print(x_nl[0].input_ids)
-        print(x_nl[0].input_mask)
-        print(x_nl[0].segment_ids)
-
         if not FLAGS.bert_model:
             feed_dict = {
                 self.x_nl: self.pad_seq(x_nl),
@@ -127,7 +123,6 @@ class ClaimBusterModel:
 
                 self.kp_cls: FLAGS.keep_prob_cls if ver == 'train' else 1.0,
                 self.kp_lstm: FLAGS.keep_prob_lstm if ver == 'train' else 1.0,
-                self.cls_weight: self.get_cls_weights(batch_y) if batch_y is not None else None
             }
         else:
             feed_dict = {
@@ -137,22 +132,24 @@ class ClaimBusterModel:
                 self.x_pos: self.prc_pos(self.pad_seq(x_pos)),
                 self.x_sent: x_sent,
 
-                self.nl_len: None,
                 self.pos_len: self.gen_x_len(x_pos),
 
-                self.nl_output_mask: None,
                 self.pos_output_mask: self.gen_output_mask(x_pos),
 
                 self.y: self.one_hot(batch_y),
 
                 self.kp_cls: FLAGS.keep_prob_cls if ver == 'train' else 1.0,
                 self.kp_lstm: FLAGS.keep_prob_lstm if ver == 'train' else 1.0,
-                self.cls_weight: self.get_cls_weights(batch_y) if batch_y is not None else None
             }
+
+        if batch_y is not None:
+            feed_dict[self.cls_weight] = self.get_cls_weights(batch_y)
 
         return feed_dict
 
     def train_neural_network(self, sess, batch_x, batch_y):
+        print('batch', end=' ', flush=True)
+
         x_nl = [z[0] for z in batch_x]
         x_pos = [z[1] for z in batch_x]
         x_sent = [z[2] for z in batch_x]
