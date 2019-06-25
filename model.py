@@ -144,8 +144,6 @@ class ClaimBusterModel:
         return feed_dict
 
     def train_neural_network(self, sess, batch_x, batch_y):
-        print('batch', end=' ', flush=True)
-
         x_nl = [z[0] for z in batch_x]
         x_pos = [z[1] for z in batch_x]
         x_sent = [z[2] for z in batch_x]
