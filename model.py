@@ -240,7 +240,7 @@ class ClaimBusterModel:
     @staticmethod
     def save_model(sess, epoch):
         saver = tf.train.Saver()
-        saver.save(sess, os.path.join(FLAGS.output_dir, 'cb.ckpt'), global_step=epoch)
+        saver.save(sess, os.path.join(FLAGS.cb_output_dir, 'cb.ckpt'), global_step=epoch)
 
     @staticmethod
     def transform_dl_data(data_xlist):
@@ -272,12 +272,12 @@ class ClaimBusterModel:
             ret_ar.sort()
             return ret_ar[-1]
 
-        model_dir = os.path.join(FLAGS.output_dir, get_last_save(FLAGS.output_dir))
+        model_dir = os.path.join(FLAGS.cb_output_dir, get_last_save(FLAGS.cb_output_dir))
         tf.logging.info('Attempting to restore from {}'.format(model_dir))
 
         with graph.as_default():
             saver = tf.train.import_meta_graph(model_dir)
-            saver.restore(sess, tf.train.latest_checkpoint(FLAGS.output_dir))
+            saver.restore(sess, tf.train.latest_checkpoint(FLAGS.cb_output_dir))
 
             # inputs
             self.x_nl = graph.get_tensor_by_name('x_nl:0')
