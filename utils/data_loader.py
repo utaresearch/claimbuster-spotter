@@ -177,16 +177,12 @@ class DataLoader:
                 tokenizer = DataLoader.create_tokenizer_from_hub_module()
 
                 train_features = run_classifier.convert_examples_to_features(train_df, [z for z in range(FLAGS.num_classes)],
-                                                                                  FLAGS.max_len, tokenizer)
+                                                                             FLAGS.max_len, tokenizer)
                 eval_features = run_classifier.convert_examples_to_features(eval_df, [z for z in range(FLAGS.num_classes)],
-                                                                                 FLAGS.max_len, tokenizer)
+                                                                            FLAGS.max_len, tokenizer)
 
-                print(train_features)
-                # print (eval_features)
-                exit()
-
-                train_data = Dataset(list(zip(train_txt, train_pos, train_sent)), train_lab, random_state=FLAGS.random_state)
-                eval_data = Dataset(list(zip(eval_txt, eval_pos, eval_sent)), eval_lab, random_state=FLAGS.random_state)
+                train_data = Dataset(list(zip(train_features, train_pos, train_sent)), train_lab, random_state=FLAGS.random_state)
+                eval_data = Dataset(list(zip(eval_features, eval_pos, eval_sent)), eval_lab, random_state=FLAGS.random_state)
 
             with open(FLAGS.prc_data_loc, 'wb') as f:
                 pickle.dump((train_data, eval_data, vocab), f)
