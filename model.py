@@ -129,9 +129,9 @@ class ClaimBusterModel:
             }
         else:
             feed_dict = {
-                self.x_nl[0]: x_nl[0],
-                self.x_nl[1]: x_nl[1],
-                self.x_nl[2]: x_nl[2],
+                self.x_nl[0]: x_nl.input_ids,
+                self.x_nl[1]: x_nl.input_mask,
+                self.x_nl[2]: x_nl.segment_ids,
                 self.x_pos: self.prc_pos(self.pad_seq(x_pos)),
                 self.x_sent: x_sent,
 
