@@ -119,8 +119,6 @@ class ClaimBusterModel:
                 self.nl_output_mask: self.gen_output_mask(x_nl),
                 self.pos_output_mask: self.gen_output_mask(x_pos),
 
-                self.y: self.one_hot(batch_y),
-
                 self.kp_cls: FLAGS.keep_prob_cls if ver == 'train' else 1.0,
                 self.kp_lstm: FLAGS.keep_prob_lstm if ver == 'train' else 1.0,
             }
@@ -133,16 +131,14 @@ class ClaimBusterModel:
                 self.x_sent: x_sent,
 
                 self.pos_len: self.gen_x_len(x_pos),
-
                 self.pos_output_mask: self.gen_output_mask(x_pos),
-
-                self.y: self.one_hot(batch_y),
 
                 self.kp_cls: FLAGS.keep_prob_cls if ver == 'train' else 1.0,
                 self.kp_lstm: FLAGS.keep_prob_lstm if ver == 'train' else 1.0,
             }
 
         if batch_y is not None:
+            feed_dict[self.y] = self.one_hot(batch_y)
             feed_dict[self.cls_weight] = self.get_cls_weights(batch_y)
 
         return feed_dict
