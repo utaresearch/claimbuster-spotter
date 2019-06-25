@@ -14,7 +14,9 @@ from flags import FLAGS
 class ClaimBusterModel:
     def __init__(self, vocab=None, cls_weights=None, restore=False):
         self.x_nl = tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x_nl') if not FLAGS.bert_model \
-            else tf.placeholder(tf.string, (None, None))
+            else [tf.placeholder(tf.string, (None, FLAGS.max_len), name='x_id'),
+                  tf.placeholder(tf.string, (None, FLAGS.max_len), name='x_mask'),
+                  tf.placeholder(tf.string, (None, FLAGS.max_len), name='x_segment')]
         self.x_pos = tf.placeholder(tf.int32, (None, FLAGS.max_len, len(pos_labels) + 1), name='x_pos')
         self.x_sent = tf.placeholder(tf.float32, (None, 2), name='x_sent')
 
@@ -116,10 +118,10 @@ class ClaimBusterModel:
                 self.x_pos: self.prc_pos(self.pad_seq(x_pos)),
                 self.x_sent: x_sent,
 
-                self.nl_len: self.gen_x_len(x_nl),
+                self.nl_len: self.gen_x_len(x_nl) if not FLAGS.bert_model else None,
                 self.pos_len: self.gen_x_len(x_pos),
 
-                self.nl_output_mask: self.gen_output_mask(x_nl),
+                self.nl_output_mask: self.gen_output_mask(x_nl) if not FLAGS.bert_model else None,
                 self.pos_output_mask: self.gen_output_mask(x_pos),
 
                 self.y: self.one_hot(batch_y),
@@ -164,10 +166,10 @@ class ClaimBusterModel:
             self.x_pos: self.prc_pos(self.pad_seq(x_pos)),
             self.x_sent: x_sent,
 
-            self.nl_len: self.gen_x_len(x_nl),
+            self.nl_len: self.gen_x_len(x_nl) if not FLAGS.bert_model else None,
             self.pos_len: self.gen_x_len(x_pos),
 
-            self.nl_output_mask: self.gen_output_mask(x_nl),
+            self.nl_output_mask: self.gen_output_mask(x_nl) if not FLAGS.bert_model else None,
             self.pos_output_mask: self.gen_output_mask(x_pos),
 
             self.y: self.one_hot(batch_y),
