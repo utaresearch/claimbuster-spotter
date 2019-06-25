@@ -80,8 +80,11 @@ class ClaimBusterModel:
                 orig_embed, nl_lstm_out = nl_lstm_out
 
         with tf.variable_scope('pos_lstm/', reuse=adv):
-            pos_lstm_out = LanguageModel.build_lstm(self.x_pos, self.pos_len, self.pos_output_mask, self.kp_lstm,
-                                                    adv)
+            if FLAGS.pos_lstm:
+                pos_lstm_out = LanguageModel.build_lstm(self.x_pos, self.pos_len, self.pos_output_mask, self.kp_lstm,
+                                                        adv)
+            else:
+                pos_lstm_out = None
 
         with tf.variable_scope('fc_output/', reuse=adv):
             lstm_out = tf.concat([nl_lstm_out, pos_lstm_out, self.x_sent], axis=1)
