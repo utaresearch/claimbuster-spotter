@@ -1,8 +1,4 @@
 import tensorflow as tf
-import bert
-from bert import run_classifier
-from bert import optimization
-from bert import tokenization
 import sys
 from .adv_losses import apply_adversarial_perturbation
 sys.path.append('..')
