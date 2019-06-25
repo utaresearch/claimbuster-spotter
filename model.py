@@ -107,7 +107,9 @@ class ClaimBusterModel:
         return tf.identity(ret_loss, name='regular_loss')
 
     def get_feed_dict(self, x_nl, x_pos, x_sent, batch_y=None, ver='train'):
-        print(x_nl)
+        print(x_nl.input_ids)
+        print(x_nl.input_mask)
+        print(x_nl.segment_ids)
 
         if not FLAGS.bert_model:
             feed_dict = {
