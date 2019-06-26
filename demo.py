@@ -22,7 +22,9 @@ def extract_info(sentence, vocab):
 
     sent = transf.get_sentiment(sentence)
     pos = transf.process_sentence_full_tags(sentence)
-    sentence = [get_idx(z) for z in sentence.split(' ')]
+    
+    if not FLAGS.bert_model:
+        sentence = [get_idx(z) for z in sentence.split(' ')]
 
     return sentence, pos, sent
 
