@@ -56,34 +56,15 @@ class ClaimBusterModel:
                 if FLAGS.adam else tf.train.RMSPropOptimizer(learning_rate=FLAGS.learning_rate).minimize(self.cost)
         else:
             train_vars = tf.trainable_variables()
-            non_trainable_layers = ['layer_{}'.format(num)
+            non_trainable_layers = ['/layer_{}/'.format(num)
                                     for num in range(FLAGS.bert_layers - FLAGS.bert_fine_tune_layers)]
 
-            tf.logging.info(non_trainable_layers)
-            tf.logging.info(train_vars)
-
-            orig_train_vars = train_vars.copy()
-
             if FLAGS.bert_trainable:
-                idx = 0
-                while idx < len(train_vars):
-                    v = train_vars[idx]
-                    for z in non_trainable_layers:
-                        if z in v.name:
-                            tf.logging.info(v.name)
-                            tf.logging.info(z)
-                            del train_vars[idx]
-                            idx -= 1
-                            break
-                    idx +=1
+                train_vars = [v for v in train_vars
+                              if not any(z in v.name for z in non_trainable_layers)]
 
-            tf.logging.info(' ')
-
+            tf.logging.info('Removing: {}'.format(non_trainable_layers))
             tf.logging.info(train_vars)
-
-            tf.logging.info(' ')
-
-            tf.logging.info(list(set(orig_train_vars).difference(set(train_vars))))
 
             return tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(self.cost, var_list=train_vars)\
                 if FLAGS.adam else tf.train.RMSPropOptimizer(learning_rate=FLAGS.learning_rate).minimize(self.cost)
