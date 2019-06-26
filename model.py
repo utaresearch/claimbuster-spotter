@@ -59,6 +59,9 @@ class ClaimBusterModel:
             non_trainable_layers = ['encoder/layer_{}'.format(num)
                                     for num in range(FLAGS.bert_layers - FLAGS.bert_fine_tune_layers)]
 
+            tf.logging.info(non_trainable_layers)
+            tf.logging.info(train_vars)
+
             if FLAGS.bert_trainable:
                 train_vars = [v for v in train_vars
                               if not any(z in v.name for z in non_trainable_layers)]
