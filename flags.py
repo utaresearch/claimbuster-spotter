@@ -76,8 +76,9 @@ flags.DEFINE_float('perturb_norm_length', 6.0, 'Norm length of adversarial pertu
 flags.DEFINE_integer('num_classes', 3, 'Number of classes for classification (2 combines NFS and UFS)')
 
 # Training
-flags.DEFINE_bool('bert_trainable', True, 'Train BERT weights or not')
-flags.DEFINE_integer('bert_fine_tune_layers', 2, 'Last bert_fine_tune_layers are marked as trainable')
+flags.DEFINE_bool('bert_trainable', True, 'Train BERT weights')
+flags.DEFINE_bool('bert_ft_embed', True, 'Train BERT embedding layer')
+flags.DEFINE_integer('bert_ft_layers', 1, 'Last `var` layers are marked as trainable')
 flags.DEFINE_bool('adam', True, 'Adam or RMSProp if False')
 flags.DEFINE_bool('restore_and_continue', False, 'Restore previous training session and continue')
 flags.DEFINE_integer('batch_size', 128, 'Size of the batch.')

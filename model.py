@@ -57,11 +57,12 @@ class ClaimBusterModel:
         else:
             train_vars = tf.trainable_variables()
             non_trainable_layers = ['/layer_{}/'.format(num)
-                                    for num in range(FLAGS.bert_layers - FLAGS.bert_fine_tune_layers)]
+                                    for num in range(FLAGS.bert_layers - FLAGS.bert_ft_layers)]
+            if not FLAGS.bert_ft_embed:
+                non_trainable_layers.append('/embeddings/')
 
             if FLAGS.bert_trainable:
-                train_vars = [v for v in train_vars
-                              if not any(z in v.name for z in non_trainable_layers)]
+                train_vars = [v for v in train_vars if not any(z in v.name for z in non_trainable_layers)]
 
             tf.logging.info('Removing: {}'.format(non_trainable_layers))
             tf.logging.info(train_vars)
