@@ -25,7 +25,7 @@ flags.DEFINE_string('cb_data_dir', './data', 'Location of data')
 flags.DEFINE_bool('refresh_data', False, 'Re-process ./data/all_data.pickle')
 flags.DEFINE_integer('max_len', 200, 'Maximum length of input')
 flags.DEFINE_bool('remove_stopwords', False, 'Remove stop words (e.g. the, a, etc.)')
-flags.DEFINE_bool('sklearn_oversample', True, 'Oversample underrepresented classes with sklearn')
+flags.DEFINE_bool('sklearn_oversample', False, 'Oversample underrepresented classes with sklearn')
 flags.DEFINE_bool('weight_classes_loss', False, 'Weight classes in CE loss function')
 flags.DEFINE_list('addition_vocab', ['./data/disjoint_2000/vocab.pickle'], 'Additional corpuses to sample vocab data from')
 
