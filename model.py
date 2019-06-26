@@ -103,12 +103,22 @@ class ClaimBusterModel:
             lstm_out = tf.concat(to_concat, axis=1)
             lstm_out = tf.nn.dropout(lstm_out, keep_prob=FLAGS.keep_prob_cls)
 
-            output_weights = tf.get_variable('cb_output_weights', shape=(lstm_out.get_shape()[1], FLAGS.num_classes),
+            lstm_out_shape = lstm_out.get_shape()[1]
+
+            hidden_weights = tf.get_variable('cb_hidden_weights', shape=(lstm_out_shape, FLAGS.cls_hidden),
+                                             initializer=tf.contrib.layers.xavier_initializer())
+            hidden_biases = tf.get_variable('cb_hidden_weights', shape=FLAGS.cls_hidden,
+                                            initializer=tf.contrib.layers.xavier_initializer())
+
+            cb_hidden = tf.matmul(lstm_out, hidden_weights) + hidden_biases
+            cb_hidden = tf.nn.dropout(cb_hidden, keep_prob=FLAGS.keep_prob_cls)
+
+            output_weights = tf.get_variable('cb_output_weights', shape=(FLAGS.cls_hidden, FLAGS.num_classes),
                                              initializer=tf.contrib.layers.xavier_initializer())
             output_biases = tf.get_variable('cb_output_biases', shape=FLAGS.num_classes,
                                             initializer=tf.zeros_initializer())
 
-            cb_out = tf.matmul(lstm_out, output_weights) + output_biases
+            cb_out = tf.matmul(cb_hidden, output_weights) + output_biases
 
         return (orig_embed, cb_out) if not adv else cb_out
 
