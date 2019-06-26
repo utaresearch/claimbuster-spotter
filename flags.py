@@ -55,7 +55,7 @@ flags.DEFINE_integer('max_steps', 1000, 'Number of epochs to run.')
 
 # Regularization
 flags.DEFINE_float('l2_reg_coeff', 0.001, 'If val > 0, use L2 Regularization on weights in graph')
-flags.DEFINE_float('keep_prob_cls', 0.6, 'Keep probability of classification layer.')
+flags.DEFINE_float('keep_prob_cls', 0.7, 'Keep probability of classification layer.')
 flags.DEFINE_float('keep_prob_lstm', 0.6, 'Keep probability LSTM network.')
 
 # Embeddings
