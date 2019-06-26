@@ -11,7 +11,7 @@ return_strings = ['Non-factual statement', 'Unimportant factual statement', 'Sal
 tokenizer = DataLoader.create_tokenizer_from_hub_module()
 
 
-def extract_info(sentence, vocab)
+def extract_info(sentence, vocab):
     def get_idx(str):
         if str in vocab:
             return vocab[str]
@@ -31,7 +31,7 @@ def prc_sentence(sentence, vocab):
 
     sentence, pos, sent = extract_info(sentence, vocab)
 
-    input_examples = run_classifier.InputExample(guid="", text_a=x, text_b=None, label=0)
+    input_examples = run_classifier.InputExample(guid="", text_a=sentence, text_b=None, label=0)
     input_features = run_classifier.convert_examples_to_features(input_examples, [z for z in range(FLAGS.num_classes)],
                                                                  FLAGS.max_len, tokenizer)
 
