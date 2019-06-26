@@ -68,6 +68,8 @@ class ClaimBusterModel:
                 train_vars = [v for v in train_vars
                               if not any(z in v.name for z in non_trainable_layers)]
 
+            tf.logging.info(' ')
+
             tf.logging.info(train_vars)
 
             tf.logging.info(' ')
