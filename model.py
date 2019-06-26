@@ -56,12 +56,12 @@ class ClaimBusterModel:
                 if FLAGS.adam else tf.train.RMSPropOptimizer(learning_rate=FLAGS.learning_rate).minimize(self.cost)
         else:
             train_vars = tf.trainable_variables()
+            non_trainable_layers = ['encoder/layer_{}'.format(num)
+                                    for num in range(FLAGS.bert_layers - FLAGS.bert_fine_tune_layers)]
 
             if FLAGS.bert_trainable:
                 train_vars = [v for v in train_vars
-                              if any('encoder/layer_{}'.format(num)
-                                     for num in range(FLAGS.bert_layers - FLAGS.bert_fine_tune_layers))
-                              not in v.name]
+                              if not any(z in v.name for z in non_trainable_layers)]
 
             print(train_vars)
 
