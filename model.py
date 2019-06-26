@@ -42,20 +42,31 @@ class ClaimBusterModel:
 
             self.logits, self.cost = self.construct_model(adv=FLAGS.adv_train)
 
-            if not FLAGS.bert_model:
-                self.optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(self.cost) \
-                    if FLAGS.adam else tf.train.RMSPropOptimizer(learning_rate=FLAGS.learning_rate).minimize(self.cost)
-            else:
-                self.optimizer = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(self.cost) \
-                    if FLAGS.adam else tf.train.RMSPropOptimizer(learning_rate=FLAGS.learning_rate).minimize(self.cost)
-                # self.optimizer = optimization.create_optimizer(
-                #     self.cost, FLAGS.learning_rate, num_train_steps, num_warmup_steps, use_tpu=False)
+            self.optimizer = self.build_optimizer()
 
             self.y_pred = tf.nn.softmax(self.logits, axis=1, name='y_pred')
             self.correct = tf.equal(tf.argmax(self.y, axis=1), tf.argmax(self.y_pred, axis=1))
             self.acc = tf.reduce_mean(tf.cast(self.correct, tf.float32), name='acc')
         else:
             self.cost, self.y_pred, self.acc = None, None, None
+
+    def build_optimizer(self):
+        if not FLAGS.bert_model:
+            return tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(self.cost) \
+                if FLAGS.adam else tf.train.RMSPropOptimizer(learning_rate=FLAGS.learning_rate).minimize(self.cost)
+        else:
+            train_vars = tf.trainable_variables()
+
+            if FLAGS.bert_trainable:
+                train_vars = [v for v in train_vars
+                              if any('encoder/layer_{}'.format(num)
+                                     for num in range(FLAGS.bert_layers - FLAGS.bert_fine_tune_layers))
+                              not in v.name]
+
+            print(train_vars)
+
+            return tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(self.cost, var_list=train_vars)\
+                if FLAGS.adam else tf.train.RMSPropOptimizer(learning_rate=FLAGS.learning_rate).minimize(self.cost)
 
     def construct_model(self, adv):
         with tf.variable_scope('cb_model/'):

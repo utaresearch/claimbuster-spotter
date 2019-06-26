@@ -42,6 +42,7 @@ flags.DEFINE_integer('random_state', 59, 'State of pseudo-randomness')
 # Model architecture
 flags.DEFINE_bool('bert_model', True, 'Use BERT pretrained RNN for NL LSTM.')
 flags.DEFINE_string('bert_model_hub', 'https://tfhub.dev/google/bert_uncased_L-12_H-768_A-12/1', 'Location of BERT on TF hubs.')
+flags.DEFINE_integer('bert_layers', 12, 'Number of BERT layers.')
 flags.DEFINE_bool('pos_lstm', True,' Use Part-of-Speech LSTM.')
 flags.DEFINE_integer('rnn_num_layers', 1, 'Number of LSTM layers.')
 flags.DEFINE_integer('rnn_cell_size', 16, 'Number of hidden units in the LSTM.')
@@ -75,7 +76,8 @@ flags.DEFINE_float('perturb_norm_length', 6.0, 'Norm length of adversarial pertu
 flags.DEFINE_integer('num_classes', 3, 'Number of classes for classification (2 combines NFS and UFS)')
 
 # Training
-flags.DEFINE_bool('bert_trainable', False, 'Train BERT weights or not')
+flags.DEFINE_bool('bert_trainable', True, 'Train BERT weights or not')
+flags.DEFINE_bool('bert_fine_tune_layers', 2, 'Last bert_fine_tune_layers are marked as trainable')
 flags.DEFINE_bool('adam', True, 'Adam or RMSProp if False')
 flags.DEFINE_bool('restore_and_continue', False, 'Restore previous training session and continue')
 flags.DEFINE_integer('batch_size', 128, 'Size of the batch.')
