@@ -68,10 +68,12 @@ class ClaimBusterModel:
                 idx = 0
                 while idx < len(train_vars):
                     v = train_vars[idx]
-                    if any(z in v.name for z in non_trainable_layers):
-                        tf.logging.info(v.name)
-                        del train_vars[idx]
-                        idx -= 1
+                    for z in non_trainable_layers:
+                        if z in v.name:
+                            tf.logging.info(v.name, z)
+                            del train_vars[idx]
+                            idx -= 1
+                            break
                     idx +=1
 
             tf.logging.info(' ')
