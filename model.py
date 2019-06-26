@@ -70,7 +70,7 @@ class ClaimBusterModel:
 
             tf.logging.info(train_vars)
 
-            tf.logging.info()
+            tf.logging.info(' ')
 
             tf.logging.info(set(train_vars).difference(set(orig_train_vars)))
 
