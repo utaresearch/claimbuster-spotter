@@ -62,7 +62,7 @@ class ClaimBusterModel:
             tf.logging.info(non_trainable_layers)
             tf.logging.info(train_vars)
 
-            orig_train_vars = train_vars
+            orig_train_vars = train_vars.copy()
 
             if FLAGS.bert_trainable:
                 train_vars = [v for v in train_vars
