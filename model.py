@@ -62,11 +62,17 @@ class ClaimBusterModel:
             tf.logging.info(non_trainable_layers)
             tf.logging.info(train_vars)
 
+            orig_train_vars = train_vars
+
             if FLAGS.bert_trainable:
                 train_vars = [v for v in train_vars
                               if not any(z in v.name for z in non_trainable_layers)]
 
             tf.logging.info(train_vars)
+
+            tf.logging.info()
+
+            tf.logging.info(difference(set(train_vars), set(orig_train_vars)))
 
             return tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(self.cost, var_list=train_vars)\
                 if FLAGS.adam else tf.train.RMSPropOptimizer(learning_rate=FLAGS.learning_rate).minimize(self.cost)
