@@ -35,7 +35,7 @@ def prc_sentence(sentence, vocab):
     sentence, pos, sent = extract_info(sentence, vocab)
 
     if FLAGS.bert_model:
-        input_examples = run_classifier.InputExample(guid="", text_a=sentence, text_b=None, label=0)
+        input_examples = [run_classifier.InputExample(guid="", text_a=sentence, text_b=None, label=0)]
         input_features = run_classifier.convert_examples_to_features(input_examples,
                                                                      [z for z in range(FLAGS.num_classes)],
                                                                      FLAGS.max_len, tokenizer)
