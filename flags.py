@@ -47,7 +47,7 @@ flags.DEFINE_bool('pos_lstm', False,' Use Part-of-Speech LSTM.')
 flags.DEFINE_integer('rnn_num_layers', 1, 'Number of LSTM layers.')
 flags.DEFINE_integer('rnn_cell_size', 16, 'Number of hidden units in the LSTM.')
 flags.DEFINE_bool('bidir_lstm', True, 'Use bidirectional LSTM')
-flags.DEFINE_integer('cls_hidden', 16, 'Size of hidden classification layer')
+flags.DEFINE_integer('cls_hidden', 0, 'Size of hidden classification layer')
 
 # Optimization
 flags.DEFINE_integer('max_steps', 1000, 'Number of epochs to run.')
