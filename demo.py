@@ -26,6 +26,7 @@ def extract_info(sentence, vocab):
 
     return sentence, pos, sent
 
+
 def prc_sentence(sentence, vocab):
     global tokenizer
 
