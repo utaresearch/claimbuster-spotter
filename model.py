@@ -107,7 +107,7 @@ class ClaimBusterModel:
 
             hidden_weights = tf.get_variable('cb_hidden_weights', shape=(lstm_out_shape, FLAGS.cls_hidden),
                                              initializer=tf.contrib.layers.xavier_initializer())
-            hidden_biases = tf.get_variable('cb_hidden_weights', shape=FLAGS.cls_hidden,
+            hidden_biases = tf.get_variable('cb_hidden_biases', shape=FLAGS.cls_hidden,
                                             initializer=tf.contrib.layers.xavier_initializer())
 
             cb_hidden = tf.matmul(lstm_out, hidden_weights) + hidden_biases
