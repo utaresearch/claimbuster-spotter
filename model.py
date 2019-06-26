@@ -65,8 +65,13 @@ class ClaimBusterModel:
             orig_train_vars = train_vars.copy()
 
             if FLAGS.bert_trainable:
-                train_vars = [v for v in train_vars
-                              if not any(z in v.name for z in non_trainable_layers)]
+                idx = 0
+                while idx < len(train_vars):
+                    v = train_vars[idx]
+                    if any(z in v.name for z in non_trainable_layers):
+                        del train_vars[idx]
+                        idx -= 1
+                    idx +=1
 
             tf.logging.info(' ')
 
