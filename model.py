@@ -228,8 +228,8 @@ class ClaimBusterModel:
 
         return np.sum(run_loss), run_acc, np.argmax(run_pred, axis=1)
 
-    def get_preds(self, sess, sentence_tuple):
-        x_nl, x_pos, x_sent = ([z] if 'InputExample' not in z[0].__name__ else z for z in sentence_tuple)
+    def get_preds(self, sess, inp):
+        x_nl, x_pos, x_sent = inp[0], [inp[1]], [inp[2]]
         feed_dict = self.get_feed_dict(x_nl, x_pos, x_sent, ver='test')
 
         return sess.run(self.y_pred, feed_dict=feed_dict)
