@@ -9,13 +9,10 @@ from flags import FLAGS
 
 
 def main():
-    global computed_cls_weights
-
     os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu])
 
     tf.logging.info("Loading dataset")
     data_load = DataLoader()
-    computed_cls_weights = data_load.class_weights
 
     test_data = data_load.load_testing_data()
     tf.logging.info("{} testing examples".format(test_data.get_length()))
