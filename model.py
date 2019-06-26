@@ -72,7 +72,7 @@ class ClaimBusterModel:
 
             tf.logging.info(' ')
 
-            tf.logging.info(list(set(train_vars).difference(set(orig_train_vars))))
+            tf.logging.info(list(set(orig_train_vars).difference(set(train_vars))))
 
             return tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(self.cost, var_list=train_vars)\
                 if FLAGS.adam else tf.train.RMSPropOptimizer(learning_rate=FLAGS.learning_rate).minimize(self.cost)
