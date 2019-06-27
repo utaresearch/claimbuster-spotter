@@ -296,13 +296,16 @@ def strip_chars(inpstr, to_strip=string.punctuation):
 
 def transform_sentence_complete(sentence):
     sentence = correct_mistakes(sentence)
-    sentence = (process_sentence_ner_spacy(sentence) if FLAGS.ner_spacy else sentence)
+    sentence = remove_kill_words(sentence)
 
+    if not FLAGS.custom_preprc:
+        return sentence
+
+    sentence = (process_sentence_ner_spacy(sentence) if FLAGS.ner_spacy else sentence)
     sentence = ' '.join(text_to_word_sequence(sentence))
 
     sentence = expand_contractions(sentence)
     sentence = remove_possessives(sentence)
-    sentence = remove_kill_words(sentence)
 
     return sentence
 

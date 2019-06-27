@@ -28,6 +28,7 @@ flags.DEFINE_bool('remove_stopwords', False, 'Remove stop words (e.g. the, a, et
 flags.DEFINE_bool('sklearn_oversample', False, 'Oversample underrepresented classes with sklearn')
 flags.DEFINE_bool('weight_classes_loss', False, 'Weight classes in CE loss function')
 flags.DEFINE_list('addition_vocab', ['./data/disjoint_2000/vocab.pickle'], 'Additional corpuses to sample vocab data from')
+flags.DEFINE_bool('custom_preprc', True, 'Use custom pre-processing')
 
 # Eval
 flags.DEFINE_integer('stat_print_interval', 1, 'Numbers of epochs before stats are printed again')
