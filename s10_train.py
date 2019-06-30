@@ -7,12 +7,27 @@ from model import ClaimBusterModel
 from flags import FLAGS, print_flags
 
 
+label_mapping = {
+    'nfs': -1,
+    'ufs': 0,
+    'cfs': 1
+}
+
+
 def train_adv_bert_model(train, dev, test):
+    global label_mapping
     os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu])
 
     print_flags()
 
     tf.logging.info("Loading dataset from given values")
+
+    train[1] = list(map(label_mapping, train[1]))
+    dev[1] = list(map(label_mapping, dev[1]))
+    test[1] = list(map(label_mapping, test[1]))
+
+    print(train[1])
+    exit()
 
     train_data = Dataset(train[0], train[1], random_state=FLAGS.random_state)
     test_data = Dataset(test[0], test[1], random_state=FLAGS.random_state)
