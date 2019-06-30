@@ -2,21 +2,20 @@ import tensorflow as tf
 import math
 import time
 import os
-from utils.data_loader import DataLoader
+from utils.data_loader import Dataset
 from model import ClaimBusterModel
 from flags import FLAGS, print_flags
 
 
-def train_adv_bert_model():
+def train_adv_bert_model(train, dev, test):
     os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu])
 
     print_flags()
 
-    tf.logging.info("Loading dataset")
-    data_load = DataLoader()
+    tf.logging.info("Loading dataset from given values")
 
-    train_data = data_load.load_training_data()
-    test_data = data_load.load_testing_data()
+    train_data = Dataset(train[0], train[1], random_state=FLAGS.random_state)
+    test_data = Dataset(test[0], test[1], random_state=FLAGS.random_state)
 
     tf.logging.info("{} training examples".format(train_data.get_length()))
     tf.logging.info("{} validation examples".format(test_data.get_length()))
