@@ -2,9 +2,9 @@ import tensorflow as tf
 import math
 import time
 import os
-from utils.data_loader import Dataset
-from model import ClaimBusterModel
-from flags import FLAGS, print_flags
+from adv_bert_claimspotter.utils.data_loader import Dataset
+from adv_bert_claimspotter.model import ClaimBusterModel
+from adv_bert_claimspotter.flags import FLAGS, print_flags
 
 
 label_mapping = {
