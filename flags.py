@@ -51,7 +51,7 @@ flags.DEFINE_bool('bidir_lstm', True, 'Use bidirectional LSTM')
 flags.DEFINE_integer('cls_hidden', 0, 'Size of hidden classification layer')
 
 # Optimization
-flags.DEFINE_integer('max_steps', 1000, 'Number of epochs to run.')
+flags.DEFINE_integer('max_steps', 8, 'Number of epochs to run.')
 # flags.DEFINE_float('learning_rate', 0.001, 'Learning rate while during optimiation.')
 
 # Regularization
