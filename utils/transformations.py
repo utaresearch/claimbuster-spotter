@@ -11,9 +11,10 @@ from tqdm import tqdm
 cwd = os.getcwd()
 root_dir = None
 
-for file in os.listdir(cwd):
-    if file.endswith("ac_bert.txt"):
-        root_dir = file
+for root, dirs, files in os.walk(cwd):
+    for file in files
+        if file.endswith("ac_bert.txt"):
+            root_dir = file
 
 print(cwd, root_dir)
 
