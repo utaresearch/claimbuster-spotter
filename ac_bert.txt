@@ -1,0 +1,1 @@
+This file serves no purpose other than to mark the root project directory.
