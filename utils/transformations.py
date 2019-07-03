@@ -12,7 +12,7 @@ cwd = os.getcwd()
 root_dir = None
 
 for root, dirs, files in os.walk(cwd):
-    for file in files
+    for file in files:
         if file.endswith("ac_bert.txt"):
             root_dir = file
 
