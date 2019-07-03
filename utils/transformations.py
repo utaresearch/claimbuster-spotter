@@ -12,10 +12,9 @@ cwd = os.getcwd()
 root_dir = None
 
 for root, dirs, files in os.walk(cwd):
-    print(root, dirs, files)
     for file in files:
         if file.endswith("ac_bert.txt"):
-            root_dir = file
+            root_dir = os.path.join(root, file)
 
 print(cwd, root_dir)
 
