@@ -3,11 +3,15 @@ import spacy
 import string
 import sys
 import os
+import glob
 from textblob import TextBlob
 from keras.preprocessing.text import text_to_word_sequence
 from tqdm import tqdm
 
-print(os.getcwd())
+cwd = os.getcwd()
+root_dir = glob.glob('ac_bert', recursive=True)
+print(cwd, root_dir)
+
 exit()
 
 sys.path.append('..')
