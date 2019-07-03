@@ -9,7 +9,12 @@ from keras.preprocessing.text import text_to_word_sequence
 from tqdm import tqdm
 
 cwd = os.getcwd()
-root_dir = glob.glob('ac_bert', recursive=True)
+root_dir = None
+
+for file in os.listdir(cwd):
+    if file.endswith("ac_bert.txt"):
+        root_dir = file
+
 print(cwd, root_dir)
 
 exit()
