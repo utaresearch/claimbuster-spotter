@@ -2,10 +2,16 @@ import nltk
 import spacy
 import string
 import sys
+import os
 from textblob import TextBlob
 from keras.preprocessing.text import text_to_word_sequence
 from tqdm import tqdm
+
+print(os.getcwd())
+exit()
+
 sys.path.append('..')
+from flags import FLAGS
 
 nlp = None
 cont = None
