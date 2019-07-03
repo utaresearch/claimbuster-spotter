@@ -6,6 +6,7 @@ from textblob import TextBlob
 from keras.preprocessing.text import text_to_word_sequence
 from tqdm import tqdm
 sys.path.append('..')
+sys.path.append('./adv_bert_claimspotter')  # required for IDIR testing
 from flags import FLAGS
 
 nlp = None
