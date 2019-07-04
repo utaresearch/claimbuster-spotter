@@ -18,8 +18,8 @@ for root, dirs, files in os.walk(cwd):
 
 print(cwd, root_dir)
 
-cwd_stripped = cwd[-cwd.rfind('/'):]
-root_dir_stripped = root_dir[-root_dir.rfind('/'):]
+cwd_stripped = cwd[cwd.rfind('/'):]
+root_dir_stripped = root_dir[root_dir.rfind('/'):]
 print(cwd_stripped, root_dir_stripped)
 
 exit()
