@@ -14,12 +14,13 @@ root_dir = None
 for root, dirs, files in os.walk(cwd):
     for file in files:
         if file.endswith("ac_bert.txt"):
-            root_dir = os.path.join(root, file)
+            root_dir = root
 
 print(cwd, root_dir)
 
-cwd_dir = cwd[-cwd.rfind('/'):]
-print(cwd_dir)
+cwd_stripped = cwd[-cwd.rfind('/'):]
+root_dir_stripped = root_dir[-root_dir.rfind('/'):]
+print(cwd_stripped, root_dir_stripped)
 
 exit()
 
