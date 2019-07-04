@@ -18,7 +18,7 @@ for root, dirs, files in os.walk(cwd):
 
 print(cwd, root_dir)
 
-cwd_dir = cwd[-root_dir.rfind('/'):]
+cwd_dir = cwd[-cwd.rfind('/'):]
 print(cwd_dir)
 
 exit()
