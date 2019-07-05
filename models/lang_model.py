@@ -1,8 +1,20 @@
 import tensorflow as tf
 import sys
 from .adv_losses import apply_adversarial_perturbation
-sys.path.append('..')
-from flags import FLAGS
+
+cwd = os.getcwd()
+root_dir = None
+
+for root, dirs, files in os.walk(cwd):
+    for file in files:
+        if file.endswith("ac_bert.txt"):
+            root_dir = root
+
+if cwd != root_dir:
+    from ..flags import FLAGS
+else:
+    sys.path.append('..')
+    from flags import FLAGS
 
 
 class LanguageModel:

@@ -7,11 +7,6 @@ from keras.utils import to_categorical
 from sklearn.metrics import f1_score
 import math
 
-from .models.lang_model import LanguageModel
-from .models.embeddings import Embedding
-from .utils.transformations import pos_labels
-from .flags import FLAGS
-
 cwd = os.getcwd()
 root_dir = None
 
