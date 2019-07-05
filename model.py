@@ -5,9 +5,7 @@ import os
 from keras.preprocessing.sequence import pad_sequences
 from keras.utils import to_categorical
 from sklearn.metrics import f1_score
-from utils.transformations import pos_labels
 import math
-from flags import FLAGS
 
 cwd = os.getcwd()
 root_dir = None
@@ -20,9 +18,13 @@ for root, dirs, files in os.walk(cwd):
 if cwd != root_dir:
     from .models.lang_model import LanguageModel
     from .models.embeddings import Embedding
+    from .utils.transformations import pos_labels
+    from .flags import FLAGS
 else:
     from models.lang_model import LanguageModel
     from models.embeddings import Embedding
+    from utils.transformations import pos_labels
+    from flags import FLAGS
 
 
 class ClaimBusterModel:
