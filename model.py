@@ -15,6 +15,11 @@ for root, dirs, files in os.walk(cwd):
         if file.endswith("ac_bert.txt"):
             root_dir = root
 
+from .models.lang_model import LanguageModel
+from .models.embeddings import Embedding
+from .utils.transformations import pos_labels
+from .flags import FLAGS
+
 if cwd != root_dir:
     from .models.lang_model import LanguageModel
     from .models.embeddings import Embedding
