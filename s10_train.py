@@ -14,6 +14,10 @@ label_mapping = {
 }
 
 
+def map_label(n):
+    return label_mapping[n]
+
+
 def train_adv_bert_model(train, dev, test):
     global label_mapping
     os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu])
@@ -22,9 +26,9 @@ def train_adv_bert_model(train, dev, test):
 
     tf.logging.info("Loading dataset from given values")
 
-    train[1] = list(map(label_mapping, train[1]))
-    dev[1] = list(map(label_mapping, dev[1]))
-    test[1] = list(map(label_mapping, test[1]))
+    train[1] = list(map(map_label, train[1]))
+    dev[1] = list(map(map_label, dev[1]))
+    test[1] = list(map(map_label, test[1]))
 
     print(train[1])
     exit()
