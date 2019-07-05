@@ -18,11 +18,10 @@ for root, dirs, files in os.walk(cwd):
 
 print(cwd, root_dir)
 
-cd_dir = root_dir.replace(cwd, "", 1)
+cd_dir = "." + root_dir.replace(cwd, "", 1)
 
-if cd_dir != "":
-    print("Switching cwd to " + "\"" + cd_dir + "\"")
-    os.chdir(cd_dir)
+print("Switching cwd to " + "\"" + cd_dir + "\"")
+os.chdir(cd_dir)
 
 sys.path.append('..')
 from flags import FLAGS
