@@ -23,8 +23,6 @@ for root, dirs, files in os.walk(cwd):
         if file.endswith("ac_bert.txt"):
             root_dir = root
 
-print(cwd, root_dir)
-
 if cwd != root_dir:
     from ..flags import FLAGS
 else:

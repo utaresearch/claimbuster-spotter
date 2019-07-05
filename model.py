@@ -4,12 +4,25 @@ import numpy as np
 import os
 from keras.preprocessing.sequence import pad_sequences
 from keras.utils import to_categorical
-from models.lang_model import LanguageModel
-from models.embeddings import Embedding
 from sklearn.metrics import f1_score
 from utils.transformations import pos_labels
 import math
 from flags import FLAGS
+
+cwd = os.getcwd()
+root_dir = None
+
+for root, dirs, files in os.walk(cwd):
+    for file in files:
+        if file.endswith("ac_bert.txt"):
+            root_dir = root
+
+if cwd != root_dir:
+    from .models.lang_model import LanguageModel
+    from .models.embeddings import Embedding
+else:
+    from models.lang_model import LanguageModel
+    from models.embeddings import Embedding
 
 
 class ClaimBusterModel:
