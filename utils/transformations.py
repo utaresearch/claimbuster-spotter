@@ -24,8 +24,6 @@ if cd_dir != "":
     print("Switching cwd to " + "\"" + cd_dir + "\"")
     os.chdir(cd_dir)
 
-exit()
-
 sys.path.append('..')
 from flags import FLAGS
 
