@@ -7,6 +7,11 @@ from keras.utils import to_categorical
 from sklearn.metrics import f1_score
 import math
 
+from .models.lang_model import LanguageModel
+from .models.embeddings import Embedding
+from .utils.transformations import pos_labels
+from .flags import FLAGS
+
 cwd = os.getcwd()
 root_dir = None
 
@@ -14,11 +19,6 @@ for root, dirs, files in os.walk(cwd):
     for file in files:
         if file.endswith("ac_bert.txt"):
             root_dir = root
-
-from .models.lang_model import LanguageModel
-from .models.embeddings import Embedding
-from .utils.transformations import pos_labels
-from .flags import FLAGS
 
 if cwd != root_dir:
     from .models.lang_model import LanguageModel
