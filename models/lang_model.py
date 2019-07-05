@@ -1,5 +1,6 @@
 import tensorflow as tf
 import sys
+import os
 from .adv_losses import apply_adversarial_perturbation
 
 cwd = os.getcwd()
