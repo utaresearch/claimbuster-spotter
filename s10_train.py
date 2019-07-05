@@ -26,9 +26,9 @@ def train_adv_bert_model(train, dev, test):
 
     tf.logging.info("Loading dataset from given values")
 
-    train[1] = list(map(map_label, train[1]))
-    dev[1] = list(map(map_label, dev[1]))
-    test[1] = list(map(map_label, test[1]))
+    train = (train[0], list(map(map_label, train[1])))
+    dev = (dev[0], list(map(map_label, dev[1])))
+    test = (test[0], list(map(map_label, test[1])))
 
     print(train[1])
     exit()
