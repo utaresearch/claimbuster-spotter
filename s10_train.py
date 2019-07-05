@@ -30,9 +30,6 @@ def train_adv_bert_model(train, dev, test):
     dev = (dev[0], list(map(map_label, dev[1])))
     test = (test[0], list(map(map_label, test[1])))
 
-    print(train[1])
-    exit()
-
     train_data = Dataset(train[0], train[1], random_state=FLAGS.random_state)
     test_data = Dataset(test[0], test[1], random_state=FLAGS.random_state)
 
