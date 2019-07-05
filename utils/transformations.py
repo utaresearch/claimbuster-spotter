@@ -21,6 +21,7 @@ print(cwd, root_dir)
 if cwd != root_dir:
     from ..flags import FLAGS
 else:
+    sys.path.append('..')
     from flags import FLAGS
 
 nlp = None

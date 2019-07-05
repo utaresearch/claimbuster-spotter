@@ -12,10 +12,26 @@ import shutil
 import json
 import sys
 from . import transformations as transf
-sys.path.append('..')
-from flags import FLAGS
 from sklearn.utils import shuffle
 from sklearn.utils.class_weight import compute_class_weight
+
+cwd = os.getcwd()
+root_dir = None
+
+for root, dirs, files in os.walk(cwd):
+    for file in files:
+        if file.endswith("ac_bert.txt"):
+            root_dir = root
+
+print(cwd, root_dir)
+
+if cwd != root_dir:
+    from ..flags import FLAGS
+else:
+    sys.path.append('..')
+    from flags import FLAGS
+
+from flags import FLAGS
 
 fail_words = set()
 
