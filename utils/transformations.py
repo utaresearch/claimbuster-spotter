@@ -19,7 +19,8 @@ for root, dirs, files in os.walk(cwd):
 print(cwd, root_dir)
 
 cd_dir = root_dir.replace(cwd, "", 1)
-print("\"" + cd_dir + "\"")
+print("Switching cwd to " + "\"" + cd_dir + "\"")
+os.chdir(cd_dir)
 
 exit()
 
