@@ -31,8 +31,6 @@ else:
     sys.path.append('..')
     from flags import FLAGS
 
-from flags import FLAGS
-
 fail_words = set()
 
 
