@@ -2,7 +2,7 @@ import tensorflow as tf
 import math
 import time
 import os
-from adv_bert_claimspotter.utils.data_loader import Dataset
+from adv_bert_claimspotter.utils.data_loader import Dataset, DataLoader
 from adv_bert_claimspotter.model import ClaimBusterModel
 from adv_bert_claimspotter.flags import FLAGS, print_flags
 
@@ -30,8 +30,10 @@ def train_adv_bert_model(train, dev, test):
     dev = (dev[0], list(map(map_label, dev[1])))
     test = (test[0], list(map(map_label, test[1])))
 
-    train_data = Dataset(train[0], train[1], random_state=FLAGS.random_state)
-    test_data = Dataset(test[0], test[1], random_state=FLAGS.random_state)
+    data_load = DataLoader(train, dev, test)
+
+    train_data = data_load.load_training_data()
+    test_data = data_load.load_testing_data()
 
     tf.logging.info("{} training examples".format(train_data.get_length()))
     tf.logging.info("{} validation examples".format(test_data.get_length()))

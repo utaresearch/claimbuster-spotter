@@ -54,10 +54,10 @@ class Dataset:
 
 
 class DataLoader:
-    def __init__(self):
+    def __init__(self, train_data=None, val_data=None, test_data=None):
         assert FLAGS.num_classes == 2 or FLAGS.num_classes == 3
 
-        self.data, self.eval_data, self.vocab = self.load_external_raw()
+        self.data, self.eval_data, self.vocab = self.load_ext_data(train_data, val_data, test_data)
 
         if FLAGS.num_classes == 2:
             self.convert_3_to_2()
@@ -134,12 +134,15 @@ class DataLoader:
         FLAGS.total_examples = FLAGS.train_examples + FLAGS.test_examples
 
     @staticmethod
-    def load_external_raw():
+    def load_ext_data(train_data_in, val_data_in, test_data_in):
         train_data, test_data, vocab = None, None, None
 
+        if train_data_in is not None and val_data_in is not None and test_data_in is not None:
+            FLAGS.refresh_data = True
+
         if FLAGS.refresh_data:
-            train_data = DataLoader.parse_json(FLAGS.raw_data_loc)
-            dj_eval_data = DataLoader.parse_json(FLAGS.raw_dj_eval_loc)
+            train_data = DataLoader.parse_json(FLAGS.raw_data_loc) if train_data_in is None else train_data_in
+            dj_eval_data = DataLoader.parse_json(FLAGS.raw_dj_eval_loc) if test_data_in is None else test_data_in
 
             # train_data = resample(train_data, n_samples=10, random_state=FLAGS.random_state)
             # dj_eval_data = resample(dj_eval_data, n_samples=10, random_state=FLAGS.random_state)
