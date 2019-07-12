@@ -284,7 +284,6 @@ class ClaimBusterModel:
     @staticmethod
     def save_model(sess, epoch):
         saver = tf.train.Saver()
-        print(os.getcwd())
         saver.save(sess, os.path.join(FLAGS.cb_output_dir, 'cb.ckpt'), global_step=epoch)
 
     @staticmethod
@@ -308,8 +307,6 @@ class ClaimBusterModel:
         return batch_x, batch_y
 
     def load_model(self, sess, graph):
-        print(os.getcwd())
-
         def get_last_save(scan_loc):
             print(scan_loc)
             ret_ar = []
