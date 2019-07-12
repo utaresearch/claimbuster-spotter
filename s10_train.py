@@ -2,6 +2,8 @@ import tensorflow as tf
 import math
 import time
 import os
+import numpy as np
+from sklearn.metrics import f1_score, classification_report
 from adv_bert_claimspotter.utils.data_loader import Dataset, DataLoader
 from adv_bert_claimspotter.model import ClaimBusterModel
 from adv_bert_claimspotter.flags import FLAGS, print_flags
@@ -20,8 +22,10 @@ def map_label(n):
 
 def train_adv_bert_model(train, dev, test):
     global label_mapping
-    os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu])
 
+    tf.logging.set_verbosity(tf.logging.INFO)
+
+    os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu])
     print_flags()
 
     tf.logging.info("Loading dataset from given values")
@@ -89,9 +93,62 @@ def train_adv_bert_model(train, dev, test):
         cb_model.save_model(sess, FLAGS.max_steps)
         tf.logging.info('Model saved.')
 
-        sess.close()
+    test_adv_bert_model(train, dev, test)
+
+
+def test_adv_bert_model(train, dev, test):
+    tf.logging.info('Evaluating model...')
+
+    tf.logging.info("Loading dataset")
+    data_load = DataLoader(train, dev, test)
+
+    test_data = data_load.load_testing_data()
+    tf.logging.info("{} testing examples".format(test_data.get_length()))
+
+    cb_model = ClaimBusterModel(data_load.vocab, data_load.class_weights, restore=True)
+
+    graph = tf.Graph()
+    with tf.Session(graph=graph, config=tf.ConfigProto(allow_soft_placement=True)) as sess:
+        sess.run(tf.global_variables_initializer())
+        cb_model.load_model(sess, graph)
+
+        n_batches = math.ceil(float(FLAGS.test_examples) / float(FLAGS.batch_size))
+
+        n_samples = 0
+        eval_loss = 0.0
+        eval_acc = 0.0
+
+        y_all = []
+        pred_all = []
+
+        for i in range(n_batches):
+            batch_x, batch_y = cb_model.get_batch(i, test_data, ver='test')
+
+            b_loss, b_acc, b_pred = cb_model.stats_from_run(sess, batch_x, batch_y)
+            if b_loss == 0 and b_acc == 0 and b_pred == 0:
+                continue
+
+            eval_loss += b_loss
+            eval_acc += b_acc * len(batch_y)
+            n_samples += len(batch_y)
+
+            y_all = np.concatenate((y_all, batch_y))
+            pred_all = np.concatenate((pred_all, b_pred))
+
+        f1score = f1_score(y_all, pred_all, average='weighted')
+
+        eval_loss /= n_samples
+        eval_acc /= n_samples
+
+        print('Labels:', y_all)
+        print('Predic:', pred_all)
+
+        tf.logging.info('Final stats | Loss: {:>7.4} Acc: {:>7.4f}% F1: {:>.4f}'.format(
+            eval_loss, eval_acc * 100, f1score))
+
+        target_names = (['NFS', 'UFS', 'CFS'] if FLAGS.num_classes == 3 else ['NFS/UFS', 'CFS'])
+        print(classification_report(y_all, pred_all, target_names=target_names))
 
 
 if __name__ == '__main__':
     tf.logging.set_verbosity(tf.logging.INFO)
-    main()
