@@ -137,8 +137,8 @@ class DataLoader:
     def load_ext_data(train_data_in, val_data_in, test_data_in):
         train_data, test_data, vocab = None, None, None
 
-        if train_data_in is not None and val_data_in is not None and test_data_in is not None:
-            FLAGS.refresh_data = True
+        # if train_data_in is not None and val_data_in is not None and test_data_in is not None:
+        #     FLAGS.refresh_data = True
 
         if FLAGS.refresh_data:
             train_data = DataLoader.parse_json(FLAGS.raw_data_loc) if train_data_in is None else train_data_in
