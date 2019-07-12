@@ -194,7 +194,6 @@ class DataLoader:
             with open(FLAGS.prc_data_loc, 'wb') as f:
                 pickle.dump((train_data, eval_data, vocab), f)
             tf.logging.info('Refreshed data, successfully dumped at {}'.format(FLAGS.prc_data_loc))
-            print("FOOOOOOOOOOOOOOOOOOO " + os.getcwd())
 
             if os.path.exists(FLAGS.cb_output_dir):
                 shutil.rmtree(FLAGS.cb_output_dir)
