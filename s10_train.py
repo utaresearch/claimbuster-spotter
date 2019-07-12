@@ -62,7 +62,8 @@ def train_adv_bert_model(train, dev, test):
             epoch_loss = 0.0
             epoch_acc = 0.0
 
-            for i in range(n_batches):
+            # for i in range(n_batches):
+            for i in range(1):
                 batch_x, batch_y = cb_model.get_batch(i, train_data)
                 cb_model.train_neural_network(sess, batch_x, batch_y)
 
@@ -122,8 +123,7 @@ def test_adv_bert_model(train, dev, test):
         y_all = []
         pred_all = []
 
-        # for i in range(n_batches):
-        for i in range(1):
+        for i in range(n_batches):
             batch_x, batch_y = cb_model.get_batch(i, test_data, ver='test')
 
             b_loss, b_acc, b_pred = cb_model.stats_from_run(sess, batch_x, batch_y)
