@@ -228,7 +228,7 @@ class ClaimBusterModel:
         val_acc /= tot_val_ex
         val_f1 = f1_score(all_y, all_y_pred, average='weighted')
 
-        return 'DJ Val Loss: {:>7.4f} DJ Val F1: {:>7.4f} '.format(val_loss, val_f1)
+        return 'Dev Loss: {:>7.4f} Dev F1: {:>7.4f} '.format(val_loss, val_f1)
 
     def stats_from_run(self, sess, batch_x, batch_y):
         x_nl = [z[0] for z in batch_x]

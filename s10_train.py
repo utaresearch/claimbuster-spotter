@@ -30,7 +30,7 @@ def train_adv_bert_model(train, dev, test):
     dev = list(zip(dev[0], list(map(map_label, dev[1]))))
     test = list(zip(test[0], list(map(map_label, test[1]))))
 
-    data_load = DataLoader(train, dev, test)
+    data_load = DataLoader(train, test, dev)
 
     train_data = data_load.load_training_data()
     test_data = data_load.load_testing_data()
