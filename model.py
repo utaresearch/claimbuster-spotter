@@ -308,9 +308,11 @@ class ClaimBusterModel:
 
     def load_model(self, sess, graph):
         def get_last_save(scan_loc):
+            print(scan_loc)
             ret_ar = []
             directory = os.fsencode(scan_loc)
             for fstr in os.listdir(directory):
+                print(os.fsdecode(fstr))
                 if '.meta' in os.fsdecode(fstr) and 'cb.ckpt-' in os.fsdecode(fstr):
                     ret_ar.append(os.fsdecode(fstr))
             ret_ar.sort()
