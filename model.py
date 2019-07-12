@@ -33,6 +33,9 @@ class ClaimBusterModel:
             else [tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x_id'),
                   tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x_mask'),
                   tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x_segment')]
+
+        os.environ["TFHUB_CACHE_DIR"] = '~/bert_cache'
+
         self.x_pos = tf.placeholder(tf.int32, (None, FLAGS.max_len, len(pos_labels) + 1), name='x_pos')
         self.x_sent = tf.placeholder(tf.float32, (None, 2), name='x_sent')
 
