@@ -210,6 +210,8 @@ class DataLoader:
 
     @staticmethod
     def create_tokenizer_from_hub_module():
+        os.environ['TFHUB_DOWNLOAD_PROGRESS'] = 1
+
         bert_module = hub.Module(FLAGS.bert_model_hub, trainable=False)
         tokenization_info = bert_module(signature="tokenization_info", as_dict=True)
         with tf.Session() as sess:

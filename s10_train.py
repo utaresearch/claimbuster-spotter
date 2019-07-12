@@ -26,6 +26,7 @@ def train_adv_bert_model(train, dev, test):
     tf.logging.set_verbosity(tf.logging.INFO)
 
     os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu])
+
     print_flags()
 
     tf.logging.info("Loading dataset from given values")
