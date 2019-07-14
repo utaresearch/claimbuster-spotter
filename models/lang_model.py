@@ -60,7 +60,7 @@ class LanguageModel:
             get_assignment_map_from_checkpoint(tf.trainable_variables(), init_checkpoint)
         restore_op = tf.train.init_from_checkpoint(init_checkpoint, assignment_map)
 
-        return [None, bert_outputs], restore_op if not adv else bert_outputs, restore_op
+        return ([None, bert_outputs], restore_op) if not adv else (bert_outputs, restore_op)
 
     @staticmethod
     def load_bert_pretrain_hyperparams():
