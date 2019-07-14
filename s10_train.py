@@ -92,8 +92,6 @@ def train_adv_bert_model(train, dev, test):
         cb_model.save_model(sess, FLAGS.max_steps)
         tf.logging.info('Model saved.')
 
-    test_adv_bert_model(train, dev, test)
-
 
 def test_adv_bert_model(train, dev, test):
     tf.logging.info('Evaluating model...')

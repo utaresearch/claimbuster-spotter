@@ -46,7 +46,6 @@ flags.DEFINE_string('bert_model_loc', './data/bert_pretrain', 'Root location of 
 flags.DEFINE_integer('bert_layers', 12, 'Number of BERT layers.')
 flags.DEFINE_integer('rnn_num_layers', 1, 'Number of LSTM layers.')
 flags.DEFINE_integer('rnn_cell_size', 16, 'Number of hidden units in the LSTM.')
-flags.DEFINE_bool('bidir_lstm', True, 'Use bidirectional LSTM')
 flags.DEFINE_integer('cls_hidden', 0, 'Size of hidden classification layer')
 
 # Optimization
@@ -56,13 +55,10 @@ flags.DEFINE_integer('max_steps', 8, 'Number of epochs to run.')
 # Regularization
 flags.DEFINE_float('l2_reg_coeff', 0.001, 'If val > 0, use L2 Regularization on weights in graph')
 flags.DEFINE_float('keep_prob_cls', 0.7, 'Keep probability of classification layer.')
-flags.DEFINE_float('keep_prob_lstm', 0.6, 'Keep probability LSTM network.')
 
 # Embeddings
 flags.DEFINE_integer('embed_type', 1, '0 for word2vec, 1 for Stanford glove')
 flags.DEFINE_string('w2v_loc', './data/word2vec/w2v3b_gensim.txt', 'Location of w2v embeddings')
-# flags.DEFINE_string('glove_loc', './data/glove/glove840b_gensim.txt', 'Location of glove embeddings')
-flags.DEFINE_string('glove_loc', './data/glove/glove6b100d_gensim.txt', 'Location of glove embeddings')
 flags.DEFINE_string('w2v_loc_bin', './data/word2vec/w2v3b_gensim.bin', 'Location of w2v embeddings in BINARY form')
 flags.DEFINE_bool('train_embed', False, 'Train on top of w2v embeddings')  # we don't have enough data to train embed
 flags.DEFINE_integer('embedding_dims', 100, 'Dimensions of embedded vector.')
