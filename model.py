@@ -16,12 +16,10 @@ for root, dirs, files in os.walk(cwd):
 
 if cwd != root_dir:
     from .models.lang_model import LanguageModel
-    from .models.embeddings import Embedding
     from .utils.transformations import pos_labels
     from .flags import FLAGS
 else:
     from models.lang_model import LanguageModel
-    from models.embeddings import Embedding
     from utils.transformations import pos_labels
     from flags import FLAGS
 
@@ -51,10 +49,6 @@ class ClaimBusterModel:
         self.computed_cls_weights = cls_weights if cls_weights is not None else [1 for _ in range(FLAGS.num_classes)]
 
         if not restore:
-            if not FLAGS.bert_model:
-                self.embed_obj = Embedding(vocab)
-                self.embed = self.embed_obj.construct_embeddings()
-
             self.logits, self.cost = self.construct_model(adv=FLAGS.adv_train)
 
             self.optimizer = self.build_optimizer()
