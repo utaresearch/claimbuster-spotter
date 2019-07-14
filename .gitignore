@@ -1,4 +1,5 @@
 data/all_data.pickle
+data/bert_pretrain
 data/word2vec/w2v3b_gensim.bin
 data/word2vec/w2v3b_gensim.txt
 data/glove/glove840b_gensim.txt
