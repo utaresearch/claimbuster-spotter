@@ -57,8 +57,6 @@ class DataLoader:
     def __init__(self, train_data=None, val_data=None, test_data=None):
         assert FLAGS.num_classes == 2 or FLAGS.num_classes == 3
 
-        os.environ["TFHUB_CACHE_DIR"] = '~/bert_cache'
-
         self.data, self.eval_data, self.vocab = self.load_ext_data(train_data, val_data, test_data)
 
         if FLAGS.num_classes == 2:
