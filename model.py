@@ -42,7 +42,6 @@ class ClaimBusterModel:
         self.y = tf.placeholder(tf.int32, (None, FLAGS.num_classes), name='y')
 
         self.kp_cls = tf.placeholder(tf.float32, name='kp_cls')
-        self.kp_lstm = tf.placeholder(tf.float32, name='kp_lstm')
         self.cls_weight = tf.placeholder(tf.float32, (None,), name='cls_weight')
 
         self.computed_cls_weights = cls_weights if cls_weights is not None else [1 for _ in range(FLAGS.num_classes)]
@@ -153,7 +152,6 @@ class ClaimBusterModel:
             self.pos_output_mask: self.gen_output_mask(x_pos),
 
             self.kp_cls: FLAGS.keep_prob_cls if ver == 'train' else 1.0,
-            self.kp_lstm: FLAGS.keep_prob_lstm if ver == 'train' else 1.0,
         }
 
         if batch_y is not None:
@@ -309,7 +307,6 @@ class ClaimBusterModel:
             self.y = graph.get_tensor_by_name('y:0')
 
             self.kp_cls = graph.get_tensor_by_name('kp_cls:0')
-            self.kp_lstm = graph.get_tensor_by_name('kp_lstm:0')
             self.cls_weight = graph.get_tensor_by_name('cls_weight:0')
 
             # outputs
