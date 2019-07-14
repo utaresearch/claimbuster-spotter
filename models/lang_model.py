@@ -43,11 +43,14 @@ class LanguageModel:
     def build_bert_transformer_raw(x_id, x_mask, x_segment, adv):
         tf.logging.info('Building BERT transformer')
 
-        config = BertConfig(vocab_size=32000, hidden_size=512,
-                            num_hidden_layers=8, num_attention_heads=6, intermediate_size=1024)
+        hparams = LanguageModel.load_bert_pretrain_hyperparams()
 
-        model = BertModel(config=config, is_training=True,
-                          input_ids=x_id, input_mask=x_mask, token_type_ids=x_segment)
+        config = BertConfig(vocab_size=hparams['vocab_size'], hidden_size=hparams['hidden_size'],
+                            num_hidden_layers=hparams['num_hidden_layers'],
+                            num_attention_heads=hparams['num_attention_heads'],
+                            intermediate_size=hparams['intermediate_size'])
+
+        model = BertModel(config=config, is_training=True, input_ids=x_id, input_mask=x_mask, token_type_ids=x_segment)
 
         bert_outputs = model.get_pooled_output()
 
@@ -55,4 +58,5 @@ class LanguageModel:
 
     @staticmethod
     def load_bert_pretrain_hyperparams():
-        data = json.load(os.path.join(FLAGS.bert_model_loc, ''))
+        data = json.load(os.path.join(FLAGS.bert_model_loc, 'bert_config.json'))
+        return data
