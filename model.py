@@ -90,10 +90,9 @@ class ClaimBusterModel:
     def fprop(self, orig_embed=None, reg_loss=None, adv=False):
         if adv: assert (reg_loss is not None and orig_embed is not None)
 
-        with tf.variable_scope('natural_lang_model/', reuse=adv):
-            nl_out = LanguageModel.build_bert_transformer_raw(self.x_nl[0], self.x_nl[1], self.x_nl[2], adv)
-            if not adv:
-                orig_embed, nl_out = nl_out
+        nl_out = LanguageModel.build_bert_transformer_raw(self.x_nl[0], self.x_nl[1], self.x_nl[2], adv)
+        if not adv:
+            orig_embed, nl_out = nl_out
 
         with tf.variable_scope('fc_output/', reuse=adv):
             synth_out = tf.concat([nl_out, self.x_sent], axis=1)
