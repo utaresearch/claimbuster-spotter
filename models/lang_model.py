@@ -58,5 +58,6 @@ class LanguageModel:
 
     @staticmethod
     def load_bert_pretrain_hyperparams():
-        data = json.load(os.path.join(FLAGS.bert_model_loc, 'bert_config.json'))
+        with open(os.path.join(FLAGS.bert_model_loc, 'bert_config.json'), 'r') as f:
+            data = json.load(f)
         return data
