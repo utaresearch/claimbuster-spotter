@@ -185,7 +185,7 @@ class ClaimBusterModel:
         return feed_dict
 
     def restore_bert_pretrain_weights(self, sess):
-
+        pass
 
     def train_neural_network(self, sess, batch_x, batch_y):
         x_nl = [z[0] for z in batch_x]
