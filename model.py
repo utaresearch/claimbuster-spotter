@@ -174,7 +174,7 @@ class ClaimBusterModel:
 
             with graph.as_default():
                 saver = tf.train.import_meta_graph(model_dir)
-                saver.restore(sess, tf.train.latest_checkpoint(FLAGS.bert_model_loc, 'bert_model.ckpt'))
+                saver.restore(sess, os.path.join(FLAGS.bert_model_loc, 'bert_model.ckpt'))
 
                 for tensor_name in tensors_to_restore:
                     ret[tensor_name] = sess.run(graph.get_tensor_by_name(tensor_name))
