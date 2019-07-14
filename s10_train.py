@@ -96,6 +96,20 @@ def train_adv_bert_model(train, dev, test):
 def test_adv_bert_model(train, dev, test):
     tf.logging.info('Evaluating model...')
 
+    global label_mapping
+
+    tf.logging.set_verbosity(tf.logging.INFO)
+
+    os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu])
+
+    print_flags()
+
+    tf.logging.info("Loading dataset from given values")
+
+    train = list(zip(train[0], list(map(map_label, train[1]))))
+    dev = list(zip(dev[0], list(map(map_label, dev[1]))))
+    test = list(zip(test[0], list(map(map_label, test[1]))))
+
     tf.logging.info("Loading dataset")
     data_load = DataLoader(train, dev, test)
 
