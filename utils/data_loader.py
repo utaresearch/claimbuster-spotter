@@ -161,35 +161,27 @@ class DataLoader:
             tf.logging.info('Processing eval data')
             eval_txt, eval_pos, eval_sent = transf.process_dataset(eval_txt)
 
-            if not FLAGS.bert_model:
-                tokenizer = Tokenizer()
+            train_df = pd.DataFrame(data=zip(train_txt, train_lab), columns=['x', 'y'])
+            eval_df = pd.DataFrame(data=zip(eval_txt, eval_lab), columns=['x', 'y'])
 
-                tokenizer.fit_on_texts(np.concatenate((train_txt, eval_txt)))
-                train_seq = tokenizer.texts_to_sequences(train_txt)
-                eval_seq = tokenizer.texts_to_sequences(eval_txt)
+            train_df = train_df.apply(lambda x: run_classifier.InputExample(guid=None, text_a=x['x'], text_b=None,
+                                                                            label=x['y']), axis=1)
 
-                train_data = Dataset(list(zip(train_seq, train_pos, train_sent)), train_lab, random_state=FLAGS.random_state)
-                eval_data = Dataset(list(zip(eval_seq, eval_pos, eval_sent)), eval_lab, random_state=FLAGS.random_state)
-                vocab = tokenizer.word_index
-            else:
-                train_df = pd.DataFrame(data=zip(train_txt, train_lab), columns=['x', 'y'])
-                eval_df = pd.DataFrame(data=zip(eval_txt, eval_lab), columns=['x', 'y'])
+            eval_df = eval_df.apply(lambda x: run_classifier.InputExample(guid=None, text_a=x['x'], text_b=None,
+                                                                          label=x['y']), axis=1)
 
-                train_df = train_df.apply(lambda x: run_classifier.InputExample(guid=None, text_a=x['x'], text_b=None,
-                                                                                label=x['y']), axis=1)
+            tokenizer = DataLoader.create_tokenizer_from_hub_module()
 
-                eval_df = eval_df.apply(lambda x: run_classifier.InputExample(guid=None, text_a=x['x'], text_b=None,
-                                                                              label=x['y']), axis=1)
+            train_features = run_classifier.convert_examples_to_features(train_df,
+                                                                         [z for z in range(FLAGS.num_classes)],
+                                                                         FLAGS.max_len, tokenizer)
+            eval_features = run_classifier.convert_examples_to_features(eval_df, [z for z in range(FLAGS.num_classes)],
+                                                                        FLAGS.max_len, tokenizer)
 
-                tokenizer = DataLoader.create_tokenizer_from_hub_module()
-
-                train_features = run_classifier.convert_examples_to_features(train_df, [z for z in range(FLAGS.num_classes)],
-                                                                             FLAGS.max_len, tokenizer)
-                eval_features = run_classifier.convert_examples_to_features(eval_df, [z for z in range(FLAGS.num_classes)],
-                                                                            FLAGS.max_len, tokenizer)
-
-                train_data = Dataset(list(zip(train_features, train_pos, train_sent)), train_lab, random_state=FLAGS.random_state)
-                eval_data = Dataset(list(zip(eval_features, eval_pos, eval_sent)), eval_lab, random_state=FLAGS.random_state)
+            train_data = Dataset(list(zip(train_features, train_pos, train_sent)), train_lab,
+                                 random_state=FLAGS.random_state)
+            eval_data = Dataset(list(zip(eval_features, eval_pos, eval_sent)), eval_lab,
+                                random_state=FLAGS.random_state)
 
             with open(FLAGS.prc_data_loc, 'wb') as f:
                 pickle.dump((train_data, eval_data, vocab), f)
@@ -202,9 +194,6 @@ class DataLoader:
             tf.logging.info('Restoring data from {}'.format(FLAGS.prc_data_loc))
             with open(FLAGS.prc_data_loc, 'rb') as f:
                 train_data, eval_data, vocab = pickle.load(f)
-
-        if not FLAGS.bert_model:
-            assert vocab is not None
 
         return train_data, eval_data, vocab
 

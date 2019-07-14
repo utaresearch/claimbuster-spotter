@@ -26,10 +26,9 @@ else:
 
 class ClaimBusterModel:
     def __init__(self, vocab=None, cls_weights=None, restore=False):
-        self.x_nl = tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x_nl') if not FLAGS.bert_model \
-            else [tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x_id'),
-                  tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x_mask'),
-                  tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x_segment')]
+        self.x_nl = [tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x_id'),
+                     tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x_mask'),
+                     tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x_segment')]
 
         self.x_pos = tf.placeholder(tf.int32, (None, FLAGS.max_len, len(pos_labels) + 1), name='x_pos')
         self.x_sent = tf.placeholder(tf.float32, (None, 2), name='x_sent')
@@ -60,24 +59,20 @@ class ClaimBusterModel:
             self.cost, self.y_pred, self.acc = None, None, None
 
     def build_optimizer(self):
-        if not FLAGS.bert_model:
-            return tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(self.cost) \
-                if FLAGS.adam else tf.train.RMSPropOptimizer(learning_rate=FLAGS.learning_rate).minimize(self.cost)
-        else:
-            train_vars = tf.trainable_variables()
-            non_trainable_layers = ['/layer_{}/'.format(num)
-                                    for num in range(FLAGS.bert_layers - FLAGS.bert_ft_enc_layers)]
-            if not FLAGS.bert_ft_embed:
-                non_trainable_layers.append('/embeddings/')
+        train_vars = tf.trainable_variables()
+        non_trainable_layers = ['/layer_{}/'.format(num)
+                                for num in range(FLAGS.bert_layers - FLAGS.bert_ft_enc_layers)]
+        if not FLAGS.bert_ft_embed:
+            non_trainable_layers.append('/embeddings/')
 
-            if FLAGS.bert_trainable:
-                train_vars = [v for v in train_vars if not any(z in v.name for z in non_trainable_layers)]
+        if FLAGS.bert_trainable:
+            train_vars = [v for v in train_vars if not any(z in v.name for z in non_trainable_layers)]
 
-            tf.logging.info('Removing: {}'.format(non_trainable_layers))
-            tf.logging.info(train_vars)
+        tf.logging.info('Removing: {}'.format(non_trainable_layers))
+        tf.logging.info(train_vars)
 
-            return tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(self.cost, var_list=train_vars)\
-                if FLAGS.adam else tf.train.RMSPropOptimizer(learning_rate=FLAGS.learning_rate).minimize(self.cost)
+        return tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(self.cost, var_list=train_vars) \
+            if FLAGS.adam else tf.train.RMSPropOptimizer(learning_rate=FLAGS.learning_rate).minimize(self.cost)
 
     def construct_model(self, adv):
         with tf.variable_scope('cb_model/'):
@@ -142,35 +137,19 @@ class ClaimBusterModel:
         return tf.identity(ret_loss, name='regular_loss')
 
     def get_feed_dict(self, x_nl, x_pos, x_sent, batch_y=None, ver='train'):
-        if not FLAGS.bert_model:
-            feed_dict = {
-                self.x_nl: self.pad_seq(x_nl),
-                self.x_pos: self.prc_pos(self.pad_seq(x_pos)),
-                self.x_sent: x_sent,
+        feed_dict = {
+            self.x_nl[0]: [z.input_ids for z in x_nl],
+            self.x_nl[1]: [z.input_mask for z in x_nl],
+            self.x_nl[2]: [z.segment_ids for z in x_nl],
+            self.x_pos: self.prc_pos(self.pad_seq(x_pos)),
+            self.x_sent: x_sent,
 
-                self.nl_len: self.gen_x_len(x_nl),
-                self.pos_len: self.gen_x_len(x_pos),
+            self.pos_len: self.gen_x_len(x_pos),
+            self.pos_output_mask: self.gen_output_mask(x_pos),
 
-                self.nl_output_mask: self.gen_output_mask(x_nl),
-                self.pos_output_mask: self.gen_output_mask(x_pos),
-
-                self.kp_cls: FLAGS.keep_prob_cls if ver == 'train' else 1.0,
-                self.kp_lstm: FLAGS.keep_prob_lstm if ver == 'train' else 1.0,
-            }
-        else:
-            feed_dict = {
-                self.x_nl[0]: [z.input_ids for z in x_nl],
-                self.x_nl[1]: [z.input_mask for z in x_nl],
-                self.x_nl[2]: [z.segment_ids for z in x_nl],
-                self.x_pos: self.prc_pos(self.pad_seq(x_pos)),
-                self.x_sent: x_sent,
-
-                self.pos_len: self.gen_x_len(x_pos),
-                self.pos_output_mask: self.gen_output_mask(x_pos),
-
-                self.kp_cls: FLAGS.keep_prob_cls if ver == 'train' else 1.0,
-                self.kp_lstm: FLAGS.keep_prob_lstm if ver == 'train' else 1.0,
-            }
+            self.kp_cls: FLAGS.keep_prob_cls if ver == 'train' else 1.0,
+            self.kp_lstm: FLAGS.keep_prob_lstm if ver == 'train' else 1.0,
+        }
 
         if batch_y is not None:
             feed_dict[self.y] = self.one_hot(batch_y)
@@ -316,13 +295,8 @@ class ClaimBusterModel:
             saver.restore(sess, tf.train.latest_checkpoint(FLAGS.cb_output_dir))
 
             # inputs
-            if not FLAGS.bert_model:
-                self.x_nl = graph.get_tensor_by_name('x_nl:0')
-                self.nl_len = graph.get_tensor_by_name('nl_len:0')
-                self.nl_output_mask = graph.get_tensor_by_name('nl_output_mask:0')
-            else:
-                self.x_nl = [graph.get_tensor_by_name('x_id:0'), graph.get_tensor_by_name('x_mask:0'),
-                             graph.get_tensor_by_name('x_segment:0')]
+            self.x_nl = [graph.get_tensor_by_name('x_id:0'), graph.get_tensor_by_name('x_mask:0'),
+                         graph.get_tensor_by_name('x_segment:0')]
 
             self.x_pos = graph.get_tensor_by_name('x_pos:0')
             self.x_sent = graph.get_tensor_by_name('x_sent:0')
