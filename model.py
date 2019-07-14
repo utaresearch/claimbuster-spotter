@@ -47,9 +47,7 @@ class ClaimBusterModel:
 
         self.computed_cls_weights = cls_weights if cls_weights is not None else [1 for _ in range(FLAGS.num_classes)]
 
-        self.bert_pretrain_weights = self.restore_bert_pretrain_weights()
-        print(self.bert_pretrain_weights)
-        exit()
+        # self.bert_pretrain_weights = self.restore_bert_pretrain_weights()
 
         if not restore:
             self.logits, self.cost = self.construct_model(adv=FLAGS.adv_train)
@@ -93,7 +91,7 @@ class ClaimBusterModel:
         if adv: assert (reg_loss is not None and orig_embed is not None)
 
         with tf.variable_scope('natural_lang_model/', reuse=adv):
-            nl_out = LanguageModel.build_bert_transformer_raw(self.x_nl[0], self.x_nl[1], self.x_nl[2], adv)
+            nl_out = LanguageModel.build_bert_transformer_hub(self.x_nl[0], self.x_nl[1], self.x_nl[2], adv)
             if not adv:
                 orig_embed, nl_out = nl_out
 
