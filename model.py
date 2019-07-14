@@ -102,43 +102,33 @@ class ClaimBusterModel:
     def fprop(self, orig_embed=None, reg_loss=None, adv=False):
         if adv: assert (reg_loss is not None and orig_embed is not None)
 
-        with tf.variable_scope('natural_lang_lstm/', reuse=adv):
-            nl_lstm_out = LanguageModel.build_embed_lstm(self.x_nl, self.nl_len, self.nl_output_mask, self.embed,
-                                                         self.kp_lstm, orig_embed, reg_loss, adv) \
-                if not FLAGS.bert_model else LanguageModel.build_bert_transformer(self.x_nl[0], self.x_nl[1],
-                                                                                  self.x_nl[2], adv)
+        with tf.variable_scope('natural_lang_model/', reuse=adv):
+            nl_out = LanguageModel.build_bert_transformer(self.x_nl[0], self.x_nl[1], self.x_nl[2], adv)
             if not adv:
-                orig_embed, nl_lstm_out = nl_lstm_out
-
-        with tf.variable_scope('pos_lstm/', reuse=adv):
-            if FLAGS.pos_lstm:
-                pos_lstm_out = LanguageModel.build_lstm(self.x_pos, self.pos_len, self.pos_output_mask, self.kp_lstm,
-                                                        adv)
+                orig_embed, nl_out = nl_out
 
         with tf.variable_scope('fc_output/', reuse=adv):
-            to_concat = [nl_lstm_out, pos_lstm_out, self.x_sent] if FLAGS.pos_lstm else [nl_lstm_out, self.x_sent]
+            synth_out = tf.concat([nl_out, self.x_sent], axis=1)
+            synth_out = tf.nn.dropout(synth_out, keep_prob=FLAGS.keep_prob_cls)
 
-            lstm_out = tf.concat(to_concat, axis=1)
-            lstm_out = tf.nn.dropout(lstm_out, keep_prob=FLAGS.keep_prob_cls)
-
-            lstm_out_shape = lstm_out.get_shape()[1]
+            synth_out_shape = synth_out.get_shape()[1]
 
             if FLAGS.cls_hidden > 0:
-                hidden_weights = tf.get_variable('cb_hidden_weights', shape=(lstm_out_shape, FLAGS.cls_hidden),
+                hidden_weights = tf.get_variable('cb_hidden_weights', shape=(synth_out_shape, FLAGS.cls_hidden),
                                                  initializer=tf.contrib.layers.xavier_initializer())
                 hidden_biases = tf.get_variable('cb_hidden_biases', shape=FLAGS.cls_hidden,
                                                 initializer=tf.contrib.layers.xavier_initializer())
 
-                lstm_out = tf.matmul(lstm_out, hidden_weights) + hidden_biases
-                lstm_out = tf.nn.dropout(lstm_out, keep_prob=FLAGS.keep_prob_cls)
+                synth_out = tf.matmul(synth_out, hidden_weights) + hidden_biases
+                synth_out = tf.nn.dropout(synth_out, keep_prob=FLAGS.keep_prob_cls)
 
             output_weights = tf.get_variable('cb_output_weights', shape=(
-                FLAGS.cls_hidden if FLAGS.cls_hidden > 0 else lstm_out_shape, FLAGS.num_classes),
+                FLAGS.cls_hidden if FLAGS.cls_hidden > 0 else synth_out_shape, FLAGS.num_classes),
                                              initializer=tf.contrib.layers.xavier_initializer())
             output_biases = tf.get_variable('cb_output_biases', shape=FLAGS.num_classes,
                                             initializer=tf.zeros_initializer())
 
-            cb_out = tf.matmul(lstm_out, output_weights) + output_biases
+            cb_out = tf.matmul(synth_out, output_weights) + output_biases
 
         return (orig_embed, cb_out) if not adv else cb_out
 
