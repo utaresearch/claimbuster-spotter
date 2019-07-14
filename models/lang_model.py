@@ -54,8 +54,11 @@ class LanguageModel:
 
         bert_outputs = model.get_pooled_output()
 
-        restore_op = get_assignment_map_from_checkpoint(tf.trainable_variables(),
-                                                        os.path.join(FLAGS.bert_model_loc, 'bert_model.ckpt'))
+        init_checkpoint = os.path.join(FLAGS.bert_model_loc, 'bert_model.ckpt')
+
+        assignment_map, initialized_variable_names = \
+            get_assignment_map_from_checkpoint(tf.trainable_variables(), init_checkpoint)
+        restore_op = tf.train.init_from_checkpoint(init_checkpoint, assignment_map)
 
         return [None, bert_outputs], restore_op if not adv else bert_outputs, restore_op
 
