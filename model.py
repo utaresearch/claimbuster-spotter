@@ -92,9 +92,6 @@ class ClaimBusterModel:
         if FLAGS.use_bert_hub:
             nl_out = LanguageModel.build_bert_transformer_hub(self.x_nl[0], self.x_nl[1], self.x_nl[2], adv)
         else:
-            print(LanguageModel.build_bert_transformer_raw(
-                self.x_nl[0], self.x_nl[1], self.x_nl[2], adv))
-
             nl_out, self.init_bert_pretrain_op = LanguageModel.build_bert_transformer_raw(
                 self.x_nl[0], self.x_nl[1], self.x_nl[2], adv)
         if not adv:
