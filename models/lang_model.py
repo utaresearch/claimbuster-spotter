@@ -3,7 +3,7 @@ import sys
 import json
 import os
 from .adv_losses import apply_adversarial_perturbation
-from .bert_model import BertConfig, BertModel
+from .bert_model import BertConfig, BertModel, get_assignment_map_from_checkpoint
 
 cwd = os.getcwd()
 root_dir = None
@@ -54,7 +54,10 @@ class LanguageModel:
 
         bert_outputs = model.get_pooled_output()
 
-        return None, bert_outputs if not adv else bert_outputs
+        restore_op = get_assignment_map_from_checkpoint(tf.trainable_variables(),
+                                                        os.path.join(FLAGS.bert_model_loc, 'bert_model.ckpt'))
+
+        return (None, bert_outputs), restore_op if not adv else bert_outputs, restore_op
 
     @staticmethod
     def load_bert_pretrain_hyperparams():
