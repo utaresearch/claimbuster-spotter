@@ -95,7 +95,7 @@ class ClaimBusterModel:
             nl_out, self.init_bert_pretrain_op = LanguageModel.build_bert_transformer_raw(
                 self.x_nl[0], self.x_nl[1], self.x_nl[2], adv)
         if not adv:
-            orig_embed, nl_out = nl_out
+            orig_embed, nl_out = nl_out[0], nl_out[1]
 
         with tf.variable_scope('fc_output/', reuse=adv):
             synth_out = tf.concat([nl_out, self.x_sent], axis=1)
