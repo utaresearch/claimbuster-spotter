@@ -54,7 +54,7 @@ class LanguageModel:
 
         bert_outputs = model.get_pooled_output()
 
-        return None, bert_outputs["pooled_output"] if not adv else bert_outputs
+        return None, bert_outputs if not adv else bert_outputs
 
     @staticmethod
     def load_bert_pretrain_hyperparams():
