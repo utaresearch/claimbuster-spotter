@@ -88,10 +88,13 @@ class ClaimBusterModel:
             return logits, tf.identity(loss, name='cost')
 
     def fprop(self, orig_embed=None, reg_loss=None, adv=False):
-        if adv: assert (reg_loss is not None and orig_embed is not None)
+        if adv: assert (reg_loss is not None and orig_embed is not None) and not FLAGS.use_bert_hub
 
-        nl_out, self.init_bert_pretrain_op = LanguageModel.build_bert_transformer_raw(self.x_nl[0], self.x_nl[1],
-                                                                                      self.x_nl[2], adv)
+        if FLAGS.use_bert_hub:
+            nl_out = LanguageModel.build_bert_transformer_hub(self.x_nl[0], self.x_nl[1], self.x_nl[2], adv)
+        else:
+            nl_out, self.init_bert_pretrain_op = LanguageModel.build_bert_transformer_raw(
+                self.x_nl[0], self.x_nl[1], self.x_nl[2], adv)
         if not adv:
             orig_embed, nl_out = nl_out
 
