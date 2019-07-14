@@ -137,15 +137,12 @@ class DataLoader:
     def load_ext_data(train_data_in, val_data_in, test_data_in):
         train_data, test_data, vocab = None, None, None
 
-        # if train_data_in is not None and val_data_in is not None and test_data_in is not None:
-        #     FLAGS.refresh_data = True
+        if train_data_in is not None and val_data_in is not None and test_data_in is not None:
+            FLAGS.refresh_data = True
 
         if FLAGS.refresh_data:
             train_data = DataLoader.parse_json(FLAGS.raw_data_loc) if train_data_in is None else train_data_in
             dj_eval_data = DataLoader.parse_json(FLAGS.raw_dj_eval_loc) if test_data_in is None else test_data_in
-
-            # train_data = resample(train_data, n_samples=10, random_state=FLAGS.random_state)
-            # dj_eval_data = resample(dj_eval_data, n_samples=10, random_state=FLAGS.random_state)
 
             train_txt = [z[0] for z in train_data]
             eval_txt = [z[0] for z in dj_eval_data]
