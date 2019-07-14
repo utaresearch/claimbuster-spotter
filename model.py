@@ -103,7 +103,7 @@ class ClaimBusterModel:
         if adv: assert (reg_loss is not None and orig_embed is not None)
 
         with tf.variable_scope('natural_lang_model/', reuse=adv):
-            nl_out = LanguageModel.build_bert_transformer(self.x_nl[0], self.x_nl[1], self.x_nl[2], adv)
+            nl_out = LanguageModel.build_bert_transformer_raw(self.x_nl[0], self.x_nl[1], self.x_nl[2], adv)
             if not adv:
                 orig_embed, nl_out = nl_out
 

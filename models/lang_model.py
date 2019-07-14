@@ -2,6 +2,7 @@ import tensorflow as tf
 import sys
 import os
 from .adv_losses import apply_adversarial_perturbation
+from .bert import BertConfig, BertModel
 
 cwd = os.getcwd()
 root_dir = None
@@ -23,7 +24,7 @@ class LanguageModel:
         pass
 
     @staticmethod
-    def build_bert_transformer(x_id, x_mask, x_segment, adv):
+    def build_bert_transformer_hub(x_id, x_mask, x_segment, adv):
         tf.logging.info('Building BERT transformer')
 
         import tensorflow_hub as hub
@@ -34,5 +35,19 @@ class LanguageModel:
             input_mask=x_mask,
             segment_ids=x_segment)
         bert_outputs = bert_module(bert_inputs, signature="tokens", as_dict=True)
+
+        return None, bert_outputs["pooled_output"] if not adv else bert_outputs
+
+    @staticmethod
+    def build_bert_transformer_raw(x_id, x_mask, x_segment, adv):
+        tf.logging.info('Building BERT transformer')
+
+        config = BertConfig(vocab_size=32000, hidden_size=512,
+                            num_hidden_layers=8, num_attention_heads=6, intermediate_size=1024)
+
+        model = BertModel(config=config, is_training=True,
+                          input_ids=x_id, input_mask=x_mask, token_type_ids=x_segment)
+
+        bert_outputs = model.get_pooled_output()
 
         return None, bert_outputs["pooled_output"] if not adv else bert_outputs
