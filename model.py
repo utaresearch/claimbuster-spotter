@@ -1,5 +1,4 @@
 import tensorflow as tf
-from bert import optimization
 import numpy as np
 import os
 from keras.preprocessing.sequence import pad_sequences
@@ -184,6 +183,9 @@ class ClaimBusterModel:
             feed_dict[self.cls_weight] = self.get_cls_weights(batch_y)
 
         return feed_dict
+
+    def restore_bert_pretrain_weights(self, sess):
+
 
     def train_neural_network(self, sess, batch_x, batch_y):
         x_nl = [z[0] for z in batch_x]

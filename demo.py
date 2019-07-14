@@ -1,5 +1,5 @@
 import tensorflow as tf
-from bert import run_classifier
+from bert_model import run_classifier
 import numpy as np
 import os
 from model import ClaimBusterModel

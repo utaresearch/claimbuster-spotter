@@ -3,7 +3,7 @@ import sys
 import json
 import os
 from .adv_losses import apply_adversarial_perturbation
-from .bert import BertConfig, BertModel
+from .bert_model import BertConfig, BertModel
 
 cwd = os.getcwd()
 root_dir = None
