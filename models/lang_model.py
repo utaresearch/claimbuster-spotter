@@ -1,5 +1,6 @@
 import tensorflow as tf
 import sys
+import json
 import os
 from .adv_losses import apply_adversarial_perturbation
 from .bert import BertConfig, BertModel
@@ -51,3 +52,7 @@ class LanguageModel:
         bert_outputs = model.get_pooled_output()
 
         return None, bert_outputs["pooled_output"] if not adv else bert_outputs
+
+    @staticmethod
+    def load_bert_pretrain_hyperparams():
+        data = json.load(os.path.join(FLAGS.bert_model_loc, ''))
