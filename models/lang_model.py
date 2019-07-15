@@ -26,6 +26,8 @@ class LanguageModel:
 
     @staticmethod
     def build_bert_transformer_hub(x_id, x_mask, x_segment, adv):
+        assert not adv
+
         tf.logging.info('Building BERT transformer')
 
         import tensorflow_hub as hub
@@ -41,7 +43,7 @@ class LanguageModel:
 
     @staticmethod
     def build_bert_transformer_raw(x_id, x_mask, x_segment, adv):
-        tf.logging.info('Building BERT transformer')
+        tf.logging.info('Building{}BERT transformer'.format(' adversarial ' if adv else ' '))
 
         hparams = LanguageModel.load_bert_pretrain_hyperparams()
 
@@ -55,20 +57,19 @@ class LanguageModel:
                             type_vocab_size=hparams['type_vocab_size'],
                             initializer_range=hparams['initializer_range'])
 
-        model = BertModel(config=config, is_training=True, input_ids=x_id, input_mask=x_mask, token_type_ids=x_segment)
+        a
 
+        model = BertModel(config=config, is_training=True, input_ids=x_id, input_mask=x_mask, token_type_ids=x_segment,
+                          adv=adv, perturb=adv_perturbation)
         bert_outputs = model.get_pooled_output()
 
         init_checkpoint = os.path.join(FLAGS.bert_model_loc, 'bert_model.ckpt')
-
         assignment_map, _ = \
             get_assignment_map_from_checkpoint(tf.trainable_variables(), init_checkpoint)
 
-        print(assignment_map)
-
         restore_op = tf.train.init_from_checkpoint(init_checkpoint, assignment_map)
 
-        return ([None, bert_outputs], restore_op) if not adv else (bert_outputs, restore_op)
+        return ([model.get_embedding_output(), bert_outputs], restore_op) if not adv else (bert_outputs, restore_op)
 
     @staticmethod
     def load_bert_pretrain_hyperparams():

@@ -114,6 +114,8 @@ class BertModel(object):
                  input_ids,
                  input_mask=None,
                  token_type_ids=None,
+                 adv=False,
+                 perturb=None,
                  use_one_hot_embeddings=False):
         """Constructor for BertModel.
 
@@ -171,6 +173,9 @@ class BertModel(object):
                     initializer_range=config.initializer_range,
                     max_position_embeddings=config.max_position_embeddings,
                     dropout_prob=config.hidden_dropout_prob)
+
+                if adv:
+                    self.embedding_output += perturb
 
             with tf.variable_scope("encoder/", reuse=tf.AUTO_REUSE):
                 # This converts a 2D mask of shape [batch_size, seq_length] to a 3D
