@@ -76,15 +76,14 @@ class ClaimBusterModel:
             if FLAGS.adam else tf.train.RMSPropOptimizer(learning_rate=FLAGS.learning_rate).minimize(self.cost)
 
     def construct_model(self, adv):
-        with tf.variable_scope('cb_model/'):
-            orig_embed, logits = self.fprop()
-            loss = self.ce_loss(logits, self.cls_weight)
+        orig_embed, logits = self.fprop()
+        loss = self.ce_loss(logits, self.cls_weight)
 
-            if adv:
-                logits_adv = self.fprop(orig_embed, loss, adv=True)
-                loss += FLAGS.adv_coeff * self.adv_loss(logits_adv, self.cls_weight)
+        if adv:
+            logits_adv = self.fprop(orig_embed, loss, adv=True)
+            loss += FLAGS.adv_coeff * self.adv_loss(logits_adv, self.cls_weight)
 
-            return logits, tf.identity(loss, name='cost')
+        return logits, tf.identity(loss, name='cost')
 
     def fprop(self, orig_embed=None, reg_loss=None, adv=False):
         if adv: assert (reg_loss is not None and orig_embed is not None) and not FLAGS.use_bert_hub
@@ -310,7 +309,7 @@ class ClaimBusterModel:
             self.cls_weight = graph.get_tensor_by_name('cls_weight:0')
 
             # outputs
-            self.cost = graph.get_tensor_by_name('cb_model/cost:0')
+            self.cost = graph.get_tensor_by_name('cost:0')
             self.y_pred = graph.get_tensor_by_name('y_pred:0')
             self.acc = graph.get_tensor_by_name('acc:0')
 
