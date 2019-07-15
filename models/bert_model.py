@@ -297,7 +297,7 @@ def get_assignment_map_from_checkpoint(tvars, init_checkpoint):
     """Compute the union of the current variables and checkpoint variables."""
 
     def clean_string(str):
-        return str.replace('//', '/')
+        return str.replace('//', '/')[:-2]
 
     graph_var_names = [v.name for v in tvars]
     clean_graph_var_names = [clean_string(vn) for vn in graph_var_names]
