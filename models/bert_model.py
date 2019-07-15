@@ -315,6 +315,7 @@ def get_assignment_map_from_checkpoint(tvars, init_checkpoint):
         try:
             idx = clean_graph_var_names.index(name)
         except ValueError:
+            print(name)
             continue
         assignment_map[name] = graph_var_names[idx]
 
