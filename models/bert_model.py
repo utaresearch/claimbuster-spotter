@@ -114,8 +114,7 @@ class BertModel(object):
                  input_ids,
                  input_mask=None,
                  token_type_ids=None,
-                 use_one_hot_embeddings=False,
-                 scope=None):
+                 use_one_hot_embeddings=False):
         """Constructor for BertModel.
 
         Args:
@@ -148,7 +147,7 @@ class BertModel(object):
         if token_type_ids is None:
             token_type_ids = tf.zeros(shape=[batch_size, seq_length], dtype=tf.int32)
 
-        with tf.variable_scope(scope, default_name="bert/"):
+        with tf.variable_scope('bert/'):
             with tf.variable_scope("embeddings/"):
                 # Perform embedding lookup on the word ids.
                 (self.embedding_output, self.embedding_table) = embedding_lookup(
