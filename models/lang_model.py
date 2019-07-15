@@ -62,6 +62,7 @@ class LanguageModel:
         tv2 = set([v.name for v in tf.trainable_variables()])
 
         print(tv2.difference(tv))
+        exit()
 
         bert_outputs = model.get_pooled_output()
 
