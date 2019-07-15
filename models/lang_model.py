@@ -58,6 +58,10 @@ class LanguageModel:
 
         assignment_map, initialized_variable_names = \
             get_assignment_map_from_checkpoint(tf.trainable_variables(), init_checkpoint)
+
+        print(assignment_map)
+        print(initialized_variable_names)
+
         restore_op = tf.train.init_from_checkpoint(init_checkpoint, assignment_map)
 
         return ([None, bert_outputs], restore_op) if not adv else (bert_outputs, restore_op)
