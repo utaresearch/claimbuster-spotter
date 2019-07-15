@@ -24,11 +24,10 @@ def main():
     cb_model = ClaimBusterModel(data_load.vocab, data_load.class_weights)
 
     with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as sess:
-        sess.run(tf.global_variables_initializer())
-
         if not FLAGS.use_bert_hub:
             tf.logging.info('Restoring pretrained BERT weights into graph')
-            sess.run(cb_model.init_bert_pretrain_op)
+
+        sess.run(tf.global_variables_initializer())
 
         start = time.time()
         epochs_trav = 0

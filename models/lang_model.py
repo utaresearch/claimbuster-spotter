@@ -64,15 +64,6 @@ class LanguageModel:
         assignment_map, _ = \
             get_assignment_map_from_checkpoint(tf.trainable_variables(), init_checkpoint)
 
-        print(assignment_map)
-
-        tvars = tf.trainable_variables()
-
-        for v in tvars:
-            if v.name[:-2] not in assignment_map:
-                raise Exception('shoot! {}'.format(v.name))
-        tf.logging.info("Successfully Successfully Successfully Successfully Successfully")
-
         restore_op = tf.train.init_from_checkpoint(init_checkpoint, assignment_map)
 
         return ([None, bert_outputs], restore_op) if not adv else (bert_outputs, restore_op)
