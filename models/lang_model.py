@@ -57,7 +57,7 @@ class LanguageModel:
                             type_vocab_size=hparams['type_vocab_size'],
                             initializer_range=hparams['initializer_range'])
 
-        perturb = get_adversarial_perturbation(orig_embed, reg_loss)
+        perturb = get_adversarial_perturbation(orig_embed, reg_loss) if adv else None
 
         model = BertModel(config=config, is_training=True, input_ids=x_id, input_mask=x_mask, token_type_ids=x_segment,
                           adv=adv, perturb=perturb)
