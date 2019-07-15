@@ -69,7 +69,7 @@ class LanguageModel:
         tvars = tf.trainable_variables()
 
         for v in tvars:
-            if v.name not in assignment_map:
+            if v.name[:-2] not in assignment_map:
                 raise Exception('shoot! {}'.format(v.name))
         tf.logging.info("Successfully Successfully Successfully Successfully Successfully")
 
