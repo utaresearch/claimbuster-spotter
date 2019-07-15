@@ -147,8 +147,8 @@ class BertModel(object):
         if token_type_ids is None:
             token_type_ids = tf.zeros(shape=[batch_size, seq_length], dtype=tf.int32)
 
-        with tf.variable_scope('bert/'):
-            with tf.variable_scope("embeddings/"):
+        with tf.variable_scope('bert/', reuse=tf.AUTO_REUSE):
+            with tf.variable_scope("embeddings/", reuse=tf.AUTO_REUSE):
                 # Perform embedding lookup on the word ids.
                 (self.embedding_output, self.embedding_table) = embedding_lookup(
                     input_ids=input_ids,
@@ -172,7 +172,7 @@ class BertModel(object):
                     max_position_embeddings=config.max_position_embeddings,
                     dropout_prob=config.hidden_dropout_prob)
 
-            with tf.variable_scope("encoder/"):
+            with tf.variable_scope("encoder/", reuse=tf.AUTO_REUSE):
                 # This converts a 2D mask of shape [batch_size, seq_length] to a 3D
                 # mask of shape [batch_size, seq_length, seq_length] which is used
                 # for the attention scores.
@@ -200,7 +200,7 @@ class BertModel(object):
             # [batch_size, hidden_size]. This is necessary for segment-level
             # (or segment-pair-level) classification tasks where we need a fixed
             # dimensional representation of the segment.
-            with tf.variable_scope("pooler/"):
+            with tf.variable_scope("pooler/", reuse=tf.AUTO_REUSE):
                 # We "pool" the model by simply taking the hidden state corresponding
                 # to the first token. We assume that this has been pre-trained
                 first_token_tensor = tf.squeeze(self.sequence_output[:, 0:1, :], axis=1)
