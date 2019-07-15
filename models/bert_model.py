@@ -307,8 +307,9 @@ def get_assignment_map_from_checkpoint(tvars, init_checkpoint):
 
     for x in ckpt_init_vars:
         (name, var) = (x[0], x[1])
-        idx = clean_graph_var_names.index(name)
-        if idx == -1:
+        try:
+            idx = clean_graph_var_names.index(name)
+        except ValueError:
             continue
         assignment_map[graph_var_names[idx]] = clean_graph_var_names[idx]
 
