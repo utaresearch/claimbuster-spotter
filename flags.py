@@ -41,7 +41,7 @@ flags.DEFINE_integer('test_examples', None, 'Number of testing examples')
 flags.DEFINE_integer('random_state', 59, 'State of pseudo-randomness')
 
 # Model architecture
-flags.DEFINE_bool('use_bert_hub', False, 'Use TF Hub for BERT rather than raw construction')
+flags.DEFINE_bool('use_bert_hub', True, 'Use TF Hub for BERT rather than raw construction')
 flags.DEFINE_string('bert_model_hub', 'https://tfhub.dev/google/bert_uncased_L-12_H-768_A-12/1', 'Location of BERT on TF hubs.')
 flags.DEFINE_string('bert_model_loc', './data/bert_pretrain', 'Root location of pretrained BERT files.')
 flags.DEFINE_integer('bert_layers', 12, 'Number of BERT layers.')
