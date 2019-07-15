@@ -96,28 +96,27 @@ class ClaimBusterModel:
         if not adv:
             orig_embed, nl_out = nl_out[0], nl_out[1]
 
-        with tf.variable_scope('fc_output/', reuse=adv):
-            synth_out = tf.concat([nl_out, self.x_sent], axis=1)
+        synth_out = tf.concat([nl_out, self.x_sent], axis=1)
+        synth_out = tf.nn.dropout(synth_out, keep_prob=FLAGS.keep_prob_cls)
+
+        synth_out_shape = synth_out.get_shape()[1]
+
+        if FLAGS.cls_hidden > 0:
+            hidden_weights = tf.get_variable('cb_hidden_weights', shape=(synth_out_shape, FLAGS.cls_hidden),
+                                             initializer=tf.contrib.layers.xavier_initializer())
+            hidden_biases = tf.get_variable('cb_hidden_biases', shape=FLAGS.cls_hidden,
+                                            initializer=tf.contrib.layers.xavier_initializer())
+
+            synth_out = tf.matmul(synth_out, hidden_weights) + hidden_biases
             synth_out = tf.nn.dropout(synth_out, keep_prob=FLAGS.keep_prob_cls)
 
-            synth_out_shape = synth_out.get_shape()[1]
+        output_weights = tf.get_variable('cb_output_weights', shape=(
+            FLAGS.cls_hidden if FLAGS.cls_hidden > 0 else synth_out_shape, FLAGS.num_classes),
+                                         initializer=tf.contrib.layers.xavier_initializer())
+        output_biases = tf.get_variable('cb_output_biases', shape=FLAGS.num_classes,
+                                        initializer=tf.zeros_initializer())
 
-            if FLAGS.cls_hidden > 0:
-                hidden_weights = tf.get_variable('cb_hidden_weights', shape=(synth_out_shape, FLAGS.cls_hidden),
-                                                 initializer=tf.contrib.layers.xavier_initializer())
-                hidden_biases = tf.get_variable('cb_hidden_biases', shape=FLAGS.cls_hidden,
-                                                initializer=tf.contrib.layers.xavier_initializer())
-
-                synth_out = tf.matmul(synth_out, hidden_weights) + hidden_biases
-                synth_out = tf.nn.dropout(synth_out, keep_prob=FLAGS.keep_prob_cls)
-
-            output_weights = tf.get_variable('cb_output_weights', shape=(
-                FLAGS.cls_hidden if FLAGS.cls_hidden > 0 else synth_out_shape, FLAGS.num_classes),
-                                             initializer=tf.contrib.layers.xavier_initializer())
-            output_biases = tf.get_variable('cb_output_biases', shape=FLAGS.num_classes,
-                                            initializer=tf.zeros_initializer())
-
-            cb_out = tf.matmul(synth_out, output_weights) + output_biases
+        cb_out = tf.matmul(synth_out, output_weights) + output_biases
 
         return (orig_embed, cb_out) if not adv else cb_out
 

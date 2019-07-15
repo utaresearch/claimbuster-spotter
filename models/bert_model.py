@@ -308,8 +308,6 @@ def get_assignment_map_from_checkpoint(tvars, init_checkpoint):
         name_to_variable[name] = var
 
     init_vars = tf.train.list_variables(init_checkpoint)
-    print('####################################################################################################################################################################################')
-    print(init_vars)
 
     assignment_map = collections.OrderedDict()
     for x in init_vars:
