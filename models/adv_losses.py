@@ -46,7 +46,7 @@ def apply_adversarial_perturbation(embedded, loss):
     """Adds gradient to embedding."""
     grad, = tf.gradients(loss, embedded, aggregation_method=tf.AggregationMethod.EXPERIMENTAL_ACCUMULATE_N)
     grad = tf.stop_gradient(grad)
-    perturb = _scale_l2(grad, FLAGS.perturb_norm_length)
+    perturb = _scale_perturb(grad, FLAGS.perturb_norm_length)
     return embedded + perturb
 
 
@@ -59,6 +59,10 @@ def _mask_by_length(t, length):
     mask = tf.expand_dims(tf.cast(mask, tf.float32), -1)
     # shape(mask) = (batch, num_timesteps, 1)
     return t * mask
+
+
+def _scale_perturb(x, norm_length):
+    return norm_length * x / tf.norm(x, ord='euclidean')
 
 
 def _scale_l2(x, norm_length):
