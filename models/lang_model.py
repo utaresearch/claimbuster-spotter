@@ -2,7 +2,7 @@ import tensorflow as tf
 import sys
 import json
 import os
-from .adv_losses import apply_adversarial_perturbation
+from .adv_losses import get_adversarial_perturbation
 from .bert_model import BertConfig, BertModel, get_assignment_map_from_checkpoint
 
 cwd = os.getcwd()
@@ -42,7 +42,7 @@ class LanguageModel:
         return [None, bert_outputs["pooled_output"]] if not adv else bert_outputs
 
     @staticmethod
-    def build_bert_transformer_raw(x_id, x_mask, x_segment, adv):
+    def build_bert_transformer_raw(x_id, x_mask, x_segment, adv=False, orig_embed=None, reg_loss=None):
         tf.logging.info('Building{}BERT transformer'.format(' adversarial ' if adv else ' '))
 
         hparams = LanguageModel.load_bert_pretrain_hyperparams()
@@ -57,10 +57,10 @@ class LanguageModel:
                             type_vocab_size=hparams['type_vocab_size'],
                             initializer_range=hparams['initializer_range'])
 
-        a
+        perturb = get_adversarial_perturbation(orig_embed, reg_loss)
 
         model = BertModel(config=config, is_training=True, input_ids=x_id, input_mask=x_mask, token_type_ids=x_segment,
-                          adv=adv, perturb=adv_perturbation)
+                          adv=adv, perturb=perturb)
         bert_outputs = model.get_pooled_output()
 
         init_checkpoint = os.path.join(FLAGS.bert_model_loc, 'bert_model.ckpt')
