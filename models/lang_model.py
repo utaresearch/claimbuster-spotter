@@ -61,11 +61,10 @@ class LanguageModel:
 
         init_checkpoint = os.path.join(FLAGS.bert_model_loc, 'bert_model.ckpt')
 
-        assignment_map, initialized_variable_names = \
+        assignment_map, _ = \
             get_assignment_map_from_checkpoint(tf.trainable_variables(), init_checkpoint)
 
         print(assignment_map)
-        print(initialized_variable_names)
 
         restore_op = tf.train.init_from_checkpoint(init_checkpoint, assignment_map)
 
