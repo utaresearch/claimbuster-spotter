@@ -67,8 +67,6 @@ class LanguageModel:
         assignment_map, _ = \
             get_assignment_map_from_checkpoint(tf.trainable_variables(), init_checkpoint)
 
-        print(assignment_map)
-
         restore_op = tf.train.init_from_checkpoint(init_checkpoint, assignment_map)
 
         return ([model.get_embedding_output(), bert_outputs], restore_op) if not adv else (bert_outputs, restore_op)
