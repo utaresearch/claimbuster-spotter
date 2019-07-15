@@ -303,6 +303,8 @@ def get_assignment_map_from_checkpoint(tvars, init_checkpoint):
     clean_graph_var_names = [clean_string(vn) for vn in graph_var_names]
     ckpt_init_vars = tf.train.list_variables(init_checkpoint)
 
+    print(clean_graph_var_names)
+
     assignment_map = collections.OrderedDict()
 
     for x in ckpt_init_vars:
