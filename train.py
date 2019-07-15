@@ -27,6 +27,7 @@ def main():
         sess.run(tf.global_variables_initializer())
 
         if not FLAGS.use_bert_hub:
+            tf.logging.info('Restoring pretrained BERT weights into graph')
             sess.run(cb_model.init_bert_pretrain_op)
 
         start = time.time()
