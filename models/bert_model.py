@@ -295,29 +295,24 @@ def get_activation(activation_string):
 
 def get_assignment_map_from_checkpoint(tvars, init_checkpoint):
     """Compute the union of the current variables and checkpoint variables."""
-    assignment_map = {}
-    initialized_variable_names = {}
 
-    name_to_variable = collections.OrderedDict()
-    for var in tvars:
-        name = var.name
-        m = re.match("^(.*):\\d+$", name)
-        if m is not None:
-            name = m.group(1)
-        name_to_variable[name] = var
+    def clean_string(str):
+        return str.replace('//', '/')
 
-    init_vars = tf.train.list_variables(init_checkpoint)
+    graph_var_names = [v.name for v in tvars]
+    clean_graph_var_names = [clean_string(vn) for vn in graph_var_names]
+    ckpt_init_vars = tf.train.list_variables(init_checkpoint)
 
     assignment_map = collections.OrderedDict()
-    for x in init_vars:
-        (name, var) = (x[0], x[1])
-        if name not in name_to_variable:
-            continue
-        assignment_map[name] = name
-        initialized_variable_names[name] = 1
-        initialized_variable_names[name + ":0"] = 1
 
-    return (assignment_map, initialized_variable_names)
+    for x in ckpt_init_vars:
+        (name, var) = (x[0], x[1])
+        idx = clean_graph_var_names.index(name)
+        if idx == -1:
+            continue
+        assignment_map[graph_var_names[idx]] = clean_graph_var_names[idx]
+
+    return assignment_map, None
 
 
 def dropout(input_tensor, dropout_prob):
