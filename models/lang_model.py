@@ -56,6 +56,12 @@ class LanguageModel:
                             initializer_range=hparams['initializer_range'])
 
         model = BertModel(config=config, is_training=True, input_ids=x_id, input_mask=x_mask, token_type_ids=x_segment)
+        tv = set([v.name for v in tf.trainable_variables()])
+
+        model2 = BertModel(config=config, is_training=True, input_ids=x_id, input_mask=x_mask, token_type_ids=x_segment)
+        tv2 = set([v.name for v in tf.trainable_variables()])
+
+        print(tv2.difference(tv))
 
         bert_outputs = model.get_pooled_output()
 
