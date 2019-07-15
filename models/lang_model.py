@@ -43,13 +43,7 @@ class LanguageModel:
     def build_bert_transformer_raw(x_id, x_mask, x_segment, adv):
         tf.logging.info('Building BERT transformer')
 
-        hparams = LanguageModel.load_bert_pretrain_hyperparams()
-
-        config = BertConfig(vocab_size=hparams['vocab_size'], hidden_size=hparams['hidden_size'],
-                            num_hidden_layers=hparams['num_hidden_layers'],
-                            num_attention_heads=hparams['num_attention_heads'],
-                            intermediate_size=hparams['intermediate_size'])
-
+        config = BertConfig.from_json_file(os.path.join(FLAGS.bert_model_loc, 'bert_config.json'))
         model = BertModel(config=config, is_training=True, input_ids=x_id, input_mask=x_mask, token_type_ids=x_segment)
 
         bert_outputs = model.get_pooled_output()
@@ -68,10 +62,3 @@ class LanguageModel:
         restore_op = tf.train.init_from_checkpoint(init_checkpoint, assignment_map)
 
         return ([None, bert_outputs], restore_op) if not adv else (bert_outputs, restore_op)
-
-    @staticmethod
-    def load_bert_pretrain_hyperparams():
-        with open(os.path.join(FLAGS.bert_model_loc, 'bert_config.json'), 'r') as f:
-            data = json.load(f)
-
-        return data
