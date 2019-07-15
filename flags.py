@@ -50,7 +50,7 @@ flags.DEFINE_integer('rnn_cell_size', 16, 'Number of hidden units in the LSTM.')
 flags.DEFINE_integer('cls_hidden', 0, 'Size of hidden classification layer')
 
 # Optimization
-flags.DEFINE_integer('max_steps', 10, 'Number of epochs to run.')
+flags.DEFINE_integer('max_steps', 20, 'Number of epochs to run.')
 # flags.DEFINE_float('learning_rate', 0.001, 'Learning rate while during optimiation.')
 
 # Regularization
