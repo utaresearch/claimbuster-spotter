@@ -300,7 +300,7 @@ def get_assignment_map_from_checkpoint(tvars, init_checkpoint):
         return str.replace('//', '/')[:-2]
 
     graph_var_names = [v.name for v in tvars]
-    clean_graph_var_names = [clean_string(vn) for vn in graph_var_names]
+    clean_graph_var_names = [clean_string(v.name) for v in tvars]
     ckpt_init_vars = tf.train.list_variables(init_checkpoint)
 
     assignment_map = collections.OrderedDict()
@@ -311,7 +311,7 @@ def get_assignment_map_from_checkpoint(tvars, init_checkpoint):
             idx = clean_graph_var_names.index(name)
         except ValueError:
             continue
-        assignment_map[graph_var_names[idx]] = clean_graph_var_names[idx]
+        assignment_map[name] = graph_var_names[idx]
 
     return assignment_map, None
 
