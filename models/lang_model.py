@@ -69,6 +69,9 @@ class LanguageModel:
 
         restore_op = tf.train.init_from_checkpoint(init_checkpoint, assignment_map)
 
+        with tf.Session() as sess:
+            sess.run(restore_op)
+
         return ([None, bert_outputs], restore_op) if not adv else (bert_outputs, restore_op)
 
     @staticmethod
