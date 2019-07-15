@@ -119,7 +119,7 @@ class ClaimBusterModel:
 
             cb_out = tf.matmul(synth_out, output_weights) + output_biases
 
-        return (orig_embed, cb_out) if not adv else cb_out
+            return (orig_embed, cb_out) if not adv else cb_out
 
     def adv_loss(self, logits, cls_weight):
         return tf.identity(self.ce_loss(logits, cls_weight), name='adv_loss')
