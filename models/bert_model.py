@@ -297,9 +297,9 @@ def get_assignment_map_from_checkpoint(tvars, init_checkpoint):
     """Compute the union of the current variables and checkpoint variables."""
 
     def clean_string(str):
-        return str.replace('//', '/')[:-2]
+        return str.replace('//', '/')
 
-    graph_var_names = [v.name for v in tvars]
+    graph_var_names = [v.name[:-2] for v in tvars]
     clean_graph_var_names = [clean_string(v.name) for v in tvars]
     ckpt_init_vars = tf.train.list_variables(init_checkpoint)
 
