@@ -32,10 +32,13 @@ def main():
         start = time.time()
         epochs_trav = 0
 
-        tf.logging.info("Starting{}training...".format(' adversarial ' if FLAGS.adv_train else ' '))
+        tf.logging.info("Starting{}training...".format(' adversarial pre-' if FLAGS.adv_train else ' '))
         for epoch in range(FLAGS.max_steps):
             epochs_trav += 1
             n_batches = math.ceil(float(FLAGS.train_examples) / float(FLAGS.batch_size))
+
+            if epoch == FLAGS.pretrain_steps:
+                tf.logging.info('Switching to adversarial training')
 
             n_samples = 0
             epoch_loss = 0.0
@@ -43,7 +46,7 @@ def main():
 
             for i in range(n_batches):
                 batch_x, batch_y = cb_model.get_batch(i, train_data)
-                cb_model.train_neural_network(sess, batch_x, batch_y)
+                cb_model.train_neural_network(sess, batch_x, batch_y, adv=(epoch < FLAGS.pretrain_steps))
 
                 b_loss, b_acc, _ = cb_model.stats_from_run(sess, batch_x, batch_y)
                 epoch_loss += b_loss

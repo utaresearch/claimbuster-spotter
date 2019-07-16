@@ -49,9 +49,11 @@ class ClaimBusterModel:
         self.init_bert_pretrain_op = None
 
         if not restore:
-            self.logits, self.cost = self.construct_model(adv=FLAGS.adv_train)
+            self.logits, self.cost, self.cost_adv = self.construct_model(adv=FLAGS.adv_train)
 
-            self.optimizer = self.build_optimizer()
+            self.optimizer = self.build_optimizer(self.cost)
+            if FLAGS.adv_train:
+                self.optimizer_adv = self.build_optimizer(self.cost_adv)
 
             self.y_pred = tf.nn.softmax(self.logits, axis=1, name='y_pred')
             self.correct = tf.equal(tf.argmax(self.y, axis=1), tf.argmax(self.y_pred, axis=1))
@@ -59,7 +61,8 @@ class ClaimBusterModel:
         else:
             self.cost, self.y_pred, self.acc = None, None, None
 
-    def build_optimizer(self):
+    @staticmethod
+    def build_optimizer(cost_fn):
         train_vars = tf.trainable_variables()
         non_trainable_layers = ['/layer_{}/'.format(num)
                                 for num in range(FLAGS.bert_layers - FLAGS.bert_ft_enc_layers)]
@@ -72,18 +75,19 @@ class ClaimBusterModel:
         tf.logging.info('Removing: {}'.format(non_trainable_layers))
         tf.logging.info(train_vars)
 
-        return tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(self.cost, var_list=train_vars) \
-            if FLAGS.adam else tf.train.RMSPropOptimizer(learning_rate=FLAGS.learning_rate).minimize(self.cost)
+        return tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(cost_fn, var_list=train_vars) \
+            if FLAGS.adam else tf.train.RMSPropOptimizer(learning_rate=FLAGS.learning_rate).minimize(cost_fn)
 
     def construct_model(self, adv):
         orig_embed, logits = self.fprop()
-        loss = self.ce_loss(logits, self.cls_weight)
+        loss = tf.identity(self.ce_loss(logits, self.cls_weight), name='cost')
+        loss_adv = None
 
         if adv:
             logits_adv = self.fprop(orig_embed, loss, adv=True)
-            loss += FLAGS.adv_coeff * self.adv_loss(logits_adv, self.cls_weight)
+            loss_adv = tf.identity(FLAGS.adv_coeff * self.adv_loss(logits_adv, self.cls_weight), name='cost_adv')
 
-        return logits, tf.identity(loss, name='cost')
+        return logits, loss, loss_adv
 
     def fprop(self, orig_embed=None, reg_loss=None, adv=False):
         if adv: assert (reg_loss is not None and orig_embed is not None) and not FLAGS.use_bert_hub
@@ -159,7 +163,7 @@ class ClaimBusterModel:
 
         return feed_dict
 
-    def train_neural_network(self, sess, batch_x, batch_y):
+    def train_neural_network(self, sess, batch_x, batch_y, adv):
         x_nl = [z[0] for z in batch_x]
         x_pos = [z[1] for z in batch_x]
         x_sent = [z[2] for z in batch_x]
@@ -167,7 +171,7 @@ class ClaimBusterModel:
         feed_dict = self.get_feed_dict(x_nl, x_pos, x_sent, batch_y, ver='train')
 
         sess.run(
-            self.optimizer,
+            (self.optimizer if not adv else self.optimizer_adv),
             feed_dict=feed_dict
         )
 
