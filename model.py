@@ -185,7 +185,7 @@ class ClaimBusterModel:
         all_y = []
         for batch in range(n_batches):
             batch_x, batch_y = self.get_batch(batch, test_data, ver='validation')
-            tloss, tloss_adv, tacc, tpred = self.stats_from_run(sess, batch_x, batch_y)
+            tloss, tloss_adv, tacc, tpred = self.stats_from_run(sess, batch_x, batch_y, adv)
 
             val_loss += tloss
             val_acc += tacc * len(batch_y)
