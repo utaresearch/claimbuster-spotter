@@ -63,7 +63,7 @@ class ClaimBusterModel:
         else:
             self.cost, self.y_pred, self.acc = None, None, None
 
-    def select_train_vars(self):
+    def select_train_vars(self, print_stuff=True):
         train_vars = tf.trainable_variables()
         non_trainable_layers = ['/layer_{}/'.format(num)
                                 for num in range(FLAGS.bert_layers - FLAGS.bert_ft_enc_layers)]
@@ -73,8 +73,9 @@ class ClaimBusterModel:
         if FLAGS.bert_trainable:
             train_vars = [v for v in train_vars if not any(z in v.name for z in non_trainable_layers)]
 
-        tf.logging.info('Removing: {}'.format(non_trainable_layers))
-        tf.logging.info(train_vars)
+        if print_stuff:
+            tf.logging.info('Removing: {}'.format(non_trainable_layers))
+            tf.logging.info(train_vars)
 
         return train_vars
 
@@ -94,7 +95,7 @@ class ClaimBusterModel:
             logits_adv = self.fprop(orig_embed, loss, adv=True)
             loss_adv = tf.identity(FLAGS.adv_coeff * self.adv_loss(logits_adv, self.cls_weight), name='cost_adv')
 
-            assert self.trainable_variables == self.select_train_vars()
+            assert self.trainable_variables == self.select_train_vars(print_stuff=False)
 
         return logits, loss, loss_adv
 
