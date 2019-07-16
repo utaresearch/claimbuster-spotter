@@ -36,7 +36,7 @@ def main():
         for epoch in range(FLAGS.max_steps):
             epochs_trav += 1
             n_batches = math.ceil(float(FLAGS.train_examples) / float(FLAGS.batch_size))
-            epoch_adv = (epoch >= FLAGS.pretrain_steps)
+            epoch_adv = FLAGS.adv_train and (epoch >= FLAGS.pretrain_steps)
 
             if epoch == FLAGS.pretrain_steps:
                 tf.logging.info('Switching to adversarial training')
