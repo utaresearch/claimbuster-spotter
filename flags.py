@@ -1,5 +1,5 @@
-import tensorflow as tf
 import os
+import tensorflow as tf
 
 flags = tf.flags
 FLAGS = flags.FLAGS

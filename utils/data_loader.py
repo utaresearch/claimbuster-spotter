@@ -1,4 +1,3 @@
-import tensorflow as tf
 import tensorflow_hub as hub
 from bert import run_classifier
 from bert import tokenization
@@ -14,6 +13,7 @@ import sys
 from . import transformations as transf
 from sklearn.utils import shuffle
 from sklearn.utils.class_weight import compute_class_weight
+import tensorflow as tf
 
 cwd = os.getcwd()
 root_dir = None

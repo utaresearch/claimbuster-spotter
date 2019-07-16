@@ -1,9 +1,9 @@
-import tensorflow as tf
 import sys
 import json
 import os
 from .adv_losses import get_adversarial_perturbation
 from .bert_model import BertConfig, BertModel, get_assignment_map_from_checkpoint
+import tensorflow as tf
 
 cwd = os.getcwd()
 root_dir = None

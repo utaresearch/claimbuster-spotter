@@ -1,4 +1,3 @@
-import tensorflow as tf
 import math
 import time
 import os
@@ -7,6 +6,7 @@ from sklearn.metrics import f1_score, classification_report
 from adv_bert_claimspotter.utils.data_loader import Dataset, DataLoader
 from adv_bert_claimspotter.model import ClaimBusterModel
 from adv_bert_claimspotter.flags import FLAGS, print_flags
+import tensorflow as tf
 
 
 label_mapping = {

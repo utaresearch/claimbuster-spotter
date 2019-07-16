@@ -1,4 +1,3 @@
-import tensorflow as tf
 import numpy as np
 import math
 import os
@@ -6,6 +5,7 @@ from utils.data_loader import DataLoader
 from model import ClaimBusterModel
 from sklearn.metrics import f1_score, classification_report
 from flags import FLAGS
+import tensorflow as tf
 
 
 def main():

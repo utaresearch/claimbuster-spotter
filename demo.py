@@ -1,4 +1,3 @@
-import tensorflow as tf
 from bert import run_classifier
 import numpy as np
 import os
@@ -6,6 +5,7 @@ from model import ClaimBusterModel
 from utils.data_loader import DataLoader
 from utils import transformations as transf
 from flags import FLAGS
+import tensorflow as tf
 
 return_strings = ['Non-factual statement', 'Unimportant factual statement', 'Salient factual statement']
 tokenizer = DataLoader.create_tokenizer_from_hub_module()

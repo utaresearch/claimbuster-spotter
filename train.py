@@ -1,10 +1,10 @@
-import tensorflow as tf
 import math
 import time
 import os
 from utils.data_loader import DataLoader
 from model import ClaimBusterModel
 from flags import FLAGS, print_flags
+import tensorflow as tf
 
 
 def main():

@@ -1,5 +1,6 @@
-import tensorflow as tf
 import numpy as np
+import tensorflow as tf
+
 
 if __name__ == "__main__":
     x = tf.placeholder(tf.float32, shape=(None, 1), name='x')

@@ -1,6 +1,6 @@
-import tensorflow as tf
 import sys
 import os
+import tensorflow as tf
 
 cwd = os.getcwd()
 root_dir = None

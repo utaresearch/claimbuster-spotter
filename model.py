@@ -1,4 +1,3 @@
-import tensorflow as tf
 import numpy as np
 import os
 from keras.preprocessing.sequence import pad_sequences
@@ -23,6 +22,7 @@ else:
     from utils.transformations import pos_labels
     from flags import FLAGS
 
+import tensorflow as tf
 
 class ClaimBusterModel:
     def __init__(self, vocab=None, cls_weights=None, restore=False):
