@@ -188,17 +188,21 @@ class ClaimBusterModel:
             tloss, tloss_adv, tacc, tpred = self.stats_from_run(sess, batch_x, batch_y)
 
             val_loss += tloss
-            val_loss_adv += tloss_adv
             val_acc += tacc * len(batch_y)
             tot_val_ex += len(batch_y)
+
+            if adv:
+                val_loss_adv += tloss_adv
 
             all_y_pred = np.concatenate((all_y_pred, tpred))
             all_y = np.concatenate((all_y, batch_y))
 
         val_loss /= tot_val_ex
-        val_loss_adv /= tot_val_ex
         val_acc /= tot_val_ex
         val_f1 = f1_score(all_y, all_y_pred, average='weighted')
+
+        if adv:
+            val_loss_adv /= tot_val_ex
 
         return 'Dev Loss: {:>7.4f}{}Dev F1: {:>7.4f} '.format(val_loss, (
             ' Dev Adv Loss: {:>7.4f} '.format(val_loss_adv) if adv else ' '), val_f1)

@@ -51,17 +51,21 @@ def main():
 
                 b_loss, b_loss_adv, b_acc, _ = cb_model.stats_from_run(sess, batch_x, batch_y, adv=epoch_adv)
                 epoch_loss += b_loss
-                epoch_loss_adv += b_loss_adv
                 epoch_acc += b_acc * len(batch_y)
                 n_samples += len(batch_y)
 
+                if epoch_adv:
+                    epoch_loss_adv += b_loss_adv
+
             epoch_loss /= n_samples
-            epoch_loss_adv /= n_samples
             epoch_acc /= n_samples
+
+            if epoch_adv:
+                epoch_loss_adv /= n_samples
 
             if epoch % FLAGS.stat_print_interval == 0:
                 log_string = 'Epoch {:>3} Loss: {:>7.4}{}Acc: {:>7.4f}% '.format(epoch + 1, epoch_loss, (
-                    ' Adv Loss: {:>7.4} '.format(epoch_loss_adv)), epoch_acc * 100)
+                    ' Adv Loss: {:>7.4} '.format(epoch_loss_adv) if epoch_adv else ' '), epoch_acc * 100)
                 if test_data.get_length() > 0:
                     log_string += cb_model.execute_validation(sess, test_data, adv=epoch_adv)
                 log_string += '({:3.3f} sec/epoch)'.format((time.time() - start) / epochs_trav)
