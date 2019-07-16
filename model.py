@@ -176,18 +176,19 @@ class ClaimBusterModel:
             feed_dict=feed_dict
         )
 
-    def execute_validation(self, sess, test_data):
+    def execute_validation(self, sess, test_data, adv):
         n_batches = math.ceil(float(FLAGS.test_examples) / float(FLAGS.batch_size))
-        val_loss, val_acc = 0.0, 0.0
+        val_loss, val_loss_adv, val_acc = 0.0, 0.0, 0.0
         tot_val_ex = 0
 
         all_y_pred = []
         all_y = []
         for batch in range(n_batches):
             batch_x, batch_y = self.get_batch(batch, test_data, ver='validation')
-            tloss, tacc, tpred = self.stats_from_run(sess, batch_x, batch_y)
+            tloss, tloss_adv, tacc, tpred = self.stats_from_run(sess, batch_x, batch_y)
 
             val_loss += tloss
+            val_loss_adv += tloss_adv
             val_acc += tacc * len(batch_y)
             tot_val_ex += len(batch_y)
 
@@ -195,12 +196,14 @@ class ClaimBusterModel:
             all_y = np.concatenate((all_y, batch_y))
 
         val_loss /= tot_val_ex
+        val_loss_adv /= tot_val_ex
         val_acc /= tot_val_ex
         val_f1 = f1_score(all_y, all_y_pred, average='weighted')
 
-        return 'Dev Loss: {:>7.4f} Dev F1: {:>7.4f} '.format(val_loss, val_f1)
+        return 'Dev Loss: {:>7.4f}{}Dev F1: {:>7.4f} '.format(val_loss, (
+            ' Dev Adv Loss: {:>7.4f} '.format(val_loss_adv) if adv else ' '), val_f1)
 
-    def stats_from_run(self, sess, batch_x, batch_y):
+    def stats_from_run(self, sess, batch_x, batch_y, adv):
         x_nl = [z[0] for z in batch_x]
         x_pos = [z[1] for z in batch_x]
         x_sent = [z[2] for z in batch_x]
@@ -208,10 +211,14 @@ class ClaimBusterModel:
         feed_dict = self.get_feed_dict(x_nl, x_pos, x_sent, batch_y, ver='test')
 
         run_loss = sess.run(self.cost, feed_dict=feed_dict)
+        run_loss_adv = None
         run_acc = sess.run(self.acc, feed_dict=feed_dict)
         run_pred = sess.run(self.y_pred, feed_dict=feed_dict)
 
-        return np.sum(run_loss), run_acc, np.argmax(run_pred, axis=1)
+        if adv:
+            run_loss_adv = sess.run(self.cost_adv, feed_dict=feed_dict)
+
+        return np.sum(run_loss), np.sum(run_loss_adv), run_acc, np.argmax(run_pred, axis=1)
 
     def get_preds(self, sess, inp):
         x_nl, x_pos, x_sent = inp[0], [inp[1]], [inp[2]]

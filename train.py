@@ -36,31 +36,33 @@ def main():
         for epoch in range(FLAGS.max_steps):
             epochs_trav += 1
             n_batches = math.ceil(float(FLAGS.train_examples) / float(FLAGS.batch_size))
+            epoch_adv = (epoch >= FLAGS.pretrain_steps)
 
             if epoch == FLAGS.pretrain_steps:
                 tf.logging.info('Switching to adversarial training')
 
             n_samples = 0
-            epoch_loss = 0.0
-            epoch_acc = 0.0
+            epoch_loss, epoch_loss_adv, epoch_acc = 0.0, 0.0, 0.0
 
             for i in range(n_batches):
                 batch_x, batch_y = cb_model.get_batch(i, train_data)
-                cb_model.train_neural_network(sess, batch_x, batch_y, adv=(epoch >= FLAGS.pretrain_steps))
+                cb_model.train_neural_network(sess, batch_x, batch_y, adv=epoch_adv)
 
-                b_loss, b_acc, _ = cb_model.stats_from_run(sess, batch_x, batch_y)
+                b_loss, b_loss_adv, b_acc, _ = cb_model.stats_from_run(sess, batch_x, batch_y, adv=epoch_adv)
                 epoch_loss += b_loss
+                epoch_loss_adv += b_loss_adv
                 epoch_acc += b_acc * len(batch_y)
                 n_samples += len(batch_y)
 
             epoch_loss /= n_samples
+            epoch_loss_adv /= n_samples
             epoch_acc /= n_samples
 
             if epoch % FLAGS.stat_print_interval == 0:
-                log_string = 'Epoch {:>3} Loss: {:>7.4} Acc: {:>7.4f}% '.format(epoch + 1, epoch_loss,
-                                                                                epoch_acc * 100)
+                log_string = 'Epoch {:>3} Loss: {:>7.4}{}Acc: {:>7.4f}% '.format(epoch + 1, epoch_loss, (
+                    ' Adv Loss: {:>7.4} '.format(epoch_loss_adv)), epoch_acc * 100)
                 if test_data.get_length() > 0:
-                    log_string += cb_model.execute_validation(sess, test_data)
+                    log_string += cb_model.execute_validation(sess, test_data, adv=epoch_adv)
                 log_string += '({:3.3f} sec/epoch)'.format((time.time() - start) / epochs_trav)
 
                 tf.logging.info(log_string)
