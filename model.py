@@ -24,6 +24,7 @@ else:
 
 import tensorflow as tf
 
+
 class ClaimBusterModel:
     def __init__(self, vocab=None, cls_weights=None, restore=False):
         self.x_nl = [tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x_id'),
