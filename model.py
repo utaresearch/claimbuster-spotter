@@ -143,7 +143,7 @@ class ClaimBusterModel:
         loss_l2 = 0
 
         if FLAGS.l2_reg_coeff > 0.0:
-            varlist = tf.trainable_variables()
+            varlist = self.trainable_variables
             loss_l2 = tf.add_n([tf.nn.l2_loss(v) for v in varlist if 'bias' not in v.name]) * FLAGS.l2_reg_coeff
 
         ret_loss = loss + loss_l2
