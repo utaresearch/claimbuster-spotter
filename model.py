@@ -136,13 +136,13 @@ class ClaimBusterModel:
             return (orig_embed, cb_out) if not adv else cb_out
 
     def adv_loss(self, logits, cls_weight):
-        return tf.identity(self.ce_loss(logits, cls_weight), name='adv_loss')
+        return tf.identity(self.ce_loss(logits, cls_weight, adv=True), name='adv_loss')
 
-    def ce_loss(self, logits, cls_weight):
+    def ce_loss(self, logits, cls_weight, adv=False):
         loss = tf.nn.softmax_cross_entropy_with_logits_v2(labels=self.y, logits=logits)
         loss_l2 = 0
 
-        if FLAGS.l2_reg_coeff > 0.0:
+        if FLAGS.l2_reg_coeff > 0.0 and not adv:
             varlist = self.trainable_variables
             loss_l2 = tf.add_n([tf.nn.l2_loss(v) for v in varlist if 'bias' not in v.name]) * FLAGS.l2_reg_coeff
 
