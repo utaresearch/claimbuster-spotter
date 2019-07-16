@@ -41,7 +41,7 @@ flags.DEFINE_integer('test_examples', None, 'Number of testing examples')
 flags.DEFINE_integer('random_state', 59, 'State of pseudo-randomness')
 
 # Model architecture
-flags.DEFINE_bool('use_bert_hub', True, 'Use TF Hub for BERT rather than raw construction')
+flags.DEFINE_bool('use_bert_hub', False, 'Use TF Hub for BERT rather than raw construction')
 flags.DEFINE_string('bert_model_hub', 'https://tfhub.dev/google/bert_uncased_L-12_H-768_A-12/1', 'Location of BERT on TF hubs.')
 flags.DEFINE_string('bert_model_loc', './data/bert_pretrain', 'Root location of pretrained BERT files.')
 flags.DEFINE_integer('bert_layers', 12, 'Number of BERT layers.')
@@ -57,13 +57,9 @@ flags.DEFINE_integer('max_steps', 100, 'Number of epochs to run.')
 flags.DEFINE_float('l2_reg_coeff', 0.001, 'If val > 0, use L2 Regularization on weights in graph')
 flags.DEFINE_float('keep_prob_cls', 0.7, 'Keep probability of classification layer.')
 
-# Embeddings
-flags.DEFINE_integer('embed_type', 1, '0 for word2vec, 1 for Stanford glove')
+# Word2vec for pre-processing
 flags.DEFINE_string('w2v_loc', './data/word2vec/w2v3b_gensim.txt', 'Location of w2v embeddings')
 flags.DEFINE_string('w2v_loc_bin', './data/word2vec/w2v3b_gensim.bin', 'Location of w2v embeddings in BINARY form')
-flags.DEFINE_bool('train_embed', False, 'Train on top of w2v embeddings')  # we don't have enough data to train embed
-flags.DEFINE_integer('embedding_dims', 100, 'Dimensions of embedded vector.')
-flags.DEFINE_bool('random_init_oov', False, 'Use np.random.normal init for unknown embeddings. 0-fill if False')
 
 # Adversarial and virtual adversarial training parameters.
 flags.DEFINE_bool('adv_train', False, 'Train using adversarial perturbations')
