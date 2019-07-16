@@ -48,6 +48,7 @@ class ClaimBusterModel:
         self.computed_cls_weights = cls_weights if cls_weights is not None else [1 for _ in range(FLAGS.num_classes)]
 
         self.init_bert_pretrain_op = None
+        self.trainable_variables = None
 
         if not restore:
             self.logits, self.cost, self.cost_adv = self.construct_model(adv=FLAGS.adv_train)
@@ -62,8 +63,7 @@ class ClaimBusterModel:
         else:
             self.cost, self.y_pred, self.acc = None, None, None
 
-    @staticmethod
-    def build_optimizer(cost_fn):
+    def select_train_vars(self):
         train_vars = tf.trainable_variables()
         non_trainable_layers = ['/layer_{}/'.format(num)
                                 for num in range(FLAGS.bert_layers - FLAGS.bert_ft_enc_layers)]
@@ -76,17 +76,25 @@ class ClaimBusterModel:
         tf.logging.info('Removing: {}'.format(non_trainable_layers))
         tf.logging.info(train_vars)
 
-        return tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(cost_fn, var_list=train_vars) \
-            if FLAGS.adam else tf.train.RMSPropOptimizer(learning_rate=FLAGS.learning_rate).minimize(cost_fn)
+        return train_vars
+
+    def build_optimizer(self, cost_fn):
+        return tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(
+            cost_fn, var_list=self.trainable_variables) if FLAGS.adam else tf.train.RMSPropOptimizer(
+            learning_rate=FLAGS.learning_rate).minimize(cost_fn, var_list=self.trainable_variables)
 
     def construct_model(self, adv):
         orig_embed, logits = self.fprop()
+        self.trainable_variables = self.select_train_vars()
+
         loss = tf.identity(self.ce_loss(logits, self.cls_weight), name='cost')
         loss_adv = None
 
         if adv:
             logits_adv = self.fprop(orig_embed, loss, adv=True)
             loss_adv = tf.identity(FLAGS.adv_coeff * self.adv_loss(logits_adv, self.cls_weight), name='cost_adv')
+
+            assert self.trainable_variables == self.select_train_vars()
 
         return logits, loss, loss_adv
 
