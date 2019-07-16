@@ -46,7 +46,7 @@ def main():
 
             for i in range(n_batches):
                 batch_x, batch_y = cb_model.get_batch(i, train_data)
-                cb_model.train_neural_network(sess, batch_x, batch_y, adv=(epoch < FLAGS.pretrain_steps))
+                cb_model.train_neural_network(sess, batch_x, batch_y, adv=(epoch >= FLAGS.pretrain_steps))
 
                 b_loss, b_acc, _ = cb_model.stats_from_run(sess, batch_x, batch_y)
                 epoch_loss += b_loss
