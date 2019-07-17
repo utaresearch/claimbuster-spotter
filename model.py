@@ -26,10 +26,12 @@ import tensorflow as tf
 
 
 class ClaimBusterModel:
-    def __init__(self, vocab=None, cls_weights=None, restore=False):
+    def __init__(self, vocab=None, cls_weights=None, restore=False, adv=False):
         self.x_nl = [tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x_id'),
                      tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x_mask'),
                      tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x_segment')]
+
+        self.adv = adv
 
         self.x_pos = tf.placeholder(tf.int32, (None, FLAGS.max_len, len(pos_labels) + 1), name='x_pos')
         self.x_sent = tf.placeholder(tf.float32, (None, 2), name='x_sent')
@@ -51,19 +53,22 @@ class ClaimBusterModel:
         self.trainable_variables = None
 
         if not restore:
-            self.logits, self.cost, self.cost_adv = self.construct_model(adv=FLAGS.adv_train)
+            self.logits, self.cost, self.cost_adv, self.cost_v_adv = self.construct_model(adv=self.adv)
 
-            self.optimizer = self.build_optimizer(self.cost)
-            if FLAGS.adv_train:
-                self.optimizer_adv = self.build_optimizer(self.cost_adv)
+            self.optimizer = self.build_optimizer(self.cost, adv=0)
+            self.optimizer_adv = self.build_optimizer(self.cost_adv, adv=1)
+            # self.optimizer_v_adv = self.build_optimizer(self.cost_v_adv, adv=2)
 
             self.y_pred = tf.nn.softmax(self.logits, axis=1, name='y_pred')
-            self.correct = tf.equal(tf.argmax(self.y, axis=1), tf.argmax(self.y_pred, axis=1))
+            self.correct = tf.equal(tf.argmax(self.y, axis=1), tf.argmax(self.y_pred, axis=1), name='correct')
             self.acc = tf.reduce_mean(tf.cast(self.correct, tf.float32), name='acc')
         else:
-            self.cost, self.y_pred, self.acc = None, None, None
+            self.logits, self.cost, self.cost_adv = None, None, None
+            self.optimizer, self.optimizer_adv = None, None
+            self.y_pred, self.correct, self.acc = None, None, None
 
-    def select_train_vars(self, print_stuff=True):
+    @staticmethod
+    def select_train_vars(print_stuff=True):
         train_vars = tf.trainable_variables()
         non_trainable_layers = ['/layer_{}/'.format(num)
                                 for num in range(FLAGS.bert_layers - FLAGS.bert_ft_enc_layers)]
@@ -79,25 +84,22 @@ class ClaimBusterModel:
 
         return train_vars
 
-    def build_optimizer(self, cost_fn):
-        return tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(
+    def build_optimizer(self, cost_fn, adv):
+        return tf.identity(tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(
             cost_fn, var_list=self.trainable_variables) if FLAGS.adam else tf.train.RMSPropOptimizer(
-            learning_rate=FLAGS.learning_rate).minimize(cost_fn, var_list=self.trainable_variables)
+            learning_rate=FLAGS.learning_rate).minimize(cost_fn, var_list=self.trainable_variables),
+                           name=('optimizer' if adv == 0 else ('optimizer_adv' if adv == 1 else 'optimizer_v_adv')))
 
-    def construct_model(self, adv):
+    def construct_model(self):
         orig_embed, logits = self.fprop()
         self.trainable_variables = self.select_train_vars()
-
         loss = tf.identity(self.ce_loss(logits, self.cls_weight), name='cost')
-        loss_adv = None
 
-        if adv:
-            logits_adv = self.fprop(orig_embed, loss, adv=True)
-            loss_adv = tf.identity(FLAGS.adv_coeff * self.adv_loss(logits_adv, self.cls_weight), name='cost_adv')
+        logits_adv = self.fprop(orig_embed, loss, adv=True)
+        loss_adv = tf.identity(FLAGS.adv_coeff * self.adv_loss(logits_adv, self.cls_weight), name='cost_adv')
+        assert self.trainable_variables == self.select_train_vars(print_stuff=False)
 
-            assert self.trainable_variables == self.select_train_vars(print_stuff=False)
-
-        return logits, loss, loss_adv
+        return logits, loss, loss_adv, None
 
     def fprop(self, orig_embed=None, reg_loss=None, adv=False):
         if adv: assert (reg_loss is not None and orig_embed is not None) and not FLAGS.use_bert_hub
@@ -134,6 +136,9 @@ class ClaimBusterModel:
             cb_out = tf.matmul(synth_out, output_weights) + output_biases
 
             return (orig_embed, cb_out) if not adv else cb_out
+
+    def v_adv_loss(self, logits_reg, logits_perturb):
+        return tf.distributions.kl_divergence(logits_reg, logits_perturb, name='v_adv_loss')
 
     def adv_loss(self, logits, cls_weight):
         return tf.identity(self.ce_loss(logits, cls_weight, adv=True), name='adv_loss')
@@ -296,7 +301,7 @@ class ClaimBusterModel:
 
         return batch_x, batch_y
 
-    def load_model(self, sess, graph):
+    def load_model(self, sess, graph, adv_train=False):
         def get_last_save(scan_loc):
             print(scan_loc)
             ret_ar = []
@@ -313,9 +318,6 @@ class ClaimBusterModel:
 
         with graph.as_default():
             saver = tf.train.import_meta_graph(model_dir)
-
-            print(FLAGS.cb_output_dir)
-
             saver.restore(sess, tf.train.latest_checkpoint(FLAGS.cb_output_dir))
 
             # inputs
@@ -337,5 +339,10 @@ class ClaimBusterModel:
             self.cost = graph.get_tensor_by_name('cost:0')
             self.y_pred = graph.get_tensor_by_name('y_pred:0')
             self.acc = graph.get_tensor_by_name('acc:0')
+
+            # operations
+            self.optimizer = graph.get_tensor_by_name('optimizer:0')
+            self.optimizer_adv = graph.get_tensor_by_name('optimizer_adv:0')
+            # self.optimizer_v_adv = graph.get_tensor_by_name('optimizer_v_adv:0')
 
             tf.logging.info('Model successfully restored.')

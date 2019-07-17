@@ -41,7 +41,7 @@ adversarial training losses). The training loop itself is defined in
 
 ### Training
 
-* Pretraining: [`pretrain.py`](train.py)
+* Pretraining: [`pretrain.py`](pretrain.py)
 * Classifier Training: [`train_classifier.py`](train_classifier.py)
 
 ### Evaluations

@@ -21,22 +21,20 @@ def main():
     tf.logging.info("{} training examples".format(train_data.get_length()))
     tf.logging.info("{} validation examples".format(test_data.get_length()))
 
-    cb_model = ClaimBusterModel(data_load.vocab, data_load.class_weights)
+    cb_model = ClaimBusterModel(data_load.vocab, data_load.class_weights, restore=True, adv=True)
 
-    with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as sess:
-        if not FLAGS.use_bert_hub:
-            tf.logging.info('Restoring pretrained BERT weights into graph')
-
+    graph = tf.Graph()
+    with tf.Session(graph=graph, config=tf.ConfigProto(allow_soft_placement=True)) as sess:
         sess.run(tf.global_variables_initializer())
+        cb_model.load_model(sess, graph, adv_train=True)
 
         start = time.time()
         epochs_trav = 0
 
-        tf.logging.info("Starting{}training...".format(' adversarial pre-' if FLAGS.adv_train else ' '))
+        tf.logging.info("Starting adv training...")
         for epoch in range(FLAGS.max_steps):
             epochs_trav += 1
             n_batches = math.ceil(float(FLAGS.train_examples) / float(FLAGS.batch_size))
-            epoch_adv = FLAGS.adv_train and (epoch >= FLAGS.pretrain_steps)
 
             if epoch == FLAGS.pretrain_steps:
                 tf.logging.info('Switching to adversarial training')
@@ -46,27 +44,23 @@ def main():
 
             for i in range(n_batches):
                 batch_x, batch_y = cb_model.get_batch(i, train_data)
-                cb_model.train_neural_network(sess, batch_x, batch_y, adv=epoch_adv)
+                cb_model.train_neural_network(sess, batch_x, batch_y, adv=True)
 
-                b_loss, b_loss_adv, b_acc, _ = cb_model.stats_from_run(sess, batch_x, batch_y, adv=epoch_adv)
+                b_loss, b_loss_adv, b_acc, _ = cb_model.stats_from_run(sess, batch_x, batch_y, adv=True)
                 epoch_loss += b_loss
+                epoch_loss_adv += b_loss_adv
                 epoch_acc += b_acc * len(batch_y)
                 n_samples += len(batch_y)
 
-                if epoch_adv:
-                    epoch_loss_adv += b_loss_adv
-
             epoch_loss /= n_samples
+            epoch_loss_adv /= n_samples
             epoch_acc /= n_samples
 
-            if epoch_adv:
-                epoch_loss_adv /= n_samples
-
             if epoch % FLAGS.stat_print_interval == 0:
-                log_string = 'Epoch {:>3} Loss: {:>7.4}{}Acc: {:>7.4f}% '.format(epoch + 1, epoch_loss, (
-                    ' Adv Loss: {:>7.4} '.format(epoch_loss_adv) if epoch_adv else ' '), epoch_acc * 100)
+                log_string = 'Epoch {:>3} Loss: {:>7.4}{}Acc: {:>7.4f}% '.format(epoch + 1, epoch_loss, epoch_loss_adv,
+                                                                                 epoch_acc * 100)
                 if test_data.get_length() > 0:
-                    log_string += cb_model.execute_validation(sess, test_data, adv=epoch_adv)
+                    log_string += cb_model.execute_validation(sess, test_data, adv=True)
                 log_string += '({:3.3f} sec/epoch)'.format((time.time() - start) / epochs_trav)
 
                 tf.logging.info(log_string)
