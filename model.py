@@ -305,7 +305,7 @@ class ClaimBusterModel:
 
         return batch_x, batch_y
 
-    def load_model(self, sess, graph, adv_train=False):
+    def load_model(self, sess, graph, train=False):
         def get_last_save(scan_loc):
             ret_ar = []
             directory = os.fsencode(scan_loc)
@@ -315,7 +315,7 @@ class ClaimBusterModel:
             ret_ar.sort()
             return ret_ar[-1]
 
-        dr = FLAGS.cb_output_dir if not adv_train else FLAGS.cb_input_dir
+        dr = FLAGS.cb_output_dir if not train else FLAGS.cb_input_dir
         print(dr)
 
         model_dir = os.path.join(dr, get_last_save(dr))
