@@ -26,7 +26,7 @@ def main():
     graph = tf.Graph()
     with tf.Session(graph=graph, config=tf.ConfigProto(allow_soft_placement=True)) as sess:
         sess.run(tf.global_variables_initializer())
-        cb_model.load_model(sess, graph, adv_train=True)
+        cb_model.load_model(sess, graph)
 
         start = time.time()
         epochs_trav = 0

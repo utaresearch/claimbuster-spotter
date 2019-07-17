@@ -89,6 +89,8 @@ class ClaimBusterModel:
             cost_fn, var_list=self.trainable_variables) if FLAGS.adam else tf.train.RMSPropOptimizer(
             learning_rate=FLAGS.learning_rate).minimize(cost_fn, var_list=self.trainable_variables)
 
+        print(opt)
+
         return tf.identity(opt,
                            name=('optimizer' if adv == 0 else ('optimizer_adv' if adv == 1 else 'optimizer_v_adv')))
 
@@ -303,7 +305,7 @@ class ClaimBusterModel:
 
         return batch_x, batch_y
 
-    def load_model(self, sess, graph, adv_train=False):
+    def load_model(self, sess, graph):
         def get_last_save(scan_loc):
             print(scan_loc)
             ret_ar = []
@@ -343,8 +345,8 @@ class ClaimBusterModel:
             self.acc = graph.get_tensor_by_name('acc:0')
 
             # operations
-            self.optimizer = graph.get_tensor_by_name('optimizer:0')
-            self.optimizer_adv = graph.get_tensor_by_name('optimizer_adv:0')
+            self.optimizer = graph.get_operation_by_name('optimizer')
+            self.optimizer_adv = graph.get_operation_by_name('optimizer_adv')
             # self.optimizer_v_adv = graph.get_tensor_by_name('optimizer_v_adv:0')
 
             tf.logging.info('Model successfully restored.')
