@@ -26,13 +26,13 @@ def main():
     graph = tf.Graph()
     with tf.Session(graph=graph, config=tf.ConfigProto(allow_soft_placement=True)) as sess:
         sess.run(tf.global_variables_initializer())
-        cb_model.load_model(sess, graph)
+        cb_model.load_model(sess, graph, adv_train=True)
 
         start = time.time()
         epochs_trav = 0
 
         tf.logging.info("Starting adv training...")
-        for epoch in range(FLAGS.max_steps):
+        for epoch in range(FLAGS.advtrain_steps):
             epochs_trav += 1
             n_batches = math.ceil(float(FLAGS.train_examples) / float(FLAGS.batch_size))
 

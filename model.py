@@ -304,24 +304,24 @@ class ClaimBusterModel:
 
         return batch_x, batch_y
 
-    def load_model(self, sess, graph):
+    def load_model(self, sess, graph, adv_train=False):
         def get_last_save(scan_loc):
-            print(scan_loc)
             ret_ar = []
             directory = os.fsencode(scan_loc)
             for fstr in os.listdir(directory):
-                print(os.fsdecode(fstr))
                 if '.meta' in os.fsdecode(fstr) and 'cb.ckpt-' in os.fsdecode(fstr):
                     ret_ar.append(os.fsdecode(fstr))
             ret_ar.sort()
             return ret_ar[-1]
 
-        model_dir = os.path.join(FLAGS.cb_output_dir, get_last_save(FLAGS.cb_output_dir))
+        dr = FLAGS.cb_output_dir if not adv_train else FLAGS.cb_input_dir
+
+        model_dir = os.path.join(dr, get_last_save(dr))
         tf.logging.info('Attempting to restore from {}'.format(model_dir))
 
         with graph.as_default():
             saver = tf.train.import_meta_graph(model_dir)
-            saver.restore(sess, tf.train.latest_checkpoint(FLAGS.cb_output_dir))
+            saver.restore(sess, tf.train.latest_checkpoint(dr))
 
             # inputs
             self.x_nl = [graph.get_tensor_by_name('x_id:0'), graph.get_tensor_by_name('x_mask:0'),

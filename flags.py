@@ -18,6 +18,7 @@ flags.DEFINE_list('gpu', [0], 'ID of GPU to use: in range [0, 4]')
 flags.DEFINE_bool('ner_spacy', False, 'Named entity recognition with spaCy')
 
 # Base directories
+flags.DEFINE_string('cb_input_dir', './pt_model', 'Location of pretrained model. Used ONLY when advtraining')
 flags.DEFINE_string('cb_output_dir', './output', 'Location of outputs')
 flags.DEFINE_string('cb_data_dir', './data', 'Location of data')
 
@@ -64,7 +65,7 @@ flags.DEFINE_string('w2v_loc_bin', './data/word2vec/w2v3b_gensim.bin', 'Location
 
 # Adversarial and virtual adversarial training parameters.
 flags.DEFINE_bool('adv_train', False, 'Train using adversarial perturbations')
-flags.DEFINE_integer('adv_type', 0, '0 for AT, 1 for VAT')
+# flags.DEFINE_integer('adv_type', 0, '0 for AT, 1 for VAT')
 flags.DEFINE_float('adv_coeff', 1.0, 'Coefficient of adversarial loss')
 flags.DEFINE_float('perturb_norm_length', 6.0, 'Norm length of adversarial perturbation')
 
