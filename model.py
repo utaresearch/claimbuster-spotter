@@ -85,9 +85,11 @@ class ClaimBusterModel:
         return train_vars
 
     def build_optimizer(self, cost_fn, adv):
-        return tf.identity(tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(
+        opt = tf.train.AdamOptimizer(learning_rate=FLAGS.learning_rate).minimize(
             cost_fn, var_list=self.trainable_variables) if FLAGS.adam else tf.train.RMSPropOptimizer(
-            learning_rate=FLAGS.learning_rate).minimize(cost_fn, var_list=self.trainable_variables),
+            learning_rate=FLAGS.learning_rate).minimize(cost_fn, var_list=self.trainable_variables)
+
+        return tf.identity(opt,
                            name=('optimizer' if adv == 0 else ('optimizer_adv' if adv == 1 else 'optimizer_v_adv')))
 
     def construct_model(self):
