@@ -340,6 +340,7 @@ class ClaimBusterModel:
 
             # outputs
             self.cost = graph.get_tensor_by_name('cost:0')
+            self.cost_adv = graph.get_tensor_by_name('cost_adv:0')
             self.y_pred = graph.get_tensor_by_name('y_pred:0')
             self.acc = graph.get_tensor_by_name('acc:0')
 
