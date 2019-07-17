@@ -316,7 +316,6 @@ class ClaimBusterModel:
             return ret_ar[-1]
 
         dr = FLAGS.cb_output_dir if not train else FLAGS.cb_input_dir
-        print(dr)
 
         model_dir = os.path.join(dr, get_last_save(dr))
         tf.logging.info('Attempting to restore from {}'.format(model_dir))

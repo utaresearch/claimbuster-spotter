@@ -32,7 +32,7 @@ def main():
         epochs_trav = 0
 
         tf.logging.info("Starting continued training...")
-        for epoch in range(FLAGS.advtrain_steps):
+        for epoch in range(FLAGS.contrain_steps):
             epochs_trav += 1
             n_batches = math.ceil(float(FLAGS.train_examples) / float(FLAGS.batch_size))
 

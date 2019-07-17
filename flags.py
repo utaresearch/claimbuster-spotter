@@ -18,7 +18,7 @@ flags.DEFINE_list('gpu', [0], 'ID of GPU to use: in range [0, 4]')
 flags.DEFINE_bool('ner_spacy', False, 'Named entity recognition with spaCy')
 
 # Base directories
-flags.DEFINE_string('cb_input_dir', './pt_model', 'Location of pretrained model. Used ONLY when advtraining')
+flags.DEFINE_string('cb_input_dir', './pt_model', 'Location of pretrained model. Used ONLY when adv/con training')
 flags.DEFINE_string('cb_output_dir', './output', 'Location of outputs')
 flags.DEFINE_string('cb_data_dir', './data', 'Location of data')
 
@@ -52,6 +52,7 @@ flags.DEFINE_integer('cls_hidden', 0, 'Size of hidden classification layer')
 
 # Optimization
 flags.DEFINE_integer('pretrain_steps', 20, 'Number of epochs to run.')
+flags.DEFINE_integer('contrain_steps', 5, 'Number of epochs to run.')
 flags.DEFINE_integer('advtrain_steps', 20, 'Number of epochs to run.')
 # flags.DEFINE_float('learning_rate', 0.001, 'Learning rate while during optimiation.')
 
