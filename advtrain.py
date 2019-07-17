@@ -36,9 +36,6 @@ def main():
             epochs_trav += 1
             n_batches = math.ceil(float(FLAGS.train_examples) / float(FLAGS.batch_size))
 
-            if epoch == FLAGS.pretrain_steps:
-                tf.logging.info('Switching to adversarial training')
-
             n_samples = 0
             epoch_loss, epoch_loss_adv, epoch_acc = 0.0, 0.0, 0.0
 
