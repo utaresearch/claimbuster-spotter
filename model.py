@@ -140,7 +140,8 @@ class ClaimBusterModel:
 
             return (orig_embed, cb_out) if not adv else cb_out
 
-    def v_adv_loss(self, logits_reg, logits_perturb):
+    @staticmethod
+    def v_adv_loss(logits_reg, logits_perturb):
         return tf.distributions.kl_divergence(logits_reg, logits_perturb, name='v_adv_loss')
 
     def adv_loss(self, logits, cls_weight):
