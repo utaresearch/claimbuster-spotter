@@ -53,7 +53,7 @@ class ClaimBusterModel:
         self.trainable_variables = None
 
         if not restore:
-            self.logits, self.cost, self.cost_adv, self.cost_v_adv = self.construct_model(adv=self.adv)
+            self.logits, self.cost, self.cost_adv, self.cost_v_adv = self.construct_model()
 
             self.optimizer = self.build_optimizer(self.cost, adv=0)
             self.optimizer_adv = self.build_optimizer(self.cost_adv, adv=1)
