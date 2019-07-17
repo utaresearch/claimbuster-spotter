@@ -27,8 +27,7 @@ def main():
         n_batches = math.ceil(float(FLAGS.test_examples) / float(FLAGS.batch_size))
 
         n_samples = 0
-        eval_loss = 0.0
-        eval_acc = 0.0
+        eval_loss, eval_acc = 0.0, 0.0
 
         y_all = []
         pred_all = []
@@ -36,7 +35,7 @@ def main():
         for i in range(n_batches):
             batch_x, batch_y = cb_model.get_batch(i, test_data, ver='test')
 
-            b_loss, b_acc, b_pred = cb_model.stats_from_run(sess, batch_x, batch_y)
+            b_loss, _, b_acc, b_pred = cb_model.stats_from_run(sess, batch_x, batch_y, adv=False)
             if b_loss == 0 and b_acc == 0 and b_pred == 0:
                 continue
 
