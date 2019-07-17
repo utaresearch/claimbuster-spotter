@@ -67,7 +67,7 @@ def main():
                 tf.logging.info('Model @ epoch {} saved'.format(epoch + 1))
 
         tf.logging.info('Training complete. Saving final model...')
-        cb_model.save_model(sess, FLAGS.max_steps)
+        cb_model.save_model(sess, FLAGS.contrain_steps)
         tf.logging.info('Model saved.')
 
         sess.close()
