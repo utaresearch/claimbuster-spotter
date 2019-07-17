@@ -51,8 +51,8 @@ flags.DEFINE_integer('rnn_cell_size', 16, 'Number of hidden units in the LSTM.')
 flags.DEFINE_integer('cls_hidden', 0, 'Size of hidden classification layer')
 
 # Optimization
-flags.DEFINE_integer('pretrain_steps', 15, 'Number of epochs to run.')
-flags.DEFINE_integer('advtrain_steps', 30, 'Number of epochs to run.')
+flags.DEFINE_integer('pretrain_steps', 20, 'Number of epochs to run.')
+flags.DEFINE_integer('advtrain_steps', 20, 'Number of epochs to run.')
 # flags.DEFINE_float('learning_rate', 0.001, 'Learning rate while during optimiation.')
 
 # Regularization
@@ -64,8 +64,7 @@ flags.DEFINE_string('w2v_loc', './data/word2vec/w2v3b_gensim.txt', 'Location of 
 flags.DEFINE_string('w2v_loc_bin', './data/word2vec/w2v3b_gensim.bin', 'Location of w2v embeddings in BINARY form')
 
 # Adversarial and virtual adversarial training parameters.
-flags.DEFINE_bool('adv_train', False, 'Train using adversarial perturbations')
-# flags.DEFINE_integer('adv_type', 0, '0 for AT, 1 for VAT')
+flags.DEFINE_integer('adv_type', 0, '0 for AT, 1 for VAT')
 flags.DEFINE_float('adv_coeff', 1.0, 'Coefficient of adversarial loss')
 flags.DEFINE_float('perturb_norm_length', 6.0, 'Norm length of adversarial perturbation')
 
