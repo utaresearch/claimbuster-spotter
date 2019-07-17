@@ -91,10 +91,7 @@ class ClaimBusterModel:
             cost_fn, var_list=self.trainable_variables, name=name) if FLAGS.adam else tf.train.RMSPropOptimizer(
             learning_rate=FLAGS.learning_rate).minimize(cost_fn, var_list=self.trainable_variables, name=name)
 
-        print(opt)
-
         return opt
-
 
     def construct_model(self):
         orig_embed, logits = self.fprop()
