@@ -29,6 +29,7 @@ def main():
     config.gpu_options.allow_growth = True
 
     with tf.Session(graph=graph, config=config) as sess:
+        sess.run(tf.global_variables_initializer())
         start = time.time()
         epochs_trav = 0
 
