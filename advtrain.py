@@ -24,7 +24,7 @@ def main():
     cb_model = ClaimBusterModel(data_load.vocab, data_load.class_weights, restore=True, adv=True)
 
     graph = tf.get_default_graph()
-    cb_model.load_model(default_graph, train=True)
+    cb_model.load_model(graph, train=True)
 
     with tf.Session(graph=graph, config=tf.ConfigProto(allow_soft_placement=True)) as sess:
 
