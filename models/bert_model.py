@@ -134,10 +134,7 @@ class BertModel(object):
           ValueError: The config is invalid or one of the input tensor shapes
             is invalid.
         """
-        config = copy.deepcopy(config)
-        if not is_training:
-            config.hidden_dropout_prob = 0.0
-            config.attention_probs_dropout_prob = 0.0
+        # config = copy.deepcopy(config)
 
         input_shape = get_shape_list(input_ids, expected_rank=2)
         batch_size = input_shape[0]
