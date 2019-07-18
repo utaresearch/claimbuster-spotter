@@ -30,7 +30,6 @@ def main():
     if FLAGS.restore_and_continue:
         cb_model.load_model(graph, train=True)
 
-
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
 
