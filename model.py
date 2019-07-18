@@ -135,7 +135,7 @@ class ClaimBusterModel:
                                                 initializer=tf.contrib.layers.xavier_initializer())
 
                 synth_out = tf.matmul(synth_out, hidden_weights) + hidden_biases
-                synth_out = tf.nn.dropout(synth_out, keep_prob=FLAGS.keep_prob_cls)
+                synth_out = tf.nn.dropout(synth_out, keep_prob=self.kp_cls)
 
             output_weights = tf.get_variable('cb_output_weights', shape=(
                 FLAGS.cls_hidden if FLAGS.cls_hidden > 0 else synth_out_shape, FLAGS.num_classes),
