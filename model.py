@@ -300,7 +300,7 @@ class ClaimBusterModel:
     @staticmethod
     def save_model(sess, epoch):
         saver = tf.train.Saver()
-        saver.save(sess, os.path.join(FLAGS.cb_output_dir, 'cb.ckpt'), global_step=epoch)
+        saver.save(sess, os.path.join(FLAGS.cb_output_dir), global_step=epoch)
 
     @staticmethod
     def transform_dl_data(data_xlist):
@@ -343,8 +343,8 @@ class ClaimBusterModel:
                 saver = tf.train.import_meta_graph(model_dir)
                 saver.restore(sess, tf.train.latest_checkpoint(dr))
 
-                with default_graph.as_default():
-                    tvars = tf.trainable_variables()
-                    for v in tvars:
-                        print(v.name)
-                        v.assign(sess.run(restore_graph.get_tensor_by_name(v.name)))
+            with default_graph.as_default():
+                tvars = tf.trainable_variables()
+                for v in tvars:
+                    print(v.name)
+                    v.assign(sess.run(restore_graph.get_tensor_by_name(v.name)))

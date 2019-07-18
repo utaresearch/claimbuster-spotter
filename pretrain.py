@@ -33,7 +33,8 @@ def main():
                 tf.logging.info('Restoring pretrained BERT weights into graph')
             sess.run(tf.global_variables_initializer())
         else:
-            cb_model.load_model(sess, graph, train=True)
+            # cb_model.load_model(sess, graph, train=True)
+            pass
 
         start = time.time()
         epochs_trav = 0
