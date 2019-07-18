@@ -121,14 +121,11 @@ class ClaimBusterModel:
         return logits, logits_adv, loss, loss_adv, None
 
     def fprop(self, orig_embed=None, reg_loss=None, adv=False):
-        if adv: assert (reg_loss is not None and orig_embed is not None) and not FLAGS.use_bert_hub
+        if adv: assert (reg_loss is not None and orig_embed is not None)
 
-        if FLAGS.use_bert_hub:
-            nl_out = LanguageModel.build_bert_transformer_hub(self.x_nl[0], self.x_nl[1], self.x_nl[2], adv)
-        else:
-            nl_out = LanguageModel.build_bert_transformer_raw(
-                self.x_nl[0], self.x_nl[1], self.x_nl[2], self.kp_bert_atten, self.kp_bert_hidden,
-                adv, orig_embed, reg_loss, self.restore)
+        nl_out = LanguageModel.build_bert_transformer_raw(
+            self.x_nl[0], self.x_nl[1], self.x_nl[2], self.kp_bert_atten, self.kp_bert_hidden,
+            adv, orig_embed, reg_loss, self.restore)
         if not adv:
             orig_embed, nl_out = nl_out[0], nl_out[1]
 

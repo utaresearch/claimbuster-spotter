@@ -36,8 +36,7 @@ def main():
     with tf.Session(graph=graph, config=config) as sess:
         sess.run(tf.global_variables_initializer())
         if not FLAGS.restore_and_continue:
-            if not FLAGS.use_bert_hub:
-                tf.logging.info('Restoring pretrained BERT weights into graph')
+            tf.logging.info('Restoring pretrained BERT weights into graph')
 
         start = time.time()
         epochs_trav = 0
