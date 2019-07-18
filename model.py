@@ -57,18 +57,18 @@ class ClaimBusterModel:
         self.restore =restore
 
         self.logits, self.logits_adv, self.cost, self.cost_adv, self.cost_v_adv = self.construct_model()
-
         self.optimizer = self.build_optimizer(self.cost, adv=0)
-        self.optimizer_adv = self.build_optimizer(self.cost_adv, adv=1)
-        # self.optimizer_v_adv = self.build_optimizer(self.cost_v_adv, adv=2)
 
         self.y_pred = tf.nn.softmax(self.logits, axis=1, name='y_pred')
         correct = tf.equal(tf.argmax(self.y, axis=1), tf.argmax(self.y_pred, axis=1), name='correct')
         self.acc = tf.reduce_mean(tf.cast(correct, tf.float32), name='acc')
 
-        self.y_pred_adv = tf.nn.softmax(self.logits_adv, axis=1, name='y_pred_adv')
-        correct_adv = tf.equal(tf.argmax(self.y, axis=1), tf.argmax(self.y_pred_adv, axis=1), name='correct_adv')
-        self.acc_adv = tf.reduce_mean(tf.cast(correct_adv, tf.float32), name='acc_adv')
+        if self.adv:
+            self.y_pred_adv = tf.nn.softmax(self.logits_adv, axis=1, name='y_pred_adv')
+            correct_adv = tf.equal(tf.argmax(self.y, axis=1), tf.argmax(self.y_pred_adv, axis=1), name='correct_adv')
+            self.acc_adv = tf.reduce_mean(tf.cast(correct_adv, tf.float32), name='acc_adv')
+
+            self.optimizer_adv = self.build_optimizer(self.cost_adv, adv=1)
 
         # If writing information is desired in the future
         # tf.summary.scalar('cost', self.cost)
@@ -108,9 +108,12 @@ class ClaimBusterModel:
         self.trainable_variables = self.select_train_vars()
         loss = tf.identity(self.ce_loss(logits, self.cls_weight), name='cost')
 
-        logits_adv = self.fprop(orig_embed, loss, adv=True)
-        loss_adv = tf.identity(FLAGS.adv_coeff * self.adv_loss(logits_adv, self.cls_weight), name='cost_adv')
-        assert self.trainable_variables == self.select_train_vars(print_stuff=False)
+        logits_adv, loss_adv = None, None
+
+        if self.adv:
+            logits_adv = self.fprop(orig_embed, loss, adv=True)
+            loss_adv = tf.identity(FLAGS.adv_coeff * self.adv_loss(logits_adv, self.cls_weight), name='cost_adv')
+            assert self.trainable_variables == self.select_train_vars(print_stuff=False)
 
         return logits, logits_adv, loss, loss_adv, None
 
