@@ -337,7 +337,7 @@ class ClaimBusterModel:
             ret_ar.sort()
             return os.path.join(scan_loc, ret_ar[-1]) + '/'
 
-        def get_assignment_map_from_checkpoint(tvars, init_checkpoint):
+        def get_assignment_map_from_checkpoint(tvars):
             graph_var_names = [v.name[:-2] for v in tvars]
             assignment_map = collections.OrderedDict()
 
@@ -350,8 +350,5 @@ class ClaimBusterModel:
 
         with default_graph.as_default():
             init_checkpoint = get_last_save(dr)
-            print(init_checkpoint)
-            am, _ = get_assignment_map_from_checkpoint(tf.trainable_variables(), init_checkpoint)
-            print(am)
-
+            am, _ = get_assignment_map_from_checkpoint(tf.trainable_variables())
             tf.train.init_from_checkpoint(init_checkpoint, am)
