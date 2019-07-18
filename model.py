@@ -245,7 +245,7 @@ class ClaimBusterModel:
 
         return 'Dev Loss: {:>7.4f}{}Dev F1: {:>7.4f}{}'.format(val_loss, (
             ' Dev Adv Loss: {:>7.4f} '.format(val_loss_adv) if adv else ' '), val_f1, (
-            ' Dev Adv F1: {:>7.4f}'.format(val_f1_adv) if adv else ''))
+            ' Dev Adv F1: {:>7.4f} '.format(val_f1_adv) if adv else ''))
 
     def stats_from_run(self, sess, batch_x, batch_y, adv):
         x_nl = [z[0] for z in batch_x]

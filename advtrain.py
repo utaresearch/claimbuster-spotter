@@ -55,7 +55,7 @@ def main():
             epoch_acc_adv /= n_samples
 
             if epoch % FLAGS.stat_print_interval == 0:
-                log_string = 'Epoch {:>3} Loss: {:>7.4} Adv Loss: {:>7.4} Acc: {:>7.4f}% Adv Acc: {:>7.4f}%'.format(
+                log_string = 'Epoch {:>3} Loss: {:>7.4} Adv Loss: {:>7.4} Acc: {:>7.4f}% Adv Acc: {:>7.4f}% '.format(
                     epoch + 1, epoch_loss, epoch_loss_adv, epoch_acc * 100, epoch_acc_adv * 100)
                 if test_data.get_length() > 0:
                     log_string += cb_model.execute_validation(sess, test_data, adv=True)
