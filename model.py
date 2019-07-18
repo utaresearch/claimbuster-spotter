@@ -301,7 +301,7 @@ class ClaimBusterModel:
     def save_model(sess, epoch):
         saver = tf.train.Saver()
         epoch_string = str(epoch).zfill(3)
-        saver.save(sess, os.path.join(FLAGS.cb_output_dir, epoch_string), global_step=epoch)
+        saver.save(sess, os.path.join(FLAGS.cb_output_dir + '-' + epoch_string), global_step=epoch)
 
     @staticmethod
     def transform_dl_data(data_xlist):
