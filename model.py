@@ -342,7 +342,7 @@ class ClaimBusterModel:
             assignment_map = collections.OrderedDict()
 
             for name in graph_var_names:
-                if 'Adam' is in name:
+                if 'Adam' in name:
                     continue
                 assignment_map[name] = name
 
