@@ -56,19 +56,24 @@ class ClaimBusterModel:
         self.trainable_variables = None
 
         if not restore:
-            self.logits, self.cost, self.cost_adv, self.cost_v_adv = self.construct_model()
+            self.logits, self.logits_adv, self.cost, self.cost_adv, self.cost_v_adv = self.construct_model()
 
             self.optimizer = self.build_optimizer(self.cost, adv=0)
             self.optimizer_adv = self.build_optimizer(self.cost_adv, adv=1)
             # self.optimizer_v_adv = self.build_optimizer(self.cost_v_adv, adv=2)
 
             self.y_pred = tf.nn.softmax(self.logits, axis=1, name='y_pred')
-            self.correct = tf.equal(tf.argmax(self.y, axis=1), tf.argmax(self.y_pred, axis=1), name='correct')
-            self.acc = tf.reduce_mean(tf.cast(self.correct, tf.float32), name='acc')
+            correct = tf.equal(tf.argmax(self.y, axis=1), tf.argmax(self.y_pred, axis=1), name='correct')
+            self.acc = tf.reduce_mean(tf.cast(correct, tf.float32), name='acc')
+
+            self.y_pred_adv = tf.nn.softmax(self.logits_adv, axis=1, name='y_pred_adv')
+            correct_adv = tf.equal(tf.argmax(self.y, axis=1), tf.argmax(self.y_pred_adv, axis=1), name='correct_adv')
+            self.acc_adv = tf.reduce_mean(tf.cast(correct_adv, tf.float32), name='acc_adv')
         else:
-            self.logits, self.cost, self.cost_adv = None, None, None
+            self.logits, self.logits_adv, self.cost, self.cost_adv = None, None, None, None
             self.optimizer, self.optimizer_adv = None, None
-            self.y_pred, self.correct, self.acc = None, None, None
+            self.y_pred, self.acc = None, None
+            self.y_pred_adv, self.acc_adv = None, None
 
         # If writing information is desired in the future
         # tf.summary.scalar('cost', self.cost)
@@ -112,7 +117,7 @@ class ClaimBusterModel:
         loss_adv = tf.identity(FLAGS.adv_coeff * self.adv_loss(logits_adv, self.cls_weight), name='cost_adv')
         assert self.trainable_variables == self.select_train_vars(print_stuff=False)
 
-        return logits, loss, loss_adv, None
+        return logits, logits_adv, loss, loss_adv, None
 
     def fprop(self, orig_embed=None, reg_loss=None, adv=False):
         if adv: assert (reg_loss is not None and orig_embed is not None) and not FLAGS.use_bert_hub
@@ -213,10 +218,11 @@ class ClaimBusterModel:
         tot_val_ex = 0
 
         all_y_pred = []
+        all_y_pred_adv = []
         all_y = []
         for batch in range(n_batches):
             batch_x, batch_y = self.get_batch(batch, test_data, ver='validation')
-            tloss, tloss_adv, tacc, tpred = self.stats_from_run(sess, batch_x, batch_y, adv)
+            tloss, tloss_adv, tacc, tpred, tpred_adv = self.stats_from_run(sess, batch_x, batch_y, adv)
 
             val_loss += tloss
             val_acc += tacc * len(batch_y)
@@ -226,17 +232,20 @@ class ClaimBusterModel:
                 val_loss_adv += tloss_adv
 
             all_y_pred = np.concatenate((all_y_pred, tpred))
+            all_y_pred_adv = np.concatenate((all_y_pred_adv, tpred_adv))
             all_y = np.concatenate((all_y, batch_y))
 
         val_loss /= tot_val_ex
         val_acc /= tot_val_ex
-        val_f1 = f1_score(all_y, all_y_pred, average='weighted')
+        val_f1, val_f1_adv = f1_score(all_y, all_y_pred, average='weighted'), None
 
         if adv:
             val_loss_adv /= tot_val_ex
+            val_f1_adv = f1_score(all_y, all_y_pred_adv, average='weighted')
 
-        return 'Dev Loss: {:>7.4f}{}Dev F1: {:>7.4f} '.format(val_loss, (
-            ' Dev Adv Loss: {:>7.4f} '.format(val_loss_adv) if adv else ' '), val_f1)
+        return 'Dev Loss: {:>7.4f}{}Dev F1: {:>7.4f}{}'.format(val_loss, (
+            ' Dev Adv Loss: {:>7.4f} '.format(val_loss_adv) if adv else ' '), val_f1, (
+            ' Dev Adv F1: {:>7.4f}'.format(val_f1_adv) if adv else ''))
 
     def stats_from_run(self, sess, batch_x, batch_y, adv):
         x_nl = [z[0] for z in batch_x]
@@ -245,15 +254,15 @@ class ClaimBusterModel:
 
         feed_dict = self.get_feed_dict(x_nl, x_pos, x_sent, batch_y, ver='test')
 
-        run_loss = sess.run(self.cost, feed_dict=feed_dict)
-        run_loss_adv = None
-        run_acc = sess.run(self.acc, feed_dict=feed_dict)
-        run_pred = sess.run(self.y_pred, feed_dict=feed_dict)
+        run_loss, run_acc, run_pred = sess.run([self.cost, self.acc, self.y_pred], feed_dict=feed_dict)
+        run_pred = np.argmax(run_pred, axis=1)
+        run_loss_adv, run_pred_adv = None, None
 
         if adv:
-            run_loss_adv = sess.run(self.cost_adv, feed_dict=feed_dict)
+            run_loss_adv, run_pred_adv = sess.run([self.cost_adv, self.y_pred_adv], feed_dict=feed_dict)
+            run_pred_adv = np.argmax(run_pred_adv, axis=1)
 
-        return np.sum(run_loss), np.sum(run_loss_adv), run_acc, np.argmax(run_pred, axis=1)
+        return np.sum(run_loss), np.sum(run_loss_adv), run_acc, run_pred, run_pred_adv
 
     def get_preds(self, sess, inp):
         x_nl, x_pos, x_sent = inp[0], [inp[1]], [inp[2]]
@@ -360,6 +369,8 @@ class ClaimBusterModel:
 
             self.y_pred = graph.get_tensor_by_name('y_pred:0')
             self.acc = graph.get_tensor_by_name('acc:0')
+            self.y_pred_adv = graph.get_tensor_by_name('y_pred_adv:0')
+            self.acc_adv = graph.get_tensor_by_name('acc_adv:0')
 
             # operations
             self.optimizer = graph.get_operation_by_name('optimizer')
