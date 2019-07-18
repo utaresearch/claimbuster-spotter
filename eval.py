@@ -27,10 +27,8 @@ def main():
 
     with tf.Session(graph=graph, config=config) as sess:
         sess.run(tf.global_variables_initializer())
-        cb_model.load_model(sess, graph)
 
         n_batches = math.ceil(float(FLAGS.test_examples) / float(FLAGS.batch_size))
-
         n_samples = 0
         eval_loss, eval_acc = 0.0, 0.0
 
