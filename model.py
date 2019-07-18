@@ -347,4 +347,4 @@ class ClaimBusterModel:
                     tvars = tf.trainable_variables()
                     for v in tvars:
                         print(v.name)
-                        v.assign(sess.run(restore_graph.get_variable(v.name)))
+                        v.assign(sess.run(restore_graph.get_tensor_by_name(v.name)))
