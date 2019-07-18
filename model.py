@@ -116,7 +116,7 @@ class ClaimBusterModel:
             orig_embed, nl_out = nl_out[0], nl_out[1]
 
         synth_out = tf.concat([nl_out, self.x_sent], axis=1)
-        synth_out = tf.nn.dropout(synth_out, keep_prob=FLAGS.keep_prob_cls)
+        synth_out = tf.nn.dropout(synth_out, keep_prob=self.kp_cls)
 
         synth_out_shape = synth_out.get_shape()[1]
 
@@ -231,7 +231,6 @@ class ClaimBusterModel:
         x_sent = [z[2] for z in batch_x]
 
         feed_dict = self.get_feed_dict(x_nl, x_pos, x_sent, batch_y, ver='test')
-        print(feed_dict)
 
         run_loss = sess.run(self.cost, feed_dict=feed_dict)
         run_loss_adv = None
