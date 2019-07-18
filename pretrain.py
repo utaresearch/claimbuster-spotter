@@ -29,7 +29,7 @@ def main():
     graph = tf.get_default_graph()
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
-    config.gpu_options.allow_soft_placement = True
+
     with tf.Session(graph=graph, config=config) as sess:
         if not FLAGS.restore_and_continue:
             if not FLAGS.use_bert_hub:
