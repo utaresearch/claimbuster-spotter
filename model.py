@@ -363,5 +363,6 @@ class ClaimBusterModel:
             init_checkpoint = get_last_save(dr)
             print(init_checkpoint)
             am, _ = get_assignment_map_from_checkpoint(tf.trainable_variables(), init_checkpoint)
+            print(am)
 
             tf.train.init_from_checkpoint(init_checkpoint, am)
