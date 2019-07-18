@@ -338,11 +338,7 @@ class ClaimBusterModel:
             return os.path.join(scan_loc, ret_ar[-1]) + '/'
 
         def get_assignment_map_from_checkpoint(tvars, init_checkpoint):
-            def clean_string(str):
-                return str.replace('//', '/')
-
             graph_var_names = [v.name[:-2] for v in tvars]
-            clean_graph_var_names = [clean_string(v) for v in graph_var_names]
             ckpt_init_vars = tf.train.list_variables(init_checkpoint)
 
             print('SUCCESSFULLY SUCCESSFULLY SUCCESSFULLY SUCCESSFULLY SUCCESSFULLY')
@@ -354,11 +350,7 @@ class ClaimBusterModel:
 
             for x in ckpt_init_vars:
                 (name, var) = (x[0], x[1])
-                try:
-                    idx = clean_graph_var_names.index(name)
-                except ValueError:
-                    continue
-                assignment_map[name] = graph_var_names[idx]
+                assignment_map[name] = name
 
             return assignment_map, None
 
