@@ -231,6 +231,7 @@ class ClaimBusterModel:
         x_sent = [z[2] for z in batch_x]
 
         feed_dict = self.get_feed_dict(x_nl, x_pos, x_sent, batch_y, ver='test')
+        print(feed_dict)
 
         run_loss = sess.run(self.cost, feed_dict=feed_dict)
         run_loss_adv = None
