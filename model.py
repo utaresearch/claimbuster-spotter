@@ -339,12 +339,9 @@ class ClaimBusterModel:
 
         def get_assignment_map_from_checkpoint(tvars, init_checkpoint):
             graph_var_names = [v.name[:-2] for v in tvars]
-            ckpt_init_vars = tf.train.list_variables(init_checkpoint)
-
             assignment_map = collections.OrderedDict()
 
-            for x in ckpt_init_vars:
-                (name, var) = (x[0], x[1])
+            for name in graph_var_names:
                 if 'Adam' is in name:
                     continue
                 assignment_map[name] = name
