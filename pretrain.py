@@ -1,6 +1,7 @@
 import math
 import time
 import os
+from tqdm import tqdm
 from utils.data_loader import DataLoader
 from model import ClaimBusterModel
 from flags import FLAGS, print_flags
@@ -42,7 +43,7 @@ def main():
         epochs_trav = 0
 
         tf.logging.info("Starting training...")
-        for epoch in range(FLAGS.pretrain_steps):
+        for epoch in tqdm(range(FLAGS.pretrain_steps)):
             epochs_trav += 1
             n_batches = math.ceil(float(FLAGS.train_examples) / float(FLAGS.batch_size))
 
