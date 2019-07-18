@@ -335,7 +335,7 @@ class ClaimBusterModel:
             for fstr in os.listdir(directory):
                 ret_ar.append(os.fsdecode(fstr))
             ret_ar.sort()
-            return ret_ar[-1]
+            return os.path.join(scan_loc, ret_ar[-1])
 
         def get_assignment_map_from_checkpoint(tvars, init_checkpoint):
             def clean_string(str):
