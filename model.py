@@ -228,12 +228,12 @@ class ClaimBusterModel:
             val_acc += tacc * len(batch_y)
             tot_val_ex += len(batch_y)
 
+            all_y_pred = np.concatenate((all_y_pred, tpred))
+            all_y = np.concatenate((all_y, batch_y))
+
             if adv:
                 val_loss_adv += tloss_adv
-
-            all_y_pred = np.concatenate((all_y_pred, tpred))
-            all_y_pred_adv = np.concatenate((all_y_pred_adv, tpred_adv))
-            all_y = np.concatenate((all_y, batch_y))
+                all_y_pred_adv = np.concatenate((all_y_pred_adv, tpred_adv))
 
         val_loss /= tot_val_ex
         val_acc /= tot_val_ex
