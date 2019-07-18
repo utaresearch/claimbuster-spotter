@@ -24,9 +24,8 @@ def main():
     tf.logging.info("{} training examples".format(train_data.get_length()))
     tf.logging.info("{} validation examples".format(test_data.get_length()))
 
-    cb_model = ClaimBusterModel(data_load.vocab, data_load.class_weights, restore=FLAGS.restore_and_continue, adv=False)
-
     graph = tf.get_default_graph()
+    cb_model = ClaimBusterModel(data_load.vocab, data_load.class_weights, restore=FLAGS.restore_and_continue, adv=False)
     if FLAGS.restore_and_continue:
         cb_model.load_model(graph, train=True)
 
