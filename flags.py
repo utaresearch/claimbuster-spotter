@@ -21,6 +21,8 @@ flags.DEFINE_bool('ner_spacy', False, 'Named entity recognition with spaCy')
 flags.DEFINE_string('cb_input_dir', './pt_model', 'Location of pretrained model. Used ONLY when adv/con training')
 flags.DEFINE_string('cb_output_dir', './output', 'Location of outputs')
 flags.DEFINE_string('cb_data_dir', './data', 'Location of data')
+flags.DEFINE_string('tb_dir', './tb_logs', 'Tensorboard location')
+
 
 # Data
 flags.DEFINE_bool('refresh_data', False, 'Re-process ./data/all_data.pickle')

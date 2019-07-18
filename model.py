@@ -67,6 +67,13 @@ class ClaimBusterModel:
             self.optimizer, self.optimizer_adv = None, None
             self.y_pred, self.correct, self.acc = None, None, None
 
+        # If writing information is desired in the future
+        # tf.summary.scalar('cost', self.cost)
+        # tf.summary.scalar('acc', self.acc)
+        # self.merged_metrics = tf.summary.merge_all()
+        # self.train_writer = tf.summary.FileWriter(os.path.join(FLAGS.tb_dir, 'train'))
+        # self.val_writer = tf.summary.FileWriter(os.path.join(FLAGS.tb_dir, 'val'))
+
     @staticmethod
     def select_train_vars(print_stuff=True):
         train_vars = tf.trainable_variables()

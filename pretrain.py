@@ -12,6 +12,9 @@ def main():
 
     print_flags()
 
+    if os.path.isdir(FLAGS.tb_dir):
+        os.rmdir(FLAGS.tb_dir)
+
     tf.logging.info("Loading dataset")
     data_load = DataLoader()
 
