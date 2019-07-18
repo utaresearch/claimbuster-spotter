@@ -24,13 +24,16 @@ def main():
     tf.logging.info("{} training examples".format(train_data.get_length()))
     tf.logging.info("{} validation examples".format(test_data.get_length()))
 
-    cb_model = ClaimBusterModel(data_load.vocab, data_load.class_weights, adv=False)
+    cb_model = ClaimBusterModel(data_load.vocab, data_load.class_weights, restore=FLAGS.restore_and_continue, adv=False)
 
-    with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as sess:
-        if not FLAGS.use_bert_hub:
-            tf.logging.info('Restoring pretrained BERT weights into graph')
-
-        sess.run(tf.global_variables_initializer())
+    graph = tf.Graph()
+    with tf.Session(graph=graph, config=tf.ConfigProto(allow_soft_placement=True)) as sess:
+        if not FLAGS.save_and_restore:
+            if not FLAGS.use_bert_hub:
+                tf.logging.info('Restoring pretrained BERT weights into graph')
+            sess.run(tf.global_variables_initializer())
+        else:
+            cb_model.load_model(sess, graph, train=True)
 
         start = time.time()
         epochs_trav = 0
@@ -47,7 +50,7 @@ def main():
                 batch_x, batch_y = cb_model.get_batch(i, train_data)
                 cb_model.train_neural_network(sess, batch_x, batch_y, adv=False)
 
-                b_loss, _, b_acc, _ = cb_model.stats_from_run(sess, batch_x, batch_y, adv=False)
+                b_loss, _, b_acc, _, _ = cb_model.stats_from_run(sess, batch_x, batch_y, adv=False)
                 epoch_loss += b_loss
                 epoch_acc += b_acc * len(batch_y)
                 n_samples += len(batch_y)
