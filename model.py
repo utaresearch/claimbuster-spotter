@@ -322,7 +322,7 @@ class ClaimBusterModel:
 
         return batch_x, batch_y
 
-    def load_model(self, sess, graph, train=False):
+    def load_model(self, default_graph, train=False):
         def get_last_save(scan_loc):
             ret_ar = []
             directory = os.fsencode(scan_loc)
@@ -338,15 +338,13 @@ class ClaimBusterModel:
         tf.logging.info('Attempting to restore from {}'.format(model_dir))
 
         restore_graph = tf.Graph()
-        with restore_graph.as_default():
-            saver = tf.train.import_meta_graph(model_dir)
-            saver.restore(sess, tf.train.latest_checkpoint(dr))
+        with tf.Session(graph=restore_graph, config=tf.ConfigProto(allow_soft_placement=True)) as sess:
+            with restore_graph.as_default():
+                saver = tf.train.import_meta_graph(model_dir)
+                saver.restore(sess, tf.train.latest_checkpoint(dr))
 
-        with graph.as_default():
-            saver = tf.train.import_meta_graph(model_dir)
-            saver.restore(sess, tf.train.latest_checkpoint(dr))
-
-            tvars = tf.trainable_variables()
-            for v in tvars:
-                print(v.name)
-                v.assign(sess.run(restore_graph.get_variable(v.name)))
+                with default_graph.as_default():
+                    tvars = tf.trainable_variables()
+                    for v in tvars:
+                        print(v.name)
+                        v.assign(sess.run(restore_graph.get_variable(v.name)))
