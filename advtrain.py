@@ -38,7 +38,7 @@ def main():
             n_samples = 0
             epoch_loss, epoch_loss_adv, epoch_acc, epoch_acc_adv = 0.0, 0.0, 0.0, 0.0
 
-            for i in range(n_batches):
+            for i in range(1):
                 batch_x, batch_y = cb_model.get_batch(i, train_data)
                 cb_model.train_neural_network(sess, batch_x, batch_y, adv=True)
 
