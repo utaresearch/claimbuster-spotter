@@ -1,4 +1,5 @@
 import numpy as np
+import collections
 import os
 from keras.preprocessing.sequence import pad_sequences
 from keras.utils import to_categorical
@@ -301,7 +302,7 @@ class ClaimBusterModel:
     def save_model(sess, epoch):
         saver = tf.train.Saver()
         epoch_string = str(epoch).zfill(3)
-        saver.save(sess, os.path.join(FLAGS.cb_output_dir + '-' + epoch_string + '/'), global_step=epoch)
+        saver.save(sess, os.path.join(FLAGS.cb_output_dir + '/' + epoch_string + '/'), global_step=epoch)
 
     @staticmethod
     def transform_dl_data(data_xlist):
@@ -328,24 +329,34 @@ class ClaimBusterModel:
             ret_ar = []
             directory = os.fsencode(scan_loc)
             for fstr in os.listdir(directory):
-                if '.meta' in os.fsdecode(fstr) and 'cb.ckpt-' in os.fsdecode(fstr):
-                    ret_ar.append(os.fsdecode(fstr))
+                ret_ar.append(os.fsdecode(fstr))
             ret_ar.sort()
             return ret_ar[-1]
 
+        def get_assignment_map_from_checkpoint(tvars, init_checkpoint):
+            def clean_string(str):
+                return str.replace('//', '/')
+
+            graph_var_names = [v.name[:-2] for v in tvars]
+            clean_graph_var_names = [clean_string(v) for v in graph_var_names]
+            ckpt_init_vars = tf.train.list_variables(init_checkpoint)
+
+            assignment_map = collections.OrderedDict()
+
+            for x in ckpt_init_vars:
+                (name, var) = (x[0], x[1])
+                try:
+                    idx = clean_graph_var_names.index(name)
+                except ValueError:
+                    continue
+                assignment_map[name] = graph_var_names[idx]
+
+            return assignment_map, None
+
         dr = FLAGS.cb_output_dir if not train else FLAGS.cb_input_dir
 
-        model_dir = os.path.join(dr, get_last_save(dr))
-        tf.logging.info('Attempting to restore from {}'.format(model_dir))
+        with default_graph.as_default():
+            init_checkpoint = get_last_save(dr)
+            am, _ = get_assignment_map_from_checkpoint(tf.trainable_variables(), init_checkpoint)
 
-        restore_graph = tf.Graph()
-        with tf.Session(graph=restore_graph, config=tf.ConfigProto(allow_soft_placement=True)) as sess:
-            with restore_graph.as_default():
-                saver = tf.train.import_meta_graph(model_dir)
-                saver.restore(sess, tf.train.latest_checkpoint(dr))
-
-            with default_graph.as_default():
-                tvars = tf.trainable_variables()
-                for v in tvars:
-                    print(v.name)
-                    v.assign(sess.run(restore_graph.get_tensor_by_name(v.name)))
+            tf.train.init_from_checkpoint(init_checkpoint, am)

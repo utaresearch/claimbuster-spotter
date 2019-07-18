@@ -21,18 +21,14 @@ def main():
     tf.logging.info("{} training examples".format(train_data.get_length()))
     tf.logging.info("{} validation examples".format(test_data.get_length()))
 
-    print(tf.train.list_variables('output-001/'))
-    exit()
-
     cb_model = ClaimBusterModel(data_load.vocab, data_load.class_weights, restore=True, adv=True)
+    cb_model.load_model(train=True)
 
     graph = tf.get_default_graph()
-    cb_model.load_model(graph, train=True)
-
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
-    with tf.Session(graph=graph, config=tf.ConfigProto(allow_soft_placement=True, allow_growth=True)) as sess:
 
+    with tf.Session(graph=graph, config=config) as sess:
         start = time.time()
         epochs_trav = 0
 

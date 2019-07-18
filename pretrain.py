@@ -25,19 +25,18 @@ def main():
     tf.logging.info("{} validation examples".format(test_data.get_length()))
 
     cb_model = ClaimBusterModel(data_load.vocab, data_load.class_weights, restore=FLAGS.restore_and_continue, adv=False)
+    if FLAGS.restore_and_continue:
+        cb_model.load_model(train=True)
 
     graph = tf.get_default_graph()
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
 
     with tf.Session(graph=graph, config=config) as sess:
+        sess.run(tf.global_variables_initializer())
         if not FLAGS.restore_and_continue:
             if not FLAGS.use_bert_hub:
                 tf.logging.info('Restoring pretrained BERT weights into graph')
-            sess.run(tf.global_variables_initializer())
-        else:
-            # cb_model.load_model(sess, graph, train=True)
-            pass
 
         start = time.time()
         epochs_trav = 0
