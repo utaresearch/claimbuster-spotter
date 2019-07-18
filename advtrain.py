@@ -21,7 +21,7 @@ def main():
     tf.logging.info("{} training examples".format(train_data.get_length()))
     tf.logging.info("{} validation examples".format(test_data.get_length()))
 
-    print(tf.train.list_variables('{}-001'.format(FLAGS.cb_output_dir)))
+    print(tf.train.list_variables('output-001/'))
     exit()
 
     cb_model = ClaimBusterModel(data_load.vocab, data_load.class_weights, restore=True, adv=True)
