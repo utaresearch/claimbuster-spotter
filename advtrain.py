@@ -36,26 +36,27 @@ def main():
             n_batches = math.ceil(float(FLAGS.train_examples) / float(FLAGS.batch_size))
 
             n_samples = 0
-            epoch_loss, epoch_loss_adv, epoch_acc = 0.0, 0.0, 0.0
+            epoch_loss, epoch_loss_adv, epoch_acc, epoch_acc_adv = 0.0, 0.0, 0.0, 0.0
 
             for i in range(n_batches):
                 batch_x, batch_y = cb_model.get_batch(i, train_data)
                 cb_model.train_neural_network(sess, batch_x, batch_y, adv=True)
 
-                b_loss, b_loss_adv, b_acc, _, _ = cb_model.stats_from_run(sess, batch_x, batch_y, adv=True)
+                b_loss, b_loss_adv, b_acc, b_acc_adv, _, _ = cb_model.stats_from_run(sess, batch_x, batch_y, adv=True)
                 epoch_loss += b_loss
                 epoch_loss_adv += b_loss_adv
                 epoch_acc += b_acc * len(batch_y)
+                epoch_acc_adv += b_acc_adv * len(batch_y)
                 n_samples += len(batch_y)
 
             epoch_loss /= n_samples
             epoch_loss_adv /= n_samples
             epoch_acc /= n_samples
+            epoch_acc_adv /= n_samples
 
             if epoch % FLAGS.stat_print_interval == 0:
-                log_string = 'Epoch {:>3} Loss: {:>7.4} Adv Loss: {:>7.4} Acc: {:>7.4f}% '.format(epoch + 1, epoch_loss,
-                                                                                                  epoch_loss_adv,
-                                                                                                  epoch_acc * 100)
+                log_string = 'Epoch {:>3} Loss: {:>7.4} Adv Loss: {:>7.4} Acc: {:>7.4f}% Adv Acc: {:>7.4f}%'.format(
+                    epoch + 1, epoch_loss, epoch_loss_adv, epoch_acc * 100, epoch_acc_adv * 100)
                 if test_data.get_length() > 0:
                     log_string += cb_model.execute_validation(sess, test_data, adv=True)
                 log_string += '({:3.3f} sec/epoch)'.format((time.time() - start) / epochs_trav)
