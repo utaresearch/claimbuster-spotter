@@ -38,7 +38,7 @@ def main():
         for i in tqdm(range(n_batches)):
             batch_x, batch_y = cb_model.get_batch(i, test_data, ver='test')
 
-            b_loss, _, b_acc, b_pred = cb_model.stats_from_run(sess, batch_x, batch_y, adv=False)
+            b_loss, _, b_acc, _, b_pred, _ = cb_model.stats_from_run(sess, batch_x, batch_y, adv=False)
             if b_loss == 0 and b_acc == 0 and b_pred == 0:
                 continue
 
