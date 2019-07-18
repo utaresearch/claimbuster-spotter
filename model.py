@@ -369,8 +369,15 @@ class ClaimBusterModel:
 
             self.y_pred = graph.get_tensor_by_name('y_pred:0')
             self.acc = graph.get_tensor_by_name('acc:0')
-            self.y_pred_adv = graph.get_tensor_by_name('y_pred_adv:0')
-            self.acc_adv = graph.get_tensor_by_name('acc_adv:0')
+
+            try:
+                self.y_pred_adv = graph.get_tensor_by_name('y_pred_adv:0')
+                self.acc_adv = graph.get_tensor_by_name('acc_adv:0')
+            except Exception as e:
+                tf.logging.info(e)
+                tf.logging.info('Setting y_pred_adv and acc_adv to dummy values')
+                self.y_pred_adv = tf.constant(-1)
+                self.acc_adv = tf.constant(-2)
 
             # operations
             self.optimizer = graph.get_operation_by_name('optimizer')
