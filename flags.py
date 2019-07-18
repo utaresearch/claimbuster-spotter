@@ -56,7 +56,7 @@ flags.DEFINE_integer('cls_hidden', 0, 'Size of hidden classification layer')
 flags.DEFINE_integer('pretrain_steps', 20, 'Number of epochs to run.')
 flags.DEFINE_integer('contrain_steps', 5, 'Number of epochs to run.')
 flags.DEFINE_integer('advtrain_steps', 20, 'Number of epochs to run.')
-# flags.DEFINE_float('learning_rate', 0.001, 'Learning rate while during optimiation.')
+flags.DEFINE_float('learning_rate', 0.001, 'Learning rate while during optimiation.')
 
 # Regularization
 flags.DEFINE_float('l2_reg_coeff', 0.001, 'If val > 0, use L2 Regularization on weights in graph')
