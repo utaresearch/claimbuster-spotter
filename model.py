@@ -52,28 +52,21 @@ class ClaimBusterModel:
 
         self.computed_cls_weights = cls_weights if cls_weights is not None else [1 for _ in range(FLAGS.num_classes)]
 
-        self.init_bert_pretrain_op = None
         self.trainable_variables = None
 
-        if not restore:
-            self.logits, self.logits_adv, self.cost, self.cost_adv, self.cost_v_adv = self.construct_model()
+        self.logits, self.logits_adv, self.cost, self.cost_adv, self.cost_v_adv = self.construct_model()
 
-            self.optimizer = self.build_optimizer(self.cost, adv=0)
-            self.optimizer_adv = self.build_optimizer(self.cost_adv, adv=1)
-            # self.optimizer_v_adv = self.build_optimizer(self.cost_v_adv, adv=2)
+        self.optimizer = self.build_optimizer(self.cost, adv=0)
+        self.optimizer_adv = self.build_optimizer(self.cost_adv, adv=1)
+        # self.optimizer_v_adv = self.build_optimizer(self.cost_v_adv, adv=2)
 
-            self.y_pred = tf.nn.softmax(self.logits, axis=1, name='y_pred')
-            correct = tf.equal(tf.argmax(self.y, axis=1), tf.argmax(self.y_pred, axis=1), name='correct')
-            self.acc = tf.reduce_mean(tf.cast(correct, tf.float32), name='acc')
+        self.y_pred = tf.nn.softmax(self.logits, axis=1, name='y_pred')
+        correct = tf.equal(tf.argmax(self.y, axis=1), tf.argmax(self.y_pred, axis=1), name='correct')
+        self.acc = tf.reduce_mean(tf.cast(correct, tf.float32), name='acc')
 
-            self.y_pred_adv = tf.nn.softmax(self.logits_adv, axis=1, name='y_pred_adv')
-            correct_adv = tf.equal(tf.argmax(self.y, axis=1), tf.argmax(self.y_pred_adv, axis=1), name='correct_adv')
-            self.acc_adv = tf.reduce_mean(tf.cast(correct_adv, tf.float32), name='acc_adv')
-        else:
-            self.logits, self.logits_adv, self.cost, self.cost_adv = None, None, None, None
-            self.optimizer, self.optimizer_adv = None, None
-            self.y_pred, self.acc = None, None
-            self.y_pred_adv, self.acc_adv = None, None
+        self.y_pred_adv = tf.nn.softmax(self.logits_adv, axis=1, name='y_pred_adv')
+        correct_adv = tf.equal(tf.argmax(self.y, axis=1), tf.argmax(self.y_pred_adv, axis=1), name='correct_adv')
+        self.acc_adv = tf.reduce_mean(tf.cast(correct_adv, tf.float32), name='acc_adv')
 
         # If writing information is desired in the future
         # tf.summary.scalar('cost', self.cost)
@@ -125,7 +118,7 @@ class ClaimBusterModel:
         if FLAGS.use_bert_hub:
             nl_out = LanguageModel.build_bert_transformer_hub(self.x_nl[0], self.x_nl[1], self.x_nl[2], adv)
         else:
-            nl_out, self.init_bert_pretrain_op = LanguageModel.build_bert_transformer_raw(
+            nl_out = LanguageModel.build_bert_transformer_raw(
                 self.x_nl[0], self.x_nl[1], self.x_nl[2], self.kp_bert_atten, self.kp_bert_hidden,
                 adv, orig_embed, reg_loss)
         if not adv:
@@ -343,47 +336,16 @@ class ClaimBusterModel:
         model_dir = os.path.join(dr, get_last_save(dr))
         tf.logging.info('Attempting to restore from {}'.format(model_dir))
 
+        restore_graph = tf.Graph()
+        with restore_graph.as_default():
+            saver = tf.train.import_meta_graph(model_dir)
+            saver.restore(sess, tf.train.latest_checkpoint(dr))
+
         with graph.as_default():
             saver = tf.train.import_meta_graph(model_dir)
             saver.restore(sess, tf.train.latest_checkpoint(dr))
 
-            # inputs
-            self.x_nl = [graph.get_tensor_by_name('x_id:0'), graph.get_tensor_by_name('x_mask:0'),
-                         graph.get_tensor_by_name('x_segment:0')]
-
-            self.x_pos = graph.get_tensor_by_name('x_pos:0')
-            self.x_sent = graph.get_tensor_by_name('x_sent:0')
-
-            self.pos_len = graph.get_tensor_by_name('pos_len:0')
-            self.pos_output_mask = graph.get_tensor_by_name('pos_output_mask:0')
-
-            self.y = graph.get_tensor_by_name('y:0')
-
-            self.kp_cls = graph.get_tensor_by_name('kp_cls:0')
-            self.kp_bert_atten = graph.get_tensor_by_name('kp_bert_atten:0')
-            self.kp_bert_hidden = graph.get_tensor_by_name('kp_bert_hidden:0')
-            self.cls_weight = graph.get_tensor_by_name('cls_weight:0')
-
-            # outputs
-            self.cost = graph.get_tensor_by_name('cost:0')
-            self.cost_adv = graph.get_tensor_by_name('cost_adv:0')
-
-            self.y_pred = graph.get_tensor_by_name('y_pred:0')
-            self.acc = graph.get_tensor_by_name('acc:0')
-
-            try:
-                self.y_pred_adv = graph.get_tensor_by_name('y_pred_adv:0')
-                self.acc_adv = graph.get_tensor_by_name('acc_adv:0')
-            except Exception as e:
-                tf.logging.info(e)
-                tf.logging.info('Setting y_pred_adv and acc_adv to dummy values')
-                self.y_pred_adv = self.y_pred
-                self.acc_adv = self.acc
-
-            # operations
-            self.optimizer = graph.get_operation_by_name('optimizer')
-            self.optimizer_adv = graph.get_operation_by_name('optimizer_adv')
-            # self.optimizer_v_adv = graph.get_tensor_by_name('optimizer_v_adv:0')
-
-            tf.logging.info('Model successfully restored.')
-            #
+            tvars = tf.trainable_variables()
+            for v in tvars:
+                print(v.name)
+                v.assign(sess.run(restore_graph.get_variable(v.name)))

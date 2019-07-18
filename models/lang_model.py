@@ -43,7 +43,7 @@ class LanguageModel:
 
     @staticmethod
     def build_bert_transformer_raw(x_id, x_mask, x_segment, kp_bert_atten, kp_bert_hidden,
-                                   adv=False, orig_embed=None, reg_loss=None):
+                                   adv=False, orig_embed=None, reg_loss=None, restore=False):
         tf.logging.info('Building{}BERT transformer'.format(' adversarial ' if adv else ' '))
 
         hparams = LanguageModel.load_bert_pretrain_hyperparams()
@@ -64,13 +64,18 @@ class LanguageModel:
                           adv=adv, perturb=perturb)
         bert_outputs = model.get_pooled_output()
 
-        init_checkpoint = os.path.join(FLAGS.bert_model_loc, 'bert_model.ckpt')
-        assignment_map, _ = \
-            get_assignment_map_from_checkpoint(tf.trainable_variables(), init_checkpoint)
+        if not restore:
+            tf.logging.info('Retrieving pre-trained BERT weights')
 
-        restore_op = tf.train.init_from_checkpoint(init_checkpoint, assignment_map)
+            init_checkpoint = os.path.join(FLAGS.bert_model_loc, 'bert_model.ckpt')
+            assignment_map, _ = \
+                get_assignment_map_from_checkpoint(tf.trainable_variables(), init_checkpoint)
 
-        return ([model.get_embedding_output(), bert_outputs], restore_op) if not adv else (bert_outputs, restore_op)
+            tf.train.init_from_checkpoint(init_checkpoint, assignment_map)
+        else:
+            tf.logging.info('Will wait to retrieve complete weights from cb.ckpt')
+
+        return (model.get_embedding_output(), bert_outputs) if not adv else bert_outputs
 
     @staticmethod
     def load_bert_pretrain_hyperparams():
