@@ -386,3 +386,4 @@ class ClaimBusterModel:
             # self.optimizer_v_adv = graph.get_tensor_by_name('optimizer_v_adv:0')
 
             tf.logging.info('Model successfully restored.')
+            #
