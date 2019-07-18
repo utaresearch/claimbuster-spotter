@@ -42,7 +42,8 @@ class LanguageModel:
         return [None, bert_outputs["pooled_output"]] if not adv else bert_outputs
 
     @staticmethod
-    def build_bert_transformer_raw(x_id, x_mask, x_segment, adv=False, orig_embed=None, reg_loss=None):
+    def build_bert_transformer_raw(x_id, x_mask, x_segment, kp_bert_atten, kp_bert_hidden,
+                                   adv=False, orig_embed=None, reg_loss=None):
         tf.logging.info('Building{}BERT transformer'.format(' adversarial ' if adv else ' '))
 
         hparams = LanguageModel.load_bert_pretrain_hyperparams()
@@ -51,8 +52,8 @@ class LanguageModel:
                             num_hidden_layers=hparams['num_hidden_layers'],
                             num_attention_heads=hparams['num_attention_heads'],
                             intermediate_size=hparams['intermediate_size'], hidden_act=hparams['hidden_act'],
-                            hidden_dropout_prob=hparams['hidden_dropout_prob'],
-                            attention_probs_dropout_prob=hparams['attention_probs_dropout_prob'],
+                            hidden_dropout_prob=1-kp_bert_hidden,
+                            attention_probs_dropout_prob=1-kp_bert_atten,
                             max_position_embeddings=hparams['max_position_embeddings'],
                             type_vocab_size=hparams['type_vocab_size'],
                             initializer_range=hparams['initializer_range'])

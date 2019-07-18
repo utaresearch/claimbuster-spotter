@@ -45,6 +45,9 @@ class ClaimBusterModel:
         self.y = tf.placeholder(tf.int32, (None, FLAGS.num_classes), name='y')
 
         self.kp_cls = tf.placeholder(tf.float32, name='kp_cls')
+        self.kp_bert_atten = tf.placeholder(tf.float32, name='kp_bert_atten')
+        self.kp_bert_hidden = tf.placeholder(tf.float32, name='kp_bert_hidden')
+
         self.cls_weight = tf.placeholder(tf.float32, (None,), name='cls_weight')
 
         self.computed_cls_weights = cls_weights if cls_weights is not None else [1 for _ in range(FLAGS.num_classes)]
@@ -118,7 +121,8 @@ class ClaimBusterModel:
             nl_out = LanguageModel.build_bert_transformer_hub(self.x_nl[0], self.x_nl[1], self.x_nl[2], adv)
         else:
             nl_out, self.init_bert_pretrain_op = LanguageModel.build_bert_transformer_raw(
-                self.x_nl[0], self.x_nl[1], self.x_nl[2], adv, orig_embed, reg_loss)
+                self.x_nl[0], self.x_nl[1], self.x_nl[2], self.kp_bert_atten, self.kp_bert_hidden,
+                adv, orig_embed, reg_loss)
         if not adv:
             orig_embed, nl_out = nl_out[0], nl_out[1]
 
@@ -181,6 +185,8 @@ class ClaimBusterModel:
             self.pos_output_mask: self.gen_output_mask(x_pos),
 
             self.kp_cls: FLAGS.keep_prob_cls if ver == 'train' else 1.0,
+            self.kp_bert_atten: 0.1 if ver == 'train' else 1.0,
+            self.kp_bert_hidden: 0.1 if ver == 'train' else 1.0,
         }
 
         if batch_y is not None:
@@ -344,6 +350,8 @@ class ClaimBusterModel:
             self.y = graph.get_tensor_by_name('y:0')
 
             self.kp_cls = graph.get_tensor_by_name('kp_cls:0')
+            self.kp_bert_atten = graph.get_tensor_by_name('kp_bert_atten:0')
+            self.kp_bert_hidden = graph.get_tensor_by_name('kp_bert_hidden:0')
             self.cls_weight = graph.get_tensor_by_name('cls_weight:0')
 
             # outputs
