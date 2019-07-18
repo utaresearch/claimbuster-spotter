@@ -54,7 +54,7 @@ class ClaimBusterModel:
         self.computed_cls_weights = cls_weights if cls_weights is not None else [1 for _ in range(FLAGS.num_classes)]
 
         self.trainable_variables = None
-        self.restore =restore
+        self.restore = restore
 
         self.logits, self.logits_adv, self.cost, self.cost_adv, self.cost_v_adv = self.construct_model()
         self.optimizer = self.build_optimizer(self.cost, adv=0)
@@ -62,6 +62,9 @@ class ClaimBusterModel:
         self.y_pred = tf.nn.softmax(self.logits, axis=1, name='y_pred')
         correct = tf.equal(tf.argmax(self.y, axis=1), tf.argmax(self.y_pred, axis=1), name='correct')
         self.acc = tf.reduce_mean(tf.cast(correct, tf.float32), name='acc')
+
+        self.y_pred_adv = self.y_pred
+        self.acc_adv = self.acc
 
         if self.adv:
             self.y_pred_adv = tf.nn.softmax(self.logits_adv, axis=1, name='y_pred_adv')
@@ -108,7 +111,7 @@ class ClaimBusterModel:
         self.trainable_variables = self.select_train_vars()
         loss = tf.identity(self.ce_loss(logits, self.cls_weight), name='cost')
 
-        logits_adv, loss_adv = None, None
+        logits_adv, loss_adv = logits, loss
 
         if self.adv:
             logits_adv = self.fprop(orig_embed, loss, adv=True)
