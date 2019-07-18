@@ -376,8 +376,8 @@ class ClaimBusterModel:
             except Exception as e:
                 tf.logging.info(e)
                 tf.logging.info('Setting y_pred_adv and acc_adv to dummy values')
-                self.y_pred_adv = tf.constant(-1)
-                self.acc_adv = tf.constant(-2)
+                self.y_pred_adv = self.y_pred
+                self.acc_adv = self.acc
 
             # operations
             self.optimizer = graph.get_operation_by_name('optimizer')
