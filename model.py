@@ -345,6 +345,8 @@ class ClaimBusterModel:
 
             for x in ckpt_init_vars:
                 (name, var) = (x[0], x[1])
+                if 'Adam' is in name:
+                    continue
                 assignment_map[name] = name
 
             return assignment_map, None
