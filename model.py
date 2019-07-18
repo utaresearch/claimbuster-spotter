@@ -121,7 +121,7 @@ class ClaimBusterModel:
         else:
             nl_out = LanguageModel.build_bert_transformer_raw(
                 self.x_nl[0], self.x_nl[1], self.x_nl[2], self.kp_bert_atten, self.kp_bert_hidden,
-                adv, orig_embed, reg_loss, restore)
+                adv, orig_embed, reg_loss, self.restore)
         if not adv:
             orig_embed, nl_out = nl_out[0], nl_out[1]
 
