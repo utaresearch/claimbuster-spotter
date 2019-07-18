@@ -27,7 +27,10 @@ def main():
     cb_model = ClaimBusterModel(data_load.vocab, data_load.class_weights, restore=FLAGS.restore_and_continue, adv=False)
 
     graph = tf.get_default_graph()
-    with tf.Session(graph=graph, config=tf.ConfigProto(allow_soft_placement=True, allow_growth=True)) as sess:
+    config = tf.ConfigProto()
+    config.gpu_options.allow_growth = True
+    config.gpu_options.allow_soft_placement = True
+    with tf.Session(graph=graph, config=config) as sess:
         if not FLAGS.restore_and_continue:
             if not FLAGS.use_bert_hub:
                 tf.logging.info('Restoring pretrained BERT weights into graph')
