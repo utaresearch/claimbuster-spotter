@@ -1,6 +1,7 @@
 import numpy as np
 import math
 import os
+from tqdm import tqdm
 from utils.data_loader import DataLoader
 from model import ClaimBusterModel
 from sklearn.metrics import f1_score, classification_report
@@ -32,7 +33,7 @@ def main():
         y_all = []
         pred_all = []
 
-        for i in range(n_batches):
+        for i in tqdm(range(n_batches)):
             batch_x, batch_y = cb_model.get_batch(i, test_data, ver='test')
 
             b_loss, _, b_acc, b_pred = cb_model.stats_from_run(sess, batch_x, batch_y, adv=False)
