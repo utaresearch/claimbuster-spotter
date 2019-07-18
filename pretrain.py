@@ -43,14 +43,14 @@ def main():
         epochs_trav = 0
 
         tf.logging.info("Starting training...")
-        for epoch in tqdm(range(FLAGS.pretrain_steps)):
+        for epoch in range(FLAGS.pretrain_steps):
             epochs_trav += 1
             n_batches = math.ceil(float(FLAGS.train_examples) / float(FLAGS.batch_size))
 
             n_samples = 0
             epoch_loss, epoch_acc = 0.0, 0.0
 
-            for i in range(n_batches):
+            for i in tqdm(range(n_batches)):
                 batch_x, batch_y = cb_model.get_batch(i, train_data)
                 cb_model.train_neural_network(sess, batch_x, batch_y, adv=False)
 
