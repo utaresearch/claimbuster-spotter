@@ -18,10 +18,14 @@ def main():
     test_data = data_load.load_testing_data()
     tf.logging.info("{} testing examples".format(test_data.get_length()))
 
+    graph = tf.get_default_graph()
     cb_model = ClaimBusterModel(data_load.vocab, data_load.class_weights, restore=True)
+    cb_model.load_model(graph)
 
-    graph = tf.Graph()
-    with tf.Session(graph=graph, config=tf.ConfigProto(allow_soft_placement=True)) as sess:
+    config = tf.ConfigProto()
+    config.gpu_options.allow_growth = True
+
+    with tf.Session(graph=graph, config=config) as sess:
         sess.run(tf.global_variables_initializer())
         cb_model.load_model(sess, graph)
 
