@@ -336,10 +336,18 @@ class ClaimBusterModel:
     def load_model(self, default_graph, train=False):
         def get_last_save(scan_loc):
             ret_ar = []
+            files = []
             directory = os.fsencode(scan_loc)
+
             for fstr in os.listdir(directory):
                 if os.path.isdir(os.path.join(scan_loc, os.fsdecode(fstr))):
                     ret_ar.append(os.fsdecode(fstr))
+                else:
+                    files.append(os.fsdecode(fstr))
+
+            if len(ret_ar) == 0 and len(files) > 0:
+                return scan_loc + '/'
+
             ret_ar.sort()
             return os.path.join(scan_loc, ret_ar[-1]) + '/'
 
