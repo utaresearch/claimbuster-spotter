@@ -336,7 +336,8 @@ class ClaimBusterModel:
             ret_ar = []
             directory = os.fsencode(scan_loc)
             for fstr in os.listdir(directory):
-                ret_ar.append(os.fsdecode(fstr))
+                if os.path.isdir(os.path.join(scan_loc, os.fsdecode(fstr)))
+                    ret_ar.append(os.fsdecode(fstr))
             ret_ar.sort()
             return os.path.join(scan_loc, ret_ar[-1]) + '/'
 
