@@ -87,6 +87,8 @@ class ClaimBusterModel:
                                 for num in range(FLAGS.bert_layers - FLAGS.bert_ft_enc_layers)]
         if not FLAGS.bert_ft_embed:
             non_trainable_layers.append('/embeddings/')
+        if not FLAGS.bert_ft_pooler:
+            non_trainable_layers.append('/pooler/')
 
         if FLAGS.bert_trainable:
             train_vars = [v for v in train_vars if not any(z in v.name for z in non_trainable_layers)]

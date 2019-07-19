@@ -75,6 +75,7 @@ flags.DEFINE_integer('num_classes', 3, 'Number of classes for classification (2 
 # Training
 flags.DEFINE_bool('bert_trainable', True, 'Train BERT weights')
 flags.DEFINE_bool('bert_ft_embed', False, 'Train BERT embedding layer')
+flags.DEFINE_bool('bert_ft_pooler', True, 'Train BERT pooler layer')
 flags.DEFINE_integer('bert_ft_enc_layers', 2, 'Last `var` encoding layers are marked as trainable')
 flags.DEFINE_bool('adam', True, 'Adam or RMSProp if False')
 flags.DEFINE_bool('restore_and_continue', False, 'Restore previous training session and continue')
