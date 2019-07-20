@@ -83,19 +83,21 @@ class ClaimBusterModel:
     @staticmethod
     def select_train_vars(print_stuff=True):
         train_vars = tf.trainable_variables()
-        non_trainable_layers = ['/layer_{}/'.format(num)
-                                for num in range(FLAGS.bert_layers - FLAGS.bert_ft_enc_layers)]
-        if not FLAGS.bert_ft_embed:
-            non_trainable_layers.append('/embeddings/')
-        if not FLAGS.bert_ft_pooler:
-            non_trainable_layers.append('/pooler/')
 
-        if FLAGS.bert_trainable:
-            train_vars = [v for v in train_vars if not any(z in v.name for z in non_trainable_layers)]
+        if FLAGS.transf_type == 1:
+            non_trainable_layers = ['/layer_{}/'.format(num)
+                                    for num in range(FLAGS.bert_layers - FLAGS.bert_ft_enc_layers)]
+            if not FLAGS.bert_ft_embed:
+                non_trainable_layers.append('/embeddings/')
+            if not FLAGS.bert_ft_pooler:
+                non_trainable_layers.append('/pooler/')
 
-        if print_stuff:
-            tf.logging.info('Removing: {}'.format(non_trainable_layers))
-            tf.logging.info(train_vars)
+            if FLAGS.bert_trainable:
+                train_vars = [v for v in train_vars if not any(z in v.name for z in non_trainable_layers)]
+
+            if print_stuff:
+                tf.logging.info('Removing: {}'.format(non_trainable_layers))
+                tf.logging.info(train_vars)
 
         return train_vars
 
@@ -125,9 +127,12 @@ class ClaimBusterModel:
     def fprop(self, orig_embed=None, reg_loss=None, adv=False):
         if adv: assert (reg_loss is not None and orig_embed is not None)
 
-        nl_out = LanguageModel.build_bert_transformer_raw(
+        nl_out = LanguageModel.build_xlnet_transformer_raw(
             self.x_nl[0], self.x_nl[1], self.x_nl[2], self.kp_bert_atten, self.kp_bert_hidden,
-            adv, orig_embed, reg_loss, self.restore)
+            adv, orig_embed, reg_loss, self.restore) if FLAGS.transf_type == 0 else \
+            LanguageModel.build_bert_transformer_raw(
+                self.x_nl[0], self.x_nl[1], self.x_nl[2], self.kp_bert_atten, self.kp_bert_hidden,
+                adv, orig_embed, reg_loss, self.restore)
         if not adv:
             orig_embed, nl_out = nl_out[0], nl_out[1]
 

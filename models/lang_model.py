@@ -3,6 +3,7 @@ import json
 import os
 from .adv_losses import get_adversarial_perturbation
 from .bert_model import BertConfig, BertModel, get_assignment_map_from_checkpoint
+from .xlnet.xlnet import XLNetConfig, XLNetModel, create_run_config
 import tensorflow as tf
 
 cwd = os.getcwd()
@@ -25,21 +26,26 @@ class LanguageModel:
         pass
 
     @staticmethod
-    def build_bert_transformer_hub(x_id, x_mask, x_segment, adv):
-        assert not adv
+    def build_xlnet_transformer_raw(x_id, x_mask, x_segment, kp_bert_atten, kp_bert_hidden,
+                                    adv=False, orig_embed=None, reg_loss=None, restore=False):
+        assert not adv  # for now
 
-        tf.logging.info('Building BERT transformer')
+        xlnet_config = XLNetConfig(json_path=os.path.join(FLAGS.xlnet_model_loc, 'xlnet_config.json'))
+        run_config = create_run_config(is_training=True, is_finetune=True, FLAGS=FLAGS)
 
-        import tensorflow_hub as hub
-
-        bert_module = hub.Module(FLAGS.bert_model_hub, trainable=FLAGS.bert_trainable)
-        bert_inputs = dict(
+        # Construct an XLNet model
+        xlnet_model = XLNetModel(
+            xlnet_config=xlnet_config,
+            run_config=run_config,
             input_ids=x_id,
-            input_mask=x_mask,
-            segment_ids=x_segment)
-        bert_outputs = bert_module(bert_inputs, signature="tokens", as_dict=True)
+            seg_ids=x_segment,
+            input_mask=x_mask)
 
-        return [None, bert_outputs["pooled_output"]] if not adv else bert_outputs
+        # Get a summary of the sequence using the last hidden state
+        summary = xlnet_model.get_pooled_out(summary_type="last")
+
+
+
 
     @staticmethod
     def build_bert_transformer_raw(x_id, x_mask, x_segment, kp_bert_atten, kp_bert_hidden,

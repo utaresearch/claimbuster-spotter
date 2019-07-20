@@ -30,7 +30,6 @@ flags.DEFINE_integer('max_len', 200, 'Maximum length of input')
 flags.DEFINE_bool('remove_stopwords', False, 'Remove stop words (e.g. the, a, etc.)')
 flags.DEFINE_bool('sklearn_oversample', False, 'Oversample underrepresented classes with sklearn')
 flags.DEFINE_bool('weight_classes_loss', False, 'Weight classes in CE loss function')
-flags.DEFINE_list('addition_vocab', ['./data/disjoint_2000/vocab.pickle'], 'Additional corpuses to sample vocab data from')
 flags.DEFINE_bool('custom_preprc', True, 'Use custom pre-processing')
 
 # Eval
@@ -44,10 +43,6 @@ flags.DEFINE_integer('test_examples', None, 'Number of testing examples')
 flags.DEFINE_integer('random_state', 59, 'State of pseudo-randomness')
 
 # Model architecture
-flags.DEFINE_string('bert_model_loc', './data/bert_pretrain', 'Root location of pretrained BERT files.')
-flags.DEFINE_integer('bert_layers', 12, 'Number of BERT layers.')
-flags.DEFINE_integer('rnn_num_layers', 1, 'Number of LSTM layers.')
-flags.DEFINE_integer('rnn_cell_size', 16, 'Number of hidden units in the LSTM.')
 flags.DEFINE_integer('cls_hidden', 0, 'Size of hidden classification layer')
 
 # Optimization
@@ -72,11 +67,21 @@ flags.DEFINE_float('perturb_norm_length', 5.0, 'Norm length of adversarial pertu
 # Output stats
 flags.DEFINE_integer('num_classes', 3, 'Number of classes for classification (2 combines NFS and UFS)')
 
-# Training
+# Transformer
+flags.DEFINE_bool('transf_type', 0, '0 XLNet 1 BERT')
+
+# XLNET
+flags.DEFINE_string('xlnet_model_loc', './data/xlnet_pretrain', 'Root location of pretrained XLNet files.')
+
+# BERT
+flags.DEFINE_string('bert_model_loc', './data/bert_pretrain', 'Root location of pretrained BERT files.')
+flags.DEFINE_integer('bert_layers', 12, 'Number of BERT layers.')
 flags.DEFINE_bool('bert_trainable', True, 'Train BERT weights')
 flags.DEFINE_bool('bert_ft_embed', False, 'Train BERT embedding layer')
 flags.DEFINE_bool('bert_ft_pooler', True, 'Train BERT pooler layer')
 flags.DEFINE_integer('bert_ft_enc_layers', 2, 'Last `var` encoding layers are marked as trainable')
+
+# Training
 flags.DEFINE_bool('adam', True, 'Adam or RMSProp if False')
 flags.DEFINE_bool('restore_and_continue', False, 'Restore previous training session and continue')
 flags.DEFINE_integer('batch_size', 12, 'Size of the batch.')
