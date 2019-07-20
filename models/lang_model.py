@@ -33,7 +33,6 @@ class LanguageModel:
         xlnet_config = XLNetConfig(json_path=os.path.join(FLAGS.xlnet_model_loc, 'xlnet_config.json'))
         run_config = create_run_config(is_training=True, is_finetune=True, FLAGS=FLAGS)
 
-        # Construct an XLNet model
         xlnet_model = XLNetModel(
             xlnet_config=xlnet_config,
             run_config=run_config,
@@ -41,10 +40,9 @@ class LanguageModel:
             seg_ids=x_segment,
             input_mask=x_mask)
 
-        # Get a summary of the sequence using the last hidden state
         summary = xlnet_model.get_pooled_out(summary_type="last")
 
-
+        return summary
 
 
     @staticmethod
