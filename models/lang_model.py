@@ -55,7 +55,7 @@ class LanguageModel:
 
         print(summary)
 
-        return summary
+        return None, summary
 
 
     @staticmethod
