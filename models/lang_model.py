@@ -57,7 +57,6 @@ class LanguageModel:
 
         return None, summary
 
-
     @staticmethod
     def build_bert_transformer_raw(x_id, x_mask, x_segment, kp_tfm_atten, kp_tfm_hidden,
                                    adv=False, orig_embed=None, reg_loss=None, restore=False):
