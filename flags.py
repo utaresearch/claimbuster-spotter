@@ -72,7 +72,6 @@ flags.DEFINE_bool('transf_type', 0, '0 XLNet 1 BERT')
 
 # XLNET
 flags.DEFINE_string('xlnet_model_loc', './data/xlnet_pretrain', 'Root location of pretrained XLNet files.')
-flags.DEFINE_bool('use_tpu', False, 'TPU training')
 flags.DEFINE_bool('use_bfloat16', False, 'Use float16 rather than 32')
 flags.DEFINE_enum("init", default="normal", enum_values=["normal", "uniform"], help="Initialization method.")
 flags.DEFINE_float("init_std", 0.02, "Initialization std when init is normal.")
