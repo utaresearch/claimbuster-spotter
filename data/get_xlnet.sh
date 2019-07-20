@@ -5,7 +5,3 @@ unzip cased_L-12_H-768_A-12.zip
 
 mv xlnet_cased_L-12_H-768_A-12 xlnet_pretrain
 rm cased_L-12_H-768_A-12.zip
-
-cd ../
-git submodule add https://github.com/zihangdai/xlnet.git ./models
-git submodule update --init --recursive
