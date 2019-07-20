@@ -76,6 +76,7 @@ flags.DEFINE_bool('use_bfloat16', False, 'Use float16 rather than 32')
 flags.DEFINE_enum("init", default="normal", enum_values=["normal", "uniform"], help="Initialization method.")
 flags.DEFINE_float("init_std", 0.02, "Initialization std when init is normal.")
 flags.DEFINE_float("init_range", 0.1, "Initialization std when init is uniform.")
+flags.DEFINE_integer("clamp_len", -1, "Clamp length")
 
 # BERT
 flags.DEFINE_string('bert_model_loc', './data/bert_pretrain', 'Root location of pretrained BERT files.')
