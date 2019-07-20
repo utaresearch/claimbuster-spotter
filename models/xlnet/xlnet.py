@@ -77,13 +77,13 @@ class XLNetConfig(object):
             json.dump(json_data, f, indent=4, sort_keys=True)
 
 
-def create_run_config(is_training, is_finetune, FLAGS):
+def create_run_config(is_training, is_finetune, FLAGS, dropout, dropatt):
     kwargs = dict(
         is_training=is_training,
         use_tpu=FLAGS.use_tpu,
         use_bfloat16=FLAGS.use_bfloat16,
-        dropout=FLAGS.dropout,
-        dropatt=FLAGS.dropatt,
+        dropout=dropout,
+        dropatt=dropatt,
         init=FLAGS.init,
         init_range=FLAGS.init_range,
         init_std=FLAGS.init_std,

@@ -57,22 +57,22 @@ def configure_tpu(FLAGS):
     return run_config
 
 
-def init_from_checkpoint(FLAGS, global_vars=False):
+def init_from_checkpoint(init_checkpoint, use_tpu=False, global_vars=False):
     tvars = tf.global_variables() if global_vars else tf.trainable_variables()
     initialized_variable_names = {}
     scaffold_fn = None
-    if FLAGS.init_checkpoint is not None:
-        if FLAGS.init_checkpoint.endswith("latest"):
-            ckpt_dir = os.path.dirname(FLAGS.init_checkpoint)
+    if init_checkpoint is not None:
+        if init_checkpoint.endswith("latest"):
+            ckpt_dir = os.path.dirname(init_checkpoint)
             init_checkpoint = tf.train.latest_checkpoint(ckpt_dir)
         else:
-            init_checkpoint = FLAGS.init_checkpoint
+            init_checkpoint = init_checkpoint
 
         tf.logging.info("Initialize from the ckpt {}".format(init_checkpoint))
 
         (assignment_map, initialized_variable_names
          ) = get_assignment_map_from_checkpoint(tvars, init_checkpoint)
-        if FLAGS.use_tpu:
+        if use_tpu:
             def tpu_scaffold():
                 tf.train.init_from_checkpoint(init_checkpoint, assignment_map)
                 return tf.train.Scaffold()

@@ -4,6 +4,7 @@ import os
 from .adv_losses import get_adversarial_perturbation
 from .bert_model import BertConfig, BertModel, get_assignment_map_from_checkpoint
 from .xlnet.xlnet import XLNetConfig, XLNetModel, create_run_config
+from .xlnet.model_utils import init_from_checkpoint
 import tensorflow as tf
 
 cwd = os.getcwd()
@@ -26,12 +27,13 @@ class LanguageModel:
         pass
 
     @staticmethod
-    def build_xlnet_transformer_raw(x_id, x_mask, x_segment, kp_bert_atten, kp_bert_hidden,
+    def build_xlnet_transformer_raw(x_id, x_mask, x_segment, kp_tfm_atten, kp_tfm_hidden,
                                     adv=False, orig_embed=None, reg_loss=None, restore=False):
         assert not adv  # for now
 
         xlnet_config = XLNetConfig(json_path=os.path.join(FLAGS.xlnet_model_loc, 'xlnet_config.json'))
-        run_config = create_run_config(is_training=True, is_finetune=True, FLAGS=FLAGS)
+        run_config = create_run_config(is_training=True, is_finetune=True, FLAGS=FLAGS, dropout=kp_tfm_hidden,
+                                       dropatt=kp_tfm_atten)
 
         xlnet_model = XLNetModel(
             xlnet_config=xlnet_config,
@@ -42,11 +44,17 @@ class LanguageModel:
 
         summary = xlnet_model.get_pooled_out(summary_type="last")
 
+        if not restore:
+            tf.logging.info('Retrieving pre-trained XLNET weights')
+            init_from_checkpoint(FLAGS.xlnet_model_loc)
+        else:
+            tf.logging.info('Will wait to retrieve complete weights from cb.ckpt')
+
         return summary
 
 
     @staticmethod
-    def build_bert_transformer_raw(x_id, x_mask, x_segment, kp_bert_atten, kp_bert_hidden,
+    def build_bert_transformer_raw(x_id, x_mask, x_segment, kp_tfm_atten, kp_tfm_hidden,
                                    adv=False, orig_embed=None, reg_loss=None, restore=False):
         tf.logging.info('Building{}BERT transformer'.format(' adversarial ' if adv else ' '))
 
@@ -56,8 +64,8 @@ class LanguageModel:
                             num_hidden_layers=hparams['num_hidden_layers'],
                             num_attention_heads=hparams['num_attention_heads'],
                             intermediate_size=hparams['intermediate_size'], hidden_act=hparams['hidden_act'],
-                            hidden_dropout_prob=1-kp_bert_hidden,
-                            attention_probs_dropout_prob=1-kp_bert_atten,
+                            hidden_dropout_prob=1-kp_tfm_hidden,
+                            attention_probs_dropout_prob=1-kp_tfm_atten,
                             max_position_embeddings=hparams['max_position_embeddings'],
                             type_vocab_size=hparams['type_vocab_size'],
                             initializer_range=hparams['initializer_range'])
