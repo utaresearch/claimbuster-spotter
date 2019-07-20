@@ -31,6 +31,8 @@ class LanguageModel:
                                     adv=False, orig_embed=None, reg_loss=None, restore=False):
         assert not adv  # for now
 
+        x_mask = tf.cast(x_mask, tf.float32)
+
         xlnet_config = XLNetConfig(json_path=os.path.join(FLAGS.xlnet_model_loc, 'xlnet_config.json'))
         run_config = create_run_config(is_training=True, is_finetune=True, FLAGS=FLAGS, dropout=kp_tfm_hidden,
                                        dropatt=kp_tfm_atten)
