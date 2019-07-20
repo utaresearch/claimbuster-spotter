@@ -68,7 +68,7 @@ flags.DEFINE_float('perturb_norm_length', 5.0, 'Norm length of adversarial pertu
 flags.DEFINE_integer('num_classes', 3, 'Number of classes for classification (2 combines NFS and UFS)')
 
 # Transformer
-flags.DEFINE_bool('transf_type', 0, '0 XLNet 1 BERT')
+flags.DEFINE_bool('tfm_type', 0, '0 XLNet 1 BERT')
 
 # XLNET
 flags.DEFINE_string('xlnet_model_loc', './data/xlnet_pretrain', 'Root location of pretrained XLNet files.')

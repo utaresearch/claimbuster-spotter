@@ -84,7 +84,7 @@ class ClaimBusterModel:
     def select_train_vars(print_stuff=True):
         train_vars = tf.trainable_variables()
 
-        if FLAGS.transf_type == 1:
+        if FLAGS.tfm_type == 1:
             non_trainable_layers = ['/layer_{}/'.format(num)
                                     for num in range(FLAGS.bert_layers - FLAGS.bert_ft_enc_layers)]
             if not FLAGS.bert_ft_embed:
@@ -129,7 +129,7 @@ class ClaimBusterModel:
 
         nl_out = LanguageModel.build_xlnet_transformer_raw(
             self.x_nl[0], self.x_nl[1], self.x_nl[2], self.kp_tfm_atten, self.kp_tfm_hidden,
-            adv, orig_embed, reg_loss, self.restore) if FLAGS.transf_type == 0 else \
+            adv, orig_embed, reg_loss, self.restore) if FLAGS.tfm_type == 0 else \
             LanguageModel.build_bert_transformer_raw(
                 self.x_nl[0], self.x_nl[1], self.x_nl[2], self.kp_tfm_atten, self.kp_tfm_hidden,
                 adv, orig_embed, reg_loss, self.restore)
