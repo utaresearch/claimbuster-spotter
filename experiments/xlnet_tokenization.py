@@ -8,7 +8,7 @@ from models.xlnet.prepro_utils import preprocess_text, encode_ids
 # some code omitted here...
 # initialize FLAGS
 
-text = "An input text string."
+text = "Does this really have anything to do with Donald Trump's inaugural address?"
 
 sp_model = spm.SentencePieceProcessor()
 sp_model.Load(os.path.join('..', FLAGS.xlnet_model_loc, 'spiece.model'))
