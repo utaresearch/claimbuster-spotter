@@ -1,5 +1,6 @@
 import sentencepiece as spm
 import sys
+import os
 sys.path.append('..')
 from flags import FLAGS
 from models.xlnet.prepro_utils import preprocess_text, encode_ids
