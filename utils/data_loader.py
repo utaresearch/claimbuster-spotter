@@ -7,15 +7,13 @@ import numpy as np
 import pandas as pd
 import pickle
 import os
-import shutil
 import json
 import sys
-from . import transformations as transf
-from ..models.xlnet.classifier_utils import convert_single_example
-from ..models.xlnet.prepro_utils import preprocess_text, encode_ids
 from sklearn.utils import shuffle
 from sklearn.utils.class_weight import compute_class_weight
 import tensorflow as tf
+
+from . import transformations as transf
 
 cwd = os.getcwd()
 root_dir = None
@@ -27,11 +25,14 @@ for root, dirs, files in os.walk(cwd):
 
 if cwd != root_dir:
     from ..flags import FLAGS
+    from ..models.xlnet.classifier_utils import convert_single_example
+    from ..models.xlnet.prepro_utils import preprocess_text, encode_ids
 else:
     sys.path.append('..')
     from flags import FLAGS
+    from models.xlnet.classifier_utils import convert_single_example
+    from models.xlnet.prepro_utils import preprocess_text, encode_ids
 
-fail_words = set()
 
 
 class XLNetExample():
