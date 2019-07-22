@@ -1,7 +1,7 @@
 import tensorflow_hub as hub
+import sentencepiece as spm
 from bert import run_classifier
 from bert import tokenization
-from keras.preprocessing.text import Tokenizer
 from sklearn.utils import resample
 import numpy as np
 import pandas as pd
@@ -11,6 +11,8 @@ import shutil
 import json
 import sys
 from . import transformations as transf
+from ..models.xlnet.classifier_utils import convert_single_example
+from ..models.xlnet.prepro_utils import preprocess_text, encode_ids
 from sklearn.utils import shuffle
 from sklearn.utils.class_weight import compute_class_weight
 import tensorflow as tf
@@ -30,6 +32,21 @@ else:
     from flags import FLAGS
 
 fail_words = set()
+
+
+class XLNetExample():
+    def __init__(self, text_a, label, guid, text_b=None):
+        self.text_a = text_a
+        self.label = label
+        self.guid = guid
+        self.text_b = text_b
+
+
+# class CBExample():
+#     def __init__(self, input_ids, input_mask, segment_ids):
+#         self.input_ids = input_ids
+#         self.input_mask = input_mask
+#         self.segment_ids = segment_ids
 
 
 class Dataset:
@@ -162,22 +179,42 @@ class DataLoader:
             tf.logging.info('Processing eval data')
             eval_txt, eval_pos, eval_sent = transf.process_dataset(eval_txt)
 
-            train_df = pd.DataFrame(data=zip(train_txt, train_lab), columns=['x', 'y'])
-            eval_df = pd.DataFrame(data=zip(eval_txt, eval_lab), columns=['x', 'y'])
+            train_features, eval_features = None, None
 
-            train_df = train_df.apply(lambda x: run_classifier.InputExample(guid=None, text_a=x['x'], text_b=None,
-                                                                            label=x['y']), axis=1)
+            if FLAGS.tfm_type == 0:
+                sp_model = spm.SentencePieceProcessor()
+                sp_model.Load(FLAGS.spiece_model_file)
+                label_list = [z for z in range(FLAGS.num_classes)]
 
-            eval_df = eval_df.apply(lambda x: run_classifier.InputExample(guid=None, text_a=x['x'], text_b=None,
-                                                                          label=x['y']), axis=1)
+                def tokenize_fn(text):
+                    text = preprocess_text(text, lower=False)
+                    return encode_ids(sp_model, text)
 
-            tokenizer = DataLoader.create_tokenizer_from_hub_module()
+                train_ex = [XLNetExample(z[0], z[1], z[2]) for z in zip(train_txt, train_lab, FLAGS.len(train_txt))]
+                eval_ex = [XLNetExample(z[0], z[1], z[2]) for z in zip(eval_txt, eval_lab, FLAGS.len(eval_txt))]
 
-            train_features = run_classifier.convert_examples_to_features(train_df,
-                                                                         [z for z in range(FLAGS.num_classes)],
-                                                                         FLAGS.max_len, tokenizer)
-            eval_features = run_classifier.convert_examples_to_features(eval_df, [z for z in range(FLAGS.num_classes)],
-                                                                        FLAGS.max_len, tokenizer)
+                train_features = [convert_single_example(ex_index, example, label_list, FLAGS.max_len, tokenize_fn)
+                             for ex_index, example in enumerate(train_ex)]
+                eval_features = [convert_single_example(ex_index, example, label_list, FLAGS.max_len, tokenize_fn)
+                            for ex_index, example in enumerate(eval_ex)]
+            else:
+                train_df = pd.DataFrame(data=zip(train_txt, train_lab), columns=['x', 'y'])
+                eval_df = pd.DataFrame(data=zip(eval_txt, eval_lab), columns=['x', 'y'])
+
+                train_df = train_df.apply(lambda x: run_classifier.InputExample(guid=None, text_a=x['x'], text_b=None,
+                                                                                label=x['y']), axis=1)
+
+                eval_df = eval_df.apply(lambda x: run_classifier.InputExample(guid=None, text_a=x['x'], text_b=None,
+                                                                              label=x['y']), axis=1)
+
+                tokenizer = DataLoader.create_tokenizer_from_hub_module()
+
+                train_features = run_classifier.convert_examples_to_features(train_df,
+                                                                             [z for z in range(FLAGS.num_classes)],
+                                                                             FLAGS.max_len, tokenizer)
+                eval_features = run_classifier.convert_examples_to_features(eval_df,
+                                                                            [z for z in range(FLAGS.num_classes)],
+                                                                            FLAGS.max_len, tokenizer)
 
             train_data = Dataset(list(zip(train_features, train_pos, train_sent)), train_lab,
                                  random_state=FLAGS.random_state)
