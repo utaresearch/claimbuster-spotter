@@ -190,8 +190,8 @@ class DataLoader:
                     text = preprocess_text(text, lower=False)
                     return encode_ids(sp_model, text)
 
-                train_ex = [XLNetExample(z[0], z[1], z[2]) for z in zip(train_txt, train_lab, FLAGS.len(train_txt))]
-                eval_ex = [XLNetExample(z[0], z[1], z[2]) for z in zip(eval_txt, eval_lab, FLAGS.len(eval_txt))]
+                train_ex = [XLNetExample(z[0], z[1], z[2]) for z in zip(train_txt, train_lab, range(len(train_txt)))]
+                eval_ex = [XLNetExample(z[0], z[1], z[2]) for z in zip(eval_txt, eval_lab, range(len(eval_txt)))]
 
                 train_features = [convert_single_example(ex_index, example, label_list, FLAGS.max_len, tokenize_fn)
                                   for ex_index, example in enumerate(train_ex)]
