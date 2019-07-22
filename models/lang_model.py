@@ -31,7 +31,9 @@ class LanguageModel:
                                     adv=False, orig_embed=None, reg_loss=None, restore=False):
         assert not adv  # for now
 
-        x_mask = tf.cast(x_mask, tf.float32)
+        x_id = tf.transpose(x_id)
+        x_mask = tf.transpose(tf.cast(x_mask, tf.float32))
+        x_segment = tf.transpose(x_segment)
 
         xlnet_config = XLNetConfig(json_path=os.path.join(FLAGS.xlnet_model_loc, 'xlnet_config.json'))
         run_config = create_run_config(is_training=True, is_finetune=True, FLAGS=FLAGS, dropout=kp_tfm_hidden,
