@@ -216,6 +216,12 @@ class DataLoader:
                                                                             [z for z in range(FLAGS.num_classes)],
                                                                             FLAGS.max_len, tokenizer)
 
+            print(train_features[0])
+            print(train_features[0].input_ids)
+            print(train_features[0].input_mask)
+            print(train_features[0].segment_ids)
+            print(train_features[0].label_id)
+
             train_data = Dataset(list(zip(train_features, train_pos, train_sent)), train_lab,
                                  random_state=FLAGS.random_state)
             eval_data = Dataset(list(zip(eval_features, eval_pos, eval_sent)), eval_lab,
