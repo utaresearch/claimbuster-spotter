@@ -137,7 +137,11 @@ class DataLoader:
     def load_ext_data(train_data_in, val_data_in, test_data_in):
         train_data, test_data, vocab = None, None, None
 
-        if train_data_in is not None and val_data_in is not None and test_data_in is not None:
+        data_loc = FLAGS.prc_data_loc[:-7] + '_{}'.format('xlnet' if FLAGS.tfm_type == 0 else 'bert') + '.pickle'
+        print(data_loc)
+
+        if (train_data_in is not None and val_data_in is not None and test_data_in is not None) or \
+           (not os.path.isfile(data_loc)):
             FLAGS.refresh_data = True
 
         if FLAGS.refresh_data:
@@ -180,12 +184,12 @@ class DataLoader:
             eval_data = Dataset(list(zip(eval_features, eval_pos, eval_sent)), eval_lab,
                                 random_state=FLAGS.random_state)
 
-            with open(FLAGS.prc_data_loc, 'wb') as f:
+            with open(data_loc, 'wb') as f:
                 pickle.dump((train_data, eval_data, vocab), f)
-            tf.logging.info('Refreshed data, successfully dumped at {}'.format(FLAGS.prc_data_loc))
+            tf.logging.info('Refreshed data, successfully dumped at {}'.format(data_loc))
         else:
-            tf.logging.info('Restoring data from {}'.format(FLAGS.prc_data_loc))
-            with open(FLAGS.prc_data_loc, 'rb') as f:
+            tf.logging.info('Restoring data from {}'.format(data_loc))
+            with open(data_loc, 'rb') as f:
                 train_data, eval_data, vocab = pickle.load(f)
 
         return train_data, eval_data, vocab

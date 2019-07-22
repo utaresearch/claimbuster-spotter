@@ -96,9 +96,6 @@ flags.DEFINE_string('raw_data_loc', '{}/data_small.json'.format(FLAGS.cb_data_di
 flags.DEFINE_string('raw_dj_eval_loc', '{}/disjoint_2000.json'.format(FLAGS.cb_data_dir), 'Location of raw data')
 flags.DEFINE_string('prc_data_loc', '{}/all_data.pickle'.format(FLAGS.cb_data_dir), 'Location of saved processed data')
 
-if not os.path.isfile(FLAGS.prc_data_loc):
-    FLAGS.refresh_data = True
-
 
 def print_flags():
     tf.logging.info(FLAGS.flag_values_dict())
