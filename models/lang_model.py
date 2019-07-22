@@ -55,8 +55,6 @@ class LanguageModel:
         else:
             tf.logging.info('Will wait to retrieve complete weights from cb.ckpt')
 
-        print(summary)
-
         return None, summary
 
     @staticmethod
