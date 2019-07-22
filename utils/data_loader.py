@@ -34,7 +34,6 @@ else:
     from models.xlnet.prepro_utils import preprocess_text, encode_ids
 
 
-
 class XLNetExample():
     def __init__(self, text_a, label, guid, text_b=None):
         self.text_a = text_a
@@ -184,7 +183,7 @@ class DataLoader:
 
             if FLAGS.tfm_type == 0:
                 sp_model = spm.SentencePieceProcessor()
-                sp_model.Load(FLAGS.spiece_model_file)
+                sp_model.Load(os.path.join(FLAGS.xlnet_model_loc, 'spiece.model'))
                 label_list = [z for z in range(FLAGS.num_classes)]
 
                 def tokenize_fn(text):
@@ -195,9 +194,9 @@ class DataLoader:
                 eval_ex = [XLNetExample(z[0], z[1], z[2]) for z in zip(eval_txt, eval_lab, FLAGS.len(eval_txt))]
 
                 train_features = [convert_single_example(ex_index, example, label_list, FLAGS.max_len, tokenize_fn)
-                             for ex_index, example in enumerate(train_ex)]
+                                  for ex_index, example in enumerate(train_ex)]
                 eval_features = [convert_single_example(ex_index, example, label_list, FLAGS.max_len, tokenize_fn)
-                            for ex_index, example in enumerate(eval_ex)]
+                                 for ex_index, example in enumerate(eval_ex)]
             else:
                 train_df = pd.DataFrame(data=zip(train_txt, train_lab), columns=['x', 'y'])
                 eval_df = pd.DataFrame(data=zip(eval_txt, eval_lab), columns=['x', 'y'])
