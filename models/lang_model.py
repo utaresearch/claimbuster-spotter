@@ -91,9 +91,6 @@ class LanguageModel:
         else:
             tf.logging.info('Will wait to retrieve complete weights from cb.ckpt')
 
-        print(bert_outputs)
-        exit()
-
         return (model.get_embedding_output(), bert_outputs) if not adv else bert_outputs
 
     @staticmethod
