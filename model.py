@@ -113,7 +113,6 @@ class ClaimBusterModel:
     def construct_model(self):
         orig_embed, logits = self.fprop()
         self.trainable_variables = self.select_train_vars()
-        print(self.trainable_variables)
         loss = tf.identity(self.ce_loss(logits, self.cls_weight), name='cost')
 
         logits_adv, loss_adv = logits, loss
