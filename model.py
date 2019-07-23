@@ -125,18 +125,20 @@ class ClaimBusterModel:
         else:
             warmup_lr = 0.0
 
+        max_steps = FLAGS.pretrain_steps if not adv else FLAGS.advtrain_steps
+
         # decay the learning rate
         if FLAGS.decay_method == "poly":
             decay_lr = tf.train.polynomial_decay(
                 FLAGS.lr,
                 global_step=global_step - FLAGS.warmup_steps,
-                decay_steps=FLAGS.max_steps - FLAGS.warmup_steps,
+                decay_steps=max_steps - FLAGS.warmup_steps,
                 end_learning_rate=FLAGS.lr * FLAGS.min_lr_ratio)
         elif FLAGS.decay_method == "cos":
             decay_lr = tf.train.cosine_decay(
                 FLAGS.lr,
                 global_step=global_step - FLAGS.warmup_steps,
-                decay_steps=FLAGS.max_steps - FLAGS.warmup_steps,
+                decay_steps=max_steps - FLAGS.warmup_steps,
                 alpha=FLAGS.min_lr_ratio)
         else:
             raise ValueError(FLAGS.decay_method)
