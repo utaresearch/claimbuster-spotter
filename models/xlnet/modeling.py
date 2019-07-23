@@ -679,7 +679,7 @@ def lm_loss(hidden, target, n_token, d_model, initializer, lookup_table=None,
 
 def summarize_sequence(summary_type, hidden, d_model, n_head, d_head, dropout,
                        dropatt, input_mask, is_training, initializer,
-                       scope=None, reuse=tf.AUTO_REUSE, use_proj=True):
+                       scope='sequnece_summary/', reuse=tf.AUTO_REUSE, use_proj=True):
     """
         Different classification tasks may not may not share the same parameters
         to summarize the sequence features.
@@ -687,7 +687,7 @@ def summarize_sequence(summary_type, hidden, d_model, n_head, d_head, dropout,
         Otherwise, one should specify a different `scope` for each task.
     """
 
-    with tf.variable_scope('sequnece_summary/', reuse=reuse):
+    with tf.variable_scope(scope, reuse=reuse):
         if summary_type == 'last':
             summary = hidden[-1]
         elif summary_type == 'first':
