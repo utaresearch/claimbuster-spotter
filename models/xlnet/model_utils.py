@@ -72,6 +72,9 @@ def init_from_checkpoint(init_checkpoint, use_tpu=False, global_vars=False):
 
         (assignment_map, initialized_variable_names
          ) = get_assignment_map_from_checkpoint(tvars, init_checkpoint)
+
+        print(assignment_map)
+
         if use_tpu:
             def tpu_scaffold():
                 tf.train.init_from_checkpoint(init_checkpoint, assignment_map)
