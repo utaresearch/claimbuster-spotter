@@ -56,7 +56,7 @@ class LanguageModel:
 
         if not restore:
             tf.logging.info('Retrieving pre-trained XLNET weights')
-            # init_from_checkpoint(os.path.join(FLAGS.xlnet_model_loc, 'model', 'xlnet_model.ckpt'))
+            init_from_checkpoint(os.path.join(FLAGS.xlnet_model_loc, 'model', 'xlnet_model.ckpt'))
             tf.logging.info('Successfully retrieved XLNET weights')
         else:
             tf.logging.info('Will wait to retrieve complete weights from cb.ckpt')
