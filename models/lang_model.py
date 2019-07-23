@@ -52,6 +52,8 @@ class LanguageModel:
         for v in tf.trainable_variables():
             print(v.name)
 
+        print(summary)
+
         if not restore:
             tf.logging.info('Retrieving pre-trained XLNET weights')
             init_from_checkpoint(os.path.join(FLAGS.xlnet_model_loc, 'model', 'xlnet_model.ckpt'))
