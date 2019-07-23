@@ -48,7 +48,9 @@ class LanguageModel:
             input_mask=x_mask)
 
         summary = xlnet_model.get_pooled_out(summary_type="last")
-        print(summary)
+
+        for v in tf.trainable_variables():
+            print(v.name)
 
         if not restore:
             tf.logging.info('Retrieving pre-trained XLNET weights')
