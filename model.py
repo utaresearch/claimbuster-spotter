@@ -259,8 +259,6 @@ class ClaimBusterModel:
 
         feed_dict = self.get_feed_dict(x_nl, x_pos, x_sent, batch_y, ver='test')
 
-        print(sess.run(self.logits, feed_dict=feed_dict))
-
         run_loss, run_acc, run_pred = sess.run([self.cost, self.acc, self.y_pred], feed_dict=feed_dict)
         run_pred = np.argmax(run_pred, axis=1)
         run_loss_adv, run_acc_adv, run_pred_adv = None, None, None
