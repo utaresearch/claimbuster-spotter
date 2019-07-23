@@ -49,9 +49,6 @@ class LanguageModel:
 
         summary = xlnet_model.get_pooled_out(summary_type="last")
 
-        for v in tf.trainable_variables():
-            print(v.name)
-
         print(summary)
 
         if not restore:

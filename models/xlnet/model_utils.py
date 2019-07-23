@@ -73,8 +73,6 @@ def init_from_checkpoint(init_checkpoint, use_tpu=False, global_vars=False):
         (assignment_map, initialized_variable_names
          ) = get_assignment_map_from_checkpoint(tvars, init_checkpoint)
 
-        print(assignment_map)
-
         if use_tpu:
             def tpu_scaffold():
                 tf.train.init_from_checkpoint(init_checkpoint, assignment_map)
@@ -86,6 +84,9 @@ def init_from_checkpoint(init_checkpoint, use_tpu=False, global_vars=False):
 
         # Log customized initialization
         tf.logging.info("**** Global Variables ****")
+
+        print(assignment_map)
+        
         for var in tvars:
             init_string = ""
             if var.name in initialized_variable_names:
@@ -267,32 +268,26 @@ def avg_checkpoints(model_dir, output_model_dir, last_k):
 
 
 def get_assignment_map_from_checkpoint(tvars, init_checkpoint):
-    """Compute the union of the current variables and checkpoint variables."""
-    assignment_map = {}
-    initialized_variable_names = {}
+    def clean_string(str):
+        return str.replace('//', '/')
 
-    name_to_variable = collections.OrderedDict()
-    for var in tvars:
-        name = var.name
-        m = re.match("^(.*):\\d+$", name)
-        if m is not None:
-            name = m.group(1)
-        name_to_variable[name] = var
+    graph_var_names = [v.name[:-2] for v in tvars]
+    clean_graph_var_names = [clean_string(v) for v in graph_var_names]
+    ckpt_init_vars = tf.train.list_variables(init_checkpoint)
 
-    init_vars = tf.train.list_variables(init_checkpoint)
+    print(ckpt_init_vars)
 
     assignment_map = collections.OrderedDict()
-    for x in init_vars:
-        (name, var) = (x[0], x[1])
-        # tf.logging.info('original name: %s', name)
-        if name not in name_to_variable:
-            continue
-        # assignment_map[name] = name
-        assignment_map[name] = name_to_variable[name]
-        initialized_variable_names[name] = 1
-        initialized_variable_names[name + ":0"] = 1
 
-    return (assignment_map, initialized_variable_names)
+    for x in ckpt_init_vars:
+        (name, var) = (x[0], x[1])
+        try:
+            idx = clean_graph_var_names.index(name)
+        except ValueError:
+            continue
+        assignment_map[name] = graph_var_names[idx]
+
+    return assignment_map, None
 
 
 class AdamWeightDecayOptimizer(tf.train.Optimizer):
