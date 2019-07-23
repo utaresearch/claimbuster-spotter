@@ -83,10 +83,7 @@ def init_from_checkpoint(init_checkpoint, use_tpu=False, global_vars=False):
             tf.train.init_from_checkpoint(init_checkpoint, assignment_map)
 
         # Log customized initialization
-        tf.logging.info("**** Global Variables ****")
-
-        print(assignment_map)
-        
+        tf.logging.info("**** Global Variables ****")        
         for var in tvars:
             init_string = ""
             if var.name in initialized_variable_names:
@@ -278,6 +275,7 @@ def get_assignment_map_from_checkpoint(tvars, init_checkpoint):
     print(ckpt_init_vars)
 
     assignment_map = collections.OrderedDict()
+    init_var_list = []
 
     for x in ckpt_init_vars:
         (name, var) = (x[0], x[1])
@@ -286,8 +284,9 @@ def get_assignment_map_from_checkpoint(tvars, init_checkpoint):
         except ValueError:
             continue
         assignment_map[name] = graph_var_names[idx]
+        init_var_list.append(graph_var_names[idx])
 
-    return assignment_map, None
+    return assignment_map, init_var_list
 
 
 class AdamWeightDecayOptimizer(tf.train.Optimizer):
