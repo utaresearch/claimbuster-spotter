@@ -49,7 +49,7 @@ flags.DEFINE_integer('cls_hidden', 0, 'Size of hidden classification layer')
 flags.DEFINE_integer('pretrain_steps', 20, 'Number of epochs to run.')
 flags.DEFINE_integer('contrain_steps', 5, 'Number of epochs to run.')
 flags.DEFINE_integer('advtrain_steps', 20, 'Number of epochs to run.')
-flags.DEFINE_float('lr', 5e-5, 'Learning rate while during optimiation.')
+flags.DEFINE_float('lr', 2e-5, 'Learning rate while during optimiation.')
 
 # Regularization
 flags.DEFINE_float('l2_reg_coeff', 0.001, 'If val > 0, use L2 Regularization on weights in graph')
@@ -84,7 +84,6 @@ flags.DEFINE_float("init_range", 0.1, "Initialization std when init is uniform."
 flags.DEFINE_integer("clamp_len", -1, "Clamp length")
 
 flags.DEFINE_integer("warmup_steps", 5, "number of warmup steps")
-flags.DEFINE_float("learning_rate", 2e-5, "initial learning rate")
 flags.DEFINE_float("lr_layer_decay_rate", 1.0, "Top layer: lr[L] = FLAGS.learning_rate. Low layer: lr[l-1] = lr[l] * lr_layer_decay_rate.")
 flags.DEFINE_float("min_lr_ratio", 0.0, "Min lr ratio for cos decay.")
 flags.DEFINE_float("clip", 1.0, "Gradient clipping")
