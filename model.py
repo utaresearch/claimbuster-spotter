@@ -105,10 +105,6 @@ class ClaimBusterModel:
     def build_optimizer(self, cost_fn, adv):
         name = ('optimizer' if adv == 0 else ('optimizer_adv' if adv == 1 else 'optimizer_v_adv'))
 
-        if FLAGS.tfm_type == 0:
-            opt, lr, gnorm = self.build_optimizer_xlnet(cost_fn, adv)
-            return opt
-
         opt = tf.train.AdamOptimizer(learning_rate=FLAGS.lr).minimize(
             cost_fn, var_list=self.trainable_variables, name=name) if FLAGS.adam else tf.train.RMSPropOptimizer(
             learning_rate=FLAGS.lr).minimize(cost_fn, var_list=self.trainable_variables, name=name)
