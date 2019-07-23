@@ -5,6 +5,7 @@ from keras.preprocessing.sequence import pad_sequences
 from keras.utils import to_categorical
 from sklearn.metrics import f1_score
 import math
+import re
 
 cwd = os.getcwd()
 root_dir = None
@@ -16,10 +17,12 @@ for root, dirs, files in os.walk(cwd):
 
 if cwd != root_dir:
     from .models.lang_model import LanguageModel
+    from .models.adam_weightdecay import AdamWeightDecayOptimizer
     from .utils.transformations import pos_labels
     from .flags import FLAGS
 else:
     from models.lang_model import LanguageModel
+    from models.adam_weightdecay import AdamWeightDecayOptimizer
     from utils.transformations import pos_labels
     from flags import FLAGS
 
@@ -102,11 +105,88 @@ class ClaimBusterModel:
     def build_optimizer(self, cost_fn, adv):
         name = ('optimizer' if adv == 0 else ('optimizer_adv' if adv == 1 else 'optimizer_v_adv'))
 
+        if FLAGS.tfm_type == 0:
+            opt, lr, gnorm = self.build_optimizer_xlnet(cost_fn, adv)
+            return opt
+
         opt = tf.train.AdamOptimizer(learning_rate=FLAGS.lr).minimize(
             cost_fn, var_list=self.trainable_variables, name=name) if FLAGS.adam else tf.train.RMSPropOptimizer(
             learning_rate=FLAGS.lr).minimize(cost_fn, var_list=self.trainable_variables, name=name)
 
         return opt
+
+    @staticmethod
+    def build_optimizer_xlnet(total_loss, adv):
+        global_step = tf.train.get_or_create_global_step()
+
+        # increase the learning rate linearly
+        if FLAGS.warmup_steps > 0:
+            warmup_lr = tf.cast(global_step, tf.float32) / tf.cast(FLAGS.warmup_steps, tf.float32) * FLAGS.lr
+        else:
+            warmup_lr = 0.0
+
+        # decay the learning rate
+        if FLAGS.decay_method == "poly":
+            decay_lr = tf.train.polynomial_decay(
+                FLAGS.lr,
+                global_step=global_step - FLAGS.warmup_steps,
+                decay_steps=FLAGS.train_steps - FLAGS.warmup_steps,
+                end_learning_rate=FLAGS.lr * FLAGS.min_lr_ratio)
+        elif FLAGS.decay_method == "cos":
+            decay_lr = tf.train.cosine_decay(
+                FLAGS.lr,
+                global_step=global_step - FLAGS.warmup_steps,
+                decay_steps=FLAGS.train_steps - FLAGS.warmup_steps,
+                alpha=FLAGS.min_lr_ratio)
+        else:
+            raise ValueError(FLAGS.decay_method)
+
+        learning_rate = tf.where(global_step < FLAGS.warmup_steps,
+                                 warmup_lr, decay_lr)
+
+        if FLAGS.weight_decay == 0:
+            optimizer = tf.train.AdamOptimizer(
+                learning_rate=learning_rate,
+                epsilon=FLAGS.adam_epsilon)
+        else:
+            optimizer = AdamWeightDecayOptimizer(
+                learning_rate=learning_rate,
+                epsilon=FLAGS.adam_epsilon,
+                exclude_from_weight_decay=["LayerNorm", "layer_norm", "bias"],
+                weight_decay_rate=FLAGS.weight_decay)
+
+        grads_and_vars = optimizer.compute_gradients(total_loss)
+
+        gradients, variables = zip(*grads_and_vars)
+        clipped, gnorm = tf.clip_by_global_norm(gradients, FLAGS.clip)
+
+        if getattr(FLAGS, "lr_layer_decay_rate", 1.0) != 1.0:
+            n_layer = 0
+            for i in range(len(clipped)):
+                m = re.search(r"model//transformer//layer_(\d+?)//", variables[i].name)
+                if not m: continue
+                n_layer = max(n_layer, int(m.group(1)) + 1)
+
+            print('successfully successfully successfully successfully successfully {}'.format(n_layer))
+
+            for i in range(len(clipped)):
+                for l in range(n_layer):
+                    if "model//transformer//layer_{}//".format(l) in variables[i].name:
+                        abs_rate = FLAGS.lr_layer_decay_rate ** (n_layer - 1 - l)
+                        clipped[i] *= abs_rate
+                        tf.logging.info("Apply mult {:.4f} to layer-{} grad of {}".format(
+                            abs_rate, l, variables[i].name))
+                        break
+
+        train_op = optimizer.apply_gradients(
+            zip(clipped, variables), global_step=global_step)
+
+        # Manually increment `global_step` for AdamWeightDecayOptimizer
+        if FLAGS.weight_decay > 0:
+            new_global_step = global_step + 1
+            train_op = tf.group(train_op, [global_step.assign(new_global_step)])
+
+        return train_op, learning_rate, gnorm
 
     def construct_model(self):
         orig_embed, logits = self.fprop()
@@ -164,17 +244,10 @@ class ClaimBusterModel:
         return tf.distributions.kl_divergence(logits_reg, logits_perturb, name='v_adv_loss')
 
     def adv_loss(self, logits, cls_weight):
-        return tf.identity(self.ce_loss(logits, cls_weight, adv=True), name='adv_loss')
+        return tf.identity(self.ce_loss(logits, cls_weight), name='adv_loss')
 
-    def ce_loss(self, logits, cls_weight, adv=False):
-        loss = tf.nn.softmax_cross_entropy_with_logits_v2(labels=self.y, logits=logits)
-        loss_l2 = 0
-
-        if FLAGS.l2_reg_coeff > 0.0:  # and not adv: @TODO restore if necessary
-            varlist = self.trainable_variables
-            loss_l2 = tf.add_n([tf.nn.l2_loss(v) for v in varlist if 'bias' not in v.name]) * FLAGS.l2_reg_coeff
-
-        ret_loss = loss + loss_l2
+    def ce_loss(self, logits, cls_weight):
+        ret_loss = tf.nn.softmax_cross_entropy_with_logits_v2(labels=self.y, logits=logits)
 
         if FLAGS.weight_classes_loss:
             ret_loss *= cls_weight
