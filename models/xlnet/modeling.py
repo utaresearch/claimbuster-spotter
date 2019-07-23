@@ -21,7 +21,7 @@ def gelu(x):
 
 
 def embedding_lookup(x, n_token, d_embed, initializer, use_tpu=True,
-                     scope='embedding', reuse=None, dtype=tf.float32):
+                     scope='embedding', reuse=tf.AUTO_REUSE, dtype=tf.float32):
     """TPU and GPU embedding_lookup function."""
     with tf.variable_scope(scope, reuse=reuse):
         lookup_table = tf.get_variable('lookup_table', [n_token, d_embed],
@@ -387,7 +387,7 @@ def transformer_xl(inp_k, n_token, n_layer, d_model, n_head,
                    use_tpu=True, input_mask=None,
                    perm_mask=None, seg_id=None, reuse_len=None,
                    ff_activation='relu', target_mapping=None,
-                   use_bfloat16=False, scope='transformer', **kwargs):
+                   use_bfloat16=False, scope='transformer/', **kwargs):
     """
       Defines a Transformer-XL computation graph with additional
       support for XLNet.
@@ -448,7 +448,7 @@ def transformer_xl(inp_k, n_token, n_layer, d_model, n_head,
     tf.logging.info('Use float type {}'.format(tf_float))
 
     new_mems = []
-    with tf.variable_scope(scope):
+    with tf.variable_scope(scope, reuse=tf.AUTO_REUSE):
         if untie_r:
             r_w_bias = tf.get_variable('r_w_bias', [n_layer, n_head, d_head],
                                        dtype=tf_float, initializer=initializer)
@@ -515,10 +515,10 @@ def transformer_xl(inp_k, n_token, n_layer, d_model, n_head,
             initializer=initializer,
             use_tpu=use_tpu,
             dtype=tf_float,
-            scope='word_embedding')
+            scope='word_embedding/')
 
         if inp_q is not None:
-            with tf.variable_scope('mask_emb'):
+            with tf.variable_scope('mask_emb/', reuse=tf.AUTO_REUSE):
                 mask_emb = tf.get_variable('mask_emb', [1, 1, d_model], dtype=tf_float)
                 if target_mapping is not None:
                     word_emb_q = tf.tile(mask_emb, [tf.shape(target_mapping)[0], bsz, 1])
@@ -576,7 +576,7 @@ def transformer_xl(inp_k, n_token, n_layer, d_model, n_head,
                 r_s_bias_i = r_s_bias if not untie_r else r_s_bias[i]
                 seg_embed_i = seg_embed[i]
 
-            with tf.variable_scope('layer_{}'.format(i)):
+            with tf.variable_scope('layer_{}/'.format(i), reuse=tf.AUTO_REUSE):
                 if inp_q is not None:
                     output_h, output_g = two_stream_rel_attn(
                         h=output_h,
@@ -679,7 +679,7 @@ def lm_loss(hidden, target, n_token, d_model, initializer, lookup_table=None,
 
 def summarize_sequence(summary_type, hidden, d_model, n_head, d_head, dropout,
                        dropatt, input_mask, is_training, initializer,
-                       scope=None, reuse=None, use_proj=True):
+                       scope=None, reuse=tf.AUTO_REUSE, use_proj=True):
     """
         Different classification tasks may not may not share the same parameters
         to summarize the sequence features.
@@ -687,7 +687,7 @@ def summarize_sequence(summary_type, hidden, d_model, n_head, d_head, dropout,
         Otherwise, one should specify a different `scope` for each task.
     """
 
-    with tf.variable_scope(scope, 'sequnece_summary', reuse=reuse):
+    with tf.variable_scope(scope, 'sequnece_summary/', reuse=reuse):
         if summary_type == 'last':
             summary = hidden[-1]
         elif summary_type == 'first':
