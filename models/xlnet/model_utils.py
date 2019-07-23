@@ -70,8 +70,7 @@ def init_from_checkpoint(init_checkpoint, use_tpu=False, global_vars=False):
 
         tf.logging.info("Initialize from the ckpt {}".format(init_checkpoint))
 
-        (assignment_map, initialized_variable_names
-         ) = get_assignment_map_from_checkpoint(tvars, init_checkpoint)
+        assignment_map, initialized_variable_names = get_assignment_map_from_checkpoint(tvars, init_checkpoint)
 
         if use_tpu:
             def tpu_scaffold():
@@ -284,7 +283,7 @@ def get_assignment_map_from_checkpoint(tvars, init_checkpoint):
         except ValueError:
             continue
         assignment_map[name] = graph_var_names[idx]
-        init_var_list.append(graph_var_names[idx])
+        init_var_list.append(graph_var_names[idx] + ":0")
 
     return assignment_map, init_var_list
 
