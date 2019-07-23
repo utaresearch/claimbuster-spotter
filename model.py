@@ -203,6 +203,10 @@ class ClaimBusterModel:
             feed_dict[self.y] = self.one_hot(batch_y)
             feed_dict[self.cls_weight] = self.get_cls_weights(batch_y)
 
+        print(feed_dict[self.x_nl[0]])
+        print(feed_dict[self.x_nl[1]])
+        print(feed_dict[self.x_nl[2]])
+
         return feed_dict
 
     def train_neural_network(self, sess, batch_x, batch_y, adv):
@@ -260,7 +264,6 @@ class ClaimBusterModel:
         feed_dict = self.get_feed_dict(x_nl, x_pos, x_sent, batch_y, ver='test')
 
         run_loss, run_acc, run_pred = sess.run([self.cost, self.acc, self.y_pred], feed_dict=feed_dict)
-        print(run_pred)
         run_pred = np.argmax(run_pred, axis=1)
         run_loss_adv, run_acc_adv, run_pred_adv = None, None, None
 
