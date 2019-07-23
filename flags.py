@@ -76,6 +76,7 @@ flags.DEFINE_integer('tfm_ft_enc_layers', 2, 'Last `var` encoding layers are mar
 
 # XLNET
 flags.DEFINE_string('xlnet_model_loc', './data/xlnet_pretrain', 'Root location of pretrained XLNet files.')
+flags.DEFINE_string('xlnet_model_size', 'base', 'Version of XLNet to use: base or large')
 flags.DEFINE_bool('use_bfloat16', False, 'Use float16 rather than 32')
 flags.DEFINE_enum("init", default="normal", enum_values=["normal", "uniform"], help="Initialization method.")
 flags.DEFINE_float("init_std", 0.02, "Initialization std when init is normal.")
@@ -95,6 +96,8 @@ flags.DEFINE_integer('batch_size', 12, 'Size of the batch.')
 flags.DEFINE_string('raw_data_loc', '{}/data_small.json'.format(FLAGS.cb_data_dir), 'Location of raw data')
 flags.DEFINE_string('raw_dj_eval_loc', '{}/disjoint_2000.json'.format(FLAGS.cb_data_dir), 'Location of raw data')
 flags.DEFINE_string('prc_data_loc', '{}/all_data.pickle'.format(FLAGS.cb_data_dir), 'Location of saved processed data')
+
+FLAGS.xlnet_model_loc = FLAGS.xlnet_model_loc + '_' + FLAGS.xlnet_model_size
 
 
 def print_flags():
