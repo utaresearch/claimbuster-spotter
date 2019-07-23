@@ -99,20 +99,20 @@ def get_train_op(FLAGS, total_loss, grads_and_vars=None):
     if FLAGS.warmup_steps > 0:
         warmup_lr = (tf.cast(global_step, tf.float32)
                      / tf.cast(FLAGS.warmup_steps, tf.float32)
-                     * FLAGS.learning_rate)
+                     * FLAGS.lr)
     else:
         warmup_lr = 0.0
 
     # decay the learning rate
     if FLAGS.decay_method == "poly":
         decay_lr = tf.train.polynomial_decay(
-            FLAGS.learning_rate,
+            FLAGS.lr,
             global_step=global_step - FLAGS.warmup_steps,
             decay_steps=FLAGS.train_steps - FLAGS.warmup_steps,
-            end_learning_rate=FLAGS.learning_rate * FLAGS.min_lr_ratio)
+            end_learning_rate=FLAGS.lr * FLAGS.min_lr_ratio)
     elif FLAGS.decay_method == "cos":
         decay_lr = tf.train.cosine_decay(
-            FLAGS.learning_rate,
+            FLAGS.lr,
             global_step=global_step - FLAGS.warmup_steps,
             decay_steps=FLAGS.train_steps - FLAGS.warmup_steps,
             alpha=FLAGS.min_lr_ratio)
