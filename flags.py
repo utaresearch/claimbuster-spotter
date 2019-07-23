@@ -69,6 +69,10 @@ flags.DEFINE_integer('num_classes', 3, 'Number of classes for classification (2 
 
 # Transformer
 flags.DEFINE_bool('tfm_type', 0, '0 XLNet 1 BERT')
+flags.DEFINE_integer('tfm_layers', 12, 'Number of BERT layers.')
+flags.DEFINE_bool('bert_ft_embed', False, 'Train BERT embedding layer')
+flags.DEFINE_bool('bert_ft_pooler', True, 'Train BERT pooler layer')
+flags.DEFINE_integer('bert_ft_enc_layers', 2, 'Last `var` encoding layers are marked as trainable')
 
 # XLNET
 flags.DEFINE_string('xlnet_model_loc', './data/xlnet_pretrain', 'Root location of pretrained XLNet files.')
@@ -81,11 +85,6 @@ flags.DEFINE_integer("clamp_len", -1, "Clamp length")
 # BERT
 flags.DEFINE_string('bert_model_loc', './data/bert_pretrain', 'Root location of pretrained BERT files.')
 flags.DEFINE_string('bert_model_hub', 'https://tfhub.dev/google/bert_uncased_L-12_H-768_A-12/1', 'Location of BERT on TF hubs.')
-flags.DEFINE_integer('bert_layers', 12, 'Number of BERT layers.')
-flags.DEFINE_bool('bert_trainable', True, 'Train BERT weights')
-flags.DEFINE_bool('bert_ft_embed', False, 'Train BERT embedding layer')
-flags.DEFINE_bool('bert_ft_pooler', True, 'Train BERT pooler layer')
-flags.DEFINE_integer('bert_ft_enc_layers', 2, 'Last `var` encoding layers are marked as trainable')
 
 # Training
 flags.DEFINE_bool('adam', True, 'Adam or RMSProp if False')

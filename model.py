@@ -84,20 +84,18 @@ class ClaimBusterModel:
     def select_train_vars(print_stuff=True):
         train_vars = tf.trainable_variables()
 
-        if FLAGS.tfm_type == 1:
-            non_trainable_layers = ['/layer_{}/'.format(num)
-                                    for num in range(FLAGS.bert_layers - FLAGS.bert_ft_enc_layers)]
-            if not FLAGS.bert_ft_embed:
-                non_trainable_layers.append('/embeddings/')
-            if not FLAGS.bert_ft_pooler:
-                non_trainable_layers.append('/pooler/')
+        non_trainable_layers = ['/layer_{}/'.format(num)
+                                for num in range(FLAGS.tfm_layers - FLAGS.tfm_ft_enc_layers)]
+        if not FLAGS.tfm_ft_embed:
+            non_trainable_layers.append('/word_embedding/' if FLAGS.tfm_type == 0 else '/embeddings/')
+        if not FLAGS.tfm_ft_pooler:
+            non_trainable_layers.append('/sequnece_summary/' if FLAGS.tfm_type == 0 else '/pooler/')
 
-            if FLAGS.bert_trainable:
-                train_vars = [v for v in train_vars if not any(z in v.name for z in non_trainable_layers)]
+        train_vars = [v for v in train_vars if not any(z in v.name for z in non_trainable_layers)]
 
-            if print_stuff:
-                tf.logging.info('Removing: {}'.format(non_trainable_layers))
-                tf.logging.info(train_vars)
+        if print_stuff:
+            tf.logging.info('Removing: {}'.format(non_trainable_layers))
+            tf.logging.info(train_vars)
 
         return train_vars
 

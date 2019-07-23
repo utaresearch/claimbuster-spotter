@@ -36,8 +36,8 @@ class LanguageModel:
         x_segment = tf.transpose(x_segment)
 
         xlnet_config = XLNetConfig(json_path=os.path.join(FLAGS.xlnet_model_loc, 'xlnet_config.json'))
-        run_config = create_run_config(is_training=True, is_finetune=True, FLAGS=FLAGS, dropout=kp_tfm_hidden,
-                                       dropatt=kp_tfm_atten)
+        # run_config = create_run_config(is_training=True, is_finetune=True, FLAGS=FLAGS, dropout=kp_tfm_hidden,
+        #                                dropatt=kp_tfm_atten)
         run_config = create_run_config(is_training=True, is_finetune=True, FLAGS=FLAGS, dropout=0.1, dropatt=0.1)
 
         xlnet_model = XLNetModel(
@@ -48,6 +48,7 @@ class LanguageModel:
             input_mask=x_mask)
 
         summary = xlnet_model.get_pooled_out(summary_type="last")
+        print(summary)
 
         if not restore:
             tf.logging.info('Retrieving pre-trained XLNET weights')
