@@ -107,7 +107,7 @@ flags.DEFINE_string('prc_data_loc', '{}/all_data.pickle'.format(FLAGS.cb_data_di
 
 FLAGS.xlnet_model_loc = FLAGS.xlnet_model_loc + '_' + FLAGS.xlnet_model_size
 FLAGS.bert_model_loc = FLAGS.bert_model_loc + '_' + FLAGS.bert_model_size
-if 'large' in any([FLAGS.xlnet_model_size, FLAGS.bert_model_size]):
+if any(['large' in z for z in [FLAGS.xlnet_model_size, FLAGS.bert_model_size]]):
 	FLAGS.tfm_layers = 24
 
 
