@@ -39,7 +39,7 @@ def main():
             tf.logging.info('Restoring pretrained transformer weights into graph')
 
         tf.logging.info("Warming up...")
-        sess.run(tf.Variable(0))
+        sess.run(tf.constant(0))
 
         start = time.time()
         epochs_trav = 0
