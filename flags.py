@@ -92,6 +92,7 @@ flags.DEFINE_string("decay_method", default="poly", help="poly or cos")
 
 # BERT
 flags.DEFINE_string('bert_model_loc', './data/bert_pretrain', 'Root location of pretrained BERT files.')
+flags.DEFINE_string('xlnet_model_size', 'base', 'Version of BERT to use: base or large_wwm')
 flags.DEFINE_string('bert_model_hub', 'https://tfhub.dev/google/bert_uncased_L-12_H-768_A-12/1', 'Location of BERT on TF hubs.')
 
 # Training
@@ -105,6 +106,9 @@ flags.DEFINE_string('raw_dj_eval_loc', '{}/disjoint_2000.json'.format(FLAGS.cb_d
 flags.DEFINE_string('prc_data_loc', '{}/all_data.pickle'.format(FLAGS.cb_data_dir), 'Location of saved processed data')
 
 FLAGS.xlnet_model_loc = FLAGS.xlnet_model_loc + '_' + FLAGS.xlnet_model_size
+FLAGS.bert_model_loc = FLAGS.bert_model_loc + '_' + FLAGS.bert_model_size
+if 'large' in any([FLAGS.xlnet_model_size, FLAGS.bert_model_size]):
+	FLAGS.tfm_layers = 24
 
 
 def print_flags():
