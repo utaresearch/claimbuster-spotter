@@ -46,8 +46,8 @@ flags.DEFINE_integer('random_state', 59, 'State of pseudo-randomness')
 flags.DEFINE_integer('cls_hidden', 0, 'Size of hidden classification layer')
 
 # Optimization
-flags.DEFINE_integer('pretrain_steps', 20, 'Number of epochs to run.')
-flags.DEFINE_integer('advtrain_steps', 20, 'Number of epochs to run.')
+flags.DEFINE_integer('pretrain_steps', 50, 'Number of epochs to run.')
+flags.DEFINE_integer('advtrain_steps', 50, 'Number of epochs to run.')
 flags.DEFINE_float('lr', 2e-5, 'Learning rate while during optimiation.')
 
 # Regularization
