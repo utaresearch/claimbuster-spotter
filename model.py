@@ -196,8 +196,8 @@ class ClaimBusterModel:
             self.pos_output_mask: self.gen_output_mask(x_pos),
 
             self.kp_cls: FLAGS.keep_prob_cls if ver == 'train' else 1.0,
-            self.kp_tfm_atten: 1-0.1 if ver == 'train' else 1.0,
-            self.kp_tfm_hidden: 1-0.1 if ver == 'train' else 1.0,
+            self.kp_tfm_atten: FLAGS.kp_tfm_atten if ver == 'train' else 1.0,
+            self.kp_tfm_hidden: FLAGS.kp_tfm_hidden if ver == 'train' else 1.0,
         }
 
         if batch_y is not None:
