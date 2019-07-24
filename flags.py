@@ -67,7 +67,7 @@ flags.DEFINE_float('perturb_norm_length', 5.0, 'Norm length of adversarial pertu
 flags.DEFINE_integer('num_classes', 3, 'Number of classes for classification (2 combines NFS and UFS)')
 
 # Transformer
-flags.DEFINE_bool('tfm_type', 0, '0 XLNet 1 BERT')
+flags.DEFINE_bool('tfm_type', 1, '0 XLNet 1 BERT')
 flags.DEFINE_integer('tfm_layers', 12, 'Number of BERT layers.')
 flags.DEFINE_bool('tfm_ft_embed', False, 'Train BERT embedding layer')
 flags.DEFINE_bool('tfm_ft_pooler', True, 'Train BERT pooler layer')
