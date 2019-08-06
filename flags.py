@@ -111,6 +111,7 @@ FLAGS.xlnet_model_loc = FLAGS.xlnet_model_loc + '_' + FLAGS.xlnet_model_size
 FLAGS.bert_model_loc = FLAGS.bert_model_loc + '_' + FLAGS.bert_model_size
 if any(['large' in z for z in [FLAGS.xlnet_model_size, FLAGS.bert_model_size]]):
 	FLAGS.tfm_layers = 24
+	FLAGS.bert_model_hub = 'https://tfhub.dev/google/bert_uncased_L-24_H-1024_A-16/1'
 
 
 def print_flags():
