@@ -30,3 +30,5 @@ __pycache__/
 *.py.save
 
 .ipynb_checkpoints/
+
+visual/
