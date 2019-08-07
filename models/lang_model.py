@@ -67,7 +67,7 @@ class LanguageModel:
                                    adv=False, orig_embed=None, reg_loss=None, perturb_id=None, restore=False):
         tf.logging.info('Building{}BERT transformer'.format(' adversarial ' if adv else ' '))
 
-        toks = list(sorted(['tok', 'seg', 'pos']))
+        toks = ['tok', 'seg', 'pos']
         pert_list = list(combinations(toks, 3)) + list(combinations(toks, 2)) + list(combinations(toks, 1))
         to_perturb = pert_list[perturb_id]
         tf.logging.info('Perturbing: {}'.format(to_perturb))
