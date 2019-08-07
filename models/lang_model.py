@@ -100,7 +100,7 @@ class LanguageModel:
         else:
             tf.logging.info('Will wait to retrieve complete weights from cb.ckpt')
 
-        print(model.get_tensor_to_perturb())
+        tf.logging.info(model.get_tensor_to_perturb())
         return (model.get_tensor_to_perturb(), bert_outputs) if not adv else bert_outputs
 
     @staticmethod
