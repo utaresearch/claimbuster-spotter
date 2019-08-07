@@ -116,6 +116,7 @@ class BertModel(object):
                  token_type_ids=None,
                  adv=False,
                  perturb=None,
+                 perturb_names=None,
                  use_one_hot_embeddings=False):
         """Constructor for BertModel.
 
@@ -169,7 +170,9 @@ class BertModel(object):
                     position_embedding_name="position_embeddings",
                     initializer_range=config.initializer_range,
                     max_position_embeddings=config.max_position_embeddings,
-                    dropout_prob=config.hidden_dropout_prob)
+                    dropout_prob=config.hidden_dropout_prob,
+                    perturb_names=perturb_names,
+                    adv=adv)
 
                 if adv:
                     self.embedding_output += perturb
@@ -420,7 +423,9 @@ def embedding_postprocessor(input_tensor,
                             position_embedding_name="position_embeddings",
                             initializer_range=0.02,
                             max_position_embeddings=512,
-                            dropout_prob=0.1):
+                            dropout_prob=0.1,
+                            perturb_names=None,
+                            adv=False):
     """Performs various post-processing on a word embedding tensor.
 
     Args:
@@ -472,7 +477,7 @@ def embedding_postprocessor(input_tensor,
         token_type_embeddings = tf.matmul(one_hot_ids, token_type_table)
         token_type_embeddings = tf.reshape(token_type_embeddings,
                                            [batch_size, seq_length, width])
-        output += token_type_embeddings
+        # output += token_type_embeddings
         seg_out = token_type_embeddings
 
     if use_position_embeddings:
@@ -504,10 +509,21 @@ def embedding_postprocessor(input_tensor,
             position_broadcast_shape.extend([seq_length, width])
             position_embeddings = tf.reshape(position_embeddings,
                                              position_broadcast_shape)
-            output += position_embeddings
+            # output += position_embeddings
             pos_out = position_embeddings
 
+    if adv:
+        to_perturb = {
+            'tok': input_tensor,
+            'seg': seg_out,
+            'pos': pos_out
+        }
+
+        print(perturb_names)
+        exit(0)
+
     output = layer_norm_and_dropout(output, dropout_prob)
+
     return output, seg_out, pos_out
 
 

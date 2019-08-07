@@ -68,8 +68,9 @@ class LanguageModel:
         tf.logging.info('Building{}BERT transformer'.format(' adversarial ' if adv else ' '))
 
         toks = list(sorted(['tok', 'seg', 'pos']))
-        perturb = list(combinations(toks, 3)) + list(combinations(toks, 2)) + list(combinations(toks, 1))
-        print(perturb, )
+        pert_list = list(combinations(toks, 3)) + list(combinations(toks, 2)) + list(combinations(toks, 1))
+        to_perturb = pert_list[perturb_id]
+        tf.logging.info('Perturbing: ' + to_perturb)
 
         hparams = LanguageModel.load_bert_pretrain_hyperparams()
 
@@ -85,7 +86,7 @@ class LanguageModel:
 
         perturb = get_adversarial_perturbation(orig_embed, reg_loss) if adv else None
         model = BertModel(config=config, is_training=True, input_ids=x_id, input_mask=x_mask, token_type_ids=x_segment,
-                          adv=adv, perturb=perturb)
+                          adv=adv, perturb=perturb, perturb_names=to_perturb)
         bert_outputs = model.get_pooled_output()
 
         if not restore:
@@ -108,7 +109,7 @@ class LanguageModel:
 
         print(ret_embed)
 
-        return (ret_embed, bert_outputs) if not adv else bert_outputs
+        return (model.get_, bert_outputs) if not adv else bert_outputs
 
     @staticmethod
     def load_bert_pretrain_hyperparams():
