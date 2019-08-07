@@ -59,6 +59,7 @@ flags.DEFINE_string('w2v_loc', './data/word2vec/w2v3b_gensim.txt', 'Location of 
 flags.DEFINE_string('w2v_loc_bin', './data/word2vec/w2v3b_gensim.bin', 'Location of w2v embeddings in BINARY form')
 
 # Adversarial and virtual adversarial training parameters.
+flags.DEFINE_integer('perturb_id', 0, "Index in [('pos',), ('seg',), ('tok',), ('pos', 'seg'), ('pos', 'tok'), ('seg', 'tok'), ('pos', 'seg', 'tok')] to perturb")
 flags.DEFINE_integer('adv_type', 0, '0 for AT, 1 for VAT')
 flags.DEFINE_float('adv_coeff', 1.0, 'Coefficient of adversarial loss')
 flags.DEFINE_float('perturb_norm_length', 5.0, 'Norm length of adversarial perturbation')
