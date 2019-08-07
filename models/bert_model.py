@@ -517,13 +517,12 @@ def embedding_postprocessor(input_tensor,
 
         if len(perturb_names) == 3:
             tensor_to_perturb = output
-            tf.logging.info(tensor_to_perturb)
         elif len(perturb_names) == 1:
             tensor_to_perturb = to_perturb[perturb_names[0]]
         else:  # length is 2
             tensor_to_perturb = to_perturb[perturb_names[0]] + to_perturb[perturb_names[1]]
-            output = tensor_to_perturb + list(all_perturbable.difference(perturb_name_set))[0]
             tf.logging.info(list(all_perturbable.difference(perturb_name_set))[0])
+            output = tensor_to_perturb + to_perturb(list(all_perturbable.difference(perturb_name_set))[0])
             exit()
 
     output = layer_norm_and_dropout(output, dropout_prob)
