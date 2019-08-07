@@ -517,6 +517,7 @@ def embedding_postprocessor(input_tensor,
 
         if len(perturb_names) == 3:
             tensor_to_perturb = output
+            print(tensor_to_perturb)
         elif len(perturb_names) == 1:
             tensor_to_perturb = to_perturb[perturb_names[0]]
         else:  # length is 2
