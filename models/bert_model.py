@@ -519,11 +519,11 @@ def embedding_postprocessor(input_tensor,
             tensor_to_perturb = output
         elif len(perturb_names) == 1:
             tensor_to_perturb = to_perturb[perturb_names[0]]
-        else:  # length is 2
+        elif len(perturb_names) == 2:
             tensor_to_perturb = to_perturb[perturb_names[0]] + to_perturb[perturb_names[1]]
-            tf.logging.info(list(all_perturbable.difference(perturb_name_set))[0])
             output = tensor_to_perturb + to_perturb[list(all_perturbable.difference(perturb_name_set))[0]]
-            exit()
+        else:
+            raise ValueError('perturb_names does not have size 1, 2, or 3')
 
     output = layer_norm_and_dropout(output, dropout_prob)
     return output, tensor_to_perturb
