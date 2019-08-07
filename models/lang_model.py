@@ -70,6 +70,7 @@ class LanguageModel:
         toks = list(sorted(['tok', 'seg', 'pos']))
         perturb = []
         for i in range(1, len(toks) + 1):
+            print(combinations(toks, i))
             np.concatenate([perturb, combinations(toks, i)])
 
         print(perturb)
