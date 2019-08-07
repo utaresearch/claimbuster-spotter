@@ -70,7 +70,7 @@ class LanguageModel:
         toks = list(sorted(['tok', 'seg', 'pos']))
         pert_list = list(combinations(toks, 3)) + list(combinations(toks, 2)) + list(combinations(toks, 1))
         to_perturb = pert_list[perturb_id]
-        tf.logging.info('Perturbing: ' + to_perturb)
+        tf.logging.info('Perturbing: {}'.format(to_perturb))
 
         hparams = LanguageModel.load_bert_pretrain_hyperparams()
 
