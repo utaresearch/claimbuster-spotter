@@ -109,7 +109,7 @@ class LanguageModel:
 
         print(ret_embed)
 
-        return (model.get_, bert_outputs) if not adv else bert_outputs
+        return (model.get_embedding_output(), bert_outputs) if not adv else bert_outputs
 
     @staticmethod
     def load_bert_pretrain_hyperparams():
