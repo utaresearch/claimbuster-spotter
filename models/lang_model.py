@@ -68,11 +68,7 @@ class LanguageModel:
         tf.logging.info('Building{}BERT transformer'.format(' adversarial ' if adv else ' '))
 
         toks = list(sorted(['tok', 'seg', 'pos']))
-        perturb = [list(combinations(toks, 1))]
-        for i in range(2, len(toks) + 1):
-            print(list(combinations(toks, i)))
-            np.concatenate([perturb, list(combinations(toks, i))])
-
+        perturb = list(combinations(toks, 1)) + list(combinations(toks, 2)) + list(combinations(toks, 3))
         print(perturb)
         exit()
 
