@@ -1,6 +1,8 @@
 import sys
 import json
 import os
+import numpy as np
+from itertools import combinations
 from .adv_losses import get_adversarial_perturbation
 from .bert_model import BertConfig, BertModel, get_assignment_map_from_checkpoint
 from .xlnet.xlnet import XLNetConfig, XLNetModel, create_run_config
@@ -65,6 +67,14 @@ class LanguageModel:
                                    adv=False, orig_embed=None, reg_loss=None, restore=False):
         tf.logging.info('Building{}BERT transformer'.format(' adversarial ' if adv else ' '))
 
+        toks = list(sorted(['tok', 'seg', 'pos']))
+        perturb = []
+        for i in range(1, len(toks) + 1):
+            np.concatenate([perturb, combinations(toks, i)])
+
+        print(perturb)
+        exit()
+
         hparams = LanguageModel.load_bert_pretrain_hyperparams()
 
         config = BertConfig(vocab_size=hparams['vocab_size'], hidden_size=hparams['hidden_size'],
@@ -78,7 +88,6 @@ class LanguageModel:
                             initializer_range=hparams['initializer_range'])
 
         perturb = get_adversarial_perturbation(orig_embed, reg_loss) if adv else None
-
         model = BertModel(config=config, is_training=True, input_ids=x_id, input_mask=x_mask, token_type_ids=x_segment,
                           adv=adv, perturb=perturb)
         bert_outputs = model.get_pooled_output()
@@ -94,7 +103,16 @@ class LanguageModel:
         else:
             tf.logging.info('Will wait to retrieve complete weights from cb.ckpt')
 
-        return (model.get_embedding_output(), bert_outputs) if not adv else bert_outputs
+        ret_embed = {
+            'tok': model.get_tok_out(),
+            'seg': model.get_seg_out(),
+            'pos': model.get_pos_out(),
+            'tot': model.get_embedding_output()
+        } if adv else None
+
+        print(ret_embed)
+
+        return (ret_embed, bert_outputs) if not adv else bert_outputs
 
     @staticmethod
     def load_bert_pretrain_hyperparams():
