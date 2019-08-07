@@ -100,14 +100,7 @@ class LanguageModel:
         else:
             tf.logging.info('Will wait to retrieve complete weights from cb.ckpt')
 
-        ret_embed = {
-            'tok': model.get_tok_out(),
-            'seg': model.get_seg_out(),
-            'pos': model.get_pos_out(),
-            'tot': model.get_embedding_output()
-        } if adv else None
-
-        return (model.get_embedding_output(), bert_outputs) if not adv else bert_outputs
+        return (model.get_tensor_to_perturb(), bert_outputs) if not adv else bert_outputs
 
     @staticmethod
     def load_bert_pretrain_hyperparams():
