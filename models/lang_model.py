@@ -107,8 +107,6 @@ class LanguageModel:
             'tot': model.get_embedding_output()
         } if adv else None
 
-        print(ret_embed)
-
         return (model.get_embedding_output(), bert_outputs) if not adv else bert_outputs
 
     @staticmethod

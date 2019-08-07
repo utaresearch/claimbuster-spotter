@@ -150,7 +150,7 @@ class BertModel(object):
         with tf.variable_scope('bert/', reuse=tf.AUTO_REUSE):
             with tf.variable_scope("embeddings/", reuse=tf.AUTO_REUSE):
                 # Perform embedding lookup on the word ids.
-                (self.tok_out, self.embedding_table) = embedding_lookup(
+                (self.embedding_output, self.embedding_table) = embedding_lookup(
                     input_ids=input_ids,
                     vocab_size=config.vocab_size,
                     embedding_size=config.hidden_size,
@@ -160,8 +160,8 @@ class BertModel(object):
 
                 # Add positional embeddings and token type embeddings, then layer
                 # normalize and perform dropout.
-                self.embedding_output, self.seg_out, self.pos_out = embedding_postprocessor(
-                    input_tensor=self.tok_out,
+                self.embedding_output, self.tensor_to_perturb = embedding_postprocessor(
+                    input_tensor=self.embedding_output,
                     use_token_type=True,
                     token_type_ids=token_type_ids,
                     token_type_vocab_size=config.type_vocab_size,
@@ -244,14 +244,8 @@ class BertModel(object):
     def get_embedding_table(self):
         return self.embedding_table
 
-    def get_tok_out(self):
-        return self.tok_out
-
-    def get_seg_out(self):
-        return self.seg_out
-
-    def get_pos_out(self):
-        return self.pos_out
+    def get_tensor_to_perturb(self):
+        return self.tensor_to_perturb
 
 
 def gelu(x):
@@ -460,7 +454,7 @@ def embedding_postprocessor(input_tensor,
 
     output = input_tensor
 
-    seg_out, pos_out = None, None
+    seg_out, pos_out, tensor_to_perturb = None, None, None
 
     if use_token_type:
         if token_type_ids is None:
@@ -477,8 +471,8 @@ def embedding_postprocessor(input_tensor,
         token_type_embeddings = tf.matmul(one_hot_ids, token_type_table)
         token_type_embeddings = tf.reshape(token_type_embeddings,
                                            [batch_size, seq_length, width])
-        # output += token_type_embeddings
         seg_out = token_type_embeddings
+        output += token_type_embeddings
 
     if use_position_embeddings:
         assert_op = tf.assert_less_equal(seq_length, max_position_embeddings)
@@ -509,8 +503,8 @@ def embedding_postprocessor(input_tensor,
             position_broadcast_shape.extend([seq_length, width])
             position_embeddings = tf.reshape(position_embeddings,
                                              position_broadcast_shape)
-            # output += position_embeddings
             pos_out = position_embeddings
+            output += position_embeddings
 
     if adv:
         to_perturb = {
@@ -518,13 +512,21 @@ def embedding_postprocessor(input_tensor,
             'seg': seg_out,
             'pos': pos_out
         }
+        all_perturbable = {'tok', 'seg', 'pos'}
+        perturb_name_set = set([z for z in perturb_names])
 
-        print(perturb_names)
-        exit(0)
+        if len(perturb_names) == 3:
+            tensor_to_perturb = output
+        elif len(perturb_names) == 1:
+            tensor_to_perturb = to_perturb[perturb_names[0]]
+        else:  # length is 2
+            tensor_to_perturb = to_perturb[perturb_names[0]] + to_perturb[perturb_names[1]]
+            output = tensor_to_perturb + list(all_perturbable.difference(perturb_name_set))[0]
+            print(list(all_perturbable.difference(perturb_name_set))[0])
+            exit()
 
     output = layer_norm_and_dropout(output, dropout_prob)
-
-    return output, seg_out, pos_out
+    return output, tensor_to_perturb
 
 
 def create_attention_mask_from_input_mask(from_tensor, to_mask):
