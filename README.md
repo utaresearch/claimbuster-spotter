@@ -151,5 +151,5 @@ Information to come.
 ## Contributors
 
 Code in this repository was contributed to by:
-* Kevin Meng, @kmeng01
+* Kevin Meng, [`@kmeng01`](https://github.com/kmeng01)
 * And others
