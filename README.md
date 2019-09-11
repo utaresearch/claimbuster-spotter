@@ -135,7 +135,7 @@ python3 advtrain.py \
 Currently, there is only one test dataset available: [disjoint 2000](data/disjoint_2000.json), which was used to evaluate the work of D. Jimenez et al. As previously mentioned, the researchers will be adding a complete presidential debate series to this list. Compatibility updates will follow soon.
 
 ```bash
-python3 -u evaluate.py \
+python3 eval.py \
     --cb_output_dir= $EVALDIR \
     --gpu=0
 ```
