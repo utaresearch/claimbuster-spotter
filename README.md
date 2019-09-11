@@ -1,8 +1,6 @@
 # Adversarial Claim Spotting
 In this repository, we apply adversarial training as as regularization technique for the purpose of determining whether a given claim is a) factual and b) worthy of fact checking.
 
-**WARNING! This documentation is deprecated. Updates are coming soon.**
-
 ## Requirements
 
 Will be listed in the future; for now, please simply use `idir-server10` to run the code. Necessary packages should already be installed; otherwise, please follow the stack track and custom-install if needed.
@@ -23,12 +21,12 @@ Preprocessing is accomplished by [`pretrain.py`](pretrain.py). Sentences are ext
 
 ### Training
 
-Each training session is predicated upon a pre-trained BERT model as an initialization point. After loading these weights, we apply two stages of training:
+Each training session is predicated upon a pre-trained BERT model as an initialization point. After loading these weights, there are two possible training algorithms:
 
-* Classifier Fine-Tuning for 5 epochs: [`pretrain.py`](pretrain.py)
-* Adversarial Classifier Fine-Tuning for 50 epochs: [`advtrain.py`](advtrain.py)
+* Classifier Fine-Tuning ([`pretrain.py`](pretrain.py)): uses vanilla stochastic gradient descent to minimize softmax classification objective into NFS/UFS/CFS class division.
+* Adversarial Classifier Fine-Tuning ([`advtrain.py`](advtrain.py)): applies adversarial perturbations to embeddings designated by `--perturb_id` flag (see [`flags.py`](flags.py) for additional details)
 
-Depending on the VRAM capacity of the selected GPU, as well as the predefined batch size, training time can range between 1 and 10 hours. On UTA servers, it should take approximately 6-7 hours.
+Depending on the VRAM capacity of the selected GPU, as well as the predefined batch size, training time can range between 1 and 10 hours. On UTA servers, it may take approximately 6-7 hours to train a `BERT-Large` model.
 
 ### Evaluations
 
@@ -100,112 +98,55 @@ The first time [`pretrain.py`](pretrain.py) is run, code to process raw data wil
 
 Once data is processed and dumped into `.pkl` files, [`pretrain.py`](pretrain.py) will continue to build a graph initialized from a pre-trained BERT model. For all of the remaining pre- and adv-training steps, please see [`flags.py`](flags.py) for more information on flag listings and descriptions.
 
+Note that the entire [small dataset](data/data_small.json) will be used for training, and the [disjoint 2000 dataset](data/disjoint_2000.json) will be used for validation.
+
 ```bash
 python3 pretrain.py \
-    --cb_output_dir=$PTDIR \
+    --cb_output_dir=$REGDIR \
     --bert_model_size=large_wwm \
     --gpu=0
 ```
 
-`$PTDIR` indicates the location where the pre-trained model should be stored.
+To continue training from another checkpoint, specify the location of the desired model using `$PTDIR`. `$REGDIR` indicates the location of regular training's output.
+
+```bash
+python3 pretrain.py \
+    --cb_input_dir=$PTDIR \
+    --cb_output_dir=$REGDIR \
+    --bert_model_size=large_wwm \
+    --restore_and_continue=True
+    --gpu=0
+```
 
 ### Adversarial Training
 
+If `$REGDIR` is an empty string, the code will initialize weights from pre-trained BERT. `$ADVDIR` indicates the location where the adv-trained model should be stored. `perturb_id` can be in the range `[0,7]` and determines which combination of embeddings will be perturbed. Please see [`flags.py`](flags.py) for more information.
+
 ```bash
 python3 advtrain.py \
-    --cb_input_dir=$PTDIR \
+    --cb_input_dir=$REGDIR \
     --cb_output_dir=$ADVDIR \
     --gpu=0 \
     --perturb_id=0
 ```
 
-`$ADVDIR` indicates the location where the adv-trained model should be stored. `perturb_id` can be in the range `[0,7]` and determines which combination of embeddings will be perturbed. Please see [`flags.py`](flags.py) for more information.
+### Performance Evaluation on Test Datasets
 
-### Pretrain CB Language Model
-
-```bash
-python3 -u pretrain.py \
-    --train_dir=$PTDIR \
-    --cb_data_dir=$GENDIR \
-    --embedding_dims=300 \
-    --rnn_cell_size=1024 \
-    --num_candidate_samples=64 \
-    --batch_size=64 \
-    --learning_rate=0.001 \
-    --learning_rate_decay_factor=0.9999 \
-    --max_steps=20000 \
-    --max_grad_norm=1.0 \
-    --num_timesteps=400 \
-    --keep_prob_emb=0.5 \
-    --num_classes=3 \
-    --normalize_embeddings \
-    --bidir_lstm=True \
-    --w2v_loc=data/word2vec/GoogleNews-vectors-negative300.bin \
-    --transfer_learn_w2v=True \
-    0 # which GPU to use [0, 1, ..., n]
-```
-
-`$PTDIR` contains the pretrained LSTM language model.
-
-### Train classifier
-
-Most flags stay the same, save for the removal of candidate sampling and the
-addition of `pretrained_model_dir`, from which the classifier will load the
-pretrained embedding and LSTM variables, and flags related to adversarial
-training and classification.
-
-```bash
-python3 -u train_classifier.py \
-    --train_dir=$TDIR \
-    --pretrained_model_dir=$PTDIR \
-    --cb_data_dir=$GENDIR \
-    --embedding_dims=300 \
-    --rnn_cell_size=1024 \
-    --cl_num_layers=1 \
-    --cl_hidden_size=30 \
-    --batch_size=64 \
-    --num_classes=3 \
-    --learning_rate=0.0005 \
-    --learning_rate_decay_factor=0.9998 \
-    --max_steps=1650 \
-    --max_grad_norm=1.0 \
-    --num_timesteps=400 \
-    --keep_prob_emb=0.5 \
-    --normalize_embeddings \
-    --adv_training_method=vat \
-    --perturb_norm_length=5.0 \
-    --bidir_lstm=True \
-    --w2v_loc=data/word2vec/GoogleNews-vectors-negative300.bin \
-    --transfer_learn_w2v=True \
-    0 # which GPU to use [0, 1, ..., n]
-```
-
-`$TDIR` contains the adversarially trained LSTM language model.
-
-### Evaluate on test data
+Currently, there is only one test dataset available: [disjoint 2000](data/disjoint_2000.json), which was used to evaluate the work of D. Jimenez et al. As previously mentioned, the researchers will be adding a complete presidential debate series to this list. Compatibility updates will follow soon.
 
 ```bash
 python3 -u evaluate.py \
-    --eval_dir=$EDIR \
-    --checkpoint_dir=$TDIR \
-    --eval_data=test \
-    --run_once \
-    --cb_data_dir=$GENDIR \
-    --cb_input_dir=$RAWDIR \
-    --num_classes=3 \
-    --embedding_dims=300 \
-    --rnn_cell_size=1024 \
-    --batch_size=800 \
-    --num_timesteps=400 \
-    --normalize_embeddings \
-    --bidir_lstm=True \
-    --multiclass_metrics=True \
-    --w2v_loc=data/word2vec/GoogleNews-vectors-negative300.bin \
-    --transfer_learn_w2v=True \
-    0 # which GPU to use [0, 1, ..., n]
+    --cb_output_dir= $EVALDIR \
+    --gpu=0
 ```
 
-`$EDIR` contains evaluation logs.
+`$EVALDIR` can be set to either `$PTDIR` or `$ADVDIR` for evalution of either the pre-trained or adv-trained model, respectively.
+
+### Demonstration on Custom-Input Sentences
+
+**Warning: This file is deprecated! Please do not run until it is fixed in a future push and this warning message is removed!**
+
+Information to come.
 
 ## Contributors
 
