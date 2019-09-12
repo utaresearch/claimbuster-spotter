@@ -34,9 +34,7 @@ We output F1 scores on the `disjoint_2000.json` dataset using [`eval.py`](eval.p
 
 ### Interactive ClaimBuster Demo
 
-**Warning: This file is deprecated! Please do not run until it is fixed in a future push and this warning message is removed!**
-
-Using [`demo.py`](demo.py), users can input individual sentences into the command line, and the model will produce an inference result on the inputted sentence. This process should take under 500ms.
+Using [`demo.py`](demo.py), users can input individual sentences into the command line, and the model will produce an inference result on the inputted sentence. Each sentence should take under 100ms to process.
 
 ### Command-Line Flags
 
@@ -154,7 +152,7 @@ python3 eval.py \
 
 ### Demonstration on Custom-Input Sentences
 
-**Warning: This file is deprecated! Please do not run until it is fixed in a future push and this warning message is removed!**
+Running the follow code will open an interface to input individual sentences for claim scoring.
 
 ```bash
 python3 demo.py \
