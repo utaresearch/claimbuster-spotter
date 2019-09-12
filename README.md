@@ -67,7 +67,7 @@ cd adversarial-claimspotting
 
 ### Fetch word2vec and spaCy models
 
-Because word2vec and spaCy binaries, which are required for pre-processing, are inconvenient/impossible to track with Git, they must be downloaded at time of use. There is a convenient pre-written script for this purpose.
+Because word2vec binaries and BERT pre-trained files are inconvenient/impossible to track with Git, they must be downloaded at time of use. There is a convenient pre-written script for this purpose.
 
 ```bash
 chmod +x ./dependencies.sh
