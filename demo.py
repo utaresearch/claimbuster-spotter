@@ -52,7 +52,10 @@ def main():
     vocab = data_load.vocab
 
     transf.load_dependencies()
-    cb_model = ClaimBusterModel(restore=True)
+
+    graph = tf.get_default_graph()
+    cb_model = ClaimBusterModel(data_load.vocab, data_load.class_weights, restore=True, adv=False)
+    cb_model.load_model(graph, train=True)
 
     graph = tf.Graph()
     with tf.Session(graph=graph, config=tf.ConfigProto(allow_soft_placement=True)) as sess:
