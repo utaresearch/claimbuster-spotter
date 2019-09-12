@@ -92,7 +92,7 @@ EDIR="output/models/vat_eval"
 Training data is drawn from the entire [small dataset](data/data_small.json), and
 testing data is drawn from the [2000 pre-selected disjoint sentences](data/disjoint_2000.pkl). In the future, a full corpus from a recent series of presidential debates will be added to this collection to data.
 
-The first time [`pretrain.py`](pretrain.py) is run, code to process raw data will be run if `--refresh_data=True` **or** the code cannot find the stored, processed `.pkl` files containing processed data. Please see the next section for code on running the pre-train file.
+When [`pretrain.py`](pretrain.py) is run, code to process raw data will be run if `--refresh_data=True` **or** the code cannot find the stored, processed `.pkl` files containing processed data. Please see the next section for code on running the pre-train file.
 
 ### Classifier Fine-Tuning
 
@@ -136,11 +136,11 @@ Currently, there is only one test dataset available: [disjoint 2000](data/disjoi
 
 ```bash
 python3 eval.py \
-    --cb_output_dir= $EVALDIR \
+    --cb_output_dir=$EVALDIR \
     --gpu=0
 ```
 
-`$EVALDIR` can be set to either `$PTDIR` or `$ADVDIR` for evalution of either the pre-trained or adv-trained model, respectively.
+`$EVALDIR` can be set to either `$REGDIR` or `$ADVDIR` for evalution of either the pre-trained or adv-trained model, respectively.
 
 ### Demonstration on Custom-Input Sentences
 
