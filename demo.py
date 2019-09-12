@@ -12,12 +12,6 @@ tokenizer = DataLoader.create_tokenizer_from_hub_module()
 
 
 def extract_info(sentence, vocab):
-    def get_idx(str):
-        if str in vocab:
-            return vocab[str]
-        else:
-            return 0
-
     sentence = transf.transform_sentence_complete(sentence)
 
     sent = transf.get_sentiment(sentence)
@@ -55,7 +49,7 @@ def main():
 
     graph = tf.get_default_graph()
     cb_model = ClaimBusterModel(data_load.vocab, data_load.class_weights, restore=True, adv=False)
-    cb_model.load_model(graph, train=True)
+    cb_model.load_model(graph, train=False)
 
     graph = tf.Graph()
     with tf.Session(graph=graph, config=tf.ConfigProto(allow_soft_placement=True)) as sess:
