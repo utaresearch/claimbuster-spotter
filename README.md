@@ -156,7 +156,13 @@ python3 eval.py \
 
 **Warning: This file is deprecated! Please do not run until it is fixed in a future push and this warning message is removed!**
 
-Information to come.
+```bash
+python3 demo.py \
+    --cb_input_dir=$DEMODIR \
+    --gpu=0
+```
+
+`$DEMODIR` can be set to either `$REGDIR` or `$ADVDIR` for evalution of either the pre-trained or adv-trained model, respectively.
 
 ## Contributors
 

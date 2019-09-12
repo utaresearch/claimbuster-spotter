@@ -51,8 +51,10 @@ def main():
     cb_model = ClaimBusterModel(data_load.vocab, data_load.class_weights, restore=True, adv=False)
     cb_model.load_model(graph, train=False)
 
-    graph = tf.Graph()
-    with tf.Session(graph=graph, config=tf.ConfigProto(allow_soft_placement=True)) as sess:
+    config = tf.ConfigProto()
+    config.gpu_options.allow_growth = True
+
+    with tf.Session(graph=graph, config=config) as sess:
         sess.run(tf.global_variables_initializer())
         cb_model.load_model(sess, graph)
 
