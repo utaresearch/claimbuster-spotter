@@ -120,12 +120,22 @@ python3 pretrain.py \
 
 ### Adversarial Training
 
-If `$REGDIR` is an empty string, the code will initialize weights from pre-trained BERT. `$ADVDIR` indicates the location where the adv-trained model should be stored. `perturb_id` can be in the range `[0,7]` and determines which combination of embeddings will be perturbed. Please see [`flags.py`](flags.py) for more information.
+`$ADVDIR` indicates the location where the adv-trained model should be stored. `perturb_id` can be in the range `[0,7]` and determines which combination of embeddings will be perturbed. Please see [`flags.py`](flags.py) for more information.
+
+```bash
+python3 advtrain.py \
+    --cb_output_dir=$ADVDIR \
+    --gpu=0 \
+    --perturb_id=0
+```
+
+To continue training from a previous checkpoint, specify its location using the `--cb_input_dir` flag. This can either be a regularly or adversarially trained model. If `--restore_and_continue` is `False`, the code will initialize weights from pre-trained BERT. 
 
 ```bash
 python3 advtrain.py \
     --cb_input_dir=$REGDIR \
     --cb_output_dir=$ADVDIR \
+    --restore_and_continue=True \
     --gpu=0 \
     --perturb_id=0
 ```
