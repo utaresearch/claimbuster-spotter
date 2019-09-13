@@ -27,8 +27,7 @@ def main():
 
     graph = tf.get_default_graph()
     cb_model = ClaimBusterModel(data_load.vocab, data_load.class_weights, restore=FLAGS.restore_and_continue, adv=False)
-    if FLAGS.restore_and_continue:
-        cb_model.load_model(graph, train=True)
+    start_epoch = 0 if not FLAGS.restore_and_continue else cb_model.load_model(graph, train=True) + 1
 
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
@@ -42,7 +41,7 @@ def main():
         epochs_trav = 0
 
         tf.logging.info("Starting training...")
-        for epoch in range(FLAGS.pretrain_steps):
+        for epoch in range(start_epoch, start_epoch + FLAGS.pretrain_steps, 1):
             epochs_trav += 1
             n_batches = math.ceil(float(FLAGS.train_examples) / float(FLAGS.batch_size))
 

@@ -369,10 +369,16 @@ class ClaimBusterModel:
         dr = FLAGS.cb_output_dir if not train else FLAGS.cb_input_dir
 
         with default_graph.as_default():
-            print(get_last_save(dr))
+            last_save = get_last_save(dr)
+            print(last_save)
+            exit()
             init_checkpoint = get_last_save(dr)
             am, _ = get_assignment_map_from_checkpoint(tf.trainable_variables())
             tf.train.init_from_checkpoint(init_checkpoint, am)
+
+        return last_save
+
+
 
     # Unused method
     @staticmethod
