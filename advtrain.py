@@ -38,7 +38,7 @@ def main():
 
     graph = tf.get_default_graph()
     cb_model = ClaimBusterModel(data_load.vocab, data_load.class_weights, restore=FLAGS.restore_and_continue, adv=True)
-    start_epoch = 0 if not FLAGS.restore_and_continue else cb_model.load_model(graph, train=True) + 1
+    start_epoch = 0 if not FLAGS.restore_and_continue else cb_model.load_model(graph, train=True)
 
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
