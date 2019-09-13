@@ -355,7 +355,7 @@ class ClaimBusterModel:
                 return scan_loc + '/'
 
             ret_ar.sort()
-            return ret_ar[-1], os.path.join(scan_loc, ret_ar[-1]) + '/'
+            return int(ret_ar[-1]), os.path.join(scan_loc, ret_ar[-1]) + '/'
 
         def get_assignment_map_from_checkpoint(tvars):
             graph_var_names = [v.name[:-2] for v in tvars]
