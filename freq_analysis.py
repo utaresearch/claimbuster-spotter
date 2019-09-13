@@ -1,6 +1,7 @@
 import numpy as np
 import nltk.data
 import re
+import matplotlib.pyplot as plt
 
 from api_wrapper import ClaimBusterAPI
 
@@ -21,10 +22,11 @@ def main():
             sentence_list = np.concatenate([sentence_list, interm])
 
     api = ClaimBusterAPI()
-    for x in sentence_list:
-        res = api.direct_sentence_query(x)
-        cb_score = res[2]
-        print(cb_score)
+    scores = sorted([api.direct_sentence_query(x)[2] for x in sentence_list])
+    sum_scores = np.cumsum(scores)
+
+    plt.plot(sum_scores)
+    
 
 if __name__ == "__main__":
     main()
