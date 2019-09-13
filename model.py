@@ -314,10 +314,10 @@ class ClaimBusterModel:
         saver = tf.train.Saver()
         epoch_string = str(epoch).zfill(3)
 
-        if not os.path.isdir(FLAGS.cb_output_dir):
-            os.mkdir(FLAGS.cb_output_dir)
+        if not os.path.isdir(FLAGS.cb_model_dir):
+            os.mkdir(FLAGS.cb_model_dir)
 
-        saver.save(sess, os.path.join(FLAGS.cb_output_dir + '/' + epoch_string + '/'), global_step=epoch)
+        saver.save(sess, os.path.join(FLAGS.cb_model_dir + '/' + epoch_string + '/'), global_step=epoch)
 
     @staticmethod
     def transform_dl_data(data_xlist):
