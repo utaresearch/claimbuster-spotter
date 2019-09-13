@@ -10,11 +10,11 @@ import tensorflow as tf
 
 class ClaimBusterAPI:
     def __init__(self):
-        self.return_strings = ['Non-factual statement', 'Unimportant factual statement', 'Salient factual statement']
-        self.tokenizer = DataLoader.create_tokenizer_from_hub_module()
-
         tf.logging.set_verbosity(tf.logging.ERROR)
         os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu])
+
+        self.return_strings = ['Non-factual statement', 'Unimportant factual statement', 'Salient factual statement']
+        self.tokenizer = DataLoader.create_tokenizer_from_hub_module()
 
         data_load = DataLoader()
         self.vocab = data_load.vocab
