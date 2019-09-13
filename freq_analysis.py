@@ -23,10 +23,11 @@ def main():
 
     api = ClaimBusterAPI()
     scores = sorted([api.direct_sentence_query(x)[2] for x in sentence_list])
-    sum_scores = np.cumsum(scores)
+    print('\n'.join(scores))
 
-    plt.plot(sum_scores)
-    
+    # sum_scores = np.cumsum(scores)
+    # plt.plot(sum_scores)
+
 
 if __name__ == "__main__":
     main()
