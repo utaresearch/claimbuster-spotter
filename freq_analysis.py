@@ -23,7 +23,7 @@ def main():
 
     api = ClaimBusterAPI()
     scores = sorted([api.direct_sentence_query(x)[2] for x in sentence_list])
-    print('\n'.join(scores))
+    print('\n'.join([str(x) for x in scores]))
 
     # sum_scores = np.cumsum(scores)
     # plt.plot(sum_scores)
