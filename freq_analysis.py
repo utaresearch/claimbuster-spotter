@@ -15,7 +15,7 @@ def main():
     sentence_list = []
     for x in data:
         interm = [re.sub(r'[A-Z0-9][A-Z0-9. ]*: ', '', x) for x in tokenizer.tokenize(x)]
-        if sentence_list == []:
+        if len(sentence_list) == 0:
             sentence_list = interm
         else:
             sentence_list = np.concatenate([sentence_list, interm])
