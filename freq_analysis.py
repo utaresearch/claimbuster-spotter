@@ -22,7 +22,9 @@ def main():
 
     api = ClaimBusterAPI()
     for x in sentence_list:
-        print(api.direct_sentence_query(x))
+        res = api.direct_sentence_query(x)
+        cb_score = res[2]
+        print(cb_score)
 
 if __name__ == "__main__":
     main()
