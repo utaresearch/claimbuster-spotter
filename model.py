@@ -366,7 +366,7 @@ class ClaimBusterModel:
 
             return assignment_map, None
 
-        dr = FLAGS.cb_output_dir if not train else FLAGS.cb_input_dir
+        dr = FLAGS.cb_model_dir
 
         with default_graph.as_default():
             last_save = get_last_save(dr)
