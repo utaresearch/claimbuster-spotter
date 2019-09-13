@@ -24,6 +24,8 @@ def main():
         else:
             print('Exiting...')
             exit()
+    if not os.path.isdir(FLAGS.cb_model_dir) and FLAGS.restore_and_continue:
+        raise Exception('Cannot restore from non-existent folder: {}'.format(FLAGS.cb_model_dir))
 
     tf.logging.info("Loading dataset")
     data_load = DataLoader()
