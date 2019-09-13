@@ -42,10 +42,14 @@ class ClaimBusterAPI:
 
         return input_features, pos, sent
 
-    def subscribe_query(self):
+    def subscribe_cmdline_query(self):
         print('Enter a sentence to process')
         sentence_tuple = self.prc_sentence(input().strip('\n\r\t '), self.vocab)
-        return self.cb_model.get_preds(self.sess, sentence_tuple)
+        return self.query_sentence(sentence_tuple)
+
+    def direct_sentence_query(self, sentence):
+        sentence_tuple = self.prc_sentence(sentence.strip('\n\r\t '), self.vocab)
+        return self.query_sentence(sentence_tuple)
 
     @staticmethod
     def extract_info(sentence, vocab):
