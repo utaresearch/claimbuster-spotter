@@ -1,6 +1,7 @@
 import math
 import time
 import os
+from shutil import rmtree
 from tqdm import tqdm
 from utils.data_loader import DataLoader
 from model import ClaimBusterModel
@@ -12,6 +13,17 @@ def main():
     os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu])
 
     print_flags()
+
+    if os.path.isdir(FLAGS.tb_dir):
+        rmtree(FLAGS.tb_dir)
+    if os.path.isdir(FLAGS.cb_model_dir) and not FLAGS.restore_and_continue:
+        print('Continue? (y/n) You will overwrite the contents of FLAGS.cb_model_dir ({})'.format(FLAGS.cb_model_dir))
+        inp = input().strip('\r\n\t')
+        if inp.lower() == 'y':
+            rmtree(FLAGS.cb_model_dir)
+        else:
+            print('Exiting...')
+            exit()
 
     tf.logging.info("Loading dataset")
     data_load = DataLoader()
