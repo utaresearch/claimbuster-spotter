@@ -121,6 +121,7 @@ As with regular training, `$MDIR` indicates the location where the trained model
 ```bash
 python3 advtrain.py \
     --cb_model_dir=$MDIR \
+    --bert_model_size=large_wwm \
     --gpu=0 \
     --perturb_id=0
 ```
@@ -136,9 +137,10 @@ Below is an example of using `restore_and_continue` on adversarial training.
 ```bash
 python3 advtrain.py \
     --cb_model_dir=$MDIR \
-    --restore_and_continue=True \
+    --bert_model_size=large_wwm \
     --gpu=0 \
-    --perturb_id=0
+    --perturb_id=0 \
+    --restore_and_continue=True
 ```
 
 ### Performance Evaluation on Test Datasets
@@ -148,6 +150,7 @@ Currently, there is only one test dataset available: [disjoint 2000](data/disjoi
 ```bash
 python3 eval.py \
     --cb_model_dir=$MDIR \
+    --bert_model_size=large_wwm \
     --gpu=0
 ```
 
@@ -160,6 +163,7 @@ Running the follow code will open an interface to input individual sentences for
 ```bash
 python3 demo.py \
     --cb_model_dir=$MDIR \
+    --bert_model_size=large_wwm \
     --gpu=0
 ```
 
