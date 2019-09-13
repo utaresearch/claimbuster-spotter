@@ -355,7 +355,7 @@ class ClaimBusterModel:
                 return scan_loc + '/'
 
             ret_ar.sort()
-            return os.path.join(scan_loc, ret_ar[-1]) + '/'
+            return ret-ar[-1], os.path.join(scan_loc, ret_ar[-1]) + '/'
 
         def get_assignment_map_from_checkpoint(tvars):
             graph_var_names = [v.name[:-2] for v in tvars]
@@ -369,16 +369,13 @@ class ClaimBusterModel:
         dr = FLAGS.cb_model_dir
 
         with default_graph.as_default():
-            last_save = get_last_save(dr)
-            print(last_save)
-            exit()
-            init_checkpoint = get_last_save(dr)
+            last_save_num, last_save_loc = get_last_save(dr)
+            print(last_save_num, last_save_loc)
+            init_checkpoint = last_save_loc
             am, _ = get_assignment_map_from_checkpoint(tf.trainable_variables())
             tf.train.init_from_checkpoint(init_checkpoint, am)
 
-        return last_save
-
-
+        return last_save_num
 
     # Unused method
     @staticmethod
