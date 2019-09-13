@@ -83,12 +83,13 @@ def main():
                 epochs_trav = 0
 
             if epoch % FLAGS.model_save_interval == 0 and epoch != 0:
-                cb_model.save_model(sess, epoch)
+                cb_model.save_model(sess, epoch + 1)
                 tf.logging.info('Model @ epoch {} saved'.format(epoch + 1))
 
-        tf.logging.info('Training complete. Saving final model...')
-        cb_model.save_model(sess, FLAGS.advtrain_steps)
-        tf.logging.info('Model saved.')
+        tf.logging.info('Training complete.')
+        if (FLAGS.advtrain_steps - 1) % FLAGS.model_save_interval != 0:
+            cb_model.save_model(sess, FLAGS.advtrain_steps)
+            tf.logging.info('Final model saved.')
 
         sess.close()
 
