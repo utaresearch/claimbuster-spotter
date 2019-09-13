@@ -1,6 +1,13 @@
 # Adversarial Claim Spotting
 In this repository, we apply adversarial training as as regularization technique for the purpose of determining whether a given claim is a) factual and b) worthy of fact checking.
 
+## Table of Contents
+1. [Requirements](#requirements)
+2. [Experimental Setup](#experimental-setup)
+3. [Code Overview](#code-overview)
+4. [API Wrapper](#api-wrapper)
+5. [Contributions](#contributors)
+
 ## Requirements
 
 Will be listed in the future; for now, please simply use `idir-server10` to run the code. Necessary packages should already be installed; otherwise, please follow the stack track and custom-install if needed.
@@ -98,41 +105,37 @@ Once data is processed and dumped into `.pkl` files, [`pretrain.py`](pretrain.py
 
 Note that the entire [small dataset](data/data_small.json) will be used for training, and the [disjoint 2000 dataset](data/disjoint_2000.json) will be used for validation.
 
-```bash
-python3 pretrain.py \
-    --cb_output_dir=$REGDIR \
-    --bert_model_size=large_wwm \
-    --gpu=0
-```
-
-To continue training from another checkpoint, specify the location of the desired model using `$PTDIR`. `$REGDIR` indicates the location of regular training's output.
+`$MDIR` indicates the location where the trained model should be stored. 
 
 ```bash
 python3 pretrain.py \
-    --cb_input_dir=$PTDIR \
-    --cb_output_dir=$REGDIR \
+    --cb_model_dir=$MDIR \
     --bert_model_size=large_wwm \
-    --restore_and_continue=True
     --gpu=0
 ```
 
 ### Adversarial Training
 
-`$ADVDIR` indicates the location where the adv-trained model should be stored. `perturb_id` can be in the range `[0,7]` and determines which combination of embeddings will be perturbed. Please see [`flags.py`](flags.py) for more information.
+As with regular training, `$MDIR` indicates the location where the trained model should be stored. `perturb_id` can be in the range `[0,7]` and determines which combination of embeddings will be perturbed. Please see [`flags.py`](flags.py) for more information.
 
 ```bash
 python3 advtrain.py \
-    --cb_output_dir=$ADVDIR \
+    --cb_model_dir=$MDIR \
     --gpu=0 \
     --perturb_id=0
 ```
 
-To continue training from a previous checkpoint, specify its location using the `--cb_input_dir` flag. This can either be a regularly or adversarially trained model. If `--restore_and_continue` is `False`, the code will initialize weights from pre-trained BERT. 
+### Restore and Continue Training
+
+To continue training from a previous checkpoint, specify that `--restore_and_continue=True`. This will retrieve weights stored in `$MDIR` and continue training in the same folder. Epoch numbers are continuous between training sessions. If the flag is false (as it is by default), the code will initialize weights from a pre-trained BERT model.
+
+Continued training does not depend on the algorithm used to train the preceding model. In other words, one may continue adversarially training a previously regularly trained model, and vice-versa.
+
+Below is an example of using `restore_and_continue` on adversarial training.
 
 ```bash
 python3 advtrain.py \
-    --cb_input_dir=$REGDIR \
-    --cb_output_dir=$ADVDIR \
+    --cb_model_dir=$MDIR \
     --restore_and_continue=True \
     --gpu=0 \
     --perturb_id=0
@@ -144,11 +147,11 @@ Currently, there is only one test dataset available: [disjoint 2000](data/disjoi
 
 ```bash
 python3 eval.py \
-    --cb_output_dir=$EVALDIR \
+    --cb_model_dir=$MDIR \
     --gpu=0
 ```
 
-`$EVALDIR` can be set to either `$REGDIR` or `$ADVDIR` for evalution of either the pre-trained or adv-trained model, respectively.
+Either the pre-trained or adv-trained model can be evaluated using this code.
 
 ### Demonstration on Custom-Input Sentences
 
@@ -156,11 +159,23 @@ Running the follow code will open an interface to input individual sentences for
 
 ```bash
 python3 demo.py \
-    --cb_input_dir=$DEMODIR \
+    --cb_model_dir=$MDIR \
     --gpu=0
 ```
 
-`$DEMODIR` can be set to either `$REGDIR` or `$ADVDIR` for evalution of either the pre-trained or adv-trained model, respectively.
+## API Wrapper
+
+We provide an API wrapper in [api_wrapper.py](api_wrapper.py) to enable easy integration into other applications. There are two simple query functions that extract inference information for a single sentence. Below is a sample usage scenario:
+
+```python
+from api_wrapper import ClaimBusterAPI
+
+api = ClaimBusterAPI()
+sentence = "ClaimBuster is a state-of-the-art, end-to-end fact-checking system."
+api_result = api.direct_sentence_query(sentence)  # Returns array w/ class probabilities
+
+api_result_2 = api.subscribe_cmdline_query()  # Collects/processes cmdline input
+```
 
 ## Contributors
 
