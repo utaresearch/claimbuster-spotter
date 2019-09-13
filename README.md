@@ -130,7 +130,7 @@ python3 advtrain.py \
 
 To continue training from a previous checkpoint, specify that `--restore_and_continue=True`. This will retrieve weights stored in `$MDIR` and continue training in the same folder. Epoch numbers are continuous between training sessions. If the flag is false (as it is by default), the code will initialize weights from a pre-trained BERT model.
 
-Continued training does not depend on the algorithm used to train the preceding model. In other words, one may continue adversarially training a previously regularly trained model, and vice-versa.
+Continued training does not depend on the algorithm used to train the preceding model. In other words, one may continue adversarially training a previously regularly trained model, and vice-versa. However, transformer sizes *must* be consistent when restoring and continuing.
 
 Below is an example of using `restore_and_continue` on adversarial training.
 
