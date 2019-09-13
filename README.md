@@ -33,7 +33,7 @@ Each training session is predicated upon a pre-trained BERT model as an initiali
 * Classifier Fine-Tuning ([`pretrain.py`](pretrain.py)): uses vanilla stochastic gradient descent to minimize softmax classification objective into NFS/UFS/CFS class division.
 * Adversarial Classifier Fine-Tuning ([`advtrain.py`](advtrain.py)): applies adversarial perturbations to embeddings designated by `--perturb_id` flag (see [`flags.py`](flags.py) for additional details)
 
-Depending on the VRAM capacity of the selected GPU, as well as the predefined batch size, training time can range between 1 and 10 hours. On UTA servers, it may take approximately 6-7 hours to train a `BERT-Large` model.
+Depending on the VRAM capacity of the selected GPU, as well as the predefined batch size, training time can range between 1 and 10 hours. On UTA servers, it may take approximately 3 hours to train a `BERT-Base` model and 6-7 hours to train a `BERT-Large` model using regular optimization. Adversarial training doubles the time required.
 
 ### Evaluations
 
