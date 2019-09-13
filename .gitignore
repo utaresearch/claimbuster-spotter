@@ -13,6 +13,8 @@ data/glove/glove6b200d.txt
 data/glove/glove6b300d_gensim.txt
 data/glove/glove6b300d.txt
 
+experiments/dump.txt
+
 output/
 *output1*
 *output2*
