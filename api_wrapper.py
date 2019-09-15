@@ -46,10 +46,7 @@ class ClaimBusterAPI:
         print('Enter a sentence to process')
         sentence_tuple = self.prc_sentence(input().strip('\n\r\t '), self.vocab)
 
-        import time
-        start = time.time()
-        res = self.cb_model.get_preds(self.sess, sentence_tuple)[0]
-        return res, time.time() - start
+        return self.cb_model.get_preds(self.sess, sentence_tuple)[0]
 
     def direct_sentence_query(self, sentence):
         sentence_tuple = self.prc_sentence(sentence.strip('\n\r\t '), self.vocab)
