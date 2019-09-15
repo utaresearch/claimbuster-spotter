@@ -6,7 +6,7 @@ if __name__ == '__main__':
 
     while True:
         res = api.subscribe_cmdline_query()
-        idx = np.argmax(res, axis=1)
+        idx = np.argmax(res)
 
         print(res)
 
