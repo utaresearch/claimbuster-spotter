@@ -1,6 +1,9 @@
 import os
 import tensorflow as tf
 
+# Prevent strange behavior of double-printing messages
+tf.get_logger().propagate = False
+
 flags = tf.flags
 FLAGS = flags.FLAGS
 

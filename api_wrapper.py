@@ -10,7 +10,6 @@ import tensorflow as tf
 
 class ClaimBusterAPI:
     def __init__(self):
-        tf.get_logger().propagate = False
         tf.logging.set_verbosity(tf.logging.ERROR)
         os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu])
 
