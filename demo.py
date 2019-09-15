@@ -10,4 +10,4 @@ if __name__ == '__main__':
 
         print(res)
 
-        print('{} with probability {}'.format(np.array(api.return_strings)[idx][0], res[idx][0]))
+        print('{} with probability {}'.format(api.return_strings[idx], res[idx]))
