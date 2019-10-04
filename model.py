@@ -352,7 +352,7 @@ class ClaimBusterModel:
                     files.append(os.fsdecode(fstr))
 
             if len(ret_ar) == 0 and len(files) > 0:
-                return scan_loc + '/'
+                return int([x for x in scan_loc.split("/") if x][-1]), scan_loc.rstrip("/") + '/'
 
             ret_ar.sort()
             return int(ret_ar[-1]), os.path.join(scan_loc, ret_ar[-1]) + '/'
