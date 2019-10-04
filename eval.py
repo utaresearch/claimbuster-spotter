@@ -61,7 +61,7 @@ def main():
             eval_loss, eval_acc * 100, f1score))
 
         target_names = (['NFS', 'UFS', 'CFS'] if FLAGS.num_classes == 3 else ['NFS/UFS', 'CFS'])
-        print(classification_report(y_all, pred_all, target_names=target_names))
+        print(classification_report(y_all, pred_all, target_names=target_names, digits=4))
 
 
 if __name__ == '__main__':

@@ -20,12 +20,11 @@ if __name__ == "__main__":
     correct_adv = tf.equal(tf.argmax(y, axis=1), tf.argmax(yhat_adv_norm, axis=1))
     cost_adv = tf.nn.softmax_cross_entropy_with_logits_v2(y, yhat_adv)
 
-    optimize = tf.train.AdamOptimizer().minimize(cost + cost_adv)
+    optimize = tf.train.AdamOptimizer(learning_rate=0.01).minimize(cost + cost_adv)
     
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
 
-        print('epoch ')
         for i in range(100000):
             sess.run(optimize, feed_dict={
                 x: [[1], [2], [3]],
@@ -34,6 +33,7 @@ if __name__ == "__main__":
             if i % 1000 == 0:
                 print(i + 1,
                     np.sum(sess.run(cost, feed_dict={x: [[1], [2], [3]], y: [[1,0,0],[0,1,0],[0,0,1]]})),
+                    np.mean(sess.run(correct, feed_dict={x: [[1], [2], [3]], y: [[1,0,0],[0,1,0],[0,0,1]]})),
                     np.mean(sess.run(correct_adv, feed_dict={x: [[1], [2], [3]], y: [[1,0,0],[0,1,0],[0,0,1]]}))
                 )
         print()

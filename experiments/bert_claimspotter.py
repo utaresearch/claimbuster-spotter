@@ -246,7 +246,7 @@ def train_classifier(train_texts, train_labels, dev_texts, dev_labels, test_text
     print("Development performance:", precision_recall_fscore_support(dev_correct, dev_predicted, average="micro"))
     print("Test performance:", precision_recall_fscore_support(test_correct, test_predicted, average="micro"))
     
-    print(classification_report(test_correct, test_predicted, target_names=target_names))
+    print(classification_report(test_correct, test_predicted, target_names=target_names, digits=4))
 
 
 
@@ -268,5 +268,5 @@ def test_classifier(test_texts, test_labels):
     _, test_correct, test_predicted = evaluate(model, test_dataloader) 
     
     print("Test performance:", precision_recall_fscore_support(test_correct, test_predicted, average="micro"))
-    print(classification_report(test_correct, test_predicted, target_names=target_names))
+    print(classification_report(test_correct, test_predicted, target_names=target_names, digits=4))
     
