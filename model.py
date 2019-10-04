@@ -74,7 +74,7 @@ class ClaimBusterModel:
             correct_adv = tf.equal(tf.argmax(self.y, axis=1), tf.argmax(self.y_pred_adv, axis=1), name='correct_adv')
             self.acc_adv = tf.reduce_mean(tf.cast(correct_adv, tf.float32), name='acc_adv')
 
-            self.optimizer_adv = self.build_optimizer(self.cost_adv, adv=1)
+            self.optimizer_adv = self.build_optimizer((self.cost_adv if not FLAGS.combine_reg_adv_loss else self.cost + self.cost_adv), adv=1)
 
         # If writing information is desired in the future
         # tf.summary.scalar('cost', self.cost)
