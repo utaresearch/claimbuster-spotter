@@ -67,7 +67,7 @@ flags.DEFINE_integer('perturb_id', 0, "Index in [('pos', 'seg', 'tok'), ('pos', 
 flags.DEFINE_integer('adv_type', 0, '0 for AT, 1 for VAT')
 flags.DEFINE_float('adv_coeff', 1.0, 'Coefficient of adversarial loss')
 flags.DEFINE_bool('combine_reg_adv_loss', False, 'Add loss of regular and adversarial loss during training')
-flags.DEFINE_float('perturb_norm_length', 5.0, 'Norm length of adversarial perturbation')
+flags.DEFINE_float('perturb_norm_length', 3.0, 'Norm length of adversarial perturbation')
 
 # Output stats
 flags.DEFINE_integer('num_classes', 3, 'Number of classes for classification (2 combines NFS and UFS)')
