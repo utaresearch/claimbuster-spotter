@@ -19,7 +19,7 @@ def main():
     tf.logging.info("{} testing examples".format(test_data.get_length()))
 
     graph = tf.get_default_graph()
-    cb_model = ClaimBusterModel(data_load.vocab, data_load.class_weights, restore=True)
+    cb_model = ClaimBusterModel(data_load.vocab, data_load.class_weights, restore=True, adv=True)
     cb_model.load_model(graph)
 
     config = tf.ConfigProto()
