@@ -86,8 +86,12 @@ class DataLoader:
         self.post_process_flags()
 
     def convert_3_to_2(self):
-        self.data.y = [(1 if self.data.y[i] == 2 else 0) for i in range(len(self.data.y))]
-        self.eval_data.y = [(1 if self.eval_data.y[i] == 2 else 0) for i in range(len(self.eval_data.y))]
+        if FLAGS.alt_two_class_combo:       
+            self.data.y = [(0 if self.data.y[i] == 0 else 1) for i in range(len(self.data.y))]
+            self.eval_data.y = [(0 if self.eval_data.y[i] == 0 else 1) for i in range(len(self.eval_data.y))]
+        else:
+            self.data.y = [(1 if self.data.y[i] == 2 else 0) for i in range(len(self.data.y))]
+            self.eval_data.y = [(1 if self.eval_data.y[i] == 2 else 0) for i in range(len(self.eval_data.y))]
 
     def compute_class_weights(self):
         ret = compute_class_weight('balanced', [z for z in range(FLAGS.num_classes)], self.data.y)

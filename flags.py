@@ -71,6 +71,7 @@ flags.DEFINE_float('perturb_norm_length', 3.0, 'Norm length of adversarial pertu
 
 # Output stats
 flags.DEFINE_integer('num_classes', 3, 'Number of classes for classification (2 combines NFS and UFS)')
+flags.DEFINE_bool('alt_two_class_combo', False, 'Combine CFS and UFS instead when num_classes=2.')
 
 # Transformer
 flags.DEFINE_bool('tfm_type', 1, '0 XLNet 1 BERT')
