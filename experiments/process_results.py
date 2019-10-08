@@ -10,9 +10,9 @@ with open('idir_results.txt', 'r') as f:
 extracted_data = []
 
 for line in data:
-	search_string = 'Loss:   '
+	search_string = 'Dev Loss: '
 	idx = line.find(search_string)
-	loss = float(line[idx+len(search_string):idx+5+len(search_string)])
+	loss = float(line[idx+len(search_string):idx+7+len(search_string)])
 
 	search_string = 'Dev F1:  '
 	idx = line.find(search_string)
