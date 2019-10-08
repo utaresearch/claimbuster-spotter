@@ -65,8 +65,8 @@ flags.DEFINE_string('w2v_loc_bin', './data/word2vec/w2v3b_gensim.bin', 'Location
 # Adversarial and virtual adversarial training parameters.
 flags.DEFINE_integer('perturb_id', 0, "Index in [('pos', 'seg', 'tok'), ('pos', 'seg'), ('pos', 'tok'), ('seg', 'tok'), ('pos',), ('seg',), ('tok',)] to perturb")
 flags.DEFINE_integer('adv_type', 0, '0 for AT, 1 for VAT')
-flags.DEFINE_float('adv_coeff', 1.0, 'Coefficient of adversarial loss')
-flags.DEFINE_bool('combine_reg_adv_loss', False, 'Add loss of regular and adversarial loss during training')
+flags.DEFINE_float('adv_coeff', 0.5, 'Coefficient of adversarial loss')
+flags.DEFINE_bool('combine_reg_adv_loss', True, 'Add loss of regular and adversarial loss during training')
 flags.DEFINE_float('perturb_norm_length', 3.0, 'Norm length of adversarial perturbation')
 
 # Output stats
