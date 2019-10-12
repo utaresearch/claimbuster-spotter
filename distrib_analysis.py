@@ -25,6 +25,7 @@ def main():
             sentence_list = np.concatenate([sentence_list, interm])
 
     # Get claimbuster information
+    print(sys.argv)
     if sys.argv[1] == 0 or sys.argv[1] == 2:
         api = ClaimBusterAPI()
         scores_advcb = sorted([api.direct_sentence_query(x)[2] for x in sentence_list])
