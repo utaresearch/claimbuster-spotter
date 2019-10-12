@@ -15,7 +15,7 @@ data/glove/glove6b300d_gensim.txt
 data/glove/glove6b300d.txt
 
 
-experiments/dump.txt
+experiments/dump*.txt
 
 output/
 *output1*
