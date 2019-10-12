@@ -3,7 +3,7 @@ import nltk.data
 import re
 import matplotlib.pyplot as plt
 import requests
-from urllib.parse import quoteplus
+from urllib.parse import quote
 import argparse
 
 from api_wrapper import ClaimBusterAPI
@@ -31,7 +31,7 @@ def main():
         print('\n'.join([str(x) for x in scores_advcb]))
 
     if args.svmcb:
-        scores_svmcb = [requests.get("https://idir.uta.edu/factchecker/score_text/{}".format(quoteplus(x))).json()["results"][0]["score"] for x in sentence_list]
+        scores_svmcb = [requests.get("https://idir.uta.edu/factchecker/score_text/{}".format(quote(x))).json()["results"][0]["score"] for x in sentence_list]
         print('\n'.join([str(x) for x in scores_advcb]))
 
 if __name__ == "__main__":
