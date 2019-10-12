@@ -31,15 +31,16 @@ def main():
         print('\n'.join([str(x) for x in scores_advcb]))
 
     if sys.argv[1] == 1 or sys.argv[1] == 2:
+        scores_svmcb = []
+
         for x in sentence_list:
-            print(x)
-            dbg = requests.get("https://idir.uta.edu/factchecker/score_text/{}".format(quote(x)))
-            print(dbg)
-            dbg2 = dbg.json()
-            print(dbg2)
-            dbg3 = dbg2["results"][0]["score"]
-            print(dbg3)
-        scores_svmcb = [requests.get("https://idir.uta.edu/factchecker/score_text/{}".format(quote(x))).json()["results"][0]["score"] for x in sentence_list]
+            req = requests.get("https://idir.uta.edu/factchecker/score_text/{}".format(quote(x)))
+            while req.status_code != 200:
+                req = requests.get("https://idir.uta.edu/factchecker/score_text/{}".format(quote(x)))
+            extract = req.json()["results"][0]["score"]
+
+            scores_svmcb.append(extract)
+
         print('\n'.join([str(x) for x in scores_svmcb]))
 
 if __name__ == "__main__":
