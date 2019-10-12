@@ -36,8 +36,8 @@ def main():
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--advcb', True)
-    parser.add_argument('--svmcb', True)
+    parser.add_argument('-advcb', True)
+    parser.add_argument('-svmcb', True)
     args = parser.parse_args()
 
     main()
