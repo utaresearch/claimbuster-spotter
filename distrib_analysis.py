@@ -30,9 +30,6 @@ def main():
         scores_advcb = sorted([api.direct_sentence_query(x)[2] for x in sentence_list])
         print('\n'.join([str(x) for x in scores_advcb]))
 
-    print(requests.get("https://idir.uta.edu/factchecker/score_text/{}".format(quote(' '.join(sentence_list)))).json())
-    exit()
-
     if sys.argv[1] == 1 or sys.argv[1] == 2:
         for x in sentence_list:
             print(x)
