@@ -32,6 +32,7 @@ def main():
 
     if sys.argv[1] == 1 or sys.argv[1] == 2:
         for x in sentence_list:
+            print(x)
             dbg = requests.get("https://idir.uta.edu/factchecker/score_text/{}".format(quote(x)))
             print(dbg)
             dbg2 = dbg.json()
