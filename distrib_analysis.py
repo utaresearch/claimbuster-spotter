@@ -3,7 +3,7 @@ import nltk.data
 import re
 import matplotlib.pyplot as plt
 import requests
-from urllib import quoteplus
+from urllib.parse import quoteplus
 import argparse
 
 from api_wrapper import ClaimBusterAPI
