@@ -25,7 +25,6 @@ def main():
             sentence_list = np.concatenate([sentence_list, interm])
 
     # Get claimbuster information
-    print(sys.argv)
     if sys.argv[1] == 0 or sys.argv[1] == 2:
         api = ClaimBusterAPI()
         scores_advcb = sorted([api.direct_sentence_query(x)[2] for x in sentence_list])
@@ -38,5 +37,7 @@ def main():
 if __name__ == "__main__":
     if not str.isdigit(sys.argv[1]):
         raise Exception('argv: 0 if advcb, 1 if svmcb, 2 if both')
+    else:
+        sys.argv[1] = int(sys.argv[1])
 
     main()
