@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import requests
 from urllib.parse import quote
 import sys
+from tqdm import tqdm
 
 from api_wrapper import ClaimBusterAPI
 
@@ -33,7 +34,8 @@ def main():
     if sys.argv[1] == 1 or sys.argv[1] == 2:
         scores_svmcb = []
 
-        for x in sentence_list:
+        for i in tqdm(range(len(sentence_list))):
+            x = sentence_list[i]
             req = requests.get("https://idir.uta.edu/factchecker/score_text/{}".format(quote(x)))
             while req.status_code != 200:
                 req = requests.get("https://idir.uta.edu/factchecker/score_text/{}".format(quote(x)))
