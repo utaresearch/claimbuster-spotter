@@ -35,7 +35,7 @@ def main():
         print('\n'.join([str(x) for x in scores_advcb]))
 
 if __name__ == "__main__":
-    if len(sys.argv != 2):
+    if str.isdigit(sys.argv[1]):
         raise Exception('argv: 0 if advcb, 1 if svmcb, 2 if both')
 
     main()
