@@ -150,16 +150,38 @@ class DataLoader:
 
     @staticmethod
     def load_clef_data():
-        train_txt = []
-        eval_txt = []
-        train_lab = []
-        eval_lab = []
+        def read_from_file(loc):
+            df = pd.read_csv(loc)
+            ret_txt, ret_lab = [row['text'] for idx, row in df.iterrows()], [row['label'] for idx, row in df.iterrows()]
+            return ret_txt, ret_lab
 
-        df = pd.read_csv(FLAGS.raw_clef_train_loc)
-        print(df)
-        exit()
+        train_txt, train_lab = read_from_file(FLAGS.raw_clef_train_loc)
+        eval_txt, eval_lab = read_from_file(FLAGS.raw_clef_test_loc)
 
-        # return train, eval, vocab information
+        train_features, eval_features = DataLoader.process_text_for_transformers(train_txt, eval_txt,
+                                                                                 train_lab, eval_lab)
+
+        tf.logging.info('Loading preprocessing dependencies')
+        transf.load_dependencies()
+        vocab = None
+
+        tf.logging.info('Processing train data')
+        train_txt, train_pos, train_sent = transf.process_dataset(train_txt)
+        tf.logging.info('Processing eval data')
+        eval_txt, eval_pos, eval_sent = transf.process_dataset(eval_txt)
+
+        train_data = Dataset(list(zip(train_features, train_pos, train_sent)), train_lab,
+                             random_state=FLAGS.random_state)
+        eval_data = Dataset(list(zip(eval_features, eval_pos, eval_sent)), eval_lab,
+                            random_state=FLAGS.random_state)
+
+        with open(FLAGS.prc_clef_loc, 'wb') as f:
+            pickle.dump((train_data, eval_data, vocab), f)
+        tf.logging.info('Refreshed data, successfully dumped at {}'.format(FLAGS.prc_clef_loc))
+
+        print(train_data[0], eval_data[0])
+
+        return train_data, eval_data, vocab
 
     @staticmethod
     def load_ext_data(train_data_in, val_data_in, test_data_in):

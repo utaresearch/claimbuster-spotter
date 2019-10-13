@@ -116,6 +116,7 @@ flags.DEFINE_string('raw_dj_eval_loc', '{}/disjoint_2000.json'.format(FLAGS.cb_d
 flags.DEFINE_string('raw_clef_train_loc', '{}/CT19-T1-Training.csv'.format(FLAGS.cb_data_dir), 'Location of raw CLEF .csv data')
 flags.DEFINE_string('raw_clef_test_loc', '{}/CT19-T1-Test.csv'.format(FLAGS.cb_data_dir), 'Location of raw CLEF .csv data')
 flags.DEFINE_string('prc_data_loc', '{}/all_data.pickle'.format(FLAGS.cb_data_dir), 'Location of saved processed data')
+flags.DEFINE_string('prc_clef_loc', '{}/clef_data.pickle'.format(FLAGS.cb_data_dir), 'Location of saved processed CLEF data')
 
 FLAGS.xlnet_model_loc = FLAGS.xlnet_model_loc + '_' + FLAGS.xlnet_model_size
 FLAGS.bert_model_loc = FLAGS.bert_model_loc + '_' + FLAGS.bert_model_size
