@@ -372,7 +372,10 @@ def process_sentence_full_tags(sentence):
     prc_res = get_tags(sentence)
     ret = []
     for f in prc_res:
-        ret.append(pos_labels.index(f[1]))
+        try:
+            ret.append(pos_labels.index(f[1]))
+        except Exception e:
+            print(f[1])
     return ret
 
 
