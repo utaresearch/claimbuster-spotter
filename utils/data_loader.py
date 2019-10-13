@@ -155,7 +155,7 @@ class DataLoader:
         train_lab = []
         eval_lab = []
 
-        df = pd.read_csv(FLAGS.raw_clef_loc)
+        df = pd.read_csv(FLAGS.raw_clef_train_loc)
         print(df)
         exit()
 

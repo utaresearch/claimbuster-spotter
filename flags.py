@@ -113,7 +113,8 @@ flags.DEFINE_integer('batch_size', 12, 'Size of the batch.')
 # Locations (must be last due to customization)
 flags.DEFINE_string('raw_data_loc', '{}/data_small.json'.format(FLAGS.cb_data_dir), 'Location of raw data')
 flags.DEFINE_string('raw_dj_eval_loc', '{}/disjoint_2000.json'.format(FLAGS.cb_data_dir), 'Location of raw data')
-flags.DEFINE_string('raw_clef_loc', ''.format(FLAGS.cb_data_dir), 'Location of raw CLEF .csv data')
+flags.DEFINE_string('raw_clef_train_loc', '{}/CT19-T1-Training.csv'.format(FLAGS.cb_data_dir), 'Location of raw CLEF .csv data')
+flags.DEFINE_string('raw_clef_test_loc', '{}/CT19-T1-Test.csv'.format(FLAGS.cb_data_dir), 'Location of raw CLEF .csv data')
 flags.DEFINE_string('prc_data_loc', '{}/all_data.pickle'.format(FLAGS.cb_data_dir), 'Location of saved processed data')
 
 FLAGS.xlnet_model_loc = FLAGS.xlnet_model_loc + '_' + FLAGS.xlnet_model_size
