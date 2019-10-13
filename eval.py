@@ -56,8 +56,8 @@ def main():
             y_all = np.concatenate((y_all, batch_y))
             pred_all = np.concatenate((pred_all, b_pred))
             pred_all_adv = np.concatenate((pred_all_adv, b_pred_adv))
-            cw_score_all = np.concatenate((cw_score_all, [x[2] for x in b_pred_raw]))
-            cw_score_all_adv = np.concatenate((cw_score_all_adv, [x[2] for x in b_pred_adv_raw]))
+            cw_score_all = np.concatenate((cw_score_all, [x[FLAGS.num_classes - 1] for x in b_pred_raw]))
+            cw_score_all_adv = np.concatenate((cw_score_all_adv, [x[FLAGS.num_classes - 1] for x in b_pred_adv_raw]))
             
         f1score = f1_score(y_all, pred_all, average='weighted')
         f1score_adv = f1_score(y_all, pred_all_adv, average='weighted')
