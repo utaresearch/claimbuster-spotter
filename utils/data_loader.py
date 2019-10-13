@@ -187,8 +187,6 @@ class DataLoader:
             with open(FLAGS.prc_clef_loc, 'rb') as f:
                 train_data, eval_data, vocab = pickle.load(f)
 
-        print(train_data.x[0], train_data.y[0])
-
         return train_data, eval_data, vocab
 
     @staticmethod
