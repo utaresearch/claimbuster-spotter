@@ -150,34 +150,42 @@ class DataLoader:
 
     @staticmethod
     def load_clef_data():
+        if not os.path.isfile(FLAGS.prc_clef_loc):
+            FLAGS.refresh_data = True
+
         def read_from_file(loc):
             df = pd.read_csv(loc)
             ret_txt, ret_lab = [row['text'] for idx, row in df.iterrows()], [row['label'] for idx, row in df.iterrows()]
             return ret_txt, ret_lab
 
-        train_txt, train_lab = read_from_file(FLAGS.raw_clef_train_loc)
-        eval_txt, eval_lab = read_from_file(FLAGS.raw_clef_test_loc)
+        if FLAGS.refresh_data:
+            train_txt, train_lab = read_from_file(FLAGS.raw_clef_train_loc)
+            eval_txt, eval_lab = read_from_file(FLAGS.raw_clef_test_loc)
 
-        train_features, eval_features = DataLoader.process_text_for_transformers(train_txt, eval_txt,
-                                                                                 train_lab, eval_lab)
+            train_features, eval_features = DataLoader.process_text_for_transformers(train_txt, eval_txt,
+                                                                                     train_lab, eval_lab)
 
-        tf.logging.info('Loading preprocessing dependencies')
-        transf.load_dependencies()
-        vocab = None
+            tf.logging.info('Loading preprocessing dependencies')
+            transf.load_dependencies()
+            vocab = None
 
-        tf.logging.info('Processing train data')
-        train_txt, train_pos, train_sent = transf.process_dataset(train_txt)
-        tf.logging.info('Processing eval data')
-        eval_txt, eval_pos, eval_sent = transf.process_dataset(eval_txt)
+            tf.logging.info('Processing train data')
+            train_txt, train_pos, train_sent = transf.process_dataset(train_txt)
+            tf.logging.info('Processing eval data')
+            eval_txt, eval_pos, eval_sent = transf.process_dataset(eval_txt)
 
-        train_data = Dataset(list(zip(train_features, train_pos, train_sent)), train_lab,
-                             random_state=FLAGS.random_state)
-        eval_data = Dataset(list(zip(eval_features, eval_pos, eval_sent)), eval_lab,
-                            random_state=FLAGS.random_state)
+            train_data = Dataset(list(zip(train_features, train_pos, train_sent)), train_lab,
+                                 random_state=FLAGS.random_state)
+            eval_data = Dataset(list(zip(eval_features, eval_pos, eval_sent)), eval_lab,
+                                random_state=FLAGS.random_state)
 
-        with open(FLAGS.prc_clef_loc, 'wb') as f:
-            pickle.dump((train_data, eval_data, vocab), f)
-        tf.logging.info('Refreshed data, successfully dumped at {}'.format(FLAGS.prc_clef_loc))
+            with open(FLAGS.prc_clef_loc, 'wb') as f:
+                pickle.dump((train_data, eval_data, vocab), f)
+            tf.logging.info('Refreshed data, successfully dumped at {}'.format(FLAGS.prc_clef_loc))
+        else:
+            tf.logging.info('Restoring data from {}'.format(FLAGS.prc_clef_loc))
+            with open(FLAGS.prc_clef_loc, 'rb') as f:
+                train_data, eval_data, vocab = pickle.load(f)
 
         print(train_data.x[0], train_data.y[0])
 
