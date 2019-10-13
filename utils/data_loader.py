@@ -179,7 +179,7 @@ class DataLoader:
             pickle.dump((train_data, eval_data, vocab), f)
         tf.logging.info('Refreshed data, successfully dumped at {}'.format(FLAGS.prc_clef_loc))
 
-        print(train_data[0], eval_data[0])
+        print(train_data.x[0], train_data.y[0])
 
         return train_data, eval_data, vocab
 
