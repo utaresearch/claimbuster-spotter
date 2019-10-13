@@ -80,6 +80,9 @@ class DataLoader:
         self.post_process_flags()
 
     def convert_3_to_2(self):
+        if FLAGS.use_clef_data:
+            return
+
         if FLAGS.alt_two_class_combo:       
             self.data.y = [(0 if self.data.y[i] == 0 else 1) for i in range(len(self.data.y))]
             self.eval_data.y = [(0 if self.eval_data.y[i] == 0 else 1) for i in range(len(self.eval_data.y))]
@@ -187,8 +190,6 @@ class DataLoader:
             tf.logging.info('Restoring data from {}'.format(FLAGS.prc_clef_loc))
             with open(FLAGS.prc_clef_loc, 'rb') as f:
                 train_data, eval_data, vocab = pickle.load(f)
-
-        print(train_data.y)
 
         return train_data, eval_data, vocab
 
