@@ -29,6 +29,7 @@ flags.DEFINE_string('tb_dir', './tb_logs', 'Tensorboard location')
 
 
 # Data
+flags.DEFINE_bool('use_clef_data', False, 'Use CLEF data, rather than ClaimBuster')
 flags.DEFINE_bool('refresh_data', False, 'Re-process ./data/all_data.pickle')
 flags.DEFINE_integer('max_len', 200, 'Maximum length of input')
 flags.DEFINE_bool('remove_stopwords', False, 'Remove stop words (e.g. the, a, etc.)')
@@ -112,6 +113,7 @@ flags.DEFINE_integer('batch_size', 12, 'Size of the batch.')
 # Locations (must be last due to customization)
 flags.DEFINE_string('raw_data_loc', '{}/data_small.json'.format(FLAGS.cb_data_dir), 'Location of raw data')
 flags.DEFINE_string('raw_dj_eval_loc', '{}/disjoint_2000.json'.format(FLAGS.cb_data_dir), 'Location of raw data')
+flags.DEFINE_string('raw_clef_loc', ''.format(FLAGS.cb_data_dir), 'Location of raw CLEF .csv data')
 flags.DEFINE_string('prc_data_loc', '{}/all_data.pickle'.format(FLAGS.cb_data_dir), 'Location of saved processed data')
 
 FLAGS.xlnet_model_loc = FLAGS.xlnet_model_loc + '_' + FLAGS.xlnet_model_size

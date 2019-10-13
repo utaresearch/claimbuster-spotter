@@ -16,6 +16,7 @@ data/glove/glove6b300d.txt
 
 
 experiments/dump*.txt
+experiments/comparison.png
 
 output/
 *output1*
