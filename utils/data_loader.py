@@ -161,7 +161,6 @@ class DataLoader:
 
         if FLAGS.refresh_data:
             train_txt, train_lab = read_from_file(FLAGS.raw_clef_train_loc)
-            print(train_lab)
             eval_txt, eval_lab = read_from_file(FLAGS.raw_clef_test_loc)
 
             train_features, eval_features = DataLoader.process_text_for_transformers(train_txt, eval_txt,
@@ -188,6 +187,8 @@ class DataLoader:
             tf.logging.info('Restoring data from {}'.format(FLAGS.prc_clef_loc))
             with open(FLAGS.prc_clef_loc, 'rb') as f:
                 train_data, eval_data, vocab = pickle.load(f)
+
+        print(train_data.y)
 
         return train_data, eval_data, vocab
 
