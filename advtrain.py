@@ -90,7 +90,7 @@ def main():
 
         tf.logging.info('Training complete.')
         if (FLAGS.advtrain_steps - 1) % FLAGS.model_save_interval != 0:
-            cb_model.save_model(sess, FLAGS.advtrain_steps)
+            cb_model.save_model(sess, epoch)
             tf.logging.info('Final model saved.')
 
         sess.close()
