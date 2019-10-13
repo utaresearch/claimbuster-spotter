@@ -60,7 +60,7 @@ def main():
                 batch_x, batch_y = cb_model.get_batch(i, train_data)
                 cb_model.train_neural_network(sess, batch_x, batch_y, adv=True)
 
-                b_loss, b_loss_adv, b_acc, b_acc_adv, _, _ = cb_model.stats_from_run(sess, batch_x, batch_y, adv=True)
+                b_loss, b_loss_adv, b_acc, b_acc_adv, _, _, _, _ = cb_model.stats_from_run(sess, batch_x, batch_y, adv=True)
                 epoch_loss += b_loss
                 epoch_loss_adv += b_loss_adv
                 epoch_acc += b_acc * len(batch_y)

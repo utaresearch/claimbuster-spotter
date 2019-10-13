@@ -228,7 +228,7 @@ class ClaimBusterModel:
         all_y = []
         for batch in range(n_batches):
             batch_x, batch_y = self.get_batch(batch, test_data, ver='validation')
-            tloss, tloss_adv, tacc, _, tpred, tpred_adv = self.stats_from_run(sess, batch_x, batch_y, adv)
+            tloss, tloss_adv, tacc, _, tpred, tpred_adv, _, _ = self.stats_from_run(sess, batch_x, batch_y, adv)
 
             val_loss += tloss
             val_acc += tacc * len(batch_y)
@@ -260,16 +260,17 @@ class ClaimBusterModel:
 
         feed_dict = self.get_feed_dict(x_nl, x_pos, x_sent, batch_y, ver='test')
 
-        run_loss, run_acc, run_pred = sess.run([self.cost, self.acc, self.y_pred], feed_dict=feed_dict)
-        run_pred = np.argmax(run_pred, axis=1)
+        run_loss, run_acc, run_pred_raw = sess.run([self.cost, self.acc, self.y_pred], feed_dict=feed_dict)
+        run_pred = np.argmax(run_pred_raw, axis=1)
         run_loss_adv, run_acc_adv, run_pred_adv = None, None, None
 
         if adv:
-            run_loss_adv, run_acc_adv, run_pred_adv = sess.run([self.cost_adv, self.acc_adv, self.y_pred_adv],
+            run_loss_adv, run_acc_adv, run_pred_adv_raw = sess.run([self.cost_adv, self.acc_adv, self.y_pred_adv],
                                                                feed_dict=feed_dict)
-            run_pred_adv = np.argmax(run_pred_adv, axis=1)
+            run_pred_adv = np.argmax(run_pred_adv_raw, axis=1)
 
-        return np.sum(run_loss), np.sum(run_loss_adv), run_acc, run_acc_adv, run_pred, run_pred_adv
+        return np.sum(run_loss), np.sum(run_loss_adv), run_acc, run_acc_adv,\
+               run_pred, run_pred_adv, run_pred_raw, run_pred_adv_raw
 
     def get_preds(self, sess, inp):
         x_nl, x_pos, x_sent = inp[0], [inp[1]], [inp[2]]
