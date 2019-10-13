@@ -21,7 +21,7 @@ with open('clef_out.csv', 'r') as fin:
     for line in fin:
         data = line.split(',')
         data[1] = str(round(float(data[1]), 4))
-        fout.write('\t'.join(data))
+        fout.write('\t'.join(data) + '\n')
 
 import os
 os.remove('clef_out.csv')
