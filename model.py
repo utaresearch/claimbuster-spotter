@@ -262,11 +262,11 @@ class ClaimBusterModel:
 
         run_loss, run_acc, run_pred_raw = sess.run([self.cost, self.acc, self.y_pred], feed_dict=feed_dict)
         run_pred = np.argmax(run_pred_raw, axis=1)
-        run_loss_adv, run_acc_adv, run_pred_adv = None, None, None
+        run_loss_adv, run_acc_adv, run_pred_adv, run_pred_adv_raw = None, None, None, None
 
         if adv:
             run_loss_adv, run_acc_adv, run_pred_adv_raw = sess.run([self.cost_adv, self.acc_adv, self.y_pred_adv],
-                                                               feed_dict=feed_dict)
+                                                                   feed_dict=feed_dict)
             run_pred_adv = np.argmax(run_pred_adv_raw, axis=1)
 
         return np.sum(run_loss), np.sum(run_loss_adv), run_acc, run_acc_adv,\
