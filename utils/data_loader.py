@@ -157,6 +157,7 @@ class DataLoader:
         def read_from_file(loc):
             df = pd.read_csv(loc)
             ret_txt, ret_lab = [row['text'] for idx, row in df.iterrows()], [row['label'] for idx, row in df.iterrows()]
+            print(ret_lab)
             return ret_txt, ret_lab
 
         if FLAGS.refresh_data:
