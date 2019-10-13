@@ -157,11 +157,11 @@ class DataLoader:
         def read_from_file(loc):
             df = pd.read_csv(loc)
             ret_txt, ret_lab = [row['text'] for idx, row in df.iterrows()], [row['label'] for idx, row in df.iterrows()]
-            print(ret_lab)
             return ret_txt, ret_lab
 
         if FLAGS.refresh_data:
             train_txt, train_lab = read_from_file(FLAGS.raw_clef_train_loc)
+            print(train_lab)
             eval_txt, eval_lab = read_from_file(FLAGS.raw_clef_test_loc)
 
             train_features, eval_features = DataLoader.process_text_for_transformers(train_txt, eval_txt,
