@@ -76,12 +76,6 @@ class DataLoader:
             ours_data = self.convert_3_to_2(ours_data)
             ours_eval = self.convert_3_to_2(ours_eval)
 
-            print(self.data.x[0])
-            print(self.data.y[0])
-
-            print(ours_data.x[0])
-            print(ours_data.y[0])
-
             self.data.x += ours_data.x
             self.data.y += ours_data.y
             self.eval_data.x += ours_eval.x
