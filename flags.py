@@ -30,6 +30,7 @@ flags.DEFINE_string('tb_dir', './tb_logs', 'Tensorboard location')
 
 # Data
 flags.DEFINE_bool('use_clef_data', False, 'Use CLEF data, rather than ClaimBuster')
+flags.DEFINE_bool('combine_ours_clef_data', False, 'Combine CLEF with ClaimBuster data')
 flags.DEFINE_bool('refresh_data', False, 'Re-process ./data/all_data.pickle')
 flags.DEFINE_integer('max_len', 200, 'Maximum length of input')
 flags.DEFINE_bool('remove_stopwords', False, 'Remove stop words (e.g. the, a, etc.)')

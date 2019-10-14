@@ -70,8 +70,18 @@ class DataLoader:
         self.data, self.eval_data, self.vocab = self.load_ext_data(train_data, val_data, test_data) \
             if not FLAGS.use_clef_data else self.load_clef_data()
 
-        if FLAGS.num_classes == 2:
-            self.convert_3_to_2()
+        if FLAGS.use_clef_data and FLAGS.combine_ours_clef_data:
+            ours_data, ours_eval, ours_vocab = self.load_ext_data(train_data, val_data, test_data)
+
+            ours_data = self.convert_3_to_2(ours_data)
+            ours_eval = self.convert_3_to_2(ours_eval)
+
+            self.data = np.concatenate(self.data, ours_data)
+            self.eval_data = np.concatenate(self.eval_data, ours_eval)
+
+        if FLAGS.num_classes == 2 and not FLAGS.use_clef_data:
+            self.data = self.convert_3_to_2(self.data)
+            self.eval_data = self.convert_3_to_2(self.data)
 
         self.class_weights = self.compute_class_weights()
         tf.logging.info('Class weights computed to be {}'.format(self.class_weights))
@@ -79,16 +89,14 @@ class DataLoader:
         self.data.shuffle()
         self.post_process_flags()
 
-    def convert_3_to_2(self):
-        if FLAGS.use_clef_data:
-            return
-
+    @staticmethod
+    def convert_3_to_2(data):
         if FLAGS.alt_two_class_combo:       
-            self.data.y = [(0 if self.data.y[i] == 0 else 1) for i in range(len(self.data.y))]
-            self.eval_data.y = [(0 if self.eval_data.y[i] == 0 else 1) for i in range(len(self.eval_data.y))]
+            data.y = [(0 if data.y[i] == 0 else 1) for i in range(len(data.y))]
         else:
-            self.data.y = [(1 if self.data.y[i] == 2 else 0) for i in range(len(self.data.y))]
-            self.eval_data.y = [(1 if self.eval_data.y[i] == 2 else 0) for i in range(len(self.eval_data.y))]
+            data.y = [(1 if data.y[i] == 2 else 0) for i in range(len(data.y))]
+
+        return data
 
     def compute_class_weights(self):
         ret = compute_class_weight('balanced', [z for z in range(FLAGS.num_classes)], self.data.y)
