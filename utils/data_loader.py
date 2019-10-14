@@ -76,6 +76,9 @@ class DataLoader:
             ours_data = self.convert_3_to_2(ours_data)
             ours_eval = self.convert_3_to_2(ours_eval)
 
+            print(self.data)
+            print(ours_data)
+
             self.data = np.concatenate(self.data, ours_data)
             self.eval_data = np.concatenate(self.eval_data, ours_eval)
 
