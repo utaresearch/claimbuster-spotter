@@ -76,11 +76,10 @@ class DataLoader:
             ours_data = self.convert_3_to_2(ours_data)
             ours_eval = self.convert_3_to_2(ours_eval)
 
-            print(self.data)
-            print(ours_data)
-
-            self.data = np.concatenate(self.data, ours_data)
-            self.eval_data = np.concatenate(self.eval_data, ours_eval)
+            self.data.x = np.concatenate(self.data.x, ours_data.x)
+            self.data.y = np.concatenate(self.data.y, ours_data.y)
+            self.eval_data.x = np.concatenate(self.eval_data.x, ours_eval.x)
+            self.eval_data.y = np.concatenate(self.eval_data.y, ours_eval.y)
 
         if FLAGS.num_classes == 2 and not FLAGS.use_clef_data:
             self.data = self.convert_3_to_2(self.data)
