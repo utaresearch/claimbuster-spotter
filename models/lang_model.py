@@ -1,4 +1,4 @@
-import bert2
+from . import bert2
 
 import sys
 sys.path.append('..')
