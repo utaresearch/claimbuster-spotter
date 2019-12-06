@@ -27,7 +27,7 @@ class ClaimBusterModel(K.layers.Layer):
 
         self.vars_to_train = []
 
-        self.call(tf.constant(0, shape=(1, FLAGS.max_len)))
+        self.call(tf.constant(0, shape=(1, FLAGS.max_len)), warmup=True)
 
     def call(self, x_id, kp_cls=FLAGS.kp_cls, kp_tfm_atten=FLAGS.kp_tfm_atten, kp_tfm_hidden=FLAGS.kp_tfm_hidden, warmup=False):
         bert_output = self.bert_model(x_id)
