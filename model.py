@@ -12,9 +12,6 @@ from models.lang_model import LanguageModel
 K = tf.keras
 L = K.layers
 
-pad_sequences = K.preprocessing.sequence.pad_sequences
-to_categorical = K.utils.to_categorical
-
 
 class ClaimBusterModel(K.layers.Layer):
     def __init__(self, cls_weights=None):

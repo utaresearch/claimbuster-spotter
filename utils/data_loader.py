@@ -10,6 +10,8 @@ from sklearn.utils.class_weight import compute_class_weight
 from absl import logging
 from . import transformations as transf
 from models import bert2
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.utils import to_categorical
 
 sys.path.append('..')
 from flags import FLAGS
@@ -156,8 +158,7 @@ class DataLoader:
             train_txt, train_lab = read_from_file(FLAGS.raw_clef_train_loc)
             eval_txt, eval_lab = read_from_file(FLAGS.raw_clef_test_loc)
 
-            train_features, eval_features = DataLoader.process_text_for_transformers(train_txt, eval_txt,
-                                                                                     train_lab, eval_lab)
+            train_features, eval_features = DataLoader.process_text_for_transformers(train_txt, eval_txt)
 
             logging.info('Loading preprocessing dependencies')
             transf.load_dependencies()
@@ -167,6 +168,9 @@ class DataLoader:
             train_txt, train_pos, train_sent = transf.process_dataset(train_txt)
             logging.info('Processing eval data')
             eval_txt, eval_pos, eval_sent = transf.process_dataset(eval_txt)
+
+            train_features, train_pos = DataLoader.convert_data_to_tensorflow_format(train_features, train_pos)
+            eval_features, eval_pos = DataLoader.convert_data_to_tensorflow_format(eval_features, eval_pos)
 
             train_data = Dataset(list(zip(train_features, train_pos, train_sent)), train_lab,
                                  random_state=FLAGS.random_state)
@@ -212,6 +216,8 @@ class DataLoader:
             eval_txt, eval_pos, eval_sent = transf.process_dataset(eval_txt)
 
             train_features, eval_features = DataLoader.process_text_for_transformers(train_txt, eval_txt)
+            train_features, train_pos = DataLoader.convert_data_to_tensorflow_format(train_features, train_pos)
+            eval_features, eval_pos = DataLoader.convert_data_to_tensorflow_format(eval_features, eval_pos)
 
             train_data = Dataset(list(zip(train_features, train_pos, train_sent)), train_lab,
                                  random_state=FLAGS.random_state)
@@ -227,6 +233,10 @@ class DataLoader:
                 train_data, eval_data, vocab = pickle.load(f)
 
         return train_data, eval_data, vocab
+
+    @staticmethod
+    def convert_data_to_tensorflow_format(features, pos):
+        return DataLoader.one_hot(features), DataLoader.one_hot_pos_tags(pos)
 
     @staticmethod
     def process_text_for_transformers(train_txt, eval_txt):
@@ -255,3 +265,24 @@ class DataLoader:
 
         print('{}: {}'.format(json_loc, labels))
         return dl
+
+    @staticmethod
+    def pad_seq(inp, ver=0):  # 0 is int, 1 is string
+        return pad_sequences(inp, padding="post", maxlen=FLAGS.max_len) if ver == 0 else \
+            pad_sequences(inp, padding="post", maxlen=FLAGS.max_len, dtype='str', value='')
+
+    @staticmethod
+    def one_hot(a, nc=FLAGS.num_classes):
+        return to_categorical(a, num_classes=nc)
+
+    @staticmethod
+    def one_hot_pos_tags(pos_data):
+        ret = np.zeros(shape=(len(pos_data), FLAGS.max_len, len(transf.pos_labels) + 1))
+
+        for i in range(len(pos_data)):
+            sentence = pos_data[i]
+            for j in range(len(sentence)):
+                code = sentence[j] + 1
+                ret[i][j][code] = 1
+
+        return ret
