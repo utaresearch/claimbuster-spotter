@@ -52,7 +52,8 @@ def main():
         epoch_loss, epoch_acc = 0, 0
         start = time.time()
 
-        for x_id, y in dataset:
+        for i in range(len(dataset)):
+            x_id, y = dataset[i]
             logging.info(y)
             epoch_loss += np.sum(model.train_on_batch(x_id, y))
 
