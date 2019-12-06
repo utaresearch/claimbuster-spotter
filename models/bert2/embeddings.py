@@ -11,11 +11,11 @@ import params_flow as pf
 from tensorflow import keras
 from tensorflow.keras import backend as K
 
-import bert2
+from .layer import Layer
 
 
-class PositionEmbeddingLayer(bert2.Layer):
-    class Params(bert2.Layer.Params):
+class PositionEmbeddingLayer(Layer):
+    class Params(Layer.Params):
         max_position_embeddings  = 512
         hidden_size              = 128
 
@@ -55,8 +55,8 @@ class PositionEmbeddingLayer(bert2.Layer):
         return output
 
 
-class EmbeddingsProjector(bert2.Layer):
-    class Params(bert2.Layer.Params):
+class EmbeddingsProjector(Layer):
+    class Params(Layer.Params):
         hidden_size                  = 768
         embedding_size               = None   # None for BERT, not None for ALBERT
         project_embeddings_with_bias = True   # in ALBERT - True for Google, False for brightmart/albert_zh
@@ -94,7 +94,7 @@ class EmbeddingsProjector(bert2.Layer):
         return output
 
 
-class BertEmbeddingsLayer(bert2.Layer):
+class BertEmbeddingsLayer(Layer):
     class Params(PositionEmbeddingLayer.Params,
                  EmbeddingsProjector.Params):
         vocab_size               = None
