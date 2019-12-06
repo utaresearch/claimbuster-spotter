@@ -1,6 +1,3 @@
-import sentencepiece as spm
-from bert import run_classifier
-from bert import tokenization
 from sklearn.utils import resample
 import numpy as np
 import pandas as pd
@@ -10,27 +7,12 @@ import json
 import sys
 from sklearn.utils import shuffle
 from sklearn.utils.class_weight import compute_class_weight
-import tensorflow as tf
-
+from absl import logging
 from . import transformations as transf
+from models import bert2
 
-cwd = os.getcwd()
-root_dir = None
-
-for root, dirs, files in os.walk(cwd):
-    for file in files:
-        if file.endswith("ac_bert.txt"):
-            root_dir = root
-
-if cwd != root_dir:
-    from ..flags import FLAGS
-    from ..models.xlnet.classifier_utils import convert_single_example
-    from ..models.xlnet.prepro_utils import preprocess_text, encode_ids
-else:
-    sys.path.append('..')
-    from flags import FLAGS
-    from models.xlnet.classifier_utils import convert_single_example
-    from models.xlnet.prepro_utils import preprocess_text, encode_ids
+sys.path.append('..')
+from flags import FLAGS
 
 
 class XLNetExample():
@@ -85,7 +67,7 @@ class DataLoader:
             self.eval_data = self.convert_3_to_2(self.data)
 
         self.class_weights = self.compute_class_weights()
-        tf.logging.info('Class weights computed to be {}'.format(self.class_weights))
+        logging.info('Class weights computed to be {}'.format(self.class_weights))
 
         self.data.shuffle()
         self.post_process_flags()
@@ -177,13 +159,13 @@ class DataLoader:
             train_features, eval_features = DataLoader.process_text_for_transformers(train_txt, eval_txt,
                                                                                      train_lab, eval_lab)
 
-            tf.logging.info('Loading preprocessing dependencies')
+            logging.info('Loading preprocessing dependencies')
             transf.load_dependencies()
             vocab = None
 
-            tf.logging.info('Processing train data')
+            logging.info('Processing train data')
             train_txt, train_pos, train_sent = transf.process_dataset(train_txt)
-            tf.logging.info('Processing eval data')
+            logging.info('Processing eval data')
             eval_txt, eval_pos, eval_sent = transf.process_dataset(eval_txt)
 
             train_data = Dataset(list(zip(train_features, train_pos, train_sent)), train_lab,
@@ -193,9 +175,9 @@ class DataLoader:
 
             with open(FLAGS.prc_clef_loc, 'wb') as f:
                 pickle.dump((train_data, eval_data, vocab), f)
-            tf.logging.info('Refreshed data, successfully dumped at {}'.format(FLAGS.prc_clef_loc))
+            logging.info('Refreshed data, successfully dumped at {}'.format(FLAGS.prc_clef_loc))
         else:
-            tf.logging.info('Restoring data from {}'.format(FLAGS.prc_clef_loc))
+            logging.info('Restoring data from {}'.format(FLAGS.prc_clef_loc))
             with open(FLAGS.prc_clef_loc, 'rb') as f:
                 train_data, eval_data, vocab = pickle.load(f)
 
@@ -221,16 +203,15 @@ class DataLoader:
             train_lab = [z[1] + 1 for z in train_data]
             eval_lab = [z[1] + 1 for z in dj_eval_data]
 
-            tf.logging.info('Loading preprocessing dependencies')
+            logging.info('Loading preprocessing dependencies')
             transf.load_dependencies()
 
-            tf.logging.info('Processing train data')
+            logging.info('Processing train data')
             train_txt, train_pos, train_sent = transf.process_dataset(train_txt)
-            tf.logging.info('Processing eval data')
+            logging.info('Processing eval data')
             eval_txt, eval_pos, eval_sent = transf.process_dataset(eval_txt)
 
-            train_features, eval_features = DataLoader.process_text_for_transformers(train_txt, eval_txt,
-                                                                                     train_lab, eval_lab)
+            train_features, eval_features = DataLoader.process_text_for_transformers(train_txt, eval_txt)
 
             train_data = Dataset(list(zip(train_features, train_pos, train_sent)), train_lab,
                                  random_state=FLAGS.random_state)
@@ -239,59 +220,23 @@ class DataLoader:
 
             with open(data_loc, 'wb') as f:
                 pickle.dump((train_data, eval_data, vocab), f)
-            tf.logging.info('Refreshed data, successfully dumped at {}'.format(data_loc))
+            logging.info('Refreshed data, successfully dumped at {}'.format(data_loc))
         else:
-            tf.logging.info('Restoring data from {}'.format(data_loc))
+            logging.info('Restoring data from {}'.format(data_loc))
             with open(data_loc, 'rb') as f:
                 train_data, eval_data, vocab = pickle.load(f)
 
         return train_data, eval_data, vocab
 
     @staticmethod
-    def process_text_for_transformers(train_txt, eval_txt, train_lab, eval_lab):
-        if FLAGS.tfm_type == 0:
-            sp_model = spm.SentencePieceProcessor()
-            sp_model.Load(os.path.join(FLAGS.xlnet_model_loc, 'spiece.model'))
-            label_list = [z for z in range(FLAGS.num_classes)]
+    def process_text_for_transformers(train_txt, eval_txt):
+        vocab_file = os.path.join(FLAGS.bert_model_loc, "vocab.txt")
+        tokenizer = bert2.bert_tokenization.FullTokenizer(vocab_file, do_lower_case=True)
 
-            def tokenize_fn(text):
-                text = preprocess_text(text, lower=False)
-                return encode_ids(sp_model, text)
+        train_txt = [tokenizer.convert_tokens_to_ids(tokenizer.tokenize(x)) for x in train_txt]
+        eval_txt = [tokenizer.convert_tokens_to_ids(tokenizer.tokenize(x)) for x in eval_txt]
 
-            train_ex = [XLNetExample(z[0], z[1], z[2]) for z in zip(train_txt, train_lab, range(len(train_txt)))]
-            eval_ex = [XLNetExample(z[0], z[1], z[2]) for z in zip(eval_txt, eval_lab, range(len(eval_txt)))]
-
-            return [convert_single_example(ex_index, example, label_list, FLAGS.max_len, tokenize_fn)
-                    for ex_index, example in enumerate(train_ex)],\
-                   [convert_single_example(ex_index, example, label_list, FLAGS.max_len, tokenize_fn)
-                    for ex_index, example in enumerate(eval_ex)]
-        else:
-            train_df = pd.DataFrame(data=zip(train_txt, train_lab), columns=['x', 'y'])
-            eval_df = pd.DataFrame(data=zip(eval_txt, eval_lab), columns=['x', 'y'])
-
-            train_df = train_df.apply(lambda x: run_classifier.InputExample(guid=None, text_a=x['x'], text_b=None,
-                                                                            label=x['y']), axis=1)
-
-            eval_df = eval_df.apply(lambda x: run_classifier.InputExample(guid=None, text_a=x['x'], text_b=None,
-                                                                          label=x['y']), axis=1)
-
-            tokenizer = DataLoader.create_tokenizer_from_hub_module()
-
-            return run_classifier.convert_examples_to_features(train_df, [z for z in range(FLAGS.num_classes)],
-                                                               FLAGS.max_len, tokenizer),\
-                   run_classifier.convert_examples_to_features(eval_df, [z for z in range(FLAGS.num_classes)],
-                                                               FLAGS.max_len, tokenizer)
-
-    @staticmethod
-    def create_tokenizer_from_hub_module():
-        bert_module = hub.Module(FLAGS.bert_model_hub, trainable=False)
-        tokenization_info = bert_module(signature="tokenization_info", as_dict=True)
-        with tf.Session() as sess:
-            vocab_file, do_lower_case = sess.run([tokenization_info["vocab_file"],
-                                                  tokenization_info["do_lower_case"]])
-
-        return tokenization.FullTokenizer(
-            vocab_file=vocab_file, do_lower_case=do_lower_case)
+        return train_txt, eval_txt
 
     @staticmethod
     def parse_json(json_loc):

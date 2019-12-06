@@ -2,7 +2,6 @@ import math
 import time
 import os
 from shutil import rmtree
-from tqdm import tqdm
 from utils.data_loader import DataLoader
 from model import ClaimBusterModel
 from flags import FLAGS, print_flags
