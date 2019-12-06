@@ -25,6 +25,8 @@ class ClaimBusterModel(K.layers.Layer):
         self.bert_model = LanguageModel.build_bert()
         self.fc_layer = L.Dense(FLAGS.num_classes)
 
+        self.select_train_vars()
+
     def call(self,
              x_id,  # BERT inputs
              y,  # Ground truths
@@ -35,7 +37,6 @@ class ClaimBusterModel(K.layers.Layer):
         bert_output = tf.nn.dropout(bert_output, rate=1-FLAGS.kp_cls)
         ret = self.fc_layer(bert_output)
 
-        self.select_train_vars()
         return ret
 
     @tf.function
