@@ -22,17 +22,18 @@ class ClaimBusterModel(K.layers.Layer):
         self.accuracy = K.metrics.Accuracy()  # @TODO wtf create some more shit?
         self.computed_cls_weights = cls_weights if cls_weights is not None else [1 for _ in range(FLAGS.num_classes)]
 
+        self.bert_model = LanguageModel.build_bert(L.InputLayer(input_shape=(None, FLAGS.seq_max_len)))
+        self.fc_layer = L.Dense(FLAGS.num_classes)
+
     def call(self,
              x_id,  # BERT inputs
              y,  # Ground truths
              kp_cls, kp_tfm_atten, kp_tfm_hidden,  # Dropout parameters
              cls_weight):
 
-        bert_output = LanguageModel.build_bert(x_id)
+        bert_output = self.bert_model(x_id)
         bert_output = tf.nn.dropout(bert_output, rate=1-FLAGS.kp_cls)
-
-        fc_layer = K.Dense(FLAGS.num_classes)
-        ret = fc_layer(bert_output)
+        ret = self.fc_layer(bert_output)
 
         self.select_train_vars()
         return ret
