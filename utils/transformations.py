@@ -8,19 +8,8 @@ from textblob import TextBlob
 from keras.preprocessing.text import text_to_word_sequence
 from tqdm import tqdm
 
-cwd = os.getcwd()
-root_dir = None
-
-for root, dirs, files in os.walk(cwd):
-    for file in files:
-        if file.endswith("ac_bert.txt"):
-            root_dir = root
-
-if cwd != root_dir:
-    from ..flags import FLAGS
-else:
-    sys.path.append('..')
-    from flags import FLAGS
+sys.path.append('..')
+from flags import FLAGS
 
 nlp = None
 cont = None
