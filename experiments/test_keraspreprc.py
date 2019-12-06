@@ -1,4 +1,4 @@
-from keras.preprocessing.text import text_to_word_sequence
+from tensorflow.keras.preprocessing.text import text_to_word_sequence
 
 
 if __name__ == '__main__':

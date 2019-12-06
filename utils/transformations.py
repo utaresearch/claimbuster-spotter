@@ -5,7 +5,7 @@ import sys
 import os
 import glob
 from textblob import TextBlob
-from keras.preprocessing.text import text_to_word_sequence
+from tensorflow.keras.preprocessing.text import text_to_word_sequence
 from tqdm import tqdm
 
 sys.path.append('..')
