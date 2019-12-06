@@ -70,6 +70,7 @@ class ClaimBusterModel(K.layers.Layer):
 
     def select_train_vars(self):
         train_vars = self.trainable_variables
+        logging.info(train_vars)
 
         non_trainable_layers = ['/layer_{}/'.format(num)
                                 for num in range(FLAGS.tfm_layers - FLAGS.tfm_ft_enc_layers)]

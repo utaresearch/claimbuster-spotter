@@ -55,6 +55,8 @@ class BertModelLayer(Layer):
             name="encoder"
         )
 
+        self.pooler_layer = keras.layers.Dense(self.params.hidden_size)
+
         super(BertModelLayer, self).build(input_shape)
 
     def apply_adapter_freeze(self):
@@ -72,5 +74,8 @@ class BertModelLayer(Layer):
 
         embedding_output = self.embeddings_layer(inputs, mask=mask, training=training)
         output           = self.encoders_layer(embedding_output, mask=mask, training=training)
+
+        pooled_output    = self.pooler_layer(output[:, 0, :], training=training)
+
         return output   # [B, seq_len, hidden_size]
 
