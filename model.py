@@ -53,7 +53,7 @@ class ClaimBusterModel(K.layers.Layer):
         # self.accuracy.update_state(y, yhat)  # @TODO update accuracy
 
     def compute_loss(self, y, logits):
-        loss = tf.nn.softmax_cross_entropy_with_logits_v2(labels=y, logits=logits)
+        loss = tf.nn.softmax_cross_entropy_with_logits(labels=y, logits=logits)
         loss_l2 = 0
 
         if FLAGS.l2_reg_coeff > 0.0:
