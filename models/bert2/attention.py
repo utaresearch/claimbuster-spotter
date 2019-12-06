@@ -9,7 +9,7 @@ import tensorflow as tf
 from tensorflow.python import keras
 from tensorflow.python.keras import backend as K
 
-from layer import Layer
+from .layer import Layer
 
 
 class AttentionLayer(Layer):
