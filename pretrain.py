@@ -46,13 +46,6 @@ def main():
 
     logging.info("Starting training...")
 
-    input = K.layers.Input(shape=(None, FLAGS.max_len))
-    kmodel = K.models.Model(inputs=input, outputs=model(input))
-
-    kmodel.compile(optimizer=model.optimizer, loss=tf.keras.losses.CategoricalCrossentropy())
-    print(kmodel.summary())
-    kmodel.fit(dataset, epochs=FLAGS.pretrain_steps)
-
     epochs_trav = 0
     for epoch in range(FLAGS.pretrain_steps):
         epochs_trav += 1
@@ -60,6 +53,7 @@ def main():
         start = time.time()
 
         for x_id, y in dataset:
+            logging.info(y)
             epoch_loss += np.sum(model.train_on_batch(x_id, y))
 
         if epoch % FLAGS.stat_print_interval == 0:
