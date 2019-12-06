@@ -77,5 +77,5 @@ class BertModelLayer(Layer):
 
         pooled_output    = self.pooler_layer(output[:, 0, :], training=training)
 
-        return output   # [B, seq_len, hidden_size]
+        return pooled_output  # [B, hidden_size]
 
