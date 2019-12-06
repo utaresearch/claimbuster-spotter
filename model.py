@@ -20,7 +20,7 @@ class ClaimBusterModel(K.layers.Layer):
     def __init__(self, cls_weights=None):
         super(ClaimBusterModel, self).__init__()
 
-        self.optimizer = K.optimizers.Adam(learning_rate=FLAGS.learning_rate)
+        self.optimizer = K.optimizers.Adam(learning_rate=FLAGS.lr)
         self.accuracy = K.metrics.Accuracy()  # @TODO wtf create some more shit?
         self.computed_cls_weights = cls_weights if cls_weights is not None else [1 for _ in range(FLAGS.num_classes)]
 
