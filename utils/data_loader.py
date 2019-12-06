@@ -1,4 +1,3 @@
-import tensorflow_hub as hub
 import sentencepiece as spm
 from bert import run_classifier
 from bert import tokenization
