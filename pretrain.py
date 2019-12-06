@@ -52,9 +52,8 @@ def main():
         epoch_loss, epoch_acc = 0, 0
         start = time.time()
 
-        for i in range(len(dataset)):
-            x_id, y = dataset[i]
-            logging.info(y)
+        for step, x_id, y in enumerate(dataset):
+            logging.info(step)
             epoch_loss += np.sum(model.train_on_batch(x_id, y))
 
         if epoch % FLAGS.stat_print_interval == 0:
