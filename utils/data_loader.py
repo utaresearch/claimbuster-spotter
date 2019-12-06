@@ -169,10 +169,8 @@ class DataLoader:
             logging.info('Processing eval data')
             eval_txt, eval_pos, eval_sent = transf.process_dataset(eval_txt)
 
-            train_features, train_pos, train_lab = DataLoader.convert_data_to_tensorflow_format(train_features,
-                                                                                                train_pos, train_lab)
-            eval_features, eval_pos, eval_lab = DataLoader.convert_data_to_tensorflow_format(eval_features, eval_pos,
-                                                                                             eval_lab)
+            train_features, train_pos = DataLoader.convert_data_to_tensorflow_format(train_features, train_pos)
+            eval_features, eval_pos = DataLoader.convert_data_to_tensorflow_format(eval_features, eval_pos)
 
             train_data = Dataset(list(zip(train_features, train_pos, train_sent)), train_lab,
                                  random_state=FLAGS.random_state)
@@ -218,10 +216,8 @@ class DataLoader:
             eval_txt, eval_pos, eval_sent = transf.process_dataset(eval_txt)
 
             train_features, eval_features = DataLoader.process_text_for_transformers(train_txt, eval_txt)
-            train_features, train_pos, train_lab = DataLoader.convert_data_to_tensorflow_format(train_features,
-                                                                                                train_pos, train_lab)
-            eval_features, eval_pos, eval_lab = DataLoader.convert_data_to_tensorflow_format(eval_features, eval_pos,
-                                                                                             eval_lab)
+            train_features, train_pos = DataLoader.convert_data_to_tensorflow_format(train_features, train_pos)
+            eval_features, eval_pos = DataLoader.convert_data_to_tensorflow_format(eval_features, eval_pos)
 
             train_data = Dataset(list(zip(train_features, train_pos, train_sent)), train_lab,
                                  random_state=FLAGS.random_state)
@@ -239,8 +235,8 @@ class DataLoader:
         return train_data, eval_data, vocab
 
     @staticmethod
-    def convert_data_to_tensorflow_format(features, pos, lab):
-        return DataLoader.pad_seq(features), DataLoader.one_hot_pos_tags(pos), DataLoader.one_hot(lab)
+    def convert_data_to_tensorflow_format(features, pos):
+        return DataLoader.pad_seq(features), DataLoader.one_hot_pos_tags(pos)
 
     @staticmethod
     def process_text_for_transformers(train_txt, eval_txt):
