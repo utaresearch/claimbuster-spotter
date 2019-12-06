@@ -15,30 +15,38 @@ sys.path.append('..')
 from flags import FLAGS
 
 
-class XLNetExample():
-    def __init__(self, text_a, label, guid, text_b=None):
-        self.text_a = text_a
-        self.label = label
-        self.guid = guid
-        self.text_b = text_b
+class InputExample():
+    def __init__(self, id, pos, sent):
+        self.id = id
+        self.pos = pos
+        self.sent = sent
 
 
 class Dataset:
-    x = []
+    x_id = []
+    x_pos = []
+    x_sent = []
     y = []
 
-    def __init__(self, x, y, random_state):
-        self.x = x
+    def __init__(self, x_id, x_pos, x_sent, y, random_state):
+        self.x_id = x_id
+        self.x_pos = x_pos
+        self.x_sent = x_sent
         self.y = y
 
         self.random_state = random_state
         self.shuffle()
 
     def shuffle(self):
-        self.x, self.y = shuffle(self.x, self.y, random_state=self.random_state)
+        temp_x = [(self.x_id[i], self.x_pos[i], self.x_sent[i]) for i in range(len(self.x_id))]
+        temp_x, self.y = shuffle(temp_x, self.y, random_state=self.random_state)
+
+        self.x_id = [x[0] for x in temp_x]
+        self.x_pos = [x[1] for x in temp_x]
+        self.x_sent = [x[2] for x in temp_x]
 
     def get_length(self):
-        xlen, ylen = len(self.x), len(self.y)
+        xlen, ylen = len(self.x_id), len(self.y)
         if xlen != ylen:
             raise ValueError("size of x != size of y ({} != {})".format(xlen, ylen))
         return xlen
