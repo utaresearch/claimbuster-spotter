@@ -25,14 +25,11 @@ class ClaimBusterModel(K.layers.Layer):
         self.bert_model = LanguageModel.build_bert()
         self.fc_layer = L.Dense(FLAGS.num_classes)
 
-        self.select_train_vars()
+        self.vars_to_train = self.select_train_vars()
 
-    def call(self,
-             x_id,  # BERT inputs
-             y,  # Ground truths
-             kp_cls, kp_tfm_atten, kp_tfm_hidden,  # Dropout parameters
-             cls_weight):
+        self.call(tf.constant(0, shape=(1, FLAGS.maxlen)))
 
+    def call(self, x_id, kp_cls=FLAGS.kp_cls, kp_tfm_atten=FLAGS.kp_tfm_atten, kp_tfm_hidden=FLAGS.kp_tfm_hidden):
         bert_output = self.bert_model(x_id)
         bert_output = tf.nn.dropout(bert_output, rate=1-FLAGS.kp_cls)
         ret = self.fc_layer(bert_output)
@@ -44,11 +41,11 @@ class ClaimBusterModel(K.layers.Layer):
         y = tf.one_hot(y, depth=FLAGS.num_classes)
 
         with tf.GradientTape() as tape:
-            logits = self.call(x_id, y, FLAGS.kp_cls, FLAGS.kp_tfm_atten, FLAGS.kp_tfm_hidden, self.computed_cls_weights)
+            logits = self.call(x_id)
             loss = self.compute_loss(y, logits)
 
         grad = tape.gradient(loss, self.trainable_weights)
-        self.optimizer.apply_gradients(zip(grad, self.trainable_weights))
+        self.optimizer.apply_gradients(zip(grad, self.vars_to_train))
 
         return loss
 
@@ -84,4 +81,4 @@ class ClaimBusterModel(K.layers.Layer):
         logging.info('Removing: {}'.format(non_trainable_layers))
         logging.info(train_vars)
 
-        self.trainable_variables = train_vars
+        return train_vars
