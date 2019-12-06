@@ -23,6 +23,7 @@ class ClaimBusterModel(K.layers.Layer):
         self.computed_cls_weights = cls_weights if cls_weights is not None else [1 for _ in range(FLAGS.num_classes)]
 
         self.bert_model, self.fc_layer = None, None
+        self.build((None, FLAGS.max_len))
 
         # self.vars_to_train = self.select_train_vars()
 
