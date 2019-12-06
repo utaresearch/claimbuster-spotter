@@ -7,7 +7,7 @@ import tensorflow as tf
 from sklearn.metrics import f1_score
 from flags import FLAGS
 from absl import logging
-from .lang_model import LanguageModel
+from models.lang_model import LanguageModel
 
 K = tf.keras
 L = K.layers
