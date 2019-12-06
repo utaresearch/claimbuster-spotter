@@ -1,4 +1,5 @@
 from absl import app, flags, logging
+import sys
 
 FLAGS = flags.FLAGS
 
@@ -106,6 +107,8 @@ flags.DEFINE_string('bert_model_hub', 'https://tfhub.dev/google/bert_uncased_L-1
 flags.DEFINE_bool('adam', True, 'Adam or RMSProp if False')
 flags.DEFINE_bool('restore_and_continue', False, 'Restore previous training session and continue')
 flags.DEFINE_integer('batch_size', 12, 'Size of the batch.')
+
+FLAGS(sys.argv)
 
 # Locations (must be last due to customization)
 flags.DEFINE_string('raw_data_loc', '{}/data_small.json'.format(FLAGS.cb_data_dir), 'Location of raw data')
