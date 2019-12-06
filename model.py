@@ -7,6 +7,7 @@ import tensorflow as tf
 from sklearn.metrics import f1_score
 from flags import FLAGS
 from absl import logging
+from tensorflow.keras.utils import to_categorical
 from models.lang_model import LanguageModel
 
 K = tf.keras
@@ -39,6 +40,8 @@ class ClaimBusterModel(K.layers.Layer):
 
     @tf.function
     def train_on_batch(self, x_id, x_mask, x_segment, y):
+        y = to_categorical(a, num_classes=FLAGS.num_classes)
+
         with tf.GradientTape() as tape:
             logits = self.call(x_id, x_mask, x_segment, -1, -1, y, FLAGS.kp_cls, FLAGS.kp_tfm_atten, FLAGS.kp_tfm_hidden)
             loss = self.compute_loss(y, logits)

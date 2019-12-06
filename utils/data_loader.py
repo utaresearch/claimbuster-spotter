@@ -11,7 +11,6 @@ from absl import logging
 from . import transformations as transf
 from models import bert2
 from tensorflow.keras.preprocessing.sequence import pad_sequences
-from tensorflow.keras.utils import to_categorical
 
 sys.path.append('..')
 from flags import FLAGS
@@ -270,10 +269,6 @@ class DataLoader:
     def pad_seq(inp, ver=0):  # 0 is int, 1 is string
         return pad_sequences(inp, padding="post", maxlen=FLAGS.max_len) if ver == 0 else \
             pad_sequences(inp, padding="post", maxlen=FLAGS.max_len, dtype='str', value='')
-
-    @staticmethod
-    def one_hot(a, nc=FLAGS.num_classes):
-        return to_categorical(a, num_classes=nc)
 
     @staticmethod
     def one_hot_pos_tags(pos_data):
