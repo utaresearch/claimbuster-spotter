@@ -13,7 +13,7 @@ import params_flow as pf
 import tensorflow as tf
 from tensorflow import keras
 
-from bert2 import BertModelLayer, loader
+from . import BertModelLayer, loader
 
 albert_models_tfhub = {
     "albert_base":    "https://tfhub.dev/google/albert_base/{version}?tf-hub-format=compressed",

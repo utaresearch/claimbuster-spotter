@@ -10,8 +10,8 @@ from tensorflow.python import keras
 
 from params_flow import LayerNormalization
 
-from bert2.attention import AttentionLayer
-from bert2.layer import Layer
+from .attention import AttentionLayer
+from .layer import Layer
 
 
 class ProjectionLayer(Layer):
