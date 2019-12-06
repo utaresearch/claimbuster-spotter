@@ -5,6 +5,7 @@ import pickle
 import os
 import json
 import sys
+import numpy as np
 from sklearn.utils import shuffle
 from sklearn.utils.class_weight import compute_class_weight
 from absl import logging
@@ -38,7 +39,8 @@ class Dataset:
         self.shuffle()
 
     def shuffle(self):
-        temp_x = [(self.x_id[i], self.x_pos[i], self.x_sent[i]) for i in range(len(self.x_id))]
+        temp_x = list(zip(self.x_id, self.x_pos, self.x_sent))
+        print(np.shape(temp_x))
         temp_x, self.y = shuffle(temp_x, self.y, random_state=self.random_state)
 
         self.x_id = [x[0] for x in temp_x]
