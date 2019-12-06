@@ -8,9 +8,9 @@ from __future__ import absolute_import, division, print_function
 from tensorflow import keras
 import params_flow as pf
 
-from bert2.layer import Layer
-from bert2.embeddings import BertEmbeddingsLayer
-from bert2.transformer import TransformerEncoderLayer
+from .layer import Layer
+from .embeddings import BertEmbeddingsLayer
+from .transformer import TransformerEncoderLayer
 
 
 class BertModelLayer(Layer):
