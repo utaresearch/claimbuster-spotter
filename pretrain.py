@@ -48,8 +48,8 @@ def main():
         epoch_loss, epoch_acc = 0, 0
         start = time.time()
 
-        for x, y in dataset:
-            epoch_loss += np.sum(model.train_on_batch(x, y))
+        for x_id, y in dataset:
+            epoch_loss += np.sum(model.train_on_batch(x_id, y))
 
         if epoch % FLAGS.stat_print_interval == 0:
             log_string = 'Epoch {:>3} Loss: {:>7.4} Acc: {:>7.4f}% '.format(epoch + 1, epoch_loss, epoch_acc * 100)

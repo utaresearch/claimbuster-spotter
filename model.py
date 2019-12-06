@@ -23,8 +23,7 @@ class ClaimBusterModel(K.layers.Layer):
         self.computed_cls_weights = cls_weights if cls_weights is not None else [1 for _ in range(FLAGS.num_classes)]
 
     def call(self,
-             x_id, x_mask, x_segment,  # BERT inputs
-             nl_len, nl_output_mask,  # Not sure? @TODO figure out
+             x_id,  # BERT inputs
              y,  # Ground truths
              kp_cls, kp_tfm_atten, kp_tfm_hidden,  # Dropout parameters
              cls_weight):
@@ -39,11 +38,11 @@ class ClaimBusterModel(K.layers.Layer):
         return ret
 
     @tf.function
-    def train_on_batch(self, x_id, x_mask, x_segment, y):
-        y = to_categorical(a, num_classes=FLAGS.num_classes)
+    def train_on_batch(self, x_id, y):
+        y = to_categorical(y, num_classes=FLAGS.num_classes)
 
         with tf.GradientTape() as tape:
-            logits = self.call(x_id, x_mask, x_segment, -1, -1, y, FLAGS.kp_cls, FLAGS.kp_tfm_atten, FLAGS.kp_tfm_hidden)
+            logits = self.call(x_id, y, FLAGS.kp_cls, FLAGS.kp_tfm_atten, FLAGS.kp_tfm_hidden)
             loss = self.compute_loss(y, logits)
 
         grad = tape.gradient(loss, self.trainable_weights)
