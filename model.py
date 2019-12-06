@@ -70,8 +70,6 @@ class ClaimBusterModel(K.layers.Layer):
 
     def select_train_vars(self):
         train_vars = self.trainable_variables
-        print(train_vars)
-        exit()
 
         non_trainable_layers = ['/layer_{}/'.format(num)
                                 for num in range(FLAGS.tfm_layers - FLAGS.tfm_ft_enc_layers)]
@@ -85,4 +83,4 @@ class ClaimBusterModel(K.layers.Layer):
         logging.info('Removing: {}'.format(non_trainable_layers))
         logging.info(train_vars)
 
-        raise Exception('cmon you didn\'t update self.trainable_vars')
+        self.trainable_variables = train_vars
