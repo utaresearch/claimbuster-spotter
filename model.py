@@ -22,12 +22,9 @@ class ClaimBusterModel(K.layers.Layer):
         self.accuracy = K.metrics.Accuracy()  # @TODO wtf create some more shit?
         self.computed_cls_weights = cls_weights if cls_weights is not None else [1 for _ in range(FLAGS.num_classes)]
 
-        self.bert_model = LanguageModel.build_bert()
-        self.fc_layer = L.Dense(FLAGS.num_classes)
+        self.bert_model, self.fc_layer = None, None
 
-        self.call(tf.constant(0, shape=(1, FLAGS.max_len)))  # Warmup and initialize weights
-
-        self.vars_to_train = self.select_train_vars()
+        # self.vars_to_train = self.select_train_vars()
 
     def call(self, x_id, kp_cls=FLAGS.kp_cls, kp_tfm_atten=FLAGS.kp_tfm_atten, kp_tfm_hidden=FLAGS.kp_tfm_hidden):
         bert_output = self.bert_model(x_id)
@@ -35,6 +32,14 @@ class ClaimBusterModel(K.layers.Layer):
         ret = self.fc_layer(bert_output)
 
         return ret
+
+    def build(self, input_shape):
+        self.bert_model = LanguageModel.build_bert()
+        self.fc_layer = L.Dense(FLAGS.num_classes)
+
+        print(self.trainable_variables)
+
+        super(ClaimBusterModel, self).build(input_shape)
 
     @tf.function
     def train_on_batch(self, x_id, y):
