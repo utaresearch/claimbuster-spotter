@@ -37,6 +37,11 @@ class ClaimBusterModel(K.layers.Layer):
 
         return ret
 
+    def warm_up(self, dataset):
+        for x, y in dataset:
+            self.call(x)
+            break
+
     @tf.function
     def train_on_batch(self, x_id, y):
         y = tf.one_hot(y, depth=FLAGS.num_classes)
