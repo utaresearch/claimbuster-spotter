@@ -43,7 +43,7 @@ def main():
         buffer_size=train_data.get_length()).batch(FLAGS.batch_size)
 
     epochs_trav = 0
-    for epoch in range(FLAGS.pretrain_epochs):
+    for epoch in range(FLAGS.pretrain_steps):
         epochs_trav += 1
         epoch_loss, epoch_acc = 0, 0
         start = time.time()
