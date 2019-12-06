@@ -22,7 +22,7 @@ class ClaimBusterModel(K.layers.Layer):
         self.accuracy = K.metrics.Accuracy()  # @TODO wtf create some more shit?
         self.computed_cls_weights = cls_weights if cls_weights is not None else [1 for _ in range(FLAGS.num_classes)]
 
-        self.bert_model = LanguageModel.build_bert(L.Input(shape=(None, FLAGS.max_len), dtype='int32'))
+        self.bert_model = LanguageModel.build_bert()
         self.fc_layer = L.Dense(FLAGS.num_classes)
 
     def call(self,
