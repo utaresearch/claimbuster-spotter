@@ -39,7 +39,7 @@ class ClaimBusterModel(K.layers.Layer):
 
     @tf.function
     def train_on_batch(self, x_id, y):
-        y = to_categorical(y, num_classes=FLAGS.num_classes)
+        y = tf.one_hot(y, depth=FLAGS.num_classes)
 
         with tf.GradientTape() as tape:
             logits = self.call(x_id, y, FLAGS.kp_cls, FLAGS.kp_tfm_atten, FLAGS.kp_tfm_hidden)
