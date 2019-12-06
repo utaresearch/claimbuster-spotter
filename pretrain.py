@@ -46,7 +46,6 @@ def main():
         buffer_size=train_data.get_length()).batch(FLAGS.batch_size)
 
     logging.info("Starting training...")
-    pbar = tqdm(total=math.ceil(len(train_data.y) / FLAGS.batch_size))
 
     epochs_trav = 0
     for epoch in range(FLAGS.pretrain_steps):
@@ -54,8 +53,10 @@ def main():
         epoch_loss, epoch_acc = 0, 0
         start = time.time()
 
+        pbar = tqdm(total=math.ceil(len(train_data.y) / FLAGS.batch_size))
         for x_id, y in dataset:
             epoch_loss += np.sum(model.train_on_batch(x_id, y))
+            pbar.update(1)
 
         if epoch % FLAGS.stat_print_interval == 0:
             log_string = 'Epoch {:>3} Loss: {:>7.4} Acc: {:>7.4f}% '.format(epoch + 1, epoch_loss, epoch_acc * 100)
@@ -65,8 +66,6 @@ def main():
 
             start = time.time()
             epochs_trav = 0
-
-        pbar.update(1)
 
 
 if __name__ == '__main__':
