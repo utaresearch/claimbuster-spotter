@@ -42,7 +42,7 @@ class ClaimBusterModel(K.layers.Layer):
         y = tf.one_hot(y, depth=FLAGS.num_classes)
 
         with tf.GradientTape() as tape:
-            logits = self.call(x_id, y, FLAGS.kp_cls, FLAGS.kp_tfm_atten, FLAGS.kp_tfm_hidden)
+            logits = self.call(x_id, y, FLAGS.kp_cls, FLAGS.kp_tfm_atten, FLAGS.kp_tfm_hidden, self.computed_cls_weights)
             loss = self.compute_loss(y, logits)
 
         grad = tape.gradient(loss, self.trainable_weights)
