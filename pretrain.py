@@ -10,6 +10,8 @@ import tensorflow as tf
 import numpy as np
 from model import ClaimBusterModel
 
+K = tf.keras
+
 
 def main():
     os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu])
@@ -43,6 +45,13 @@ def main():
         buffer_size=train_data.get_length()).batch(FLAGS.batch_size)
 
     logging.info("Starting training...")
+
+    input = K.layers.Input(shape=(None, FLAGS.max_len))
+    kmodel = K.models.Model(inputs=input, outputs=model(input))
+
+    kmodel.compile(optimizer=model.optimizer, loss=tf.keras.losses.CategoricalCrossentropy())
+    print(kmodel.summary())
+    kmodel.fit(dataset, epochs=FLAGS.pretrain_steps)
 
     epochs_trav = 0
     for epoch in range(FLAGS.pretrain_steps):
