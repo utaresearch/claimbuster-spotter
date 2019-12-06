@@ -5,7 +5,6 @@ import pickle
 import os
 import json
 import sys
-import numpy as np
 from sklearn.utils import shuffle
 from sklearn.utils.class_weight import compute_class_weight
 from absl import logging
@@ -16,39 +15,30 @@ sys.path.append('..')
 from flags import FLAGS
 
 
-class InputExample():
-    def __init__(self, id, pos, sent):
-        self.id = id
-        self.pos = pos
-        self.sent = sent
+class XLNetExample():
+    def __init__(self, text_a, label, guid, text_b=None):
+        self.text_a = text_a
+        self.label = label
+        self.guid = guid
+        self.text_b = text_b
 
 
 class Dataset:
-    x_id = []
-    x_pos = []
-    x_sent = []
+    x = []
     y = []
 
-    def __init__(self, x_id, x_pos, x_sent, y, random_state):
-        self.x_id = x_id
-        self.x_pos = x_pos
-        self.x_sent = x_sent
+    def __init__(self, x, y, random_state):
+        self.x = x
         self.y = y
 
         self.random_state = random_state
         self.shuffle()
 
     def shuffle(self):
-        temp_x = list(zip(self.x_id, self.x_pos, self.x_sent))
-        print(np.shape(temp_x))
-        temp_x, self.y = shuffle(temp_x, self.y, random_state=self.random_state)
-
-        self.x_id = [x[0] for x in temp_x]
-        self.x_pos = [x[1] for x in temp_x]
-        self.x_sent = [x[2] for x in temp_x]
+        self.x, self.y = shuffle(self.x, self.y, random_state=self.random_state)
 
     def get_length(self):
-        xlen, ylen = len(self.x_id), len(self.y)
+        xlen, ylen = len(self.x), len(self.y)
         if xlen != ylen:
             raise ValueError("size of x != size of y ({} != {})".format(xlen, ylen))
         return xlen
@@ -84,7 +74,7 @@ class DataLoader:
 
     @staticmethod
     def convert_3_to_2(data):
-        if FLAGS.alt_two_class_combo:       
+        if FLAGS.alt_two_class_combo:
             data.y = [(0 if data.y[i] == 0 else 1) for i in range(len(data.y))]
         else:
             data.y = [(1 if data.y[i] == 2 else 0) for i in range(len(data.y))]
