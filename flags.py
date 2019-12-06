@@ -1,10 +1,5 @@
-import os
-import tensorflow as tf
+from absl import app, flags, logging
 
-# Prevent strange behavior of double-printing messages
-tf.get_logger().propagate = False
-
-flags = tf.flags
 FLAGS = flags.FLAGS
 
 
@@ -50,6 +45,7 @@ flags.DEFINE_integer('random_state', 59, 'State of pseudo-randomness')
 
 # Model architecture
 flags.DEFINE_integer('cls_hidden', 0, 'Size of hidden classification layer')
+flags.DEFINE_float('kp_cls', 0.7, 'Keep probability of dropout in FC')
 
 # Optimization
 flags.DEFINE_integer('pretrain_steps', 50, 'Number of epochs to run.')
@@ -128,4 +124,4 @@ if any(['large' in z for z in [FLAGS.xlnet_model_size, FLAGS.bert_model_size]]):
 
 
 def print_flags():
-    tf.logging.info(FLAGS.flag_values_dict())
+	logging.info(FLAGS.flag_values_dict())

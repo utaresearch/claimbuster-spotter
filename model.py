@@ -1,91 +1,77 @@
 import numpy as np
 import collections
 import os
-from keras.preprocessing.sequence import pad_sequences
-from keras.utils import to_categorical
-from sklearn.metrics import f1_score
 import math
 import re
-
-cwd = os.getcwd()
-root_dir = None
-
-for root, dirs, files in os.walk(cwd):
-    for file in files:
-        if file.endswith("ac_bert.txt"):
-            root_dir = root
-
-if cwd != root_dir:
-    from .models.lang_model import LanguageModel
-    from .models.adam_weightdecay import AdamWeightDecayOptimizer
-    from .utils.transformations import pos_labels
-    from .flags import FLAGS
-else:
-    from models.lang_model import LanguageModel
-    from models.adam_weightdecay import AdamWeightDecayOptimizer
-    from utils.transformations import pos_labels
-    from flags import FLAGS
-
 import tensorflow as tf
+from sklearn.metrics import f1_score
+from flags import FLAGS
+from absl import logging
+from lang_model import LanguageModel
+
+K = tf.keras
+L = K.layers
+
+pad_sequences = K.preprocessing.sequence.pad_sequences
+to_categorical = K.utils.to_categorical
 
 
-class ClaimBusterModel:
-    def __init__(self, vocab=None, cls_weights=None, restore=False, adv=False):
-        self.x_nl = [tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x_id'),
-                     tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x_mask'),
-                     tf.placeholder(tf.int32, (None, FLAGS.max_len), name='x_segment')]
+class ClaimBusterModel(K.layers.Layer):
+    def __init__(self, cls_weights=None):
+        super(ClaimBusterModel, self).__init__()
 
-        self.adv = adv
-
-        self.x_pos = tf.placeholder(tf.int32, (None, FLAGS.max_len, len(pos_labels) + 1), name='x_pos')
-        self.x_sent = tf.placeholder(tf.float32, (None, 2), name='x_sent')
-
-        self.nl_len = tf.placeholder(tf.int32, (None,), name='nl_len')
-        self.pos_len = tf.placeholder(tf.int32, (None,), name='pos_len')
-
-        self.nl_output_mask = tf.placeholder(tf.bool, (None, FLAGS.max_len), name='nl_output_mask')
-        self.pos_output_mask = tf.placeholder(tf.bool, (None, FLAGS.max_len), name='pos_output_mask')
-
-        self.y = tf.placeholder(tf.int32, (None, FLAGS.num_classes), name='y')
-
-        self.kp_cls = tf.placeholder(tf.float32, name='kp_cls')
-        self.kp_tfm_atten = tf.placeholder(tf.float32, name='kp_tfm_atten')
-        self.kp_tfm_hidden = tf.placeholder(tf.float32, name='kp_tfm_hidden')
-
-        self.cls_weight = tf.placeholder(tf.float32, (None,), name='cls_weight')
-
+        self.optimizer = K.optimizers.Adam(learning_rate=FLAGS.learning_rate)
+        self.accuracy = K.metrics.Accuracy()  # @TODO wtf create some more shit?
         self.computed_cls_weights = cls_weights if cls_weights is not None else [1 for _ in range(FLAGS.num_classes)]
 
-        self.trainable_variables = None
-        self.restore = restore
+    def call(self,
+             x_id, x_mask, x_segment,  # BERT inputs
+             nl_len, nl_output_mask,  # Not sure? @TODO figure out
+             y,  # Ground truths
+             kp_cls, kp_tfm_atten, kp_tfm_hidden,  # Dropout parameters
+             cls_weight):
 
-        self.logits, self.logits_adv, self.cost, self.cost_adv, self.cost_v_adv = self.construct_model()
-        self.optimizer = self.build_optimizer(self.cost, adv=0)
+        bert_output = LanguageModel.build_bert(x_id)
+        bert_output = tf.nn.dropout(bert_output, rate=1-FLAGS.kp_cls)
 
-        self.y_pred = tf.nn.softmax(self.logits, axis=1, name='y_pred')
-        correct = tf.equal(tf.argmax(self.y, axis=1), tf.argmax(self.y_pred, axis=1), name='correct')
-        self.acc = tf.reduce_mean(tf.cast(correct, tf.float32), name='acc')
+        fc_layer = K.Dense(FLAGS.num_classes)
+        ret = fc_layer(bert_output)
 
-        self.y_pred_adv = self.y_pred
-        self.acc_adv = self.acc
+        self.select_train_vars()
+        return ret
 
-        if self.adv:
-            self.y_pred_adv = tf.nn.softmax(self.logits_adv, axis=1, name='y_pred_adv')
-            correct_adv = tf.equal(tf.argmax(self.y, axis=1), tf.argmax(self.y_pred_adv, axis=1), name='correct_adv')
-            self.acc_adv = tf.reduce_mean(tf.cast(correct_adv, tf.float32), name='acc_adv')
+    @tf.function
+    def train_on_batch(self, x_id, x_mask, x_segment, y):
+        with tf.GradientTape() as tape:
+            logits = self.call(x_id, x_mask, x_segment, -1, -1, y, FLAGS.kp_cls, FLAGS.kp_tfm_atten, FLAGS.kp_tfm_hidden)
+            loss = self.compute_loss(y, logits)
 
-            self.optimizer_adv = self.build_optimizer((self.cost_adv if not FLAGS.combine_reg_adv_loss else self.cost + self.cost_adv), adv=1)
+        grad = tape.gradient(loss, self.trainable_weights)
+        self.optimizer.apply_gradients(zip(grad, self.trainable_weights))
 
-        # If writing information is desired in the future
-        # tf.summary.scalar('cost', self.cost)
-        # tf.summary.scalar('acc', self.acc)
-        # self.merged_metrics = tf.summary.merge_all()
-        # self.train_writer = tf.summary.FileWriter(os.path.join(FLAGS.tb_dir, 'train'))
-        # self.val_writer = tf.summary.FileWriter(os.path.join(FLAGS.tb_dir, 'val'))
+        return loss
 
-    @staticmethod
-    def select_train_vars(print_stuff=True):
-        train_vars = tf.trainable_variables()
+        # self.accuracy.update_state(y, yhat)  # @TODO update accuracy
+
+    def compute_loss(self, y, logits):
+        loss = tf.nn.softmax_cross_entropy_with_logits_v2(labels=y, logits=logits)
+        loss_l2 = 0
+
+        if FLAGS.l2_reg_coeff > 0.0:
+            varlist = self.trainable_variables
+            loss_l2 = tf.add_n([tf.nn.l2_loss(v) for v in varlist if 'bias' not in v.name]) * FLAGS.l2_reg_coeff
+
+        ret_loss = loss + loss_l2
+
+        if FLAGS.weight_classes_loss:
+            ret_loss *= self.computed_cls_weights
+
+        return tf.identity(ret_loss, name='loss')
+
+    def select_train_vars(self):
+        train_vars = self.trainable_variables
+        print(train_vars)
+        exit()
 
         non_trainable_layers = ['/layer_{}/'.format(num)
                                 for num in range(FLAGS.tfm_layers - FLAGS.tfm_ft_enc_layers)]
@@ -96,360 +82,7 @@ class ClaimBusterModel:
 
         train_vars = [v for v in train_vars if not any(z in v.name for z in non_trainable_layers)]
 
-        if print_stuff:
-            tf.logging.info('Removing: {}'.format(non_trainable_layers))
-            tf.logging.info(train_vars)
+        logging.info('Removing: {}'.format(non_trainable_layers))
+        logging.info(train_vars)
 
-        return train_vars
-
-    def build_optimizer(self, cost_fn, adv):
-        name = ('optimizer' if adv == 0 else ('optimizer_adv' if adv == 1 else 'optimizer_v_adv'))
-
-        opt = tf.train.AdamOptimizer(learning_rate=FLAGS.lr).minimize(
-            cost_fn, var_list=self.trainable_variables, name=name) if FLAGS.adam else tf.train.RMSPropOptimizer(
-            learning_rate=FLAGS.lr).minimize(cost_fn, var_list=self.trainable_variables, name=name)
-
-        return opt
-
-    def construct_model(self):
-        orig_embed, logits = self.fprop()
-        self.trainable_variables = self.select_train_vars()
-        loss = tf.identity(self.ce_loss(logits, self.cls_weight), name='cost')
-
-        logits_adv, loss_adv = logits, loss
-
-        if self.adv:
-            logits_adv = self.fprop(orig_embed, loss, adv=True)
-            loss_adv = tf.identity(FLAGS.adv_coeff * self.adv_loss(logits_adv, self.cls_weight), name='cost_adv')
-            assert self.trainable_variables == self.select_train_vars(print_stuff=False)
-
-        return logits, logits_adv, loss, loss_adv, None
-
-    def fprop(self, orig_embed=None, reg_loss=None, adv=False):
-        if adv: assert (reg_loss is not None and orig_embed is not None)
-
-        nl_out = LanguageModel.build_xlnet_transformer_raw(
-            self.x_nl[0], self.x_nl[1], self.x_nl[2], self.kp_tfm_atten, self.kp_tfm_hidden,
-            adv, orig_embed, reg_loss, self.restore) if FLAGS.tfm_type == 0 else \
-            LanguageModel.build_bert_transformer_raw(
-                self.x_nl[0], self.x_nl[1], self.x_nl[2], self.kp_tfm_atten, self.kp_tfm_hidden,
-                adv, orig_embed, reg_loss, FLAGS.perturb_id, self.restore)
-        if not adv:
-            orig_embed, nl_out = nl_out[0], nl_out[1]
-
-        synth_out = tf.concat([nl_out, self.x_sent], axis=1)
-        synth_out = tf.nn.dropout(synth_out, keep_prob=self.kp_cls)
-
-        synth_out_shape = synth_out.get_shape()[1]
-
-        with tf.variable_scope('fc_output/', reuse=tf.AUTO_REUSE):
-            if FLAGS.cls_hidden > 0:
-                hidden_weights = tf.get_variable('cb_hidden_weights', shape=(synth_out_shape, FLAGS.cls_hidden),
-                                                 initializer=tf.contrib.layers.xavier_initializer())
-                hidden_biases = tf.get_variable('cb_hidden_biases', shape=FLAGS.cls_hidden,
-                                                initializer=tf.contrib.layers.xavier_initializer())
-
-                synth_out = tf.matmul(synth_out, hidden_weights) + hidden_biases
-                synth_out = tf.nn.dropout(synth_out, keep_prob=self.kp_cls)
-
-            output_weights = tf.get_variable('cb_output_weights', shape=(
-                FLAGS.cls_hidden if FLAGS.cls_hidden > 0 else synth_out_shape, FLAGS.num_classes),
-                                             initializer=tf.contrib.layers.xavier_initializer())
-            output_biases = tf.get_variable('cb_output_biases', shape=FLAGS.num_classes,
-                                            initializer=tf.zeros_initializer())
-
-            cb_out = tf.matmul(synth_out, output_weights) + output_biases
-
-            return (orig_embed, cb_out) if not adv else cb_out
-
-    @staticmethod
-    def v_adv_loss(logits_reg, logits_perturb):
-        return tf.distributions.kl_divergence(logits_reg, logits_perturb, name='v_adv_loss')
-
-    def adv_loss(self, logits, cls_weight):
-        return tf.identity(self.ce_loss(logits, cls_weight), name='adv_loss')
-
-    def ce_loss(self, logits, cls_weight):
-        loss = tf.nn.softmax_cross_entropy_with_logits_v2(labels=self.y, logits=logits)
-        loss_l2 = 0
-
-        if FLAGS.l2_reg_coeff > 0.0:
-            varlist = self.trainable_variables
-            loss_l2 = tf.add_n([tf.nn.l2_loss(v) for v in varlist if 'bias' not in v.name]) * FLAGS.l2_reg_coeff
-
-        ret_loss = loss + loss_l2
-
-        if FLAGS.weight_classes_loss:
-            ret_loss *= cls_weight
-
-        return tf.identity(ret_loss, name='regular_loss')
-
-    def get_feed_dict(self, x_nl, x_pos, x_sent, batch_y=None, ver='train'):
-        feed_dict = {
-            self.x_nl[0]: [z.input_ids for z in x_nl],
-            self.x_nl[1]: [z.input_mask for z in x_nl],
-            self.x_nl[2]: [z.segment_ids for z in x_nl],
-            self.x_pos: self.prc_pos(self.pad_seq(x_pos)),
-            self.x_sent: x_sent,
-
-            self.pos_len: self.gen_x_len(x_pos),
-            self.pos_output_mask: self.gen_output_mask(x_pos),
-
-            self.kp_cls: FLAGS.keep_prob_cls if ver == 'train' else 1.0,
-            self.kp_tfm_atten: FLAGS.kp_tfm_atten if ver == 'train' else 1.0,
-            self.kp_tfm_hidden: FLAGS.kp_tfm_hidden if ver == 'train' else 1.0,
-        }
-
-        if batch_y is not None:
-            feed_dict[self.y] = self.one_hot(batch_y)
-            feed_dict[self.cls_weight] = self.get_cls_weights(batch_y)
-
-        return feed_dict
-
-    def train_neural_network(self, sess, batch_x, batch_y, adv):
-        x_nl = [z[0] for z in batch_x]
-        x_pos = [z[1] for z in batch_x]
-        x_sent = [z[2] for z in batch_x]
-
-        feed_dict = self.get_feed_dict(x_nl, x_pos, x_sent, batch_y, ver='train')
-
-        sess.run(
-            (self.optimizer if not adv else self.optimizer_adv),
-            feed_dict=feed_dict
-        )
-
-    def execute_validation(self, sess, test_data, adv):
-        n_batches = math.ceil(float(FLAGS.test_examples) / float(FLAGS.batch_size))
-        val_loss, val_loss_adv, val_acc = 0.0, 0.0, 0.0
-        tot_val_ex = 0
-
-        all_y_pred = []
-        all_y_pred_adv = []
-        all_y = []
-        for batch in range(n_batches):
-            batch_x, batch_y = self.get_batch(batch, test_data, ver='validation')
-            tloss, tloss_adv, tacc, _, tpred, tpred_adv, _, _ = self.stats_from_run(sess, batch_x, batch_y, adv)
-
-            val_loss += tloss
-            val_acc += tacc * len(batch_y)
-            tot_val_ex += len(batch_y)
-
-            all_y_pred = np.concatenate((all_y_pred, tpred))
-            all_y = np.concatenate((all_y, batch_y))
-
-            if adv:
-                val_loss_adv += tloss_adv
-                all_y_pred_adv = np.concatenate((all_y_pred_adv, tpred_adv))
-
-        val_loss /= tot_val_ex
-        val_acc /= tot_val_ex
-        val_f1, val_f1_adv = f1_score(all_y, all_y_pred, average='weighted'), None
-
-        if adv:
-            val_loss_adv /= tot_val_ex
-            val_f1_adv = f1_score(all_y, all_y_pred_adv, average='weighted')
-
-        return 'Dev Loss: {:>7.4f}{}Dev F1: {:>7.4f}{}'.format(val_loss, (
-            ' Dev Adv Loss: {:>7.4f} '.format(val_loss_adv) if adv else ' '), val_f1, (
-            ' Dev Adv F1: {:>7.4f} '.format(val_f1_adv) if adv else ''))
-
-    def stats_from_run(self, sess, batch_x, batch_y, adv):
-        x_nl = [z[0] for z in batch_x]
-        x_pos = [z[1] for z in batch_x]
-        x_sent = [z[2] for z in batch_x]
-
-        feed_dict = self.get_feed_dict(x_nl, x_pos, x_sent, batch_y, ver='test')
-
-        run_loss, run_acc, run_pred_raw = sess.run([self.cost, self.acc, self.y_pred], feed_dict=feed_dict)
-        run_pred = np.argmax(run_pred_raw, axis=1)
-        run_loss_adv, run_acc_adv, run_pred_adv, run_pred_adv_raw = None, None, None, None
-
-        if adv:
-            run_loss_adv, run_acc_adv, run_pred_adv_raw = sess.run([self.cost_adv, self.acc_adv, self.y_pred_adv],
-                                                                   feed_dict=feed_dict)
-            run_pred_adv = np.argmax(run_pred_adv_raw, axis=1)
-
-        return np.sum(run_loss), np.sum(run_loss_adv), run_acc, run_acc_adv,\
-               run_pred, run_pred_adv, run_pred_raw, run_pred_adv_raw
-
-    def get_preds(self, sess, inp):
-        x_nl, x_pos, x_sent = inp[0], [inp[1]], [inp[2]]
-        feed_dict = self.get_feed_dict(x_nl, x_pos, x_sent, ver='test')
-
-        return sess.run(self.y_pred, feed_dict=feed_dict)
-
-    def get_cls_weights(self, batch_y):
-        return [self.computed_cls_weights[z] for z in batch_y]
-
-    @staticmethod
-    def prc_pos(pos_data):
-        ret = np.zeros(shape=(len(pos_data), FLAGS.max_len, len(pos_labels) + 1))
-
-        for i in range(len(pos_data)):
-            sentence = pos_data[i]
-            for j in range(len(sentence)):
-                code = sentence[j] + 1
-                ret[i][j][code] = 1
-
-        return ret
-
-    @staticmethod
-    def pad_seq(inp, ver=0):  # 0 is int, 1 is string
-        return pad_sequences(inp, padding="post", maxlen=FLAGS.max_len) if ver == 0 else \
-            pad_sequences(inp, padding="post", maxlen=FLAGS.max_len, dtype='str', value='')
-
-    @staticmethod
-    def one_hot(a, nc=FLAGS.num_classes):
-        return to_categorical(a, num_classes=nc)
-
-    @staticmethod
-    def gen_output_mask(inp):
-        return [[1 if j == len(el) - 1 else 0 for j in range(FLAGS.max_len)] for el in inp]
-
-    @staticmethod
-    def gen_x_len(inp):
-        return [len(el) for el in inp]
-
-    @staticmethod
-    def save_model(sess, epoch):
-        saver = tf.train.Saver()
-        epoch_string = str(epoch).zfill(3)
-
-        if not os.path.isdir(FLAGS.cb_model_dir):
-            os.mkdir(FLAGS.cb_model_dir)
-
-        saver.save(sess, os.path.join(FLAGS.cb_model_dir + '/' + epoch_string + '/'), global_step=epoch)
-
-    @staticmethod
-    def transform_dl_data(data_xlist):
-        temp = [[z[0] for z in data_xlist], [z[1] for z in data_xlist]]
-        return np.swapaxes(temp, 0, 1)
-
-    @staticmethod
-    def get_batch(bid, data, ver='train'):
-        batch_x = []
-        batch_y = []
-
-        for i in range(FLAGS.batch_size):
-            idx = bid * FLAGS.batch_size + i
-            if idx >= (FLAGS.train_examples if ver == 'train' else FLAGS.test_examples):
-                break
-
-            batch_x.append(list(data.x[idx]))
-            batch_y.append(data.y[idx])
-
-        return batch_x, batch_y
-
-    def load_model(self, default_graph, train=False):
-        def get_last_save(scan_loc):
-            ret_ar = []
-            files = []
-            directory = os.fsencode(scan_loc)
-
-            for fstr in os.listdir(directory):
-                if os.path.isdir(os.path.join(scan_loc, os.fsdecode(fstr))):
-                    ret_ar.append(os.fsdecode(fstr))
-                else:
-                    files.append(os.fsdecode(fstr))
-
-            if len(ret_ar) == 0 and len(files) > 0:
-                return int([x for x in scan_loc.split("/") if x][-1]), scan_loc.rstrip("/") + '/'
-
-            ret_ar.sort()
-            return int(ret_ar[-1]), os.path.join(scan_loc, ret_ar[-1]) + '/'
-
-        def get_assignment_map_from_checkpoint(tvars):
-            graph_var_names = [v.name[:-2] for v in tvars]
-            assignment_map = collections.OrderedDict()
-
-            for name in graph_var_names:
-                assignment_map[name] = name
-
-            return assignment_map, None
-
-        dr = FLAGS.cb_model_dir
-
-        with default_graph.as_default():
-            last_save_num, last_save_loc = get_last_save(dr)
-            print(last_save_num, last_save_loc)
-            init_checkpoint = last_save_loc
-            am, _ = get_assignment_map_from_checkpoint(tf.trainable_variables())
-            tf.train.init_from_checkpoint(init_checkpoint, am)
-
-        return last_save_num
-
-    # Unused method
-    @staticmethod
-    def build_optimizer_xlnet(total_loss, adv):
-        global_step = tf.train.get_or_create_global_step()
-
-        # increase the learning rate linearly
-        if FLAGS.warmup_steps > 0:
-            warmup_lr = tf.cast(global_step, tf.float32) / tf.cast(FLAGS.warmup_steps, tf.float32) * FLAGS.lr
-        else:
-            warmup_lr = 0.0
-
-        max_steps = FLAGS.pretrain_steps if not adv else FLAGS.advtrain_steps
-
-        # decay the learning rate
-        if FLAGS.decay_method == "poly":
-            decay_lr = tf.train.polynomial_decay(
-                FLAGS.lr,
-                global_step=global_step - FLAGS.warmup_steps,
-                decay_steps=max_steps - FLAGS.warmup_steps,
-                end_learning_rate=FLAGS.lr * FLAGS.min_lr_ratio)
-        elif FLAGS.decay_method == "cos":
-            decay_lr = tf.train.cosine_decay(
-                FLAGS.lr,
-                global_step=global_step - FLAGS.warmup_steps,
-                decay_steps=max_steps - FLAGS.warmup_steps,
-                alpha=FLAGS.min_lr_ratio)
-        else:
-            raise ValueError(FLAGS.decay_method)
-
-        learning_rate = tf.where(global_step < FLAGS.warmup_steps,
-                                 warmup_lr, decay_lr)
-
-        if FLAGS.weight_decay == 0:
-            optimizer = tf.train.AdamOptimizer(
-                learning_rate=learning_rate,
-                epsilon=FLAGS.adam_epsilon)
-        else:
-            optimizer = AdamWeightDecayOptimizer(
-                learning_rate=learning_rate,
-                epsilon=FLAGS.adam_epsilon,
-                exclude_from_weight_decay=["LayerNorm", "layer_norm", "bias"],
-                weight_decay_rate=FLAGS.weight_decay)
-
-        grads_and_vars = optimizer.compute_gradients(total_loss)
-
-        gradients, variables = zip(*grads_and_vars)
-        clipped, gnorm = tf.clip_by_global_norm(gradients, FLAGS.clip)
-
-        if getattr(FLAGS, "lr_layer_decay_rate", 1.0) != 1.0:
-            n_layer = 0
-            for i in range(len(clipped)):
-                m = re.search(r"model//transformer//layer_(\d+?)//", variables[i].name)
-                if not m: continue
-                n_layer = max(n_layer, int(m.group(1)) + 1)
-
-            print('successfully successfully successfully successfully successfully {}'.format(n_layer))
-
-            for i in range(len(clipped)):
-                for l in range(n_layer):
-                    if "model//transformer//layer_{}//".format(l) in variables[i].name:
-                        abs_rate = FLAGS.lr_layer_decay_rate ** (n_layer - 1 - l)
-                        clipped[i] *= abs_rate
-                        tf.logging.info("Apply mult {:.4f} to layer-{} grad of {}".format(
-                            abs_rate, l, variables[i].name))
-                        break
-
-        train_op = optimizer.apply_gradients(
-            zip(clipped, variables), global_step=global_step)
-
-        # Manually increment `global_step` for AdamWeightDecayOptimizer
-        if FLAGS.weight_decay > 0:
-            new_global_step = global_step + 1
-            train_op = tf.group(train_op, [global_step.assign(new_global_step)])
-
-        return train_op, learning_rate, gnorm
+        raise Exception('cmon you didn\'t update self.trainable_vars')
