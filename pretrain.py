@@ -1,6 +1,7 @@
 import math
 import time
 import os
+from tqdm import tqdm
 from shutil import rmtree
 from utils.data_loader import DataLoader
 from model import ClaimBusterModel
@@ -45,6 +46,7 @@ def main():
         buffer_size=train_data.get_length()).batch(FLAGS.batch_size)
 
     logging.info("Starting training...")
+    pbar = tqdm(total=math.ceil(len(train_data.y) / FLAGS.batch_size))
 
     epochs_trav = 0
     for epoch in range(FLAGS.pretrain_steps):
@@ -52,8 +54,7 @@ def main():
         epoch_loss, epoch_acc = 0, 0
         start = time.time()
 
-        for step, (x_id, y) in enumerate(dataset):
-            logging.info(step)
+        for x_id, y in dataset:
             epoch_loss += np.sum(model.train_on_batch(x_id, y))
 
         if epoch % FLAGS.stat_print_interval == 0:
@@ -64,6 +65,8 @@ def main():
 
             start = time.time()
             epochs_trav = 0
+
+        pbar.update(1)
 
 
 if __name__ == '__main__':
