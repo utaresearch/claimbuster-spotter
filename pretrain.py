@@ -52,6 +52,8 @@ def main():
     model.call(K.layers.Input(shape=(FLAGS.max_len,), dtype='int32'))
     logging.info("Starting training...")
 
+    model.save_weights('dummy.ckpt')
+
     epochs_trav = 0
     for epoch in range(FLAGS.pretrain_steps):
         epochs_trav += 1

@@ -14,7 +14,7 @@ K = tf.keras
 L = K.layers
 
 
-class ClaimBusterModel(K.models.Model):
+class ClaimBusterModel(K.layers.Layer):
     def __init__(self, cls_weights=None):
         super(ClaimBusterModel, self).__init__()
 
