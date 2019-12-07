@@ -43,9 +43,10 @@ def main():
     logging.info("{} validation examples".format(test_data.get_length()))
 
     dataset_train = tf.data.Dataset.from_tensor_slices(([x[0] for x in train_data.x], train_data.y)).shuffle(
-        buffer_size=train_data.get_length()).batch(FLAGS.batch_size)
+        buffer_size=train_data.get_length()).batch(
+        FLAGS.batch_size_reg if not FLAGS.adv_train else FLAGS.batch_size_adv)
     dataset_test = tf.data.Dataset.from_tensor_slices(([x[0] for x in test_data.x], test_data.y)).shuffle(
-        buffer_size=test_data.get_length()).batch(FLAGS.batch_size)
+        buffer_size=test_data.get_length()).batch(FLAGS.batch_size_reg if not FLAGS.adv_train else FLAGS.batch_size_adv)
 
     logging.info("Warming up...")
 
@@ -70,7 +71,8 @@ def main():
         epoch_loss, epoch_acc = 0, 0
         start = time.time()
 
-        pbar = tqdm(total=math.ceil(len(train_data.y) / FLAGS.batch_size))
+        pbar = tqdm(total=math.ceil(
+            len(train_data.y) / (FLAGS.batch_size_reg if not FLAGS.adv_train else FLAGS.batch_size_adv)))
         for x_id, y in dataset_train:
             train_batch_loss, train_batch_acc = (model.train_on_batch(x_id, y) if not FLAGS.adv_train
                                                  else model.adv_train_on_batch(x_id, y))
