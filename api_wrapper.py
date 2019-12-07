@@ -27,7 +27,7 @@ class ClaimBusterAPI:
 
     def prc_sentence(self, sentence):
         sentence, sent = self.extract_info(sentence)
-        ds = tf.data.Dataset.from_tensor_slices(([self.create_bert_features(sentence)], [0]))
+        ds = tf.data.Dataset.from_tensor_slices([self.create_bert_features(sentence)])
 
         return next(iter(ds)).numpy(), sent
 
