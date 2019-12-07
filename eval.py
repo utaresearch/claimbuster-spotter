@@ -39,6 +39,7 @@ def main():
 
     logging.info('Attempting to restore weights from {}'.format(FLAGS.cb_model_dir))
     model.load_custom_model()
+    logging.info('Restore successful')
 
     logging.info("Starting evaluation...")
 
@@ -51,6 +52,8 @@ def main():
         eval_acc += eval_batch_acc * np.shape(y)[0]
 
         preds = model.preds_on_batch(x_id)
+        print(preds)
+        print(all_pred)
         all_pred += preds
         all_y += y
 
