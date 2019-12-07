@@ -49,6 +49,9 @@ def main():
         buffer_size=test_data.get_length()).batch(FLAGS.batch_size)
 
     logging.info("Warming up...")
+
+    model.call(K.layers.Input(shape=(FLAGS.max_len,), dtype='int32'))
+
     kmodel = K.models.Model(K.layers.Input(shape=(FLAGS.max_len,), dtype='int32'),
                             model.call(K.layers.Input(shape=(FLAGS.max_len,), dtype='int32')))
     logging.info("Starting training...")
