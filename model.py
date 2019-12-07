@@ -22,18 +22,7 @@ class ClaimBusterModel(K.models.Model):
         self.adv = None
 
     def call(self, x_id, **kwargs):
-        assert 'adv' in kwargs
-        self.adv = kwargs.get('adv')
-
-        if not self.adv:
-            return self.layer.call(x_id, **kwargs)
-        else:
-            assert all(x in kwargs for x in ['loss', 'tape'])
-            loss = kwargs.get('loss')
-            tape = kwargs.get('tape')
-
-            perturb = self._compute_perturbation(loss, tape)
-            return self.layer.call(x_id, adv=self.adv, perturb=perturb)
+        return self.layer.call(x_id, **kwargs)
 
     def warm_up(self):
         input_ph = K.layers.Input(shape=(FLAGS.max_len,), dtype='int32')
@@ -58,16 +47,14 @@ class ClaimBusterModel(K.models.Model):
     def train_on_batch(self, x_id, y):
         return self.layer.train_on_batch(x_id, y)
 
+    def adv_train_on_batch(self, x_id, y):
+        return self.layer.adv_train_on_batch(x_id, y)
+
     def stats_on_batch(self, x_id, y):
         return self.layer.stats_on_batch(x_id, y)
 
     def preds_on_batch(self, x_id):
         return self.layer.preds_on_batch(x_id)
-
-    @staticmethod
-    def _compute_perturbation(loss, tape):
-        raise Exception('not implemented!')
-        return -1
 
 
 class ClaimBusterLayer(K.layers.Layer):
@@ -108,6 +95,24 @@ class ClaimBusterLayer(K.layers.Layer):
         self.optimizer.apply_gradients(zip(grad, self.vars_to_train))
 
         return tf.reduce_sum(loss), self.compute_accuracy(y, logits)
+
+    @tf.function
+    def adv_train_on_batch(self, x_id, y):
+        y = tf.one_hot(y, depth=FLAGS.num_classes)
+
+        with tf.GradientTape() as tape:
+            logits = self.call(x_id)
+            loss = self.compute_loss(y, logits)
+
+            perturb = self._compute_perturbation(loss, tape)
+
+            logits_adv = self.call(x_id, perturb=perturb)
+            loss_adv = self.compute_loss(y, logits_adv)
+
+        grad = tape.gradient(loss_adv, self.vars_to_train)
+        self.optimizer.apply_gradients(zip(grad, self.vars_to_train))
+
+        return tf.reduce_sum(loss_adv), self.compute_accuracy(y, logits_adv)
 
     @tf.function
     def stats_on_batch(self, x_id, y):
@@ -156,6 +161,11 @@ class ClaimBusterLayer(K.layers.Layer):
     @staticmethod
     def compute_accuracy(y, logits):
         return tf.reduce_mean(tf.cast(tf.equal(tf.argmax(logits, axis=1), tf.argmax(y, axis=1)), dtype=tf.float32))
+
+    @staticmethod
+    def _compute_perturbation(loss, tape):
+        raise Exception('not implemented!')
+        return -1
 
     def init_model_weights(self, ckpt_path=os.path.join(FLAGS.bert_model_loc, 'bert_model.ckpt')):
         # Define several helper functions
