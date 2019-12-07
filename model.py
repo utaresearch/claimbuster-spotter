@@ -93,13 +93,44 @@ class ClaimBusterModel(K.layers.Layer):
         return train_vars
 
     def init_model_weights(self, ckpt_path=os.path.join(FLAGS.bert_model_loc, 'bert_model.ckpt')):
-        # Define several helper function
+        # Define several helper functions
         def bert_prefix():
             re_bert = re.compile(r'(.*)/(embeddings|encoder)/(.+):0')
             match = re_bert.match(self.weights[0].name)
             assert match, "Unexpected bert layer: {} weight:{}".format(self, self.weights[0].name)
             prefix = match.group(1)
             return prefix
+
+        def map_to_stock_variable_name(name, pfx="bert"):
+            name = name.split(":")[0]
+            ns = name.split("/")
+            pns = pfx.split("/")
+
+            if ns[:len(pns)] != pns:
+                return None
+
+            name = "/".join(["bert"] + ns[len(pns):])
+            ns = name.split("/")
+
+            if ns[1] not in ["encoder", "embeddings"]:
+                return None
+            if ns[1] == "embeddings":
+                if ns[2] == "LayerNorm":
+                    return name
+                elif ns[2] == "word_embeddings_projector":
+                    ns[2] = "word_embeddings_2"
+                    if ns[3] == "projector":
+                        ns[3] = "embeddings"
+                        return "/".join(ns[:-1])
+                    return "/".join(ns)
+                else:
+                    return "/".join(ns[:-1])
+            if ns[1] == "encoder":
+                if ns[3] == "intermediate":
+                    return "/".join(ns[:4] + ["dense"] + ns[4:])
+                else:
+                    return name
+            return None
 
         ckpt_reader = tf.train.load_checkpoint(ckpt_path)
 
@@ -112,10 +143,8 @@ class ClaimBusterModel(K.layers.Layer):
         skipped_weight_value_tuples = []
 
         bert_params = self.weights
-        print(bert_params)
-        exit()
-
         param_values = K.backend.batch_get_value(self.weights)
+
         for ndx, (param_value, param) in enumerate(zip(param_values, bert_params)):
             stock_name = map_to_stock_variable_name(param.name, prefix)
 
@@ -134,7 +163,7 @@ class ClaimBusterModel(K.layers.Layer):
             else:
                 print("loader: No value for:[{}], i.e.:[{}] in:[{}]".format(param.name, stock_name, ckpt_path))
                 skip_count += 1
-        keras.backend.batch_set_value(weight_value_tuples)
+        K.backend.batch_set_value(weight_value_tuples)
 
         print("Done loading {} BERT weights from: {} into {} (prefix:{}). "
               "Count of weights not found in the checkpoint was: [{}]. "
