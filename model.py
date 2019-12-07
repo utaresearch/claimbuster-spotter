@@ -28,7 +28,7 @@ class ClaimBusterModel(K.layers.Layer):
 
     def call(self, x_id, kp_cls=FLAGS.kp_cls, kp_tfm_atten=FLAGS.kp_tfm_atten, kp_tfm_hidden=FLAGS.kp_tfm_hidden):
         bert_output = self.bert_model(x_id)
-        bert_output = tf.nn.dropout(bert_output, rate=1-FLAGS.kp_cls)
+        bert_output = tf.nn.dropout(bert_output, rate=1-kp_cls)
         ret = self.fc_layer(bert_output)
 
         if not self.vars_to_train:

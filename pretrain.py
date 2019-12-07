@@ -45,7 +45,7 @@ def main():
     model = ClaimBusterModel()
     dataset = tf.data.Dataset.from_tensor_slices(([x[0] for x in train_data.x], train_data.y)).shuffle(
         buffer_size=train_data.get_length()).batch(FLAGS.batch_size)
-    model.warm_up(dataset)
+    model.warm_up(K.layers.Input(shape=(FLAGS.max_len,), dtype='int32'))
 
     logging.info("Starting training...")
 
