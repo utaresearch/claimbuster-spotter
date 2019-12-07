@@ -16,8 +16,8 @@ from .layer import Layer
 
 class PositionEmbeddingLayer(Layer):
     class Params(Layer.Params):
-        max_position_embeddings  = 512
-        hidden_size              = 128
+        max_position_embeddings = 512
+        hidden_size = 128
 
     # noinspection PyUnusedLocal
     def _construct(self, params: Params):
@@ -57,14 +57,14 @@ class PositionEmbeddingLayer(Layer):
 
 class EmbeddingsProjector(Layer):
     class Params(Layer.Params):
-        hidden_size                  = 768
-        embedding_size               = None   # None for BERT, not None for ALBERT
-        project_embeddings_with_bias = True   # in ALBERT - True for Google, False for brightmart/albert_zh
+        hidden_size = 768
+        embedding_size = None  # None for BERT, not None for ALBERT
+        project_embeddings_with_bias = True  # in ALBERT - True for Google, False for brightmart/albert_zh
 
     # noinspection PyUnusedLocal
     def _construct(self, params: Params):
-        self.projector_layer      = None   # for ALBERT
-        self.projector_bias_layer = None   # for ALBERT
+        self.projector_layer = None  # for ALBERT
+        self.projector_bias_layer = None  # for ALBERT
 
     def build(self, input_shape):
         emb_shape = input_shape
@@ -97,33 +97,33 @@ class EmbeddingsProjector(Layer):
 class BertEmbeddingsLayer(Layer):
     class Params(PositionEmbeddingLayer.Params,
                  EmbeddingsProjector.Params):
-        vocab_size               = None
-        use_token_type           = True
-        use_position_embeddings  = True
-        token_type_vocab_size    = 2
-        hidden_size              = 768
-        hidden_dropout           = 0.1
+        vocab_size = None
+        use_token_type = True
+        use_position_embeddings = True
+        token_type_vocab_size = 2
+        hidden_size = 768
+        hidden_dropout = 0.1
 
-        extra_tokens_vocab_size  = None  # size of the extra (task specific) token vocabulary (using negative token ids)
+        extra_tokens_vocab_size = None  # size of the extra (task specific) token vocabulary (using negative token ids)
 
         #
         # ALBERT support - set embedding_size (or None for BERT)
         #
-        embedding_size               = None   # None for BERT, not None for ALBERT
-        project_embeddings_with_bias = True   # in ALBERT - True for Google, False for brightmart/albert_zh
-        project_position_embeddings  = True   # in ALEBRT - True for Google, False for brightmart/albert_zh
+        embedding_size = None  # None for BERT, not None for ALBERT
+        project_embeddings_with_bias = True  # in ALBERT - True for Google, False for brightmart/albert_zh
+        project_position_embeddings = True  # in ALEBRT - True for Google, False for brightmart/albert_zh
 
-        mask_zero                    = False
+        mask_zero = False
 
     # noinspection PyUnusedLocal
     def _construct(self, params: Params):
-        self.word_embeddings_layer       = None
-        self.extra_word_embeddings_layer = None   # for task specific tokens (negative token ids)
+        self.word_embeddings_layer = None
+        self.extra_word_embeddings_layer = None  # for task specific tokens (negative token ids)
         self.token_type_embeddings_layer = None
-        self.position_embeddings_layer   = None
-        self.word_embeddings_projector_layer = None   # for ALBERT
+        self.position_embeddings_layer = None
+        self.word_embeddings_projector_layer = None  # for ALBERT
         self.layer_norm_layer = None
-        self.dropout_layer    = None
+        self.dropout_layer = None
 
         self.support_masking = params.mask_zero
 
@@ -178,7 +178,7 @@ class BertEmbeddingsLayer(Layer):
             )
 
         self.layer_norm_layer = pf.LayerNormalization(name="LayerNorm")
-        self.dropout_layer    = keras.layers.Dropout(rate=self.params.hidden_dropout)
+        self.dropout_layer = keras.layers.Dropout(rate=self.params.hidden_dropout)
 
         super(BertEmbeddingsLayer, self).build(input_shape)
 
@@ -187,15 +187,15 @@ class BertEmbeddingsLayer(Layer):
             assert 2 == len(inputs), "Expecting inputs to be a [input_ids, token_type_ids] list"
             input_ids, token_type_ids = inputs
         else:
-            input_ids      = inputs
+            input_ids = inputs
             token_type_ids = None
 
         input_ids = tf.cast(input_ids, dtype=tf.int32)
 
         if self.extra_word_embeddings_layer is not None:
-            token_mask   = tf.cast(input_ids >= 0, tf.int32)
-            extra_mask   = tf.cast(input_ids  < 0, tf.int32)
-            token_ids    = token_mask * input_ids
+            token_mask = tf.cast(input_ids >= 0, tf.int32)
+            extra_mask = tf.cast(input_ids < 0, tf.int32)
+            token_ids = token_mask * input_ids
             extra_tokens = extra_mask * (- input_ids)
             token_output = self.word_embeddings_layer(token_ids)
             extra_output = self.extra_word_embeddings_layer(extra_tokens)
@@ -210,11 +210,11 @@ class BertEmbeddingsLayer(Layer):
                 embedding_output = self.word_embeddings_projector_layer(embedding_output)
 
         if token_type_ids is not None:
-            token_type_ids    = tf.cast(token_type_ids, dtype=tf.int32)
+            token_type_ids = tf.cast(token_type_ids, dtype=tf.int32)
             embedding_output += self.token_type_embeddings_layer(token_type_ids)
 
         if self.position_embeddings_layer is not None:
-            seq_len  = input_ids.shape.as_list()[1]
+            seq_len = input_ids.shape.as_list()[1]
             emb_size = embedding_output.shape[-1]
 
             pos_embeddings = self.position_embeddings_layer(seq_len)
@@ -230,14 +230,14 @@ class BertEmbeddingsLayer(Layer):
             if self.word_embeddings_projector_layer:
                 embedding_output = self.word_embeddings_projector_layer(embedding_output)
 
-        return embedding_output   # [B, seq_len, hidden_size]
+        return embedding_output  # [B, seq_len, hidden_size]
 
     def compute_mask(self, inputs, mask=None):
         if isinstance(inputs, list):
             assert 2 == len(inputs), "Expecting inputs to be a [input_ids, token_type_ids] list"
             input_ids, token_type_ids = inputs
         else:
-            input_ids      = inputs
+            input_ids = inputs
             token_type_ids = None
 
         if not self.support_masking:

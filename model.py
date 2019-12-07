@@ -158,7 +158,7 @@ class ClaimBusterLayer(K.layers.Layer):
             name = "/".join(["bert"] + ns[len(pns):])
             ns = name.split("/")
 
-            if ns[1] not in ["encoder", "embeddings"]:
+            if ns[1] not in ["encoder", "embeddings", "pooler"]:
                 return None
             if ns[1] == "embeddings":
                 if ns[2] == "LayerNorm":
@@ -176,6 +176,9 @@ class ClaimBusterLayer(K.layers.Layer):
                     return "/".join(ns[:4] + ["dense"] + ns[4:])
                 else:
                     return name
+            if ns[1] == "pooler":
+                print(ns)
+                exit()
             return None
 
         ckpt_reader = tf.train.load_checkpoint(ckpt_path)
