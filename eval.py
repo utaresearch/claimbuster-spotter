@@ -58,6 +58,7 @@ def main():
         all_y = all_y + list(y.numpy())
 
         pbar.update(1)
+    pbar.clear()
 
     eval_loss /= test_data.get_length()
     eval_acc /= test_data.get_length()

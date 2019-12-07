@@ -76,6 +76,7 @@ def main():
             epoch_loss += train_batch_loss
             epoch_acc += train_batch_acc * np.shape(y)[0]
             pbar.update(1)
+        pbar.clear()
 
         epoch_loss /= train_data.get_length()
         epoch_acc /= train_data.get_length()
