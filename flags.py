@@ -24,6 +24,7 @@ flags.DEFINE_string('cb_model_ckpt', 'bert_claimspotter.ckpt', 'Filename of mode
 flags.DEFINE_string('cb_data_dir', './data', 'Location of data')
 flags.DEFINE_string('tb_dir', './tb_logs', 'Tensorboard location')
 
+flags.DEFINE_bool('adv_train', False, 'Use adversarial training?')
 
 # Data
 flags.DEFINE_bool('use_clef_data', False, 'Use CLEF data, rather than ClaimBuster')
@@ -50,7 +51,7 @@ flags.DEFINE_integer('cls_hidden', 0, 'Size of hidden classification layer')
 flags.DEFINE_float('kp_cls', 0.7, 'Keep probability of dropout in FC')
 
 # Optimization
-flags.DEFINE_integer('pretrain_steps', 50, 'Number of epochs to run.')
+flags.DEFINE_integer('regtrain_steps', 50, 'Number of epochs to run.')
 flags.DEFINE_integer('advtrain_steps', 50, 'Number of epochs to run.')
 flags.DEFINE_float('lr', 2e-5, 'Learning rate while during optimiation.')
 
@@ -89,7 +90,8 @@ flags.DEFINE_string('bert_model_size', 'base', 'Version of BERT to use: base or 
 # Training
 flags.DEFINE_bool('adam', True, 'Adam or RMSProp if False')
 flags.DEFINE_bool('restore_and_continue', False, 'Restore previous training session and continue')
-flags.DEFINE_integer('batch_size', 128, 'Size of the batch.')
+flags.DEFINE_integer('batch_size_reg', 128, 'Size of the batch.')
+flags.DEFINE_integer('batch_size_adv', 12, 'Size of the batch when adversarial training.')
 
 FLAGS(sys.argv)
 

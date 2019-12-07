@@ -62,7 +62,7 @@ def main():
         start_epoch += last_epoch + 1
         end_epoch += last_epoch + 1 + FLAGS.pretrain_steps
 
-    logging.info("Starting adversarial training...")
+    logging.info("Starting{}training...".format(' ' if not FLAGS.adv_train else ' adversarial '))
 
     epochs_trav = 0
     for epoch in range(start_epoch, end_epoch, 1):
@@ -72,7 +72,8 @@ def main():
 
         pbar = tqdm(total=math.ceil(len(train_data.y) / FLAGS.batch_size))
         for x_id, y in dataset_train:
-            train_batch_loss, train_batch_acc = model.adv_train_on_batch(x_id, y)
+            train_batch_loss, train_batch_acc = (model.train_on_batch(x_id, y) if not FLAGS.adv_train
+                                                 else model.adv_train_on_batch(x_id, y))
             epoch_loss += train_batch_loss
             epoch_acc += train_batch_acc * np.shape(y)[0]
             pbar.update(1)

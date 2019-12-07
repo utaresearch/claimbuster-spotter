@@ -25,4 +25,4 @@ nohup sh -c "python3 pretrain.py --cb_model_dir=reg_ours_clef --gpu=2 --use_clef
 nohup sh -c "python3 advtrain.py --cb_model_dir=adv_ours_clef --gpu=3 --use_clef_data=True --combine_ours_clef_data=True --weight_classes_loss=True -num_classes=2 --restore_and_continue=True"&>nohup3.out&
 
 
-python3 regtrain.py --cb_model_dir=reg_ours_clef --gpu=2 --use_clef_data=True --combine_ours_clef_data=True --weight_classes_loss=True -num_classes=2 --restore_and_continue=False
+python3 train.py --cb_model_dir=reg_ours_clef --gpu=2 --use_clef_data=True --combine_ours_clef_data=True --weight_classes_loss=True -num_classes=2 --restore_and_continue=False

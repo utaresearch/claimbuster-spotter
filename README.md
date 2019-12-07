@@ -24,13 +24,13 @@ This section provides a high-level overview of this repository, as well as detai
 
 ### Pre-processing
 
-Preprocessing is accomplished by [`pretrain.py`](regtrain.py). Sentences are extracted from `./data/`, transformed based on various flags defined in [`flags.py`](flags.py), and converted into the token/segment/mask format required by BERT. Uses `tensorflow-hub` module.
+Preprocessing is accomplished by [`pretrain.py`](train.py). Sentences are extracted from `./data/`, transformed based on various flags defined in [`flags.py`](flags.py), and converted into the token/segment/mask format required by BERT. Uses `tensorflow-hub` module.
 
 ### Training
 
 Each training session is predicated upon a pre-trained BERT model as an initialization point. After loading these weights, there are two possible training algorithms:
 
-* Classifier Fine-Tuning ([`pretrain.py`](regtrain.py)): uses vanilla stochastic gradient descent to minimize softmax classification objective into NFS/UFS/CFS class division.
+* Classifier Fine-Tuning ([`pretrain.py`](train.py)): uses vanilla stochastic gradient descent to minimize softmax classification objective into NFS/UFS/CFS class division.
 * Adversarial Classifier Fine-Tuning ([`advtrain.py`](advtrain.py)): applies adversarial perturbations to embeddings designated by `--perturb_id` flag (see [`flags.py`](flags.py) for additional details)
 
 Depending on the VRAM capacity of the selected GPU, as well as the predefined batch size, training time can range between 1 and 10 hours. On UTA servers, it may take approximately 3 hours to train a `BERT-Base` model and 6-7 hours to train a `BERT-Large` model using regular optimization. Adversarial training doubles the time required.
@@ -97,11 +97,11 @@ EDIR="output/models/vat_eval"
 Training data is drawn from the entire [small dataset](data/data_small.json), and
 testing data is drawn from the [2000 pre-selected disjoint sentences](data/disjoint_2000.pkl). In the future, a full corpus from a recent series of presidential debates will be added to this collection to data.
 
-When [`pretrain.py`](regtrain.py) is run, code to process raw data will be run if `--refresh_data=True` **or** the code cannot find the stored, processed `.pkl` files containing processed data. Please see the next section for code on running the pre-train file.
+When [`pretrain.py`](train.py) is run, code to process raw data will be run if `--refresh_data=True` **or** the code cannot find the stored, processed `.pkl` files containing processed data. Please see the next section for code on running the pre-train file.
 
 ### Classifier Fine-Tuning
 
-Once data is processed and dumped into `.pkl` files, [`pretrain.py`](regtrain.py) will continue to build a graph initialized from a pre-trained BERT model. For all of the remaining pre- and adv-training steps, please see [`flags.py`](flags.py) for more information on flag listings and descriptions.
+Once data is processed and dumped into `.pkl` files, [`pretrain.py`](train.py) will continue to build a graph initialized from a pre-trained BERT model. For all of the remaining pre- and adv-training steps, please see [`flags.py`](flags.py) for more information on flag listings and descriptions.
 
 Note that the entire [small dataset](data/data_small.json) will be used for training, and the [disjoint 2000 dataset](data/disjoint_2000.json) will be used for validation.
 
