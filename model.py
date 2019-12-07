@@ -147,9 +147,8 @@ class ClaimBusterModel(K.layers.Layer):
 
         for ndx, (param_value, param) in enumerate(zip(param_values, bert_params)):
             stock_name = map_to_stock_variable_name(param.name, prefix)
-            logging.info(stock_name)
 
-            if ckpt_reader.has_tensor(stock_name):
+            if stock_name and ckpt_reader.has_tensor(stock_name):
                 ckpt_value = ckpt_reader.get_tensor(stock_name)
 
                 if param_value.shape != ckpt_value.shape:
