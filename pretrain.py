@@ -66,6 +66,8 @@ def main():
 
     logging.info("Starting training...")
 
+    model.save_weights(os.path.join(FLAGS.cb_model_dir, '{}/bert_claimspotter.ckpt'.format(str(1).zfill(3))))
+
     epochs_trav = 0
     for epoch in range(FLAGS.pretrain_steps):
         epochs_trav += 1
