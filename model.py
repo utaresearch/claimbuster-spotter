@@ -93,13 +93,22 @@ class ClaimBusterModel(K.layers.Layer):
         return train_vars
 
     def init_model_weights(self, ckpt_path=os.path.join(FLAGS.bert_model_loc, 'bert_model.ckpt')):
+        # Define several helper function
+        def bert_prefix():
+            re_bert = re.compile(r'(.*)/(embeddings|encoder)/(.+):0')
+            match = re_bert.match(self.weights[0].name)
+            assert match, "Unexpected bert layer: {} weight:{}".format(self, self.weights[0].name)
+            prefix = match.group(1)
+            return prefix
+
         ckpt_reader = tf.train.load_checkpoint(ckpt_path)
 
         stock_weights = set(ckpt_reader.get_variable_to_dtype_map().keys())
         print(stock_weights)
-        exit()
 
-        prefix = bert_prefix(bert)
+        prefix = bert_prefix(self)
+        print(prefix)
+        exit()
 
         loaded_weights = set()
         skip_count = 0
