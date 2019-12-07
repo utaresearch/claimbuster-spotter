@@ -37,7 +37,7 @@ class ClaimBusterAPI:
         return self._retrieve_model_preds(self._prc_sentence_list(sentence_list))
 
     def _prc_sentence_list(self, sentence_list):
-        sentence_features = [self._extract_info(x) for x in sentence_list]
+        sentence_features = self._extract_info(sentence_list)
         return tf.data.Dataset.from_tensor_slices(
             (self._create_bert_features(sentence_features[0])), sentence_features[1]).batch(FLAGS.batch_size)
 
@@ -53,8 +53,7 @@ class ClaimBusterAPI:
         return DataLoader.pad_seq(features)
 
     @staticmethod
-    def _extract_info(sentence):
-        sentence = transf.transform_sentence_complete(sentence)
-        sent = transf.get_sentiment(sentence)
-
-        return sentence, sent
+    def _extract_info(sentence_list):
+        r_sentence_list = [transf.transform_sentence_complete(x) for x in sentence_list]
+        r_sentiment_list = [transf.get_sentiment(x) for x in sentence_list]
+        return r_sentence_list, r_sentiment_list
