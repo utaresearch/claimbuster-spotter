@@ -75,7 +75,6 @@ class ClaimBusterLayer(K.layers.Layer):
 
         if not get_embedding:
             bert_output = self.bert_model(x_id, perturb, training=self.is_training)
-            print(bert_output)
         else:
             orig_embed, bert_output = self.bert_model(x_id, perturb, get_embedding=True, training=self.is_training)
 
@@ -87,7 +86,10 @@ class ClaimBusterLayer(K.layers.Layer):
                 self.init_model_weights()
             self.vars_to_train = self.select_train_vars()
 
-        return ret if not get_embedding else orig_embed, ret
+        if not get_embedding:
+            return ret
+        else:
+            return orig_embed, ret
 
     @tf.function
     def train_on_batch(self, x_id, y):
