@@ -78,6 +78,8 @@ class BertModelLayer(Layer):
         embedding_output = self.embeddings_layer(inputs, mask=mask, training=training)
 
         if perturb:
+            print(embedding_output)
+            print(perturb)
             embedding_output += perturb
 
         output = self.encoders_layer(embedding_output, mask=mask, training=training)
