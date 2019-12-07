@@ -104,19 +104,18 @@ class ClaimBusterModel(K.layers.Layer):
         ckpt_reader = tf.train.load_checkpoint(ckpt_path)
 
         stock_weights = set(ckpt_reader.get_variable_to_dtype_map().keys())
-        print(stock_weights)
-
         prefix = bert_prefix()
-        print(prefix)
-        exit()
 
         loaded_weights = set()
         skip_count = 0
         weight_value_tuples = []
         skipped_weight_value_tuples = []
 
-        bert_params = bert.weights
-        param_values = keras.backend.batch_get_value(bert.weights)
+        bert_params = self.weights
+        print(bert_params)
+        exit()
+
+        param_values = K.backend.batch_get_value(self.weights)
         for ndx, (param_value, param) in enumerate(zip(param_values, bert_params)):
             stock_name = map_to_stock_variable_name(param.name, prefix)
 
