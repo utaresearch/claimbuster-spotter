@@ -177,8 +177,8 @@ class ClaimBusterLayer(K.layers.Layer):
                 else:
                     return name
             if ns[1] == "pooler":
-                print(ns)
-                exit()
+                logging.info("/".join(ns))
+                return "/".join(ns)
             return None
 
         ckpt_reader = tf.train.load_checkpoint(ckpt_path)
