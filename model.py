@@ -22,12 +22,18 @@ class ClaimBusterModel(K.models.Model):
         self.optimizer = K.optimizers.Adam(learning_rate=FLAGS.lr)
         self.computed_cls_weights = cls_weights if cls_weights is not None else [1 for _ in range(FLAGS.num_classes)]
 
+        self.vars_to_train = []
+
     def call(self, x_id, kp_cls=FLAGS.kp_cls):
         return self.layer.call(x_id, kp_cls)
 
     def warm_up(self):
         input_ph = K.layers.Input(shape=(FLAGS.max_len,), dtype='int32')
         self.call(input_ph)
+
+        if not FLAGS.restore_and_continue:
+            self.layer.init_model_weights()
+        self.vars_to_train = self.select_train_vars()
 
     @tf.function
     def train_on_batch(self, x_id, y):
@@ -93,17 +99,10 @@ class ClaimBusterLayer(K.layers.Layer):
         self.bert_model = LanguageModel.build_bert()
         self.fc_layer = L.Dense(FLAGS.num_classes)
 
-        self.vars_to_train = None
-
     def call(self, x_id, kp_cls=FLAGS.kp_cls, kp_tfm_atten=FLAGS.kp_tfm_atten, kp_tfm_hidden=FLAGS.kp_tfm_hidden):
         bert_output = self.bert_model(x_id)
         bert_output = tf.nn.dropout(bert_output, rate=1 - kp_cls)
         ret = self.fc_layer(bert_output)
-
-        if not self.vars_to_train:
-            if not FLAGS.restore_and_continue:
-                self.init_model_weights()
-            self.vars_to_train = self.select_train_vars()
 
         return ret
 
