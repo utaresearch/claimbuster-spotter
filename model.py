@@ -71,8 +71,13 @@ class ClaimBusterLayer(K.layers.Layer):
 
     def call(self, x_id, **kwargs):
         perturb = None if 'perturb' not in kwargs else kwargs.get('perturb')
+        get_embedding = None if 'get_embedding' not in kwargs else kwargs.get('get_embedding')
 
-        bert_output = self.bert_model(x_id, perturb, training=self.is_training)
+        if not get_embedding:
+            bert_output = self.bert_model(x_id, perturb, training=self.is_training)
+        else:
+            orig_embed, bert_output = self.bert_model(x_id, perturb, training=self.is_training)
+
         bert_output = self.dropout_layer(bert_output, training=self.is_training)
         ret = self.fc_layer(bert_output)
 
@@ -81,7 +86,7 @@ class ClaimBusterLayer(K.layers.Layer):
                 self.init_model_weights()
             self.vars_to_train = self.select_train_vars()
 
-        return ret
+        return ret if not get_embedding else orig_embed, ret
 
     @tf.function
     def train_on_batch(self, x_id, y):
@@ -101,10 +106,10 @@ class ClaimBusterLayer(K.layers.Layer):
         y = tf.one_hot(y, depth=FLAGS.num_classes)
 
         with tf.GradientTape() as tape:
-            logits = self.call(x_id)
+            orig_embed, logits = self.call(x_id, get_embedding=True)
             loss = self.compute_loss(y, logits)
 
-            perturb = self._compute_perturbation(loss, tape)
+            perturb = self._compute_perturbation(loss, orig_embed, tape)
 
             logits_adv = self.call(x_id, perturb=perturb)
             loss_adv = self.compute_loss(y, logits_adv)
@@ -163,9 +168,12 @@ class ClaimBusterLayer(K.layers.Layer):
         return tf.reduce_mean(tf.cast(tf.equal(tf.argmax(logits, axis=1), tf.argmax(y, axis=1)), dtype=tf.float32))
 
     @staticmethod
-    def _compute_perturbation(loss, tape):
-        raise Exception('not implemented!')
-        return -1
+    def _compute_perturbation(loss, orig_embed, tape):
+        grad = tape.gradient(loss, orig_embed)
+        grad = tf.stop_gradient(grad)
+        perturb = FLAGS.perturb_norm_length * grad / tf.norm(grad, ord='euclidean')
+
+        return perturb
 
     def init_model_weights(self, ckpt_path=os.path.join(FLAGS.bert_model_loc, 'bert_model.ckpt')):
         # Define several helper functions

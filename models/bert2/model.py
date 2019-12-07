@@ -71,7 +71,7 @@ class BertModelLayer(Layer):
 
             pf.utils.freeze_leaf_layers(self, freeze_selector)
 
-    def call(self, inputs, perturb, mask=None, training=None):
+    def call(self, inputs, perturb, get_embedding=False, mask=None, training=None):
         if mask is None:
             mask = self.embeddings_layer.compute_mask(inputs)
 
@@ -84,4 +84,4 @@ class BertModelLayer(Layer):
 
         pooled_output = self.pooler_layer(output[:, 0, :], training=training)
 
-        return pooled_output  # [B, hidden_size]
+        return pooled_output if not get_embedding else embedding_output, pooled_output
