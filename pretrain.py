@@ -60,6 +60,9 @@ def main():
 
     kmodel.save_weights('dummy.ckpt')
 
+    print(kmodel(input))
+    exit()
+
     epochs_trav = 0
     for epoch in range(FLAGS.pretrain_steps):
         epochs_trav += 1
