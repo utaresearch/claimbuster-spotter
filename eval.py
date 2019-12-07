@@ -52,10 +52,8 @@ def main():
         eval_acc += eval_batch_acc * np.shape(y)[0]
 
         preds = model.preds_on_batch(x_id)
-        print(preds.numpy())
-        print(all_pred)
-        all_pred += preds.numpy()
-        all_y += y
+        all_pred = np.concatenate(all_pred, preds.numpy())
+        all_y = np.concatenate(all_y, y)
 
     eval_loss /= test_data.get_length()
     eval_acc /= test_data.get_length()
