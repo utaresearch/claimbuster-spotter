@@ -55,9 +55,7 @@ def main():
 
         preds = model.preds_on_batch(x_id)
         all_pred = all_pred + list(preds.numpy())
-        all_y = all_y + list(y)
-
-        print(all_pred, all_y)
+        all_y = all_y + list(np.cast(y.numpy(), dtype=np.float32))
 
         pbar.update(1)
 
