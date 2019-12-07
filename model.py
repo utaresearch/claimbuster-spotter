@@ -173,7 +173,7 @@ class ClaimBusterModel(K.layers.Layer):
         logging.info("Unused weights from checkpoint: {}".format("\n\t" + "\n\t".join(
             sorted(stock_weights.difference(loaded_weights)))))
 
-        return skipped_weight_value_tuples  # (bert_weight, value_from_ckpt)
+        return skipped_weight_value_tuples
 
     @staticmethod
     def compute_accuracy(y, logits):
