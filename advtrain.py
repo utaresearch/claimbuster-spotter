@@ -1,12 +1,17 @@
 import math
 import time
 import os
-from shutil import rmtree
 from tqdm import tqdm
+from shutil import rmtree
 from utils.data_loader import DataLoader
 from model import ClaimBusterModel
 from flags import FLAGS, print_flags
+from absl import logging
 import tensorflow as tf
+import numpy as np
+from model import ClaimBusterModel
+
+K = tf.keras
 
 
 def main():
@@ -28,75 +33,81 @@ def main():
     if not os.path.isdir(FLAGS.cb_model_dir) and FLAGS.restore_and_continue:
         raise Exception('Cannot restore from non-existent folder: {}'.format(FLAGS.cb_model_dir))
 
-    tf.logging.info("Loading dataset")
+    logging.info("Loading dataset")
     data_load = DataLoader()
 
     train_data = data_load.load_training_data()
     test_data = data_load.load_testing_data()
 
-    tf.logging.info("{} training examples".format(train_data.get_length()))
-    tf.logging.info("{} validation examples".format(test_data.get_length()))
+    logging.info("{} training examples".format(train_data.get_length()))
+    logging.info("{} validation examples".format(test_data.get_length()))
 
-    graph = tf.get_default_graph()
-    cb_model = ClaimBusterModel(data_load.vocab, data_load.class_weights, restore=FLAGS.restore_and_continue, adv=True)
-    start_epoch = 0 if not FLAGS.restore_and_continue else cb_model.load_model(graph, train=True)
+    dataset_train = tf.data.Dataset.from_tensor_slices(([x[0] for x in train_data.x], train_data.y)).shuffle(
+        buffer_size=train_data.get_length()).batch(FLAGS.batch_size)
+    dataset_test = tf.data.Dataset.from_tensor_slices(([x[0] for x in test_data.x], test_data.y)).shuffle(
+        buffer_size=test_data.get_length()).batch(FLAGS.batch_size)
 
-    config = tf.ConfigProto()
-    config.gpu_options.allow_growth = True
+    logging.info("Warming up...")
 
-    with tf.Session(graph=graph, config=config) as sess:
-        sess.run(tf.global_variables_initializer())
+    model = ClaimBusterModel(training=True)
+    model.warm_up()
+
+    start_epoch, end_epoch = 0, FLAGS.pretrain_steps
+
+    if FLAGS.restore_and_continue:
+        logging.info('Attempting to restore weights from {}'.format(FLAGS.cb_model_dir))
+
+        last_epoch = model.load_custom_model()
+
+        start_epoch += last_epoch + 1
+        end_epoch += last_epoch + 1 + FLAGS.pretrain_steps
+
+    logging.info("Starting adversarial training...")
+
+    epochs_trav = 0
+    for epoch in range(start_epoch, end_epoch, 1):
+        epochs_trav += 1
+        epoch_loss, epoch_acc = 0, 0
         start = time.time()
-        epochs_trav = 0
 
-        tf.logging.info("Starting adv training...")
-        for epoch in range(start_epoch, start_epoch + FLAGS.advtrain_steps, 1):
-            epochs_trav += 1
-            n_batches = math.ceil(float(FLAGS.train_examples) / float(FLAGS.batch_size))
+        pbar = tqdm(total=math.ceil(len(train_data.y) / FLAGS.batch_size))
+        for x_id, y in dataset_train:
+            train_batch_loss, train_batch_acc = model.train_on_batch(x_id, y)
+            epoch_loss += train_batch_loss
+            epoch_acc += train_batch_acc * np.shape(y)[0]
+            pbar.update(1)
+        pbar.close()
 
-            n_samples = 0
-            epoch_loss, epoch_loss_adv, epoch_acc, epoch_acc_adv = 0.0, 0.0, 0.0, 0.0
+        epoch_loss /= train_data.get_length()
+        epoch_acc /= train_data.get_length()
 
-            for i in tqdm(range(n_batches)):
-                batch_x, batch_y = cb_model.get_batch(i, train_data)
-                cb_model.train_neural_network(sess, batch_x, batch_y, adv=True)
+        if epoch % FLAGS.stat_print_interval == 0:
+            log_string = 'Epoch {:>3} Loss: {:>7.4} Acc: {:>7.4f}% '.format(epoch + 1, epoch_loss, epoch_acc * 100)
 
-                b_loss, b_loss_adv, b_acc, b_acc_adv, _, _, _, _ = cb_model.stats_from_run(sess, batch_x, batch_y, adv=True)
-                epoch_loss += b_loss
-                epoch_loss_adv += b_loss_adv
-                epoch_acc += b_acc * len(batch_y)
-                epoch_acc_adv += b_acc_adv * len(batch_y)
-                n_samples += len(batch_y)
+            if test_data.get_length() > 0:
+                val_loss, val_acc = 0, 0
 
-            epoch_loss /= n_samples
-            epoch_loss_adv /= n_samples
-            epoch_acc /= n_samples
-            epoch_acc_adv /= n_samples
+                for x_id, y in dataset_test:
+                    val_batch_loss, val_batch_acc = model.stats_on_batch(x_id, y)
+                    val_loss += val_batch_loss
+                    val_acc += val_batch_acc * np.shape(y)[0]
 
-            if epoch % FLAGS.stat_print_interval == 0:
-                log_string = 'Epoch {:>3} Loss: {:>7.4} Adv Loss: {:>7.4} Acc: {:>7.4f}% Adv Acc: {:>7.4f}% '.format(
-                    epoch + 1, epoch_loss, epoch_loss_adv, epoch_acc * 100, epoch_acc_adv * 100)
-                if test_data.get_length() > 0:
-                    log_string += cb_model.execute_validation(sess, test_data, adv=True)
-                log_string += '({:3.3f} sec/epoch)'.format((time.time() - start) / epochs_trav)
+                val_loss /= test_data.get_length()
+                val_acc /= test_data.get_length()
 
-                tf.logging.info(log_string)
+                log_string += 'Dev Loss: {:>7.4f} Dev Acc: {:>7.4f} '.format(val_loss, val_acc)
 
-                start = time.time()
-                epochs_trav = 0
+            log_string += '({:3.3f} sec/epoch)'.format((time.time() - start) / epochs_trav)
 
-            if epoch % FLAGS.model_save_interval == 0 and epoch != 0:
-                cb_model.save_model(sess, epoch + 1)
-                tf.logging.info('Model @ epoch {} saved'.format(epoch + 1))
+            print(log_string)
 
-        tf.logging.info('Training complete.')
-        if (FLAGS.advtrain_steps - 1) % FLAGS.model_save_interval != 0:
-            cb_model.save_model(sess, epoch)
-            tf.logging.info('Final model saved.')
+            start = time.time()
+            epochs_trav = 0
 
-        sess.close()
+        if epoch % FLAGS.model_save_interval == 0:
+            model.save_custom_model(epoch)
 
 
 if __name__ == '__main__':
-    tf.logging.set_verbosity(tf.logging.INFO)
+    logging.set_verbosity(logging.INFO)
     main()

@@ -19,9 +19,21 @@ class ClaimBusterModel(K.models.Model):
         super(ClaimBusterModel, self).__init__()
         self.layer = ClaimBusterLayer(training)
         self.computed_cls_weights = cls_weights if cls_weights is not None else [1 for _ in range(FLAGS.num_classes)]
+        self.adv = None
 
     def call(self, x_id, **kwargs):
-        return self.layer.call(x_id)
+        assert 'adv' in kwargs
+        self.adv = kwargs.get('adv')
+
+        if not self.adv:
+            return self.layer.call(x_id, **kwargs)
+        else:
+            assert all(x in kwargs for x in ['loss', 'tape'])
+            loss = kwargs.get('loss')
+            tape = kwargs.get('tape')
+
+            perturb = self._compute_perturbation(loss, tape)
+            return self.layer.call(x_id, adv=self.adv, perturb=perturb)
 
     def warm_up(self):
         input_ph = K.layers.Input(shape=(FLAGS.max_len,), dtype='int32')
@@ -52,6 +64,11 @@ class ClaimBusterModel(K.models.Model):
     def preds_on_batch(self, x_id):
         return self.layer.preds_on_batch(x_id)
 
+    @staticmethod
+    def _compute_perturbation(loss, tape):
+        raise Exception('not implemented!')
+        return -1
+
 
 class ClaimBusterLayer(K.layers.Layer):
     def __init__(self, training):
@@ -66,7 +83,9 @@ class ClaimBusterLayer(K.layers.Layer):
         self.is_training = training
 
     def call(self, x_id, **kwargs):
-        bert_output = self.bert_model(x_id, training=self.is_training)
+        perturb = None if 'perturb' not in kwargs else kwargs.get('perturb')
+
+        bert_output = self.bert_model(x_id, perturb, training=self.is_training)
         bert_output = self.dropout_layer(bert_output, training=self.is_training)
         ret = self.fc_layer(bert_output)
 
