@@ -53,7 +53,7 @@ flags.DEFINE_float('kp_cls', 0.7, 'Keep probability of dropout in FC')
 # Optimization
 flags.DEFINE_integer('regtrain_steps', 50, 'Number of epochs to run.')
 flags.DEFINE_integer('advtrain_steps', 50, 'Number of epochs to run.')
-flags.DEFINE_float('lr', 2e-5, 'Learning rate while during optimiation.')
+flags.DEFINE_float('lr', 5e-5, 'Learning rate while during optimiation.')
 
 # Regularization
 flags.DEFINE_float('l2_reg_coeff', 0.001, 'If val > 0, use L2 Regularization on weights in graph')
