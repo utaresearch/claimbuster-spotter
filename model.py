@@ -23,9 +23,6 @@ class ClaimBusterModel(K.layers.Layer):
         self.computed_cls_weights = cls_weights if cls_weights is not None else [1 for _ in range(FLAGS.num_classes)]
 
         self.bert_model = LanguageModel.build_bert()
-        self.bert_model.build(L.Input(shape=(FLAGS.max_len,), dtype='int32'))
-        load_stock_weights(self.bert_model, os.path.join(FLAGS.bert_model_loc, 'bert_model.ckpt'))
-
         self.fc_layer = L.Dense(FLAGS.num_classes)
 
         self.vars_to_train = None
@@ -36,6 +33,7 @@ class ClaimBusterModel(K.layers.Layer):
         ret = self.fc_layer(bert_output)
 
         if not self.vars_to_train:
+            self.init_model_weights()
             self.vars_to_train = self.select_train_vars()
 
         return ret
@@ -93,6 +91,52 @@ class ClaimBusterModel(K.layers.Layer):
         logging.info([v.name for v in train_vars])
 
         return train_vars
+
+    def init_model_weights(self, ckpt_path=os.path.join(FLAGS.bert_model_loc, 'bert_model.ckpt')):
+        ckpt_reader = tf.train.load_checkpoint(ckpt_path)
+
+        stock_weights = set(ckpt_reader.get_variable_to_dtype_map().keys())
+        print(stock_weights)
+        exit()
+
+        prefix = bert_prefix(bert)
+
+        loaded_weights = set()
+        skip_count = 0
+        weight_value_tuples = []
+        skipped_weight_value_tuples = []
+
+        bert_params = bert.weights
+        param_values = keras.backend.batch_get_value(bert.weights)
+        for ndx, (param_value, param) in enumerate(zip(param_values, bert_params)):
+            stock_name = map_to_stock_variable_name(param.name, prefix)
+
+            if ckpt_reader.has_tensor(stock_name):
+                ckpt_value = ckpt_reader.get_tensor(stock_name)
+
+                if param_value.shape != ckpt_value.shape:
+                    print("loader: Skipping weight:[{}] as the weight shape:[{}] is not compatible "
+                          "with the checkpoint:[{}] shape:{}".format(param.name, param.shape,
+                                                                     stock_name, ckpt_value.shape))
+                    skipped_weight_value_tuples.append((param, ckpt_value))
+                    continue
+
+                weight_value_tuples.append((param, ckpt_value))
+                loaded_weights.add(stock_name)
+            else:
+                print("loader: No value for:[{}], i.e.:[{}] in:[{}]".format(param.name, stock_name, ckpt_path))
+                skip_count += 1
+        keras.backend.batch_set_value(weight_value_tuples)
+
+        print("Done loading {} BERT weights from: {} into {} (prefix:{}). "
+              "Count of weights not found in the checkpoint was: [{}]. "
+              "Count of weights with mismatched shape: [{}]".format(
+            len(weight_value_tuples), ckpt_path, bert, prefix, skip_count, len(skipped_weight_value_tuples)))
+
+        print("Unused weights from checkpoint:",
+              "\n\t" + "\n\t".join(sorted(stock_weights.difference(loaded_weights))))
+
+        return skipped_weight_value_tuples  # (bert_weight, value_from_ckpt)
 
     @staticmethod
     def compute_accuracy(y, logits):
