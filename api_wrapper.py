@@ -25,29 +25,35 @@ class ClaimBusterAPI:
         self.model.warm_up()
         self.model.load_custom_model()
 
-    def prc_sentence(self, sentence):
-        sentence, sent = self.extract_info(sentence)
-        ds = tf.data.Dataset.from_tensor_slices([self.create_bert_features(sentence)]).batch(1)
-
-        return next(iter(ds)).numpy(), sent
-
-    def create_bert_features(self, sentence):
-        features = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(sentence))
-        return DataLoader.pad_seq(features)
-
     def subscribe_cmdline_query(self):
         print('Enter a sentence to process')
-        sentence_duple = self.prc_sentence(input().strip('\n\r\t '))
-        print(sentence_duple)
+        return self._retrieve_model_preds(self._prc_sentence_list([input().strip('\n\r\t ')]))
 
-        return self.model.preds_on_batch(sentence_duple[0])
+    def single_sentence_query(self, sentence):
+        return self._retrieve_model_preds(self._prc_sentence_list([sentence.strip('\n\r\t ')]))
 
-    def direct_sentence_query(self, sentence):
-        sentence_duple = self.prc_sentence(sentence.strip('\n\r\t '))
-        return self.model.preds_on_batch(sentence_duple[0])
+    def batch_sentence_query(self, sentence_list):
+        sentence_list = [x.strip('\n\r\t ') for x in sentence_list]
+        return self._retrieve_model_preds(self._prc_sentence_list(sentence_list))
+
+    def _prc_sentence_list(self, sentence_list):
+        sentence_features = [self._extract_info(x) for x in sentence_list]
+        return tf.data.Dataset.from_tensor_slices(self._create_bert_features(sentence_features)).batch(
+            FLAGS.batch_size)
+
+    def _retrieve_model_preds(self, dataset):
+        ret = []
+        for x in dataset:
+            ret = ret + self.model.preds_on_batch(x)
+        return ret
+
+    def _create_bert_features(self, sentence_list):
+        features = [self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(x))
+                    for x in sentence_list]
+        return DataLoader.pad_seq(features)
 
     @staticmethod
-    def extract_info(sentence):
+    def _extract_info(sentence):
         sentence = transf.transform_sentence_complete(sentence)
         sent = transf.get_sentiment(sentence)
 
