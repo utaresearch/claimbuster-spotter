@@ -76,7 +76,7 @@ class ClaimBusterLayer(K.layers.Layer):
         if not get_embedding:
             bert_output = self.bert_model(x_id, perturb, training=self.is_training)
         else:
-            orig_embed, bert_output = self.bert_model(x_id, perturb, training=self.is_training)
+            orig_embed, bert_output = self.bert_model(x_id, perturb, get_embedding=True, training=self.is_training)
 
         bert_output = self.dropout_layer(bert_output, training=self.is_training)
         ret = self.fc_layer(bert_output)
