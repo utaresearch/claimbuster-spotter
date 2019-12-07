@@ -13,7 +13,7 @@ if __name__ == '__main__':
     ]
 
     print(sentence_list)
-    print(api.batch_sentence_query())
+    print(api.batch_sentence_query(sentence_list))
     print('Test OK')
 
     print('--- Single Sentence Query ---')
