@@ -95,7 +95,7 @@ class ClaimBusterLayer(K.layers.Layer):
     def train_on_batch(self, x_id, y):
         y = tf.one_hot(y, depth=FLAGS.num_classes)
 
-        with tf.GradientTape(persistent=False) as tape:
+        with tf.GradientTape() as tape:
             logits = self.call(x_id)
             loss = self.compute_loss(y, logits)
 
@@ -108,14 +108,15 @@ class ClaimBusterLayer(K.layers.Layer):
     def adv_train_on_batch(self, x_id, y):
         y = tf.one_hot(y, depth=FLAGS.num_classes)
 
-        with tf.GradientTape(persistent=True) as tape:
-            orig_embed, logits = self.call(x_id, get_embedding=True)
-            loss = self.compute_loss(y, logits)
+        with tf.GradientTape() as tape:
+            with tf.GradientTape() as tape2:
+                orig_embed, logits = self.call(x_id, get_embedding=True)
+                loss = self.compute_loss(y, logits)
 
-            perturb = self._compute_perturbation(loss, orig_embed, tape)
+                perturb = self._compute_perturbation(loss, orig_embed, tape2)
 
-            logits_adv = self.call(x_id, perturb=perturb)
-            loss_adv = self.compute_loss(y, logits_adv)
+                logits_adv = self.call(x_id, perturb=perturb)
+                loss_adv = self.compute_loss(y, logits_adv)
 
         grad = tape.gradient(loss_adv, self.vars_to_train)
         self.optimizer.apply_gradients(zip(grad, self.vars_to_train))
