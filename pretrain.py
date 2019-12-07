@@ -61,8 +61,7 @@ def main():
             load_location = FLAGS.cb_model_dir
         else:
             folders = [x for x in os.listdir(FLAGS.cb_model_dir) if os.path.isdir(os.path.join(FLAGS.cb_model_dir, x))]
-            print(os.listdir(FLAGS.cb_model_dir), folders)
-            load_location = sorted(folders)[-1]
+            load_location = os.path.join(FLAGS.cb_model_dir, sorted(folders)[-1])
 
         logging.info(load_location)
         model.load_weights(load_location)
