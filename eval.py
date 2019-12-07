@@ -57,6 +57,12 @@ def main():
         all_pred = all_pred + list(preds.numpy())
         all_y = all_y + list(y.numpy())
 
+        #test
+        all_pred_argmax = np.argmax(all_pred, axis=1)
+
+        f1score = f1_score(all_y, all_pred_argmax, average='weighted')
+        ndcg = compute_ndcg(all_y, [x[FLAGS.num_classes - 1] for x in all_pred])
+
         pbar.update(1)
 
     eval_loss /= test_data.get_length()
