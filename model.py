@@ -170,8 +170,8 @@ class ClaimBusterModel(K.layers.Layer):
                      "Count of weights with mismatched shape: [{}]".format(
             len(weight_value_tuples), ckpt_path, self, prefix, skip_count, len(skipped_weight_value_tuples)))
 
-        logging.info("Unused weights from checkpoint:",
-                     "\n\t" + "\n\t".join(sorted(stock_weights.difference(loaded_weights))))
+        logging.info("Unused weights from checkpoint: {}".format("\n\t" + "\n\t".join(
+            sorted(stock_weights.difference(loaded_weights)))))
 
         return skipped_weight_value_tuples  # (bert_weight, value_from_ckpt)
 
