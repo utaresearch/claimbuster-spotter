@@ -5,9 +5,8 @@ if __name__ == '__main__':
     api = ClaimBusterAPI()
 
     while True:
-        res = api.subscribe_cmdline_query()
+        res = api.subscribe_cmdline_query()[0]
         idx = np.argmax(res)
 
         print(res)
-
         print('{} with probability {}'.format(api.return_strings[idx], res[idx]))
