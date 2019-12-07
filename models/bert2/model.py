@@ -11,6 +11,7 @@ import params_flow as pf
 from .layer import Layer
 from .embeddings import BertEmbeddingsLayer
 from .transformer import TransformerEncoderLayer
+from .pooler import PoolerLayer
 
 
 class BertModelLayer(Layer):
@@ -55,7 +56,7 @@ class BertModelLayer(Layer):
             name="encoder"
         )
 
-        self.pooler_layer = keras.layers.Dense(self.params.hidden_size, name="pooler/dense")
+        self.pooler_layer = PoolerLayer(self.params.hidden_size, name='pooler')
 
         super(BertModelLayer, self).build(input_shape)
 

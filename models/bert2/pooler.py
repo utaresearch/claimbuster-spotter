@@ -1,0 +1,15 @@
+import tensorflow as tf
+
+K = tf.keras
+L = K.layers
+
+
+class PoolerLayer(L.Layer):
+    def __init__(self, hidden_size, name):
+        super(PoolerLayer, self).__init__(name)
+
+        self.hidden_size = hidden_size
+        self.dense_layer = L.Dense(hidden_size, name='dense')
+
+    def call(self, x):
+        return self.dense_layer(x)
