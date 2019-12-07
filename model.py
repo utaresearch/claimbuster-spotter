@@ -43,7 +43,7 @@ class ClaimBusterModel(K.models.Model):
             logits = self.call(x_id)
             loss = self.compute_loss(y, logits)
 
-        grad = tape.gradient(loss, self.trainable_weights)
+        grad = tape.gradient(loss, self.layer.trainable_weights)
         self.optimizer.apply_gradients(zip(grad, self.vars_to_train))
 
         return tf.reduce_sum(loss), self.compute_accuracy(y, logits)
@@ -60,7 +60,7 @@ class ClaimBusterModel(K.models.Model):
         loss_l2 = 0
 
         if FLAGS.l2_reg_coeff > 0.0:
-            varlist = self.trainable_variables
+            varlist = self.layer.trainable_weights
             loss_l2 = tf.add_n([tf.nn.l2_loss(v) for v in varlist if 'bias' not in v.name]) * FLAGS.l2_reg_coeff
 
         ret_loss = loss + loss_l2
@@ -71,7 +71,7 @@ class ClaimBusterModel(K.models.Model):
         return tf.identity(ret_loss, name='loss')
 
     def select_train_vars(self):
-        train_vars = self.trainable_variables
+        train_vars = self.layer.trainable_weights
 
         non_trainable_layers = ['/layer_{}/'.format(num)
                                 for num in range(FLAGS.tfm_layers - FLAGS.tfm_ft_enc_layers)]
