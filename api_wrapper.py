@@ -37,6 +37,7 @@ class ClaimBusterAPI:
     def subscribe_cmdline_query(self):
         print('Enter a sentence to process')
         sentence_duple = self.prc_sentence(input().strip('\n\r\t '))
+        print(sentence_duple)
 
         return self.model.preds_on_batch([sentence_duple[0]])
 
