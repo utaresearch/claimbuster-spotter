@@ -52,9 +52,9 @@ def main():
         eval_acc += eval_batch_acc * np.shape(y)[0]
 
         preds = model.preds_on_batch(x_id)
-        print(preds)
+        print(preds.numpy())
         print(all_pred)
-        all_pred += preds
+        all_pred += preds.numpy()
         all_y += y
 
     eval_loss /= test_data.get_length()
