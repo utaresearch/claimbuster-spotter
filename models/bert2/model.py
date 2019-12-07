@@ -72,6 +72,8 @@ class BertModelLayer(Layer):
             pf.utils.freeze_leaf_layers(self, freeze_selector)
 
     def call(self, inputs, perturb, get_embedding=False, mask=None, training=None):
+        print(perturb, get_embedding)
+
         if mask is None:
             mask = self.embeddings_layer.compute_mask(inputs)
 
