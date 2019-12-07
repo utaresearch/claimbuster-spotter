@@ -81,27 +81,9 @@ flags.DEFINE_integer('tfm_ft_enc_layers', 2, 'Last `var` encoding layers are mar
 flags.DEFINE_float('kp_tfm_atten', 0.7, 'Keep probability of attention dropout in Transformer')
 flags.DEFINE_float('kp_tfm_hidden', 0.7, 'Keep probability of hidden dropout in Transformer')
 
-# XLNET
-flags.DEFINE_string('xlnet_model_loc', './data/xlnet_pretrain', 'Root location of pretrained XLNet files.')
-flags.DEFINE_string('xlnet_model_size', 'base', 'Version of XLNet to use: base or large')
-flags.DEFINE_bool('use_bfloat16', False, 'Use float16 rather than 32')
-flags.DEFINE_enum("init", default="normal", enum_values=["normal", "uniform"], help="Initialization method.")
-flags.DEFINE_float("init_std", 0.02, "Initialization std when init is normal.")
-flags.DEFINE_float("init_range", 0.1, "Initialization std when init is uniform.")
-flags.DEFINE_integer("clamp_len", -1, "Clamp length")
-
-flags.DEFINE_integer("warmup_steps", 5, "number of warmup steps")
-flags.DEFINE_float("lr_layer_decay_rate", 1.0, "Top layer: lr[L] = FLAGS.learning_rate. Low layer: lr[l-1] = lr[l] * lr_layer_decay_rate.")
-flags.DEFINE_float("min_lr_ratio", 0.0, "Min lr ratio for cos decay.")
-flags.DEFINE_float("clip", 1.0, "Gradient clipping")
-flags.DEFINE_float("weight_decay", default=0.00, help="Weight decay rate")
-flags.DEFINE_float("adam_epsilon", default=1e-8, help="Adam epsilon")
-flags.DEFINE_string("decay_method", default="poly", help="poly or cos")
-
 # BERT
 flags.DEFINE_string('bert_model_loc', './data/bert_pretrain', 'Root location of pretrained BERT files.')
 flags.DEFINE_string('bert_model_size', 'base', 'Version of BERT to use: base or large_wwm')
-flags.DEFINE_string('bert_model_hub', 'https://tfhub.dev/google/bert_uncased_L-12_H-768_A-12/1', 'Location of BERT on TF hubs.')
 
 # Training
 flags.DEFINE_bool('adam', True, 'Adam or RMSProp if False')
@@ -118,11 +100,9 @@ flags.DEFINE_string('raw_clef_test_loc', '{}/CT19-T1-Test.csv'.format(FLAGS.cb_d
 flags.DEFINE_string('prc_data_loc', '{}/all_data.pickle'.format(FLAGS.cb_data_dir), 'Location of saved processed data')
 flags.DEFINE_string('prc_clef_loc', '{}/all_clef_data.pickle'.format(FLAGS.cb_data_dir), 'Location of saved processed CLEF data')
 
-FLAGS.xlnet_model_loc = FLAGS.xlnet_model_loc + '_' + FLAGS.xlnet_model_size
 FLAGS.bert_model_loc = FLAGS.bert_model_loc + '_' + FLAGS.bert_model_size
-if any(['large' in z for z in [FLAGS.xlnet_model_size, FLAGS.bert_model_size]]):
+if any(['large' in FLAGS.bert_model_size]):
 	FLAGS.tfm_layers = 24
-	FLAGS.bert_model_hub = 'https://tfhub.dev/google/bert_uncased_L-24_H-1024_A-16/1'
 	FLAGS.tfm_ft_enc_layers *= 2
 
 
