@@ -72,10 +72,10 @@ def main():
         end_epoch += last_epoch + 1 + FLAGS.pretrain_steps
 
         print(start_epoch, end_epoch)
+    else:
+        model.save_weights(os.path.join(FLAGS.cb_model_dir, '{}/bert_claimspotter.ckpt'.format(str(1).zfill(3))))
 
     logging.info("Starting training...")
-
-    model.save_weights(os.path.join(FLAGS.cb_model_dir, '{}/bert_claimspotter.ckpt'.format(str(1).zfill(3))))
 
     epochs_trav = 0
     for epoch in range(start_epoch, end_epoch, 1):
