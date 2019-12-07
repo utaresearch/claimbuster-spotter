@@ -95,7 +95,7 @@ class ClaimBusterLayer(K.layers.Layer):
     def train_on_batch(self, x_id, y):
         y = tf.one_hot(y, depth=FLAGS.num_classes)
 
-        with tf.GradientTape() as tape:
+        with tf.GradientTape(persistent=False) as tape:
             logits = self.call(x_id)
             loss = self.compute_loss(y, logits)
 
@@ -108,7 +108,7 @@ class ClaimBusterLayer(K.layers.Layer):
     def adv_train_on_batch(self, x_id, y):
         y = tf.one_hot(y, depth=FLAGS.num_classes)
 
-        with tf.GradientTape() as tape:
+        with tf.GradientTape(persistent=True) as tape:
             orig_embed, logits = self.call(x_id, get_embedding=True)
             loss = self.compute_loss(y, logits)
 
