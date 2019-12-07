@@ -12,7 +12,7 @@ class ClaimBusterAPI:
     def __init__(self):
         tf.logging.set_verbosity(tf.logging.ERROR)
         os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu])
-        os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'True'
+        os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 
         self.return_strings = ['Non-factual statement', 'Unimportant factual statement', 'Salient factual statement']
         self.tokenizer = DataLoader.create_tokenizer_from_hub_module()
