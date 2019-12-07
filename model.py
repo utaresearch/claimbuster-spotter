@@ -122,14 +122,14 @@ class ClaimBusterLayer(K.layers.Layer):
 
         return tf.reduce_sum(loss_adv), self.compute_accuracy(y, logits_adv)
 
-    # @tf.function
+    @tf.function
     def stats_on_batch(self, x_id, y):
         y = tf.one_hot(y, depth=FLAGS.num_classes)
         logits = self.call(x_id)
 
         return tf.reduce_sum(self.compute_loss(y, logits)), self.compute_accuracy(y, logits)
 
-    # @tf.function
+    @tf.function
     def preds_on_batch(self, x_id):
         logits = self.call(x_id)
         return tf.nn.softmax(logits)
