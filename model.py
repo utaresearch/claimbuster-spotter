@@ -73,8 +73,6 @@ class ClaimBusterLayer(K.layers.Layer):
         perturb = None if 'perturb' not in kwargs else kwargs.get('perturb')
         get_embedding = None if 'get_embedding' not in kwargs else kwargs.get('get_embedding')
 
-        print(perturb, get_embedding)
-
         if not get_embedding:
             bert_output = self.bert_model(x_id, perturb, training=self.is_training)
         else:
