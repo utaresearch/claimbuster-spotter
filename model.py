@@ -14,30 +14,20 @@ K = tf.keras
 L = K.layers
 
 
-class ClaimBusterModel(K.layers.Layer):
+class ClaimBusterModel(K.models.Model):
     def __init__(self, cls_weights=None):
         super(ClaimBusterModel, self).__init__()
+        self.layer = ClaimBusterLayer()
 
         self.optimizer = K.optimizers.Adam(learning_rate=FLAGS.lr)
-        self.accuracy = K.metrics.Accuracy()  # @TODO create more in the future
         self.computed_cls_weights = cls_weights if cls_weights is not None else [1 for _ in range(FLAGS.num_classes)]
 
-        self.bert_model = LanguageModel.build_bert()
-        self.fc_layer = L.Dense(FLAGS.num_classes)
+    def call(self, x_id, kp_cls=FLAGS.kp_cls):
+        return self.layer.call(x_id, kp_cls)
 
-        self.vars_to_train = None
-
-    def call(self, x_id, kp_cls=FLAGS.kp_cls, kp_tfm_atten=FLAGS.kp_tfm_atten, kp_tfm_hidden=FLAGS.kp_tfm_hidden):
-        bert_output = self.bert_model(x_id)
-        bert_output = tf.nn.dropout(bert_output, rate=1 - kp_cls)
-        ret = self.fc_layer(bert_output)
-
-        if not self.vars_to_train:
-            if not FLAGS.restore_and_continue:
-                self.init_model_weights()
-            self.vars_to_train = self.select_train_vars()
-
-        return ret
+    def warm_up(self):
+        input_ph = K.layers.Input(shape=(FLAGS.max_len,), dtype='int32')
+        self.call(input_ph)
 
     @tf.function
     def train_on_batch(self, x_id, y):
@@ -51,8 +41,6 @@ class ClaimBusterModel(K.layers.Layer):
         self.optimizer.apply_gradients(zip(grad, self.vars_to_train))
 
         return tf.reduce_sum(loss), self.compute_accuracy(y, logits)
-
-        # self.accuracy.update_state(y, yhat)  # @TODO update accuracy
 
     @tf.function
     def stats_on_batch(self, x_id, y):
@@ -92,6 +80,32 @@ class ClaimBusterModel(K.layers.Layer):
         logging.info([v.name for v in train_vars])
 
         return train_vars
+
+    @staticmethod
+    def compute_accuracy(y, logits):
+        return tf.reduce_mean(tf.cast(tf.equal(tf.argmax(logits, axis=1), tf.argmax(y, axis=1)), dtype=tf.float32))
+
+
+class ClaimBusterLayer(K.layers.Layer):
+    def __init__(self):
+        super(ClaimBusterLayer, self).__init__()
+
+        self.bert_model = LanguageModel.build_bert()
+        self.fc_layer = L.Dense(FLAGS.num_classes)
+
+        self.vars_to_train = None
+
+    def call(self, x_id, kp_cls=FLAGS.kp_cls, kp_tfm_atten=FLAGS.kp_tfm_atten, kp_tfm_hidden=FLAGS.kp_tfm_hidden):
+        bert_output = self.bert_model(x_id)
+        bert_output = tf.nn.dropout(bert_output, rate=1 - kp_cls)
+        ret = self.fc_layer(bert_output)
+
+        if not self.vars_to_train:
+            if not FLAGS.restore_and_continue:
+                self.init_model_weights()
+            self.vars_to_train = self.select_train_vars()
+
+        return ret
 
     def init_model_weights(self, ckpt_path=os.path.join(FLAGS.bert_model_loc, 'bert_model.ckpt')):
         # Define several helper functions
@@ -175,7 +189,3 @@ class ClaimBusterModel(K.layers.Layer):
             sorted(stock_weights.difference(loaded_weights)))))
 
         return skipped_weight_value_tuples
-
-    @staticmethod
-    def compute_accuracy(y, logits):
-        return tf.reduce_mean(tf.cast(tf.equal(tf.argmax(logits, axis=1), tf.argmax(y, axis=1)), dtype=tf.float32))

@@ -49,8 +49,8 @@ def main():
 
     logging.info("Warming up...")
 
-    input_ph = K.layers.Input(shape=(FLAGS.max_len,), dtype='int32')
-    model = K.models.Model(input_ph, ClaimBusterModel().call(input_ph))
+    model = ClaimBusterModel()
+    model.warm_up()
 
     if FLAGS.restore_and_continue:
         logging.info('Attempting to restore weights from {}'.format(FLAGS.cb_model_dir))
