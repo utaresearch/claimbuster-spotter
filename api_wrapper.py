@@ -1,63 +1,51 @@
-from bert import run_classifier
 import numpy as np
 import os
 from model import ClaimBusterModel
+from models import bert2
 from utils.data_loader import DataLoader
 from utils import transformations as transf
 from flags import FLAGS
+from absl import logging
 import tensorflow as tf
 
 
 class ClaimBusterAPI:
     def __init__(self):
-        tf.logging.set_verbosity(tf.logging.ERROR)
+        logging.set_verbosity(logging.ERROR)
         os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu])
         os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 
         self.return_strings = ['Non-factual statement', 'Unimportant factual statement', 'Salient factual statement']
-        self.tokenizer = DataLoader.create_tokenizer_from_hub_module()
-
-        data_load = DataLoader()
-        self.vocab = data_load.vocab
+        self.tokenizer = bert2.bert_tokenization.FullTokenizer(os.path.join(FLAGS.bert_model_loc, "vocab.txt"),
+                                                               do_lower_case=True)
 
         transf.load_dependencies()
 
-        graph = tf.get_default_graph()
-        self.cb_model = ClaimBusterModel(data_load.vocab, data_load.class_weights, restore=True, adv=False)
-        self.cb_model.load_model(graph, train=False)
+        self.model = ClaimBusterModel()
+        self.model.load_custom_model()
 
-        config = tf.ConfigProto()
-        config.gpu_options.allow_growth = True
+    def prc_sentence(self, sentence):
+        sentence, sent = self.extract_info(sentence)
+        input_features = self.create_bert_features(sentence)
 
-        self.sess = tf.Session(graph=graph, config=config)
-        self.sess.run(tf.global_variables_initializer())
-        self.cb_model.load_model(self.sess, graph)
+        return input_features, sent
 
-    def prc_sentence(self, sentence, vocab):
-        sentence, pos, sent = self.extract_info(sentence, vocab)
-
-        input_examples = [run_classifier.InputExample(guid="", text_a=sentence, text_b=None, label=0)]
-        input_features = run_classifier.convert_examples_to_features(input_examples,
-                                                                     [z for z in range(FLAGS.num_classes)],
-                                                                     FLAGS.max_len, self.tokenizer)
-
-        return input_features, pos, sent
+    def create_bert_features(self, sentence):
+        return self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(sentence)
 
     def subscribe_cmdline_query(self):
         print('Enter a sentence to process')
-        sentence_tuple = self.prc_sentence(input().strip('\n\r\t '), self.vocab)
 
-        return self.cb_model.get_preds(self.sess, sentence_tuple)[0]
+        sentence_duple = self.prc_sentence(input().strip('\n\r\t '))
+        return self.model.preds_on_batch(sentence_duple[0])
 
     def direct_sentence_query(self, sentence):
-        sentence_tuple = self.prc_sentence(sentence.strip('\n\r\t '), self.vocab)
-        return self.cb_model.get_preds(self.sess, sentence_tuple)[0]
+        sentence_duple = self.prc_sentence(sentence.strip('\n\r\t '))
+        return self.model.preds_on_batch(sentence_duple[0])
 
     @staticmethod
-    def extract_info(sentence, vocab):
+    def extract_info(sentence):
         sentence = transf.transform_sentence_complete(sentence)
-
         sent = transf.get_sentiment(sentence)
-        pos = transf.process_sentence_full_tags(sentence)
 
-        return sentence, pos, sent
+        return sentence, sent

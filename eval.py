@@ -38,15 +38,7 @@ def main():
     model.warm_up()
 
     logging.info('Attempting to restore weights from {}'.format(FLAGS.cb_model_dir))
-
-    if any('.ckpt' in x for x in os.listdir(FLAGS.cb_model_dir)):
-        load_location = FLAGS.cb_model_dir
-    else:
-        folders = [x for x in os.listdir(FLAGS.cb_model_dir) if os.path.isdir(os.path.join(FLAGS.cb_model_dir, x))]
-        load_location = os.path.join(FLAGS.cb_model_dir, sorted(folders)[-1])
-
-    load_location = os.path.join(load_location, FLAGS.cb_model_ckpt)
-    model.load_weights(load_location)
+    model.load_custom_model()
 
     logging.info("Starting evaluation...")
 

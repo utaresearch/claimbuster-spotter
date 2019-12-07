@@ -27,6 +27,22 @@ class ClaimBusterModel(K.models.Model):
         input_ph = K.layers.Input(shape=(FLAGS.max_len,), dtype='int32')
         self.call(input_ph)
 
+    def load_custom_model(self):
+        if any('.ckpt' in x for x in os.listdir(FLAGS.cb_model_dir)):
+            load_location = FLAGS.cb_model_dir
+        else:
+            folders = [x for x in os.listdir(FLAGS.cb_model_dir) if os.path.isdir(os.path.join(FLAGS.cb_model_dir, x))]
+            load_location = os.path.join(FLAGS.cb_model_dir, sorted(folders)[-1])
+
+        last_epoch = int(load_location.split('/')[-1])
+        load_location = os.path.join(load_location, FLAGS.cb_model_ckpt)
+        self.load_weights(load_location)
+
+        return last_epoch
+
+    def save_custom_model(self, epoch):
+        self.save_weights(os.path.join(FLAGS.cb_model_dir, str(epoch + 1).zfill(3), FLAGS.cb_model_ckpt))
+
     def train_on_batch(self, x_id, y):
         return self.layer.train_on_batch(x_id, y)
 

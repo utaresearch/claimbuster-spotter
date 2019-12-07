@@ -57,15 +57,7 @@ def main():
     if FLAGS.restore_and_continue:
         logging.info('Attempting to restore weights from {}'.format(FLAGS.cb_model_dir))
 
-        if any('.ckpt' in x for x in os.listdir(FLAGS.cb_model_dir)):
-            load_location = FLAGS.cb_model_dir
-        else:
-            folders = [x for x in os.listdir(FLAGS.cb_model_dir) if os.path.isdir(os.path.join(FLAGS.cb_model_dir, x))]
-            load_location = os.path.join(FLAGS.cb_model_dir, sorted(folders)[-1])
-
-        last_epoch = int(load_location.split('/')[-1])
-        load_location = os.path.join(load_location, FLAGS.cb_model_ckpt)
-        model.load_weights(load_location)
+        last_epoch = model.load_custom_model()
 
         start_epoch += last_epoch + 1
         end_epoch += last_epoch + 1 + FLAGS.pretrain_steps
@@ -112,7 +104,7 @@ def main():
             epochs_trav = 0
 
         if epoch % FLAGS.model_save_interval == 0:
-            model.save_weights(os.path.join(FLAGS.cb_model_dir, str(epoch + 1).zfill(3), FLAGS.cb_model_ckpt))
+            model.save_custom_model(epoch)
 
 
 if __name__ == '__main__':
