@@ -1,5 +1,6 @@
 import math
 import time
+from tqdm import tqdm
 import os
 from utils.data_loader import DataLoader
 from model import ClaimBusterModel
@@ -46,6 +47,7 @@ def main():
     eval_loss, eval_acc = 0, 0
     all_y, all_pred = [], []
 
+    pbar = tqdm(total=math.ceil(len(test_data.y) / FLAGS.batch_size))
     for x_id, y in dataset_test:
         eval_batch_loss, eval_batch_acc = model.stats_on_batch(x_id, y)
         eval_loss += eval_batch_loss
@@ -54,6 +56,10 @@ def main():
         preds = model.preds_on_batch(x_id)
         all_pred = all_pred + list(preds.numpy())
         all_y = all_y + list(y)
+
+        print(all_pred, all_y)
+
+        pbar.update(1)
 
     eval_loss /= test_data.get_length()
     eval_acc /= test_data.get_length()
