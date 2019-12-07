@@ -85,7 +85,7 @@ class ClaimBusterLayer(K.layers.Layer):
             logits = self.call(x_id)
             loss = self.compute_loss(y, logits)
 
-        grad = tape.gradient(loss, self.trainable_weights)
+        grad = tape.gradient(loss, self.vars_to_train)
         self.optimizer.apply_gradients(zip(grad, self.vars_to_train))
 
         return tf.reduce_sum(loss), self.compute_accuracy(y, logits)
