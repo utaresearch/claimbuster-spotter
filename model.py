@@ -18,11 +18,7 @@ class ClaimBusterModel(K.models.Model):
     def __init__(self, cls_weights=None):
         super(ClaimBusterModel, self).__init__()
         self.layer = ClaimBusterLayer()
-
-        self.optimizer = K.optimizers.Adam(learning_rate=FLAGS.lr)
         self.computed_cls_weights = cls_weights if cls_weights is not None else [1 for _ in range(FLAGS.num_classes)]
-
-        self.vars_to_train = []
 
     def call(self, x_id, kp_cls=FLAGS.kp_cls):
         return self.layer.call(x_id, kp_cls)
@@ -31,9 +27,33 @@ class ClaimBusterModel(K.models.Model):
         input_ph = K.layers.Input(shape=(FLAGS.max_len,), dtype='int32')
         self.call(input_ph)
 
-        if not FLAGS.restore_and_continue:
-            self.layer.init_model_weights()
-        self.vars_to_train = self.select_train_vars()
+    def train_on_batch(self, x_id, y):
+        return self.layer.train_on_batch(x_id, y)
+
+    def stats_on_batch(self, x_id, y):
+        return self.layer.stats_on_batch(x_id, y)
+
+
+class ClaimBusterLayer(K.layers.Layer):
+    def __init__(self):
+        super(ClaimBusterLayer, self).__init__()
+
+        self.bert_model = LanguageModel.build_bert()
+        self.fc_layer = L.Dense(FLAGS.num_classes)
+        self.optimizer = K.optimizers.Adam(learning_rate=FLAGS.lr)
+        self.vars_to_train = []
+
+    def call(self, x_id, kp_cls=FLAGS.kp_cls, kp_tfm_atten=FLAGS.kp_tfm_atten, kp_tfm_hidden=FLAGS.kp_tfm_hidden):
+        bert_output = self.bert_model(x_id)
+        bert_output = tf.nn.dropout(bert_output, rate=1 - kp_cls)
+        ret = self.fc_layer(bert_output)
+
+        if not self.vars_to_train:
+            if not FLAGS.restore_and_continue:
+                self.init_model_weights()
+            self.vars_to_train = self.select_train_vars()
+
+        return ret
 
     @tf.function
     def train_on_batch(self, x_id, y):
@@ -43,7 +63,7 @@ class ClaimBusterModel(K.models.Model):
             logits = self.call(x_id)
             loss = self.compute_loss(y, logits)
 
-        grad = tape.gradient(loss, self.layer.trainable_weights)
+        grad = tape.gradient(loss, self.trainable_weights)
         self.optimizer.apply_gradients(zip(grad, self.vars_to_train))
 
         return tf.reduce_sum(loss), self.compute_accuracy(y, logits)
@@ -60,7 +80,7 @@ class ClaimBusterModel(K.models.Model):
         loss_l2 = 0
 
         if FLAGS.l2_reg_coeff > 0.0:
-            varlist = self.layer.trainable_weights
+            varlist = self.trainable_variables
             loss_l2 = tf.add_n([tf.nn.l2_loss(v) for v in varlist if 'bias' not in v.name]) * FLAGS.l2_reg_coeff
 
         ret_loss = loss + loss_l2
@@ -71,7 +91,7 @@ class ClaimBusterModel(K.models.Model):
         return tf.identity(ret_loss, name='loss')
 
     def select_train_vars(self):
-        train_vars = self.layer.trainable_weights
+        train_vars = self.trainable_variables
 
         non_trainable_layers = ['/layer_{}/'.format(num)
                                 for num in range(FLAGS.tfm_layers - FLAGS.tfm_ft_enc_layers)]
@@ -90,21 +110,6 @@ class ClaimBusterModel(K.models.Model):
     @staticmethod
     def compute_accuracy(y, logits):
         return tf.reduce_mean(tf.cast(tf.equal(tf.argmax(logits, axis=1), tf.argmax(y, axis=1)), dtype=tf.float32))
-
-
-class ClaimBusterLayer(K.layers.Layer):
-    def __init__(self):
-        super(ClaimBusterLayer, self).__init__()
-
-        self.bert_model = LanguageModel.build_bert()
-        self.fc_layer = L.Dense(FLAGS.num_classes)
-
-    def call(self, x_id, kp_cls=FLAGS.kp_cls, kp_tfm_atten=FLAGS.kp_tfm_atten, kp_tfm_hidden=FLAGS.kp_tfm_hidden):
-        bert_output = self.bert_model(x_id)
-        bert_output = tf.nn.dropout(bert_output, rate=1 - kp_cls)
-        ret = self.fc_layer(bert_output)
-
-        return ret
 
     def init_model_weights(self, ckpt_path=os.path.join(FLAGS.bert_model_loc, 'bert_model.ckpt')):
         # Define several helper functions
