@@ -60,7 +60,9 @@ def main():
 
         pbar = tqdm(total=math.ceil(len(train_data.y) / FLAGS.batch_size))
         for x_id, y in dataset_train:
-            epoch_loss += np.sum(model.train_on_batch(x_id, y))
+            train_batch_loss, train_batch_acc = model.train_on_batch(x_id, y)
+            epoch_loss += train_batch_loss
+            epoch_acc += train_batch_acc * np.shape(y)
             pbar.update(1)
 
         epoch_loss /= train_data.get_length()
@@ -75,7 +77,7 @@ def main():
                 for x_id, y in dataset_test:
                     val_batch_loss, val_batch_acc = model.stats_on_batch(x_id, y)
                     val_loss += val_batch_loss
-                    val_acc += val_batch_acc
+                    val_acc += val_batch_acc * np.shape(y)
 
                 val_loss /= test_data.get_length()
                 val_acc /= test_data.get_length()
