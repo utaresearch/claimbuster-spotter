@@ -54,17 +54,17 @@ def main():
 
     epochs_trav = 0
     for epoch in range(FLAGS.pretrain_steps):
-        epochs_trav += 1
-        epoch_loss, epoch_acc = 0, 0
-        start = time.time()
-
-        pbar = tqdm(total=math.ceil(len(train_data.y) / FLAGS.batch_size))
-        for x_id, y in dataset_train:
-            epoch_loss += np.sum(model.train_on_batch(x_id, y))
-            pbar.update(1)
-
-        epoch_loss /= train_data.get_length()
-        epoch_acc /= train_data.get_length()
+        # epochs_trav += 1
+        # epoch_loss, epoch_acc = 0, 0
+        # start = time.time()
+        #
+        # pbar = tqdm(total=math.ceil(len(train_data.y) / FLAGS.batch_size))
+        # for x_id, y in dataset_train:
+        #     epoch_loss += np.sum(model.train_on_batch(x_id, y))
+        #     pbar.update(1)
+        #
+        # epoch_loss /= train_data.get_length()
+        # epoch_acc /= train_data.get_length()
 
         if epoch % FLAGS.stat_print_interval == 0:
             log_string = 'Epoch {:>3} Loss: {:>7.4} Acc: {:>7.4f}% '.format(epoch + 1, epoch_loss, epoch_acc * 100)

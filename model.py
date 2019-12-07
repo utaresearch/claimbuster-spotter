@@ -51,9 +51,11 @@ class ClaimBusterModel(K.layers.Layer):
 
         # self.accuracy.update_state(y, yhat)  # @TODO update accuracy
 
-    @tf.function
+    # @tf.function
     def stats_on_batch(self, x_id, y):
         logits = self.call(x_id)
+        print(y)
+        print(logits)
         loss = self.compute_loss(y, logits)
         pred = tf.argmax(logits, axis=1)
         acc = tf.reduce_mean(tf.cast(tf.equal(pred, tf.argmax(y, axis=1)), dtype=tf.int32))
