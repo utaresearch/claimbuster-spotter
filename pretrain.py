@@ -42,7 +42,6 @@ def main():
     logging.info("{} training examples".format(train_data.get_length()))
     logging.info("{} validation examples".format(test_data.get_length()))
 
-    model = ClaimBusterModel()
     dataset_train = tf.data.Dataset.from_tensor_slices(([x[0] for x in train_data.x], train_data.y)).shuffle(
         buffer_size=train_data.get_length()).batch(FLAGS.batch_size)
     dataset_test = tf.data.Dataset.from_tensor_slices(([x[0] for x in test_data.x], test_data.y)).shuffle(
@@ -50,18 +49,10 @@ def main():
 
     logging.info("Warming up...")
 
-    input = K.layers.Input(shape=(FLAGS.max_len,), dtype='int32')
-    model.call(input)
+    input_ph = K.layers.Input(shape=(FLAGS.max_len,), dtype='int32')
+    model = K.models.Model(input_ph, ClaimBusterModel().call(input_ph))
 
-    kmodel = K.models.Model(input, model.call(input))
     logging.info("Starting training...")
-
-    print(kmodel.summary())
-
-    kmodel.save_weights('dummy.ckpt')
-
-    print(kmodel(input))
-    exit()
 
     epochs_trav = 0
     for epoch in range(FLAGS.pretrain_steps):
@@ -102,6 +93,8 @@ def main():
             start = time.time()
             epochs_trav = 0
 
+        if epoch % FLAGS.model_save_interval == 0:
+            model.save_weights(os.path.join(FLAGS.cb_model_dir, '{}/bert_claimspot.ckpt'.format(str(epoch + 1).zfill(3))))
 
 if __name__ == '__main__':
     logging.set_verbosity(logging.INFO)
