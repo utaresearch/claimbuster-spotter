@@ -22,6 +22,7 @@ class ClaimBusterAPI:
         transf.load_dependencies()
 
         self.model = ClaimBusterModel()
+        self.model.warm_up()
         self.model.load_custom_model()
 
     def prc_sentence(self, sentence):
