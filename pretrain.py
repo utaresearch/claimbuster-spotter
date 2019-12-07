@@ -72,10 +72,6 @@ def main():
         start_epoch += last_epoch + 1
         end_epoch += last_epoch + 1 + FLAGS.pretrain_steps
 
-        print(start_epoch, end_epoch)
-    else:
-        model.save_weights(os.path.join(FLAGS.cb_model_dir, str(1).zfill(3), FLAGS.cb_model_ckpt))
-
     logging.info("Starting training...")
 
     epochs_trav = 0
