@@ -55,7 +55,7 @@ class BertModelLayer(Layer):
             name="encoder"
         )
 
-        self.pooler_layer = keras.layers.Dense(self.params.hidden_size, name="pooler")
+        self.pooler_layer = keras.layers.Dense(self.params.hidden_size, name="pooler/dense")
 
         super(BertModelLayer, self).build(input_shape)
 
