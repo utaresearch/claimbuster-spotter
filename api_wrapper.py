@@ -43,8 +43,8 @@ class ClaimBusterAPI:
 
     def _retrieve_model_preds(self, dataset):
         ret = []
-        for x in dataset:
-            ret = ret + self.model.preds_on_batch(x)
+        for x_id, x_sent in dataset:
+            ret = ret + self.model.preds_on_batch(x_id)
         return ret
 
     def _create_bert_features(self, sentence_list):
