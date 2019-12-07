@@ -31,7 +31,7 @@ def main():
     logging.info("{} testing examples".format(test_data.get_length()))
 
     dataset_test = tf.data.Dataset.from_tensor_slices(([x[0] for x in test_data.x], test_data.y)).shuffle(
-        buffer_size=test_data.get_length()).batch(FLAGS.batch_size)
+        buffer_size=test_data.get_length()).batch(FLAGS.batch_size_reg)
 
     logging.info("Warming up...")
 
@@ -47,7 +47,7 @@ def main():
     eval_loss, eval_acc = 0, 0
     all_y, all_pred = [], []
 
-    pbar = tqdm(total=math.ceil(len(test_data.y) / FLAGS.batch_size))
+    pbar = tqdm(total=math.ceil(len(test_data.y) / FLAGS.batch_size_reg))
     for x_id, y in dataset_test:
         eval_batch_loss, eval_batch_acc = model.stats_on_batch(x_id, y)
         eval_loss += eval_batch_loss
