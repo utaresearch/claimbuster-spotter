@@ -23,6 +23,7 @@ class ClaimBusterModel(K.layers.Layer):
         self.computed_cls_weights = cls_weights if cls_weights is not None else [1 for _ in range(FLAGS.num_classes)]
 
         self.bert_model = LanguageModel.build_bert()
+        self.bert_model.build(L.Input(FLAGS.max_len,), dtype='int32')
         load_stock_weights(self.bert_model, os.path.join(FLAGS.bert_model_loc, 'bert_model.ckpt'))
 
         self.fc_layer = L.Dense(FLAGS.num_classes)
