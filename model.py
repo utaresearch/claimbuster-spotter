@@ -20,7 +20,7 @@ class ClaimBusterModel(K.models.Model):
         self.layer = ClaimBusterLayer(training)
         self.computed_cls_weights = cls_weights if cls_weights is not None else [1 for _ in range(FLAGS.num_classes)]
 
-    def call(self, x_id):
+    def call(self, x_id, **kwargs):
         return self.layer.call(x_id)
 
     def warm_up(self):
@@ -65,7 +65,7 @@ class ClaimBusterLayer(K.layers.Layer):
         self.vars_to_train = []
         self.is_training = training
 
-    def call(self, x_id):
+    def call(self, x_id, **kwargs):
         bert_output = self.bert_model(x_id, training=self.is_training)
         bert_output = self.dropout_layer(bert_output, training=self.is_training)
         ret = self.fc_layer(bert_output)

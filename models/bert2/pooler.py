@@ -11,5 +11,5 @@ class PoolerLayer(L.Layer):
         self.hidden_size = hidden_size
         self.dense_layer = L.Dense(hidden_size, name='dense')
 
-    def call(self, x):
+    def call(self, x, **kwargs):
         return self.dense_layer(x)
