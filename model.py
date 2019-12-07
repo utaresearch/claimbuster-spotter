@@ -21,13 +21,10 @@ class ClaimBusterModel(K.layers.Layer):
         self.accuracy = K.metrics.Accuracy()  # @TODO create more in the future
         self.computed_cls_weights = cls_weights if cls_weights is not None else [1 for _ in range(FLAGS.num_classes)]
 
-        self.vars_to_train = None
-
-    def build(self, input_shape):
         self.bert_model = LanguageModel.build_bert()
         self.fc_layer = L.Dense(FLAGS.num_classes)
 
-        super(ClaimBusterModel, self).build(input_shape)
+        self.vars_to_train = None
 
     def call(self, x_id, kp_cls=FLAGS.kp_cls, kp_tfm_atten=FLAGS.kp_tfm_atten, kp_tfm_hidden=FLAGS.kp_tfm_hidden):
         bert_output = self.bert_model(x_id)
@@ -87,6 +84,6 @@ class ClaimBusterModel(K.layers.Layer):
         train_vars = [v for v in train_vars if not any(z in v.name for z in non_trainable_layers)]
 
         logging.info('Removing: {}'.format(non_trainable_layers))
-        logging.info(train_vars)
+        logging.info([v.name for v in train_vars])
 
         return train_vars
