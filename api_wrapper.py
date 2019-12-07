@@ -27,9 +27,9 @@ class ClaimBusterAPI:
 
     def prc_sentence(self, sentence):
         sentence, sent = self.extract_info(sentence)
-        input_features = self.create_bert_features(sentence)
+        ds = tf.data.Dataset.from_tensor_slices(([self.create_bert_features(sentence)], [0]))
 
-        return input_features, sent
+        return next(iter(ds)).numpy(), sent
 
     def create_bert_features(self, sentence):
         return self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(sentence))

@@ -5,7 +5,7 @@ if __name__ == '__main__':
     api = ClaimBusterAPI()
 
     while True:
-        res= api.subscribe_cmdline_query()
+        res = api.subscribe_cmdline_query()
         idx = np.argmax(res)
 
         print(res)

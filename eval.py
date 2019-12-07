@@ -72,7 +72,7 @@ def main():
 
     target_names = (['NFS', 'UFS', 'CFS'] if FLAGS.num_classes == 3 else ['NFS/UFS', 'CFS'])
 
-    print('Final stats     | Loss: {:>7.4} Acc: {:>7.4f}% F1: {:>.4f} nDCG: {:>.4f}'.format(
+    print('Final stats | Loss: {:>7.4} Acc: {:>7.4f}% F1: {:>.4f} nDCG: {:>.4f}'.format(
         eval_loss, eval_acc * 100, f1score, ndcg))
     print(classification_report(all_y, all_pred_argmax, target_names=target_names, digits=4))
 
