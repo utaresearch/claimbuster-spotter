@@ -106,7 +106,7 @@ class ClaimBusterModel(K.layers.Layer):
         stock_weights = set(ckpt_reader.get_variable_to_dtype_map().keys())
         print(stock_weights)
 
-        prefix = bert_prefix(self)
+        prefix = bert_prefix()
         print(prefix)
         exit()
 
