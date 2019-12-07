@@ -62,7 +62,7 @@ def main():
         for x_id, y in dataset_train:
             train_batch_loss, train_batch_acc = model.train_on_batch(x_id, y)
             epoch_loss += train_batch_loss
-            epoch_acc += train_batch_acc * np.shape(y)
+            epoch_acc += train_batch_acc * np.shape(y)[0]
             pbar.update(1)
 
         epoch_loss /= train_data.get_length()
@@ -77,7 +77,7 @@ def main():
                 for x_id, y in dataset_test:
                     val_batch_loss, val_batch_acc = model.stats_on_batch(x_id, y)
                     val_loss += val_batch_loss
-                    val_acc += val_batch_acc * np.shape(y)
+                    val_acc += val_batch_acc * np.shape(y)[0]
 
                 val_loss /= test_data.get_length()
                 val_acc /= test_data.get_length()

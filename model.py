@@ -165,10 +165,6 @@ class ClaimBusterModel(K.layers.Layer):
                 skip_count += 1
         K.backend.batch_set_value(weight_value_tuples)
 
-        print(weight_value_tuples)
-        print(skipped_weight_value_tuples)
-
-
         logging.info("Done loading {} BERT weights from: {} into {} (prefix:{}). "
                      "Count of weights not found in the checkpoint was: [{}]. "
                      "Count of weights with mismatched shape: [{}]".format(
