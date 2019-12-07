@@ -50,10 +50,10 @@ def main():
 
     logging.info("Warming up...")
 
-    model.call(K.layers.Input(shape=(FLAGS.max_len,), dtype='int32'))
+    input = K.layers.Input(shape=(FLAGS.max_len,), dtype='int32')
+    model.call(input)
 
-    kmodel = K.models.Model(K.layers.Input(shape=(FLAGS.max_len,), dtype='int32'),
-                            model.call(K.layers.Input(shape=(FLAGS.max_len,), dtype='int32')))
+    kmodel = K.models.Model(input, model.call(input))
     logging.info("Starting training...")
 
     print(kmodel.summary())
