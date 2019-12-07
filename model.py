@@ -53,9 +53,8 @@ class ClaimBusterModel(K.layers.Layer):
 
     # @tf.function
     def stats_on_batch(self, x_id, y):
+        y = tf.one_hot(y, depth=FLAGS.num_classes)
         logits = self.call(x_id)
-        print(y)
-        print(logits)
         loss = self.compute_loss(y, logits)
         pred = tf.argmax(logits, axis=1)
         acc = tf.reduce_mean(tf.cast(tf.equal(pred, tf.argmax(y, axis=1)), dtype=tf.int32))
