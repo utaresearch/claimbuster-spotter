@@ -1,14 +1,14 @@
 import math
 import time
 import os
-from tqdm import tqdm
-from shutil import rmtree
 from utils.data_loader import DataLoader
 from model import ClaimBusterModel
 from flags import FLAGS, print_flags
 from absl import logging
 import tensorflow as tf
 import numpy as np
+from sklearn.metrics import f1_score, classification_report
+from utils.compute_ndcg import compute_ndcg
 from model import ClaimBusterModel
 
 K = tf.keras
@@ -20,76 +20,64 @@ def main():
 
     print_flags()
 
-    if os.path.isdir(FLAGS.tb_dir):
-        rmtree(FLAGS.tb_dir)
-    if os.path.isdir(FLAGS.cb_model_dir) and not FLAGS.restore_and_continue:
-        print('Continue? (y/n) You will overwrite the contents of FLAGS.cb_model_dir ({})'.format(FLAGS.cb_model_dir))
-        inp = input().strip('\r\n\t')
-        if inp.lower() == 'y':
-            rmtree(FLAGS.cb_model_dir)
-        else:
-            print('Exiting...')
-            exit()
-    if not os.path.isdir(FLAGS.cb_model_dir) and FLAGS.restore_and_continue:
+    if not os.path.isdir(FLAGS.cb_model_dir):
         raise Exception('Cannot restore from non-existent folder: {}'.format(FLAGS.cb_model_dir))
 
     logging.info("Loading dataset")
     data_load = DataLoader()
 
-    train_data = data_load.load_training_data()
     test_data = data_load.load_testing_data()
+    logging.info("{} testing examples".format(test_data.get_length()))
 
-    logging.info("{} training examples".format(train_data.get_length()))
-    logging.info("{} validation examples".format(test_data.get_length()))
-
-    model = ClaimBusterModel()
-    dataset_train = tf.data.Dataset.from_tensor_slices(([x[0] for x in train_data.x], train_data.y)).shuffle(
-        buffer_size=train_data.get_length()).batch(FLAGS.batch_size)
     dataset_test = tf.data.Dataset.from_tensor_slices(([x[0] for x in test_data.x], test_data.y)).shuffle(
         buffer_size=test_data.get_length()).batch(FLAGS.batch_size)
 
     logging.info("Warming up...")
-    model.call(K.layers.Input(shape=(FLAGS.max_len,), dtype='int32'))
-    logging.info("Starting training...")
 
-    epochs_trav = 0
-    for epoch in range(FLAGS.pretrain_steps):
-        epochs_trav += 1
-        epoch_loss, epoch_acc = 0, 0
-        start = time.time()
+    model = ClaimBusterModel()
+    model.warm_up()
 
-        pbar = tqdm(total=math.ceil(len(train_data.y) / FLAGS.batch_size))
-        for x_id, y in dataset_train:
-            train_batch_loss, train_batch_acc = model.train_on_batch(x_id, y)
-            epoch_loss += train_batch_loss
-            epoch_acc += train_batch_acc * np.shape(y)[0]
-            pbar.update(1)
+    logging.info('Attempting to restore weights from {}'.format(FLAGS.cb_model_dir))
 
-        epoch_loss /= train_data.get_length()
-        epoch_acc /= train_data.get_length()
+    if any('.ckpt' in x for x in os.listdir(FLAGS.cb_model_dir)):
+        load_location = FLAGS.cb_model_dir
+    else:
+        folders = [x for x in os.listdir(FLAGS.cb_model_dir) if os.path.isdir(os.path.join(FLAGS.cb_model_dir, x))]
+        load_location = os.path.join(FLAGS.cb_model_dir, sorted(folders)[-1])
 
-        if epoch % FLAGS.stat_print_interval == 0:
-            log_string = 'Epoch {:>3} Loss: {:>7.4} Acc: {:>7.4f}% '.format(epoch + 1, epoch_loss, epoch_acc * 100)
+    load_location = os.path.join(load_location, FLAGS.cb_model_ckpt)
+    model.load_weights(load_location)
 
-            if test_data.get_length() > 0:
-                val_loss, val_acc = 0, 0
+    logging.info("Starting evaluation...")
 
-                for x_id, y in dataset_test:
-                    val_batch_loss, val_batch_acc = model.stats_on_batch(x_id, y)
-                    val_loss += val_batch_loss
-                    val_acc += val_batch_acc * np.shape(y)[0]
+    eval_loss, eval_acc = 0, 0
+    all_y, all_pred = [], []
 
-                val_loss /= test_data.get_length()
-                val_acc /= test_data.get_length()
+    for x_id, y in dataset_test:
+        eval_batch_loss, eval_batch_acc = model.stats_on_batch(x_id, y)
+        eval_loss += eval_batch_loss
+        eval_acc += eval_batch_acc * np.shape(y)[0]
 
-                log_string += 'Dev Loss: {:>7.4f} Dev Acc: {:>7.4f} '.format(val_loss, val_acc)
+        preds = model.preds_on_batch(x_id)
+        all_pred += preds
+        all_y += y
 
-            log_string += '({:3.3f} sec/epoch)'.format((time.time() - start) / epochs_trav)
+    eval_loss /= test_data.get_length()
+    eval_acc /= test_data.get_length()
 
-            print(log_string)
+    all_pred_argmax = np.argmax(all_pred, axis=1)
 
-            start = time.time()
-            epochs_trav = 0
+    f1score = f1_score(all_y, all_pred_argmax, average='weighted')
+    ndcg = compute_ndcg(all_y, [x[FLAGS.num_classes - 1] for x in all_pred])
+
+    print('Labels:', all_y)
+    print('Predic:', all_pred_argmax)
+
+    target_names = (['NFS', 'UFS', 'CFS'] if FLAGS.num_classes == 3 else ['NFS/UFS', 'CFS'])
+
+    print('Final stats     | Loss: {:>7.4} Acc: {:>7.4f}% F1: {:>.4f} nDCG: {:>.4f}'.format(
+        eval_loss, eval_acc * 100, f1score, ndcg))
+    print(classification_report(all_y, all_pred_argmax, target_names=target_names, digits=4))
 
 
 if __name__ == '__main__':

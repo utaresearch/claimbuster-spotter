@@ -65,8 +65,6 @@ def main():
 
         last_epoch = int(load_location.split('/')[-1])
         load_location = os.path.join(load_location, FLAGS.cb_model_ckpt)
-
-        logging.info(load_location)
         model.load_weights(load_location)
 
         start_epoch += last_epoch + 1

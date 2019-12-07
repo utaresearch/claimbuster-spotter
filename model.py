@@ -33,6 +33,9 @@ class ClaimBusterModel(K.models.Model):
     def stats_on_batch(self, x_id, y):
         return self.layer.stats_on_batch(x_id, y)
 
+    def preds_on_batch(self, x_id):
+        return self.layer.preds_on_batch(x_id)
+
 
 class ClaimBusterLayer(K.layers.Layer):
     def __init__(self):
@@ -74,6 +77,11 @@ class ClaimBusterLayer(K.layers.Layer):
         logits = self.call(x_id)
 
         return tf.reduce_sum(self.compute_loss(y, logits)), self.compute_accuracy(y, logits)
+
+    @tf.function
+    def preds_on_batch(self, x_id):
+        logits = self.call(x_id)
+        return tf.nn.softmax(logits)
 
     def compute_loss(self, y, logits):
         loss = tf.nn.softmax_cross_entropy_with_logits(labels=y, logits=logits)

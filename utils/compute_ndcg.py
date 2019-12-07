@@ -1,5 +1,6 @@
 import math
 
+
 # ver == 0 or 1
 def compute_dcg_term(i, labels, ver=1):
     return labels[i - 1] / math.log2(i + 1) if ver == 0\
@@ -7,7 +8,7 @@ def compute_dcg_term(i, labels, ver=1):
 
 
 # Precondition: for each index i, scores[i] corresponds with labels[i]
-def compute_ndcg(scores, labels):
+def compute_ndcg(labels, scores):
     combined = sorted([(scores[i], labels[i]) for i in range(len(scores))], reverse=True)
     labels = [x[1] for x in combined]
 
