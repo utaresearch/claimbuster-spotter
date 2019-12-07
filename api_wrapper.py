@@ -31,7 +31,7 @@ class ClaimBusterAPI:
         return input_features, sent
 
     def create_bert_features(self, sentence):
-        return self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(sentence)
+        return self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(sentence))
 
     def subscribe_cmdline_query(self):
         print('Enter a sentence to process')
