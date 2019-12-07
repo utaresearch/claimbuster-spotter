@@ -27,7 +27,7 @@ class ClaimBusterAPI:
 
     def prc_sentence(self, sentence):
         sentence, sent = self.extract_info(sentence)
-        ds = tf.data.Dataset.from_tensor_slices([self.create_bert_features(sentence)])
+        ds = tf.data.Dataset.from_tensor_slices([self.create_bert_features(sentence)]).batch(1)
 
         return next(iter(ds)).numpy(), sent
 
@@ -39,11 +39,11 @@ class ClaimBusterAPI:
         sentence_duple = self.prc_sentence(input().strip('\n\r\t '))
         print(sentence_duple)
 
-        return self.model.preds_on_batch([sentence_duple[0]])
+        return self.model.preds_on_batch(sentence_duple[0])
 
     def direct_sentence_query(self, sentence):
         sentence_duple = self.prc_sentence(sentence.strip('\n\r\t '))
-        return self.model.preds_on_batch([sentence_duple[0]])
+        return self.model.preds_on_batch(sentence_duple[0])
 
     @staticmethod
     def extract_info(sentence):
