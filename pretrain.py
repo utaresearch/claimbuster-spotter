@@ -58,10 +58,10 @@ def main():
         epoch_loss, epoch_acc = 0, 0
         start = time.time()
 
-        # pbar = tqdm(total=math.ceil(len(train_data.y) / FLAGS.batch_size))
-        # for x_id, y in dataset_train:
-        #     epoch_loss += np.sum(model.train_on_batch(x_id, y))
-        #     pbar.update(1)
+        pbar = tqdm(total=math.ceil(len(train_data.y) / FLAGS.batch_size))
+        for x_id, y in dataset_train:
+            epoch_loss += np.sum(model.train_on_batch(x_id, y))
+            pbar.update(1)
 
         epoch_loss /= train_data.get_length()
         epoch_acc /= train_data.get_length()
@@ -80,7 +80,7 @@ def main():
                 val_loss /= test_data.get_length()
                 val_acc /= test_data.get_length()
 
-                log_string += 'Dev Loss: {:>7.4f} Dev Acc: {:>7.4f}'.format(val_loss, val_acc)
+                log_string += 'Dev Loss: {:>7.4f} Dev Acc: {:>7.4f} '.format(val_loss, val_acc)
 
             log_string += '({:3.3f} sec/epoch)'.format((time.time() - start) / epochs_trav)
 

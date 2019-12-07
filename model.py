@@ -47,7 +47,7 @@ class ClaimBusterModel(K.layers.Layer):
         grad = tape.gradient(loss, self.trainable_weights)
         self.optimizer.apply_gradients(zip(grad, self.vars_to_train))
 
-        return tf.reduce_sum(loss)
+        return tf.reduce_sum(loss), self.compute_accuracy(y, logits)
 
         # self.accuracy.update_state(y, yhat)  # @TODO update accuracy
 
@@ -55,11 +55,8 @@ class ClaimBusterModel(K.layers.Layer):
     def stats_on_batch(self, x_id, y):
         y = tf.one_hot(y, depth=FLAGS.num_classes)
         logits = self.call(x_id)
-        loss = self.compute_loss(y, logits)
-        pred = tf.argmax(logits, axis=1)
-        acc = tf.reduce_mean(tf.cast(tf.equal(pred, tf.argmax(y, axis=1)), dtype=tf.int32))
 
-        return tf.reduce_sum(loss), acc
+        return tf.reduce_sum(self.compute_loss(y, logits)), self.compute_accuracy(y, logits)
 
     def compute_loss(self, y, logits):
         loss = tf.nn.softmax_cross_entropy_with_logits(labels=y, logits=logits)
@@ -92,3 +89,7 @@ class ClaimBusterModel(K.layers.Layer):
         logging.info([v.name for v in train_vars])
 
         return train_vars
+
+    @staticmethod
+    def compute_accuracy(y, logits):
+        return tf.reduce_mean(tf.cast(tf.equal(tf.argmax(logits, axis=1), tf.argmax(y, axis=1)), dtype=tf.float32))
