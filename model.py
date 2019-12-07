@@ -29,7 +29,7 @@ class ClaimBusterModel(K.layers.Layer):
 
     def call(self, x_id, kp_cls=FLAGS.kp_cls, kp_tfm_atten=FLAGS.kp_tfm_atten, kp_tfm_hidden=FLAGS.kp_tfm_hidden):
         bert_output = self.bert_model(x_id)
-        bert_output = tf.nn.dropout(bert_output, rate=1-kp_cls)
+        bert_output = tf.nn.dropout(bert_output, rate=1 - kp_cls)
         ret = self.fc_layer(bert_output)
 
         if not self.vars_to_train:
@@ -152,9 +152,9 @@ class ClaimBusterModel(K.layers.Layer):
                 ckpt_value = ckpt_reader.get_tensor(stock_name)
 
                 if param_value.shape != ckpt_value.shape:
-                    print("loader: Skipping weight:[{}] as the weight shape:[{}] is not compatible "
-                          "with the checkpoint:[{}] shape:{}".format(param.name, param.shape,
-                                                                     stock_name, ckpt_value.shape))
+                    logging.info("loader: Skipping weight:[{}] as the weight shape:[{}] is not compatible "
+                                 "with the checkpoint:[{}] shape:{}".format(param.name, param.shape,
+                                                                            stock_name, ckpt_value.shape))
                     skipped_weight_value_tuples.append((param, ckpt_value))
                     continue
 
@@ -165,13 +165,17 @@ class ClaimBusterModel(K.layers.Layer):
                 skip_count += 1
         K.backend.batch_set_value(weight_value_tuples)
 
-        print("Done loading {} BERT weights from: {} into {} (prefix:{}). "
-              "Count of weights not found in the checkpoint was: [{}]. "
-              "Count of weights with mismatched shape: [{}]".format(
-            len(weight_value_tuples), ckpt_path, bert, prefix, skip_count, len(skipped_weight_value_tuples)))
+        print(weight_value_tuples)
+        print(skipped_weight_value_tuples)
 
-        print("Unused weights from checkpoint:",
-              "\n\t" + "\n\t".join(sorted(stock_weights.difference(loaded_weights))))
+
+        logging.info("Done loading {} BERT weights from: {} into {} (prefix:{}). "
+                     "Count of weights not found in the checkpoint was: [{}]. "
+                     "Count of weights with mismatched shape: [{}]".format(
+            len(weight_value_tuples), ckpt_path, self, prefix, skip_count, len(skipped_weight_value_tuples)))
+
+        logging.info("Unused weights from checkpoint:",
+                     "\n\t" + "\n\t".join(sorted(stock_weights.difference(loaded_weights))))
 
         return skipped_weight_value_tuples  # (bert_weight, value_from_ckpt)
 
