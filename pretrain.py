@@ -63,12 +63,11 @@ def main():
             folders = [x for x in os.listdir(FLAGS.cb_model_dir) if os.path.isdir(os.path.join(FLAGS.cb_model_dir, x))]
             load_location = os.path.join(FLAGS.cb_model_dir, sorted(folders)[-1])
 
+        last_epoch = int(load_location.split('/')[-1])
         load_location = os.path.join(load_location, FLAGS.cb_model_ckpt)
 
         logging.info(load_location)
         model.load_weights(load_location)
-
-        last_epoch = int(load_location.split('/')[-1])
 
         start_epoch += last_epoch + 1
         end_epoch += last_epoch + 1 + FLAGS.pretrain_steps
