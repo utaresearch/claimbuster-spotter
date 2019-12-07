@@ -113,10 +113,10 @@ class ClaimBusterLayer(K.layers.Layer):
                 orig_embed, logits = self.call(x_id, get_embedding=True)
                 loss = self.compute_loss(y, logits)
 
-                perturb = self._compute_perturbation(loss, orig_embed, tape2)
+            perturb = self._compute_perturbation(loss, orig_embed, tape2)
 
-                logits_adv = self.call(x_id, perturb=perturb)
-                loss_adv = self.compute_loss(y, logits_adv)
+            logits_adv = self.call(x_id, perturb=perturb)
+            loss_adv = self.compute_loss(y, logits_adv)
 
         grad = tape.gradient(loss_adv, self.vars_to_train)
         self.optimizer.apply_gradients(zip(grad, self.vars_to_train))
