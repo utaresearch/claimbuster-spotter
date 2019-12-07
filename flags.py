@@ -51,8 +51,7 @@ flags.DEFINE_integer('cls_hidden', 0, 'Size of hidden classification layer')
 flags.DEFINE_float('kp_cls', 0.7, 'Keep probability of dropout in FC')
 
 # Optimization
-flags.DEFINE_integer('regtrain_steps', 50, 'Number of epochs to run.')
-flags.DEFINE_integer('advtrain_steps', 50, 'Number of epochs to run.')
+flags.DEFINE_integer('train_steps', 50, 'Number of epochs to run.')
 flags.DEFINE_float('lr', 5e-5, 'Learning rate while during optimiation.')
 
 # Regularization

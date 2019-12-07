@@ -53,7 +53,7 @@ def main():
     model = ClaimBusterModel(training=True)
     model.warm_up()
 
-    start_epoch, end_epoch = 0, FLAGS.pretrain_steps
+    start_epoch, end_epoch = 0, FLAGS.train_steps
 
     if FLAGS.restore_and_continue:
         logging.info('Attempting to restore weights from {}'.format(FLAGS.cb_model_dir))
@@ -61,7 +61,7 @@ def main():
         last_epoch = model.load_custom_model()
 
         start_epoch += last_epoch + 1
-        end_epoch += last_epoch + 1 + FLAGS.pretrain_steps
+        end_epoch += last_epoch + 1 + FLAGS.train_steps
 
     logging.info("Starting{}training...".format(' ' if not FLAGS.adv_train else ' adversarial '))
 
