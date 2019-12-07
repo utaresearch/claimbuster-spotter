@@ -51,6 +51,15 @@ class ClaimBusterModel(K.layers.Layer):
 
         # self.accuracy.update_state(y, yhat)  # @TODO update accuracy
 
+    @tf.function
+    def stats_on_batch(self, x_id, y):
+        logits = self.call(x_id)
+        loss = self.compute_loss(y, logits)
+        pred = tf.argmax(logits, axis=1)
+        acc = tf.reduce_mean(tf.cast(tf.equal(pred, tf.argmax(y, axis=1)), dtype=tf.int32))
+
+        return loss, acc
+
     def compute_loss(self, y, logits):
         loss = tf.nn.softmax_cross_entropy_with_logits(labels=y, logits=logits)
         loss_l2 = 0

@@ -43,8 +43,10 @@ def main():
     logging.info("{} validation examples".format(test_data.get_length()))
 
     model = ClaimBusterModel()
-    dataset = tf.data.Dataset.from_tensor_slices(([x[0] for x in train_data.x], train_data.y)).shuffle(
+    dataset_train = tf.data.Dataset.from_tensor_slices(([x[0] for x in train_data.x], train_data.y)).shuffle(
         buffer_size=train_data.get_length()).batch(FLAGS.batch_size)
+    dataset_test = tf.data.Dataset.from_tensor_slices(([x[0] for x in test_data.x], test_data.y)).shuffle(
+        buffer_size=test_data.get_length()).batch(FLAGS.batch_size)
 
     logging.info("Warming up...")
     model.call(K.layers.Input(shape=(FLAGS.max_len,), dtype='int32'))
@@ -57,12 +59,29 @@ def main():
         start = time.time()
 
         pbar = tqdm(total=math.ceil(len(train_data.y) / FLAGS.batch_size))
-        for x_id, y in dataset:
+        for x_id, y in dataset_train:
             epoch_loss += np.sum(model.train_on_batch(x_id, y))
             pbar.update(1)
 
+        epoch_loss /= train_data.get_length()
+        epoch_acc /= train_data.get_length()
+
         if epoch % FLAGS.stat_print_interval == 0:
             log_string = 'Epoch {:>3} Loss: {:>7.4} Acc: {:>7.4f}% '.format(epoch + 1, epoch_loss, epoch_acc * 100)
+
+            if test_data.get_length() > 0:
+                val_loss, val_acc = 0, 0
+
+                for x_id, y in dataset_test:
+                    val_batch_loss, val_batch_acc = model.stats_on_batch(x_id, y)
+                    val_loss += val_batch_loss
+                    val_acc += val_batch_acc
+
+                val_loss /= test_data.get_length()
+                val_acc /= test_data.get_length()
+
+                log_string += 'Dev Loss: {:>7.4f} Dev Acc: {:>7.4f}'.format(val_loss, val_acc)
+
             log_string += '({:3.3f} sec/epoch)'.format((time.time() - start) / epochs_trav)
 
             logging.info(log_string)
