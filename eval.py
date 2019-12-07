@@ -68,9 +68,6 @@ def main():
     f1score = f1_score(all_y, all_pred_argmax, average='weighted')
     ndcg = compute_ndcg(all_y, [x[FLAGS.num_classes - 1] for x in all_pred])
 
-    print('Labels:', all_y)
-    print('Predic:', all_pred_argmax)
-
     target_names = (['NFS', 'UFS', 'CFS'] if FLAGS.num_classes == 3 else ['NFS/UFS', 'CFS'])
 
     print('Final stats | Loss: {:>7.4} Acc: {:>7.4f}% F1: {:>.4f} nDCG: {:>.4f}'.format(
