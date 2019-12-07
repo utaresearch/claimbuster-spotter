@@ -7,7 +7,6 @@ import tensorflow as tf
 from sklearn.metrics import f1_score
 from flags import FLAGS
 from absl import logging
-from tensorflow.keras.utils import to_categorical
 from models.lang_model import LanguageModel
 
 K = tf.keras
@@ -19,13 +18,16 @@ class ClaimBusterModel(K.layers.Layer):
         super(ClaimBusterModel, self).__init__()
 
         self.optimizer = K.optimizers.Adam(learning_rate=FLAGS.lr)
-        self.accuracy = K.metrics.Accuracy()  # @TODO wtf create some more shit?
+        self.accuracy = K.metrics.Accuracy()  # @TODO create more in the future
         self.computed_cls_weights = cls_weights if cls_weights is not None else [1 for _ in range(FLAGS.num_classes)]
 
+        self.vars_to_train = None
+
+    def build(self, input_shape):
         self.bert_model = LanguageModel.build_bert()
         self.fc_layer = L.Dense(FLAGS.num_classes)
 
-        self.vars_to_train = []
+        super(ClaimBusterModel, self).build(input_shape)
 
     def call(self, x_id, kp_cls=FLAGS.kp_cls, kp_tfm_atten=FLAGS.kp_tfm_atten, kp_tfm_hidden=FLAGS.kp_tfm_hidden):
         bert_output = self.bert_model(x_id)
