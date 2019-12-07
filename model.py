@@ -33,7 +33,8 @@ class ClaimBusterModel(K.layers.Layer):
         ret = self.fc_layer(bert_output)
 
         if not self.vars_to_train:
-            self.init_model_weights()
+            if not FLAGS.restore_and_continue:
+                self.init_model_weights()
             self.vars_to_train = self.select_train_vars()
 
         return ret

@@ -52,6 +52,18 @@ def main():
     input_ph = K.layers.Input(shape=(FLAGS.max_len,), dtype='int32')
     model = K.models.Model(input_ph, ClaimBusterModel().call(input_ph))
 
+    if FLAGS.restore_and_continue:
+        logging.info('Attempting to restore weights from {}'.format(FLAGS.cb_model_dir))
+
+        if any('.ckpt' in x for x in os.listdir(FLAGS.cb_model_dir)):
+            load_location = FLAGS.cb_model_dir
+        else:
+            folders = [x for x in os.listdir(FLAGS.cb_model_dir) if os.path.isdir(x)]
+            load_location = sorted(folders)[-1]
+
+        logging.info(load_location)
+        model.load_weights(load_location)
+
     logging.info("Starting training...")
 
     epochs_trav = 0
@@ -94,7 +106,8 @@ def main():
             epochs_trav = 0
 
         if epoch % FLAGS.model_save_interval == 0:
-            model.save_weights(os.path.join(FLAGS.cb_model_dir, '{}/bert_claimspot.ckpt'.format(str(epoch + 1).zfill(3))))
+            model.save_weights(os.path.join(FLAGS.cb_model_dir, '{}/bert_claimspotter.ckpt'.format(str(epoch + 1).zfill(3))))
+
 
 if __name__ == '__main__':
     logging.set_verbosity(logging.INFO)
