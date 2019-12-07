@@ -12,6 +12,7 @@ import tensorflow as tf
 
 def main():
     os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu])
+    os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = True
 
     tf.logging.info("Loading dataset")
     data_load = DataLoader()
