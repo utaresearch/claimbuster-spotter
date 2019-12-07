@@ -37,12 +37,11 @@ class ClaimBusterAPI:
         print('Enter a sentence to process')
         sentence_duple = self.prc_sentence(input().strip('\n\r\t '))
 
-        print(sentence_duple)
-        return self.model.preds_on_batch(sentence_duple[0])
+        return self.model.preds_on_batch([sentence_duple[0]])
 
     def direct_sentence_query(self, sentence):
         sentence_duple = self.prc_sentence(sentence.strip('\n\r\t '))
-        return self.model.preds_on_batch(sentence_duple[0])
+        return self.model.preds_on_batch([sentence_duple[0]])
 
     @staticmethod
     def extract_info(sentence):
