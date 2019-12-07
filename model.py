@@ -15,9 +15,9 @@ L = K.layers
 
 
 class ClaimBusterModel(K.models.Model):
-    def __init__(self, cls_weights=None):
+    def __init__(self, training, cls_weights=None):
         super(ClaimBusterModel, self).__init__()
-        self.layer = ClaimBusterLayer()
+        self.layer = ClaimBusterLayer(training)
         self.computed_cls_weights = cls_weights if cls_weights is not None else [1 for _ in range(FLAGS.num_classes)]
 
     def call(self, x_id, kp_cls=FLAGS.kp_cls):
@@ -54,17 +54,20 @@ class ClaimBusterModel(K.models.Model):
 
 
 class ClaimBusterLayer(K.layers.Layer):
-    def __init__(self):
+    def __init__(self, training):
         super(ClaimBusterLayer, self).__init__()
 
         self.bert_model = LanguageModel.build_bert()
+        self.dropout_layer = L.Dropout(rate=1-FLAGS.kp_cls)
         self.fc_layer = L.Dense(FLAGS.num_classes)
+
         self.optimizer = K.optimizers.Adam(learning_rate=FLAGS.lr)
         self.vars_to_train = []
+        self.is_training = training
 
-    def call(self, x_id, kp_cls=FLAGS.kp_cls, kp_tfm_atten=FLAGS.kp_tfm_atten, kp_tfm_hidden=FLAGS.kp_tfm_hidden):
-        bert_output = self.bert_model(x_id)
-        bert_output = tf.nn.dropout(bert_output, rate=1 - kp_cls)
+    def call(self, x_id):
+        bert_output = self.bert_model(x_id, training=self.is_training)
+        bert_output = self.dropout_layer(bert_output, training=self.is_training)
         ret = self.fc_layer(bert_output)
 
         if not self.vars_to_train:
