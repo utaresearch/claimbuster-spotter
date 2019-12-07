@@ -52,6 +52,8 @@ def main():
     model = ClaimBusterModel()
     model.warm_up()
 
+    start_epoch, end_epoch = 0, FLAGS.pretrain_steps
+
     if FLAGS.restore_and_continue:
         logging.info('Attempting to restore weights from {}'.format(FLAGS.cb_model_dir))
 
@@ -64,12 +66,19 @@ def main():
         logging.info(load_location)
         model.load_weights(load_location)
 
+        last_epoch = int(load_location.split('/')[-1])
+
+        start_epoch += last_epoch + 1
+        end_epoch += last_epoch + 1 + FLAGS.pretrain_steps
+
+        print(start_epoch, end_epoch)
+
     logging.info("Starting training...")
 
     model.save_weights(os.path.join(FLAGS.cb_model_dir, '{}/bert_claimspotter.ckpt'.format(str(1).zfill(3))))
 
     epochs_trav = 0
-    for epoch in range(FLAGS.pretrain_steps):
+    for epoch in range(start_epoch, end_epoch, 1):
         epochs_trav += 1
         epoch_loss, epoch_acc = 0, 0
         start = time.time()
