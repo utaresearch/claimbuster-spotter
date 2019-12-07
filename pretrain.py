@@ -63,6 +63,8 @@ def main():
             folders = [x for x in os.listdir(FLAGS.cb_model_dir) if os.path.isdir(os.path.join(FLAGS.cb_model_dir, x))]
             load_location = os.path.join(FLAGS.cb_model_dir, sorted(folders)[-1])
 
+        load_location = os.path.join(load_location, FLAGS.cb_model_ckpt)
+
         logging.info(load_location)
         model.load_weights(load_location)
 
@@ -73,7 +75,7 @@ def main():
 
         print(start_epoch, end_epoch)
     else:
-        model.save_weights(os.path.join(FLAGS.cb_model_dir, '{}/bert_claimspotter.ckpt'.format(str(1).zfill(3))))
+        model.save_weights(os.path.join(FLAGS.cb_model_dir, str(1).zfill(3), FLAGS.cb_model_ckpt))
 
     logging.info("Starting training...")
 
@@ -117,7 +119,7 @@ def main():
             epochs_trav = 0
 
         if epoch % FLAGS.model_save_interval == 0:
-            model.save_weights(os.path.join(FLAGS.cb_model_dir, '{}/bert_claimspotter.ckpt'.format(str(epoch + 1).zfill(3))))
+            model.save_weights(os.path.join(FLAGS.cb_model_dir, str(epoch + 1).zfill(3), FLAGS.cb_model_ckpt))
 
 
 if __name__ == '__main__':

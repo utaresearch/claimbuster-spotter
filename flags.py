@@ -20,6 +20,7 @@ flags.DEFINE_bool('ner_spacy', False, 'Named entity recognition with spaCy')
 # flags.DEFINE_string('cb_input_dir', './pt_model', 'Location of pretrained model. Used ONLY when adv/con training')
 # flags.DEFINE_string('cb_output_dir', './output', 'Location of outputs')
 flags.DEFINE_string('cb_model_dir', './output', 'Location of model (both input and output)')
+flags.DEFINE_string('cb_model_ckpt', 'bert_claimspotter.ckpt', 'Filename of model .ckpt')
 flags.DEFINE_string('cb_data_dir', './data', 'Location of data')
 flags.DEFINE_string('tb_dir', './tb_logs', 'Tensorboard location')
 
