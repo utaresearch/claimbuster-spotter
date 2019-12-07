@@ -1,4 +1,4 @@
-from bert2 import BertModelLayer
+from .bert2 import BertModelLayer
 import os
 import json
 
