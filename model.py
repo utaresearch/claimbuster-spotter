@@ -8,7 +8,7 @@ from sklearn.metrics import f1_score
 from flags import FLAGS
 from absl import logging
 from models.lang_model import LanguageModel
-from models.bert2 import load_stock_weights
+from optimizers.adam import AdamWeightFriction
 
 K = tf.keras
 L = K.layers
@@ -65,7 +65,7 @@ class ClaimBusterLayer(K.layers.Layer):
         self.dropout_layer = L.Dropout(rate=1-FLAGS.kp_cls)
         self.fc_layer = L.Dense(FLAGS.num_classes)
 
-        self.optimizer = K.optimizers.Adam(learning_rate=FLAGS.lr)
+        self.optimizer = AdamWeightFriction(learning_rate=FLAGS.lr)
         self.vars_to_train = []
         self.is_training = training
 
