@@ -97,7 +97,7 @@ class ClaimBusterLayer(K.layers.Layer):
 
         with tf.GradientTape() as tape:
             logits = self.call(x_id)
-            loss = self.compute_loss(y, logits)
+            loss = self.compute_training_loss(y, logits)
 
         grad = tape.gradient(loss, self.vars_to_train)
         self.optimizer.apply_gradients(zip(grad, self.vars_to_train))
@@ -111,12 +111,12 @@ class ClaimBusterLayer(K.layers.Layer):
         with tf.GradientTape() as tape:
             with tf.GradientTape() as tape2:
                 orig_embed, logits = self.call(x_id, get_embedding=True)
-                loss = self.compute_loss(y, logits)
+                loss = self.compute_ce_loss(y, logits)
 
             perturb = self._compute_perturbation(loss, orig_embed, tape2)
 
             logits_adv = self.call(x_id, perturb=perturb)
-            loss_adv = self.compute_loss(y, logits_adv)
+            loss_adv = self.compute_training_loss(y, logits_adv)
 
         grad = tape.gradient(loss_adv, self.vars_to_train)
         self.optimizer.apply_gradients(zip(grad, self.vars_to_train))
@@ -128,27 +128,29 @@ class ClaimBusterLayer(K.layers.Layer):
         y = tf.one_hot(y, depth=FLAGS.num_classes)
         logits = self.call(x_id)
 
-        return tf.reduce_sum(self.compute_loss(y, logits)), self.compute_accuracy(y, logits)
+        return tf.reduce_sum(self.compute_training_loss(y, logits)), self.compute_accuracy(y, logits)
 
     @tf.function
     def preds_on_batch(self, x_id):
         logits = self.call(x_id)
         return tf.nn.softmax(logits)
 
-    def compute_loss(self, y, logits):
-        loss = tf.nn.softmax_cross_entropy_with_logits(labels=y, logits=logits)
+    def compute_training_loss(self, y, logits):
+        loss = self.compute_ce_loss(y, logits)
         loss_l2 = 0
 
         if FLAGS.l2_reg_coeff > 0.0:
-            varlist = self.trainable_variables
-            loss_l2 = tf.add_n([tf.nn.l2_loss(v) for v in varlist if 'bias' not in v.name]) * FLAGS.l2_reg_coeff
-
-        ret_loss = loss + loss_l2
+            varlist = self.vars_to_train
+            loss_l2 = tf.add_n([tf.nn.l2_loss(v) for v in varlist if 'bias' not in v.name])
 
         if FLAGS.weight_classes_loss:
-            ret_loss *= self.computed_cls_weights
+            loss *= self.computed_cls_weights
 
-        return tf.identity(ret_loss, name='loss')
+        return loss + FLAGS.l2_reg_coeff * loss_l2
+
+    @staticmethod
+    def compute_ce_loss(y, logits):
+        return tf.nn.softmax_cross_entropy_with_logits(labels=y, logits=logits)
 
     def select_train_vars(self):
         train_vars = self.trainable_variables
