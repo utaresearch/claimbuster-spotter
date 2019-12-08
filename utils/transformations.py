@@ -15,6 +15,7 @@ nlp = None
 cont = None
 embed_obj = None
 kill_words = ["", "uh"]
+nltk.download('stopwords')
 stop_words = list(nltk.corpus.stopwords.words('english'))
 pos_labels = list(nltk.load("help/tagsets/upenn_tagset.pickle").keys())
 
@@ -240,8 +241,6 @@ exp_contractions = {
     "you're": "you are",
     "you've": "you have"
 }
-
-nltk.download('stopwords')
 
 
 def expand_sentence(sentence):
