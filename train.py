@@ -102,7 +102,7 @@ def main():
 
             log_string += '({:3.3f} sec/epoch)'.format((time.time() - start) / epochs_trav)
 
-            print(log_string)
+            logging.info(log_string)
 
             start = time.time()
             epochs_trav = 0
