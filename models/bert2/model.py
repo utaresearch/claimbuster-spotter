@@ -85,7 +85,7 @@ class BertModelLayer(Layer):
             embedding_output += perturb
 
         output = self.encoders_layer(embedding_output, mask=mask, training=training)
-        output = self.dropout_layer(output)
+        output = self.dropout_layer(output, training=training)
 
         pooled_output = self.pooler_layer(output[:, 0, :], training=training)
 
