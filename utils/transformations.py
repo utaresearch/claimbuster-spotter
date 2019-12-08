@@ -241,6 +241,8 @@ exp_contractions = {
     "you've": "you have"
 }
 
+nltk.download('stopwords')
+
 
 def expand_sentence(sentence):
     return [(strip_chars(word)) for word in sentence.split(' ')]
