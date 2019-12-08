@@ -59,9 +59,8 @@ class BertModelLayer(Layer):
             name="encoder"
         )
 
-        self.dropout_layer = K.layers.Dropout(rate=1-self.params.hidden_dropout)
-
-        self.pooler_layer = PoolerLayer(rate=1-self.params.hidden_size, name='pooler')
+        self.dropout_layer = K.layers.Dropout(rate=self.params.hidden_dropout)
+        self.pooler_layer = PoolerLayer(self.params.hidden_size, name='pooler')
 
         super(BertModelLayer, self).build(input_shape)
 
