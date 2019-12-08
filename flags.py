@@ -106,6 +106,8 @@ FLAGS.bert_model_loc = FLAGS.bert_model_loc + '_' + FLAGS.bert_model_size
 if any(['large' in FLAGS.bert_model_size]):
 	FLAGS.tfm_layers = 24
 	FLAGS.tfm_ft_enc_layers *= 2
+	FLAGS.batch_size_reg /= 2
+	FLAGS.batch_size_adv /= 2
 
 
 def print_flags():
