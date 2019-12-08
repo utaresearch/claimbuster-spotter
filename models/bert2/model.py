@@ -5,13 +5,15 @@
 
 from __future__ import absolute_import, division, print_function
 
-from tensorflow import keras
+import tensorflow as tf
 import params_flow as pf
 
 from .layer import Layer
 from .embeddings import BertEmbeddingsLayer
 from .transformer import TransformerEncoderLayer
 from .pooler import PoolerLayer
+
+K = tf.keras
 
 
 class BertModelLayer(Layer):
@@ -40,11 +42,11 @@ class BertModelLayer(Layer):
         if isinstance(input_shape, list):
             assert len(input_shape) == 2
             input_ids_shape, token_type_ids_shape = input_shape
-            self.input_spec = [keras.layers.InputSpec(shape=input_ids_shape),
-                               keras.layers.InputSpec(shape=token_type_ids_shape)]
+            self.input_spec = [K.layers.InputSpec(shape=input_ids_shape),
+                               K.layers.InputSpec(shape=token_type_ids_shape)]
         else:
             input_ids_shape = input_shape
-            self.input_spec = keras.layers.InputSpec(shape=input_ids_shape)
+            self.input_spec = K.layers.InputSpec(shape=input_ids_shape)
 
         self.embeddings_layer = BertEmbeddingsLayer.from_params(
             self.params,
@@ -56,6 +58,8 @@ class BertModelLayer(Layer):
             self.params,
             name="encoder"
         )
+
+        self.dropout_layer = K.layers.Dropout(rate=1-self.params.hidden_dropout)
 
         self.pooler_layer = PoolerLayer(self.params.hidden_size, name='pooler')
 
@@ -81,6 +85,8 @@ class BertModelLayer(Layer):
             embedding_output += perturb
 
         output = self.encoders_layer(embedding_output, mask=mask, training=training)
+        output = self.dropout_layer(output)
+
         pooled_output = self.pooler_layer(output[:, 0, :], training=training)
 
         if not get_embedding:
