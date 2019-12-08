@@ -6,7 +6,7 @@
 # cd data/word2vec
 # ./get_w2v.sh
 
-cd ../
+cd ./data/
 ./get_bert.sh
 
 # ./get_xlnet.sh
