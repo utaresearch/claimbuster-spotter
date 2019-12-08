@@ -89,8 +89,8 @@ flags.DEFINE_string('bert_model_size', 'base', 'Version of BERT to use: base or 
 # Training
 flags.DEFINE_bool('adam', True, 'Adam or RMSProp if False')
 flags.DEFINE_bool('restore_and_continue', False, 'Restore previous training session and continue')
-flags.DEFINE_integer('batch_size_reg', 128, 'Size of the batch.')
-flags.DEFINE_integer('batch_size_adv', 16, 'Size of the batch when adversarial training.')
+flags.DEFINE_integer('batch_size_reg', 64, 'Size of the batch.')
+flags.DEFINE_integer('batch_size_adv', 12, 'Size of the batch when adversarial training.')
 
 FLAGS(sys.argv)
 
