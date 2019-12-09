@@ -76,6 +76,9 @@ class ClaimBusterLayer(K.layers.Layer):
         x_id = x[0]
         x_sent = x[1]
 
+        x_id = K.layers.Input(shape=(FLAGS.max_len,), dtype='int32')
+        x_sent = K.layers.Input(shape=(2,), dtype='float32')
+
         print(x_id, x_sent)
 
         training = kwargs.get('training')
