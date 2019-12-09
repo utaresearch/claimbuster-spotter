@@ -75,6 +75,8 @@ class ClaimBusterLayer(K.layers.Layer):
         x_id = x[0]
         x_sent = x[1]
 
+        print(x_id, x_sent)
+
         training = kwargs.get('training')
         perturb = None if 'perturb' not in kwargs else kwargs.get('perturb')
         get_embedding = None if 'get_embedding' not in kwargs else kwargs.get('get_embedding')
