@@ -49,11 +49,11 @@ class DataLoader:
     def __init__(self, train_data=None, val_data=None, test_data=None):
         assert FLAGS.num_classes == 2 or FLAGS.num_classes == 3
 
-        self.data, self.eval_data, self.vocab = self.load_ext_data(train_data, val_data, test_data) \
+        self.data, self.eval_data, = self.load_ext_data(train_data, val_data, test_data) \
             if not FLAGS.use_clef_data else self.load_clef_data()
 
         if FLAGS.use_clef_data and FLAGS.combine_ours_clef_data:
-            ours_data, ours_eval, ours_vocab = self.load_ext_data(train_data, val_data, test_data)
+            ours_data, ours_eval = self.load_ext_data(train_data, val_data, test_data)
 
             ours_data = self.convert_3_to_2(ours_data)
             ours_eval = self.convert_3_to_2(ours_eval)
@@ -161,7 +161,6 @@ class DataLoader:
 
             logging.info('Loading preprocessing dependencies')
             transf.load_dependencies()
-            vocab = None
 
             logging.info('Processing train data')
             train_txt, train_pos, train_sent = transf.process_dataset(train_txt)
@@ -177,19 +176,17 @@ class DataLoader:
                                 random_state=FLAGS.random_state)
 
             with open(FLAGS.prc_clef_loc, 'wb') as f:
-                pickle.dump((train_data, eval_data, vocab), f)
+                pickle.dump((train_data, eval_data), f)
             logging.info('Refreshed data, successfully dumped at {}'.format(FLAGS.prc_clef_loc))
         else:
             logging.info('Restoring data from {}'.format(FLAGS.prc_clef_loc))
             with open(FLAGS.prc_clef_loc, 'rb') as f:
-                train_data, eval_data, vocab = pickle.load(f)
+                train_data, eval_data = pickle.load(f)
 
-        return train_data, eval_data, vocab
+        return train_data, eval_data
 
     @staticmethod
     def load_ext_data(train_data_in, val_data_in, test_data_in):
-        train_data, test_data, vocab = None, None, None
-
         data_loc = FLAGS.prc_data_loc[:-7] + '_{}'.format('xlnet' if FLAGS.tfm_type == 0 else 'bert') + '.pickle'
 
         if (train_data_in is not None and val_data_in is not None and test_data_in is not None) or \
@@ -225,14 +222,14 @@ class DataLoader:
                                 random_state=FLAGS.random_state)
 
             with open(data_loc, 'wb') as f:
-                pickle.dump((train_data, eval_data, vocab), f)
+                pickle.dump((train_data, eval_data), f)
             logging.info('Refreshed data, successfully dumped at {}'.format(data_loc))
         else:
             logging.info('Restoring data from {}'.format(data_loc))
             with open(data_loc, 'rb') as f:
-                train_data, eval_data, vocab = pickle.load(f)
+                train_data, eval_data = pickle.load(f)
 
-        return train_data, eval_data, vocab
+        return train_data, eval_data
 
     @staticmethod
     def convert_data_to_tensorflow_format(features, pos):
