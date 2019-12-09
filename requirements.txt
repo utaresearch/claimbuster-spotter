@@ -6,8 +6,8 @@ nltk
 numpy
 pandas
 params
-params_flow
-scikit_learn
+params-flow
+scikit-learn
 scipy
 sentencepiece
 six
