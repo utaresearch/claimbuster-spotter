@@ -42,6 +42,8 @@ def main():
     logging.info("{} training examples".format(train_data.get_length()))
     logging.info("{} validation examples".format(test_data.get_length()))
 
+    print(train_data.x[0])
+
     dataset_train = tf.data.Dataset.from_tensor_slices((train_data.x, train_data.y)).shuffle(
         buffer_size=train_data.get_length()).batch(FLAGS.batch_size_reg if not FLAGS.adv_train else FLAGS.batch_size_adv)
     dataset_test = tf.data.Dataset.from_tensor_slices((test_data.x, test_data.y)).shuffle(
