@@ -24,8 +24,9 @@ class ClaimBusterModel(K.models.Model):
         raise Exception('Please do not call this model. Use the *_on_batch functions instead')
 
     def warm_up(self):
-        input_ph = K.layers.Input(shape=(FLAGS.max_len,), dtype='int32')
-        self.layer.call(input_ph, training=False)
+        input_ph_id = K.layers.Input(shape=(FLAGS.max_len,), dtype='int32')
+        input_ph_sent = K.layers.Input(shape=(2,), dtype='float32')
+        self.layer.call((input_ph_id, input_ph_sent), training=False)
 
     def load_custom_model(self):
         if any('.ckpt' in x for x in os.listdir(FLAGS.cb_model_dir)):
