@@ -170,9 +170,6 @@ class DataLoader:
             train_features, train_pos = DataLoader.convert_data_to_tensorflow_format(train_features, train_pos)
             eval_features, eval_pos = DataLoader.convert_data_to_tensorflow_format(eval_features, eval_pos)
 
-            print(train_features)
-            print(train_sent)
-
             train_data = Dataset(list(zip(train_features, train_pos, train_sent)), train_lab,
                                  random_state=FLAGS.random_state)
             eval_data = Dataset(list(zip(eval_features, eval_pos, eval_sent)), eval_lab,
@@ -218,6 +215,9 @@ class DataLoader:
 
             train_features, train_pos = DataLoader.convert_data_to_tensorflow_format(train_features, train_pos)
             eval_features, eval_pos = DataLoader.convert_data_to_tensorflow_format(eval_features, eval_pos)
+
+            print(train_features)
+            print(train_sent)
 
             train_data = Dataset(list(zip(train_features, train_pos, train_sent)), train_lab,
                                  random_state=FLAGS.random_state)
