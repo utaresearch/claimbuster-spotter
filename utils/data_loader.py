@@ -163,20 +163,16 @@ class DataLoader:
             transf.load_dependencies()
 
             logging.info('Processing train data')
-            train_txt, train_pos, train_sent = transf.process_dataset(train_txt)
+            train_txt, _, train_sent = transf.process_dataset(train_txt)
             logging.info('Processing eval data')
-            eval_txt, eval_pos, eval_sent = transf.process_dataset(eval_txt)
+            eval_txt, _, eval_sent = transf.process_dataset(eval_txt)
 
-            train_features, train_pos = DataLoader.convert_data_to_tensorflow_format(train_features, train_pos)
-            eval_features, eval_pos = DataLoader.convert_data_to_tensorflow_format(eval_features, eval_pos)
+            train_features = DataLoader.convert_data_to_tensorflow_format(train_features)
+            eval_features = DataLoader.convert_data_to_tensorflow_format(eval_features)
 
-            assert len(train_features) == len(train_pos) == len(train_sent)
-
-            train_data = Dataset(
-                [(train_features[i], train_pos[i], train_sent[i]) for i in range(len(train_features))], train_lab,
-                random_state=FLAGS.random_state)
-            eval_data = Dataset([(eval_features[i], eval_pos[i], eval_sent[i]) for i in range(len(eval_features))],
-                                eval_lab,
+            train_data = Dataset(list(zip(train_features, train_sent)), train_lab,
+                                 random_state=FLAGS.random_state)
+            eval_data = Dataset(list(zip(eval_features, eval_sent)), eval_lab,
                                 random_state=FLAGS.random_state)
 
             with open(FLAGS.prc_clef_loc, 'wb') as f:
@@ -194,7 +190,7 @@ class DataLoader:
         data_loc = FLAGS.prc_data_loc[:-7] + '_{}'.format('xlnet' if FLAGS.tfm_type == 0 else 'bert') + '.pickle'
 
         if (train_data_in is not None and val_data_in is not None and test_data_in is not None) or \
-                (not os.path.isfile(data_loc)):
+           (not os.path.isfile(data_loc)):
             FLAGS.refresh_data = True
 
         if FLAGS.refresh_data:
@@ -211,24 +207,18 @@ class DataLoader:
             transf.load_dependencies()
 
             logging.info('Processing train data')
-            train_txt, train_pos, train_sent = transf.process_dataset(train_txt)
+            train_txt, _, train_sent = transf.process_dataset(train_txt)
             logging.info('Processing eval data')
-            eval_txt, eval_pos, eval_sent = transf.process_dataset(eval_txt)
+            eval_txt, _, eval_sent = transf.process_dataset(eval_txt)
 
             train_features, eval_features = DataLoader.process_text_for_transformers(train_txt, eval_txt)
 
-            train_features, train_pos = DataLoader.convert_data_to_tensorflow_format(train_features, train_pos)
-            eval_features, eval_pos = DataLoader.convert_data_to_tensorflow_format(eval_features, eval_pos)
+            train_features = DataLoader.convert_data_to_tensorflow_format(train_features)
+            eval_features = DataLoader.convert_data_to_tensorflow_format(eval_features)
 
-            assert len(train_features) == len(train_pos) == len(train_sent)
-
-            print([(train_features[i], train_pos[i], train_sent[i]) for i in range(len(train_features))][0])
-
-            train_data = Dataset(
-                [(train_features[i], train_pos[i], train_sent[i]) for i in range(len(train_features))], train_lab,
-                random_state=FLAGS.random_state)
-            eval_data = Dataset([(eval_features[i], eval_pos[i], eval_sent[i]) for i in range(len(eval_features))],
-                                eval_lab,
+            train_data = Dataset(list(zip(train_features, train_sent)), train_lab,
+                                 random_state=FLAGS.random_state)
+            eval_data = Dataset(list(zip(eval_features, eval_sent)), eval_lab,
                                 random_state=FLAGS.random_state)
 
             with open(data_loc, 'wb') as f:
@@ -242,8 +232,8 @@ class DataLoader:
         return train_data, eval_data
 
     @staticmethod
-    def convert_data_to_tensorflow_format(features, pos):
-        return DataLoader.pad_seq(features), DataLoader.one_hot_pos_tags(pos)
+    def convert_data_to_tensorflow_format(features):
+        return DataLoader.pad_seq(features)
 
     @staticmethod
     def process_text_for_transformers(train_txt, eval_txt):
@@ -277,15 +267,3 @@ class DataLoader:
     def pad_seq(inp, ver=0):  # 0 is int, 1 is string
         return pad_sequences(inp, padding="post", maxlen=FLAGS.max_len) if ver == 0 else \
             pad_sequences(inp, padding="post", maxlen=FLAGS.max_len, dtype='str', value='')
-
-    @staticmethod
-    def one_hot_pos_tags(pos_data):
-        ret = np.zeros(shape=(len(pos_data), FLAGS.max_len, len(transf.pos_labels) + 1))
-
-        for i in range(len(pos_data)):
-            sentence = pos_data[i]
-            for j in range(len(sentence)):
-                code = sentence[j] + 1
-                ret[i][j][code] = 1
-
-        return ret
