@@ -52,10 +52,10 @@ flags.DEFINE_float('kp_cls', 0.7, 'Keep probability of dropout in FC')
 
 # Optimization
 flags.DEFINE_integer('train_steps', 50, 'Number of epochs to run.')
-flags.DEFINE_float('lr', 5e-5, 'Learning rate while during optimiation.')
+flags.DEFINE_float('lr', 1e-4, 'Learning rate while during optimiation.')
 
 # Regularization
-flags.DEFINE_float('l2_reg_coeff', 0.001, 'If val > 0, use L2 Regularization on weights in graph')
+flags.DEFINE_float('l2_reg_coeff', 0.0005, 'If val > 0, use L2 Regularization on weights in graph')
 flags.DEFINE_float('keep_prob_cls', 0.7, 'Keep probability of classification layer.')
 
 # Word2vec for pre-processing
@@ -79,8 +79,8 @@ flags.DEFINE_integer('tfm_layers', 12, 'Number of BERT layers.')
 flags.DEFINE_bool('tfm_ft_embed', False, 'Train BERT embedding layer')
 flags.DEFINE_bool('tfm_ft_pooler', True, 'Train BERT pooler layer')
 flags.DEFINE_integer('tfm_ft_enc_layers', 2, 'Last n encoding layers are marked as trainable')
-flags.DEFINE_float('kp_tfm_atten', 0.7, 'Keep probability of attention dropout in Transformer')
-flags.DEFINE_float('kp_tfm_hidden', 0.7, 'Keep probability of hidden dropout in Transformer')
+flags.DEFINE_float('kp_tfm_atten', 0.8, 'Keep probability of attention dropout in Transformer')
+flags.DEFINE_float('kp_tfm_hidden', 0.8, 'Keep probability of hidden dropout in Transformer')
 
 # BERT
 flags.DEFINE_string('bert_model_loc', './data/bert_pretrain', 'Root location of pretrained BERT files.')
