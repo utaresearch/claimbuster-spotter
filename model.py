@@ -85,7 +85,7 @@ class ClaimBusterLayer(K.layers.Layer):
         if not get_embedding:
             bert_output = self.bert_model(x_id, perturb, training=training)
         else:
-            orig_embed, bert_output = self.bert_model(x_sent, perturb, get_embedding=True, training=training)
+            orig_embed, bert_output = self.bert_model(x_id, perturb, get_embedding=True, training=training)
 
         bert_output = tf.concat([bert_output, x_sent], axis=1)
         bert_output = self.dropout_layer(bert_output, training=training)
