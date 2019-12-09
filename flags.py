@@ -55,7 +55,7 @@ flags.DEFINE_integer('train_steps', 50, 'Number of epochs to run.')
 flags.DEFINE_float('lr', 1e-4, 'Learning rate while during optimiation.')
 
 # Regularization
-flags.DEFINE_float('l2_reg_coeff', 0.0005, 'If val > 0, use L2 Regularization on weights in graph')
+flags.DEFINE_float('l2_reg_coeff', 5e-4, 'If val > 0, use L2 Regularization on weights in graph')
 flags.DEFINE_float('keep_prob_cls', 0.7, 'Keep probability of classification layer.')
 
 # Word2vec for pre-processing
