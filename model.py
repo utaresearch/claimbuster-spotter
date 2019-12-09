@@ -149,6 +149,7 @@ class ClaimBusterLayer(K.layers.Layer):
         if FLAGS.weight_classes_loss:
             print(loss)
             print(self.computed_cls_weights)
+            print(y)
 
             loss *= self.computed_cls_weights
 
