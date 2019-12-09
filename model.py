@@ -94,7 +94,7 @@ class ClaimBusterLayer(K.layers.Layer):
         else:
             return orig_embed, ret
 
-    # @tf.function
+    @tf.function
     def train_on_batch(self, x_id, y):
         y = tf.one_hot(y, depth=FLAGS.num_classes)
 
@@ -148,10 +148,8 @@ class ClaimBusterLayer(K.layers.Layer):
 
         if FLAGS.weight_classes_loss:
             y_int = tf.argmax(y, axis=1)
-            print(y_int)
             cw = tf.constant(self.computed_cls_weights, dtype=tf.float32)
             loss_adj = tf.map_fn(lambda x: cw[x], y_int, dtype=tf.float32)
-            print(loss_adj)
 
             loss *= loss_adj
 
