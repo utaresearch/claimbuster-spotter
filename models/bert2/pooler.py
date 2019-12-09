@@ -9,7 +9,7 @@ class PoolerLayer(L.Layer):
         super(PoolerLayer, self).__init__(**kwargs)
 
         self.hidden_size = hidden_size
-        self.dense_layer = L.Dense(hidden_size, name='dense')
+        self.dense_layer = L.Dense(hidden_size, activation='tanh', name='dense')
 
     def call(self, x, **kwargs):
         return self.dense_layer(x)
