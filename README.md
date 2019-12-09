@@ -1,5 +1,5 @@
 # Adversarial Claim Spotting
-In this repository, we apply adversarial training as as regularization technique for the purpose of determining whether a given claim is a) factual and b) worthy of fact checking.
+In this repository, we apply adversarial training as as regularization technique for the purpose of determining whether a given claim is factual and worthy of fact-checking.
 
 ## Table of Contents
 1. [Requirements](#requirements)
@@ -10,7 +10,7 @@ In this repository, we apply adversarial training as as regularization technique
 
 ## Requirements
 
-Will be listed in the future; for now, please simply use `idir-server10` to run the code. Necessary packages should already be installed; otherwise, please follow the stack track and custom-install if needed.
+Please see [`requirements.txt`](requirements.txt) for a list of required Python packages. You may use `pip3 install -r requirements.txt` to install them at once.
 
 ## Experimental Setup
 
@@ -24,16 +24,16 @@ This section provides a high-level overview of this repository, as well as detai
 
 ### Pre-processing
 
-Preprocessing is accomplished by [`pretrain.py`](train.py). Sentences are extracted from `./data/`, transformed based on various flags defined in [`flags.py`](flags.py), and converted into the token/segment/mask format required by BERT. Uses `tensorflow-hub` module.
+Preprocessing is accomplished by [`train.py`](train.py). Sentences are extracted from `./data/`, transformed based on various flags defined in [`flags.py`](flags.py), and converted into the token/segment/mask format required by BERT.
 
 ### Training
 
-Each training session is predicated upon a pre-trained BERT model as an initialization point. After loading these weights, there are two possible training algorithms:
+Each training session is predicated upon a pre-trained BERT model as an initialization point. After loading these weights, we offer two possible training algorithms:
 
-* Classifier Fine-Tuning ([`pretrain.py`](train.py)): uses vanilla stochastic gradient descent to minimize softmax classification objective into NFS/UFS/CFS class division.
-* Adversarial Classifier Fine-Tuning ([`advtrain.py`](advtrain.py)): applies adversarial perturbations to embeddings designated by `--perturb_id` flag (see [`flags.py`](flags.py) for additional details)
+* Classifier Fine-Tuning (`--adv_train=False`): uses vanilla stochastic gradient descent to minimize softmax classification objective into NFS/UFS/CFS class division.
+* Adversarial Classifier Fine-Tuning (`--adv_train=True`): applies adversarial perturbations to embeddings and uses stochastic gradient descent to minimize error between each resulting prediction and its corresponding ground-truth.
 
-Depending on the VRAM capacity of the selected GPU, as well as the predefined batch size, training time can range between 1 and 10 hours. On UTA servers, it may take approximately 3 hours to train a `BERT-Base` model and 6-7 hours to train a `BERT-Large` model using regular optimization. Adversarial training doubles the time required.
+Depending on the VRAM capacity of the selected GPU, as well as the predefined batch size and number of frozen layers, training time can range between 1 and 10 hours. On an Nvidia GeForce GTX 1080Ti, it takes approximately 3 minutes/epoch to train a `BERT-Base` model and 5 minutes/epoch to train a `BERT-Large` model using regular optimization. Adversarial training doubles the time required.
 
 ### Evaluations
 
@@ -70,46 +70,35 @@ root.
 cd adversarial-claimspotting
 ```
 
-### Fetch word2vec and spaCy models
+### Fetch dependencies
 
-Because word2vec binaries and BERT pre-trained files are inconvenient/impossible to track with Git, they must be downloaded at time of use. There is a convenient pre-written script for this purpose.
+Because BERT pre-trained files are inconvenient/impossible to track with Git, they must be downloaded at time of use. There is a convenient pre-written script for this purpose.
 
 ```bash
+chmod +x ./data/get_bert.sh
 chmod +x ./dependencies.sh
 ./dependencies.sh
 ```
-
-<!-- ### Set necessary directories
-
-Descriptions for each directory are located below steps that require their usage.
-
-```bash
-mkdir output
-PTDIR="output/models/vat_pretrain"
-GENDIR="output/cb"
-RAWDIR="output/cb_raw"
-TDIR="output/models/vat_classify"
-EDIR="output/models/vat_eval"
-``` -->
 
 ### Raw Data Parsing & Data Transformations
 
 Training data is drawn from the entire [small dataset](data/data_small.json), and
 testing data is drawn from the [2000 pre-selected disjoint sentences](data/disjoint_2000.pkl). In the future, a full corpus from a recent series of presidential debates will be added to this collection to data.
 
-When [`pretrain.py`](train.py) is run, code to process raw data will be run if `--refresh_data=True` **or** the code cannot find the stored, processed `.pkl` files containing processed data. Please see the next section for code on running the pre-train file.
+When [`train.py`](train.py) is run, code to process raw data will be run if `--refresh_data=True` **or** the code cannot find the stored, processed `.pkl` files containing processed data. Please see the next section for code on running the pre-train file.
 
 ### Classifier Fine-Tuning
 
-Once data is processed and dumped into `.pkl` files, [`pretrain.py`](train.py) will continue to build a graph initialized from a pre-trained BERT model. For all of the remaining pre- and adv-training steps, please see [`flags.py`](flags.py) for more information on flag listings and descriptions.
+Once data is processed and dumped into `.pkl` files, [`train.py`](train.py) will continue to build a graph initialized from a pre-trained BERT model. For all of the remaining pre- and adv-training steps, please see [`flags.py`](flags.py) for more information on flag listings and descriptions.
 
 Note that the entire [small dataset](data/data_small.json) will be used for training, and the [disjoint 2000 dataset](data/disjoint_2000.json) will be used for validation.
 
 `$MDIR` indicates the location where the trained model should be stored. 
 
 ```bash
-python3 pretrain.py \
+python3 train.py \
     --cb_model_dir=$MDIR \
+    --adv_train=False \
     --gpu=0
 ```
 
@@ -118,10 +107,10 @@ python3 pretrain.py \
 As with regular training, `$MDIR` indicates the location where the trained model should be stored. `perturb_id` can be in the range `[0,7]` and determines which combination of embeddings will be perturbed. Please see [`flags.py`](flags.py) for more information.
 
 ```bash
-python3 advtrain.py \
+python3 train.py \
     --cb_model_dir=$MDIR \
+    --adv_train=True \
     --gpu=0 \
-    --perturb_id=0
 ```
 
 ### Restore and Continue Training
@@ -135,8 +124,8 @@ Below is an example of using `restore_and_continue` on adversarial training.
 ```bash
 python3 advtrain.py \
     --cb_model_dir=$MDIR \
+    --adv_train=True
     --gpu=0 \
-    --perturb_id=0 \
     --restore_and_continue=True
 ```
 
@@ -180,4 +169,5 @@ api_result_2 = api.subscribe_cmdline_query()  # Collects/processes cmdline input
 
 Code in this repository was contributed to by:
 * Kevin Meng, [`@kmeng01`](https://github.com/kmeng01)
+* Damian Jimenez, [`@damianj`](https://github.com/damianj)
 * And others
