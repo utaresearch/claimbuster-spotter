@@ -170,9 +170,9 @@ class DataLoader:
             train_features, train_pos = DataLoader.convert_data_to_tensorflow_format(train_features, train_pos)
             eval_features, eval_pos = DataLoader.convert_data_to_tensorflow_format(eval_features, eval_pos)
 
-            train_data = Dataset(list(zip(list(train_features), list(train_pos), list(train_sent))), list(train_lab),
+            train_data = Dataset(list(zip(train_features, train_pos, train_sent)), train_lab,
                                  random_state=FLAGS.random_state)
-            eval_data = Dataset(list(zip(list(eval_features), list(eval_pos), list(eval_sent))), list(eval_lab),
+            eval_data = Dataset(list(zip(eval_features, eval_pos, eval_sent)), eval_lab,
                                 random_state=FLAGS.random_state)
 
             with open(FLAGS.prc_clef_loc, 'wb') as f:
@@ -216,9 +216,9 @@ class DataLoader:
             train_features, train_pos = DataLoader.convert_data_to_tensorflow_format(train_features, train_pos)
             eval_features, eval_pos = DataLoader.convert_data_to_tensorflow_format(eval_features, eval_pos)
 
-            train_data = Dataset(list(zip(list(train_features), list(train_pos), list(train_sent))), list(train_lab),
+            train_data = Dataset(list(zip(train_features, train_pos, train_sent)), train_lab,
                                  random_state=FLAGS.random_state)
-            eval_data = Dataset(list(zip(list(eval_features), list(eval_pos), list(eval_sent))), list(eval_lab),
+            eval_data = Dataset(list(zip(eval_features, eval_pos, eval_sent)), eval_lab,
                                 random_state=FLAGS.random_state)
 
             with open(data_loc, 'wb') as f:
