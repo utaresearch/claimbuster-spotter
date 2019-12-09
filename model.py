@@ -17,7 +17,6 @@ L = K.layers
 class ClaimBusterModel(K.models.Model):
     def __init__(self, cls_weights=None):
         super(ClaimBusterModel, self).__init__()
-        logging.info(cls_weights)
         self.layer = ClaimBusterLayer(cls_weights if cls_weights is not None else [1 for _ in range(FLAGS.num_classes)])
         self.adv = None
 
