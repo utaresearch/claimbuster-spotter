@@ -151,7 +151,12 @@ class ClaimBusterLayer(K.layers.Layer):
             print(self.computed_cls_weights)
             print(y)
 
-            loss *= self.computed_cls_weights
+            y_int = tf.argmax(y, axis=1)
+            print(y_int)
+            loss_adj = [self.computed_cls_weights[x] for x in y_int]
+            print(loss_adj)
+
+            loss *= loss_adj
 
         return loss + FLAGS.l2_reg_coeff * loss_l2
 
