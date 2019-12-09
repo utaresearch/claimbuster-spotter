@@ -173,9 +173,9 @@ class DataLoader:
             assert len(train_features) == len(train_pos) == len(train_sent)
 
             train_data = Dataset(
-                [(train_features[i], train_pos[i], train_sent[i]) for i in range(len(train_features[i]))], train_lab,
+                [(train_features[i], train_pos[i], train_sent[i]) for i in range(len(train_features))], train_lab,
                 random_state=FLAGS.random_state)
-            eval_data = Dataset([(eval_features[i], eval_pos[i], eval_sent[i]) for i in range(len(eval_features[i]))],
+            eval_data = Dataset([(eval_features[i], eval_pos[i], eval_sent[i]) for i in range(len(eval_features))],
                                 eval_lab,
                                 random_state=FLAGS.random_state)
 
@@ -223,9 +223,9 @@ class DataLoader:
             assert len(train_features) == len(train_pos) == len(train_sent)
 
             train_data = Dataset(
-                [(train_features[i], train_pos[i], train_sent[i]) for i in range(len(train_features[i]))], train_lab,
+                [(train_features[i], train_pos[i], train_sent[i]) for i in range(len(train_features))], train_lab,
                 random_state=FLAGS.random_state)
-            eval_data = Dataset([(eval_features[i], eval_pos[i], eval_sent[i]) for i in range(len(eval_features[i]))],
+            eval_data = Dataset([(eval_features[i], eval_pos[i], eval_sent[i]) for i in range(len(eval_features))],
                                 eval_lab,
                                 random_state=FLAGS.random_state)
 
