@@ -154,10 +154,9 @@ class ClaimBusterLayer(K.layers.Layer):
             y_int = tf.argmax(y, axis=1)
             print(y_int)
             # loss_adj = [self.computed_cls_weights[x] for x in y_int]
-            cw = tf.constant(self.computed_cls_weights, dtype=tf.float32
-                             )
+            cw = tf.constant(self.computed_cls_weights, dtype=tf.float32)
             print(cw)
-            loss_adj = tf.map_fn(lambda x: cw, y_int)
+            loss_adj = tf.map_fn(lambda x: cw[x], y_int)
             print(loss_adj)
 
             loss *= loss_adj
