@@ -172,6 +172,8 @@ class DataLoader:
 
             assert len(train_features) == len(train_pos) == len(train_sent)
 
+            print([(train_features[i], train_pos[i], train_sent[i]) for i in range(len(train_features))][0])
+
             train_data = Dataset(
                 [(train_features[i], train_pos[i], train_sent[i]) for i in range(len(train_features))], train_lab,
                 random_state=FLAGS.random_state)
