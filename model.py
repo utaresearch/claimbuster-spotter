@@ -70,7 +70,7 @@ class ClaimBusterLayer(K.layers.Layer):
         self.optimizer = AdamWeightFriction(learning_rate=FLAGS.lr)
         self.vars_to_train = []
 
-    def call(self, x, **kwargs):
+    def call(self, x, x2, **kwargs):
         assert 'training' in kwargs
 
         x_id = x[0]
