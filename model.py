@@ -146,6 +146,9 @@ class ClaimBusterLayer(K.layers.Layer):
             varlist = self.vars_to_train
             loss_l2 = tf.add_n([tf.nn.l2_loss(v) for v in varlist if 'bias' not in v.name])
 
+        print(loss)
+        print(self.computed_cls_weights)
+
         if FLAGS.weight_classes_loss:
             loss *= self.computed_cls_weights
 
