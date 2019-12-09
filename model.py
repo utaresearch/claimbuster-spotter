@@ -26,7 +26,7 @@ class ClaimBusterModel(K.models.Model):
 
     def warm_up(self):
         input_ph = K.layers.Input(shape=(FLAGS.max_len,), dtype='int32')
-        self.layer.call(input_ph)
+        self.layer.call(input_ph, training=False)
 
     def load_custom_model(self):
         if any('.ckpt' in x for x in os.listdir(FLAGS.cb_model_dir)):
