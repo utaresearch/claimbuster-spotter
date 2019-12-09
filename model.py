@@ -20,7 +20,7 @@ class ClaimBusterModel(K.models.Model):
         self.layer = ClaimBusterLayer(cls_weights if cls_weights is not None else [1 for _ in range(FLAGS.num_classes)])
         self.adv = None
 
-    def call(self, x_id, **kwargs):
+    def call(self, x, **kwargs):
         raise Exception('Please do not call this model. Use the *_on_batch functions instead')
 
     def warm_up(self):
@@ -43,17 +43,17 @@ class ClaimBusterModel(K.models.Model):
     def save_custom_model(self, epoch):
         self.save_weights(os.path.join(FLAGS.cb_model_dir, str(epoch + 1).zfill(3), FLAGS.cb_model_ckpt))
 
-    def train_on_batch(self, x_id, y):
-        return self.layer.train_on_batch(x_id, y)
+    def train_on_batch(self, x, y):
+        return self.layer.train_on_batch(x, y)
 
-    def adv_train_on_batch(self, x_id, y):
-        return self.layer.adv_train_on_batch(x_id, y)
+    def adv_train_on_batch(self, x, y):
+        return self.layer.adv_train_on_batch(x, y)
 
-    def stats_on_batch(self, x_id, y):
-        return self.layer.stats_on_batch(x_id, y)
+    def stats_on_batch(self, x, y):
+        return self.layer.stats_on_batch(x, y)
 
-    def preds_on_batch(self, x_id):
-        return self.layer.preds_on_batch(x_id)
+    def preds_on_batch(self, x):
+        return self.layer.preds_on_batch(x)
 
 
 class ClaimBusterLayer(K.layers.Layer):
@@ -69,8 +69,11 @@ class ClaimBusterLayer(K.layers.Layer):
         self.optimizer = AdamWeightFriction(learning_rate=FLAGS.lr)
         self.vars_to_train = []
 
-    def call(self, x_id, **kwargs):
+    def call(self, x, **kwargs):
         assert 'training' in kwargs
+
+        x_id = x[0]
+        x_sent = x[1]
 
         training = kwargs.get('training')
         perturb = None if 'perturb' not in kwargs else kwargs.get('perturb')
@@ -79,9 +82,11 @@ class ClaimBusterLayer(K.layers.Layer):
         if not get_embedding:
             bert_output = self.bert_model(x_id, perturb, training=training)
         else:
-            orig_embed, bert_output = self.bert_model(x_id, perturb, get_embedding=True, training=training)
+            orig_embed, bert_output = self.bert_model(x_sent, perturb, get_embedding=True, training=training)
 
+        bert_output = tf.concat([bert_output, x_sent], axis=1)
         bert_output = self.dropout_layer(bert_output, training=training)
+
         ret = self.fc_layer(bert_output)
 
         if not self.vars_to_train:
@@ -95,11 +100,11 @@ class ClaimBusterLayer(K.layers.Layer):
             return orig_embed, ret
 
     @tf.function
-    def train_on_batch(self, x_id, y):
+    def train_on_batch(self, x, y):
         y = tf.one_hot(y, depth=FLAGS.num_classes)
 
         with tf.GradientTape() as tape:
-            logits = self.call(x_id, training=True)
+            logits = self.call(x, training=True)
             loss = self.compute_training_loss(y, logits)
 
         grad = tape.gradient(loss, self.vars_to_train)
@@ -108,17 +113,17 @@ class ClaimBusterLayer(K.layers.Layer):
         return tf.reduce_sum(loss), self.compute_accuracy(y, logits)
 
     @tf.function
-    def adv_train_on_batch(self, x_id, y):
+    def adv_train_on_batch(self, x, y):
         y = tf.one_hot(y, depth=FLAGS.num_classes)
 
         with tf.GradientTape() as tape:
             with tf.GradientTape() as tape2:
-                orig_embed, logits = self.call(x_id, training=True, get_embedding=True)
+                orig_embed, logits = self.call(x, training=True, get_embedding=True)
                 loss = self.compute_ce_loss(y, logits)
 
             perturb = self._compute_perturbation(loss, orig_embed, tape2)
 
-            logits_adv = self.call(x_id, training=True, perturb=perturb)
+            logits_adv = self.call(x, training=True, perturb=perturb)
             loss_adv = self.compute_training_loss(y, logits_adv)
 
         grad = tape.gradient(loss_adv, self.vars_to_train)
@@ -127,15 +132,15 @@ class ClaimBusterLayer(K.layers.Layer):
         return tf.reduce_sum(loss_adv), self.compute_accuracy(y, logits_adv)
 
     @tf.function
-    def stats_on_batch(self, x_id, y):
+    def stats_on_batch(self, x, y):
         y = tf.one_hot(y, depth=FLAGS.num_classes)
-        logits = self.call(x_id, training=False)
+        logits = self.call(x, training=False)
 
         return tf.reduce_sum(self.compute_training_loss(y, logits)), self.compute_accuracy(y, logits)
 
     @tf.function
-    def preds_on_batch(self, x_id):
-        logits = self.call(x_id, training=False)
+    def preds_on_batch(self, x):
+        logits = self.call(x, training=False)
         return tf.nn.softmax(logits)
 
     def compute_training_loss(self, y, logits):

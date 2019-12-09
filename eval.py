@@ -48,12 +48,12 @@ def main():
     all_y, all_pred = [], []
 
     pbar = tqdm(total=math.ceil(len(test_data.y) / FLAGS.batch_size_reg))
-    for x_id, y in dataset_test:
-        eval_batch_loss, eval_batch_acc = model.stats_on_batch(x_id, y)
+    for x, y in dataset_test:
+        eval_batch_loss, eval_batch_acc = model.stats_on_batch(x, y)
         eval_loss += eval_batch_loss
         eval_acc += eval_batch_acc * np.shape(y)[0]
 
-        preds = model.preds_on_batch(x_id)
+        preds = model.preds_on_batch(x)
         all_pred = all_pred + list(preds.numpy())
         all_y = all_y + list(y.numpy())
 
