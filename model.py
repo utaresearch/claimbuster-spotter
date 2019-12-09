@@ -220,7 +220,6 @@ class ClaimBusterLayer(K.layers.Layer):
                 else:
                     return name
             if ns[1] == "pooler":
-                logging.info("/".join(ns))
                 return "/".join(ns)
             return None
 
