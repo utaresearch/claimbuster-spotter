@@ -86,7 +86,7 @@ class BertModelLayer(Layer):
         output = self.encoders_layer(embedding_output, mask=mask, training=training)
         output = self.dropout_layer(output, training=training)
 
-        pooled_output = self.pooler_layer(output[:, 0, :], training=training)
+        pooled_output = self.pooler_layer(output[:, 0:1, :], training=training)
 
         if not get_embedding:
             return pooled_output
