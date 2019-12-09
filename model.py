@@ -156,7 +156,7 @@ class ClaimBusterLayer(K.layers.Layer):
             # loss_adj = [self.computed_cls_weights[x] for x in y_int]
             cw = tf.constant(self.computed_cls_weights, dtype=tf.float32)
             print(cw)
-            loss_adj = tf.map_fn(lambda x: cw[x], y_int)
+            loss_adj = tf.map_fn(lambda x: cw[x], y_int, dtype=tf.float32)
             print(loss_adj)
 
             loss *= loss_adj
