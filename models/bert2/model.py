@@ -88,7 +88,7 @@ class BertModelLayer(Layer):
 
         print(output)
 
-        pooled_output = self.pooler_layer(output[:, 0:1, :], training=training)
+        pooled_output = tf.squeeze(self.pooler_layer(output[:, 0:1, :], training=training), axis=1)
 
         print(pooled_output)
 
