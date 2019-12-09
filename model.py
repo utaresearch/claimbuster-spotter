@@ -26,7 +26,7 @@ class ClaimBusterModel(K.models.Model):
     def warm_up(self):
         input_ph_id = K.layers.Input(shape=(FLAGS.max_len,), dtype='int32')
         input_ph_sent = K.layers.Input(shape=(2,), dtype='float32')
-        self.layer.call(input_ph_id, input_ph_sent, training=False)
+        self.layer.call(input_ph_id, training=False)
 
     def load_custom_model(self):
         if any('.ckpt' in x for x in os.listdir(FLAGS.cb_model_dir)):
@@ -70,16 +70,18 @@ class ClaimBusterLayer(K.layers.Layer):
         self.optimizer = AdamWeightFriction(learning_rate=FLAGS.lr)
         self.vars_to_train = []
 
-    def call(self, x, x2, **kwargs):
+    def call(self, x, **kwargs):
         assert 'training' in kwargs
 
-        x_id = x[0]
-        x_sent = x[1]
+        x_id = x
 
-        x_id = K.layers.Input(shape=(FLAGS.max_len,), dtype='int32')
-        x_sent = K.layers.Input(shape=(2,), dtype='float32')
-
-        print(x_id, x_sent)
+        # x_id = x[0]
+        # x_sent = x[1]
+        #
+        # x_id = K.layers.Input(shape=(FLAGS.max_len,), dtype='int32')
+        # x_sent = K.layers.Input(shape=(2,), dtype='float32')
+        #
+        # print(x_id, x_sent)
 
         training = kwargs.get('training')
         perturb = None if 'perturb' not in kwargs else kwargs.get('perturb')
