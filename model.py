@@ -17,16 +17,16 @@ L = K.layers
 class ClaimBusterModel(K.models.Model):
     def __init__(self, training, cls_weights=None):
         super(ClaimBusterModel, self).__init__()
-        self.layer = ClaimBusterLayer(training)
+        self.layer = ClaimBusterLayer()
         self.computed_cls_weights = cls_weights if cls_weights is not None else [1 for _ in range(FLAGS.num_classes)]
         self.adv = None
 
     def call(self, x_id, **kwargs):
-        return self.layer.call(x_id, **kwargs)
+        raise Exception('Please do not call this model. Use the *_on_batch functions instead')
 
     def warm_up(self):
         input_ph = K.layers.Input(shape=(FLAGS.max_len,), dtype='int32')
-        self.call(input_ph)
+        self.layer.call(input_ph)
 
     def load_custom_model(self):
         if any('.ckpt' in x for x in os.listdir(FLAGS.cb_model_dir)):
@@ -58,7 +58,7 @@ class ClaimBusterModel(K.models.Model):
 
 
 class ClaimBusterLayer(K.layers.Layer):
-    def __init__(self, training):
+    def __init__(self):
         super(ClaimBusterLayer, self).__init__()
 
         self.bert_model = LanguageModel.build_bert()
@@ -67,18 +67,20 @@ class ClaimBusterLayer(K.layers.Layer):
 
         self.optimizer = AdamWeightFriction(learning_rate=FLAGS.lr)
         self.vars_to_train = []
-        self.is_training = training
 
     def call(self, x_id, **kwargs):
+        assert 'training' in kwargs
+
+        training = kwargs.get('training')
         perturb = None if 'perturb' not in kwargs else kwargs.get('perturb')
         get_embedding = None if 'get_embedding' not in kwargs else kwargs.get('get_embedding')
 
         if not get_embedding:
-            bert_output = self.bert_model(x_id, perturb, training=self.is_training)
+            bert_output = self.bert_model(x_id, perturb, training=training)
         else:
-            orig_embed, bert_output = self.bert_model(x_id, perturb, get_embedding=True, training=self.is_training)
+            orig_embed, bert_output = self.bert_model(x_id, perturb, get_embedding=True, training=training)
 
-        bert_output = self.dropout_layer(bert_output, training=self.is_training)
+        bert_output = self.dropout_layer(bert_output, training=training)
         ret = self.fc_layer(bert_output)
 
         if not self.vars_to_train:
@@ -96,7 +98,7 @@ class ClaimBusterLayer(K.layers.Layer):
         y = tf.one_hot(y, depth=FLAGS.num_classes)
 
         with tf.GradientTape() as tape:
-            logits = self.call(x_id)
+            logits = self.call(x_id, training=True)
             loss = self.compute_training_loss(y, logits)
 
         grad = tape.gradient(loss, self.vars_to_train)
@@ -110,12 +112,12 @@ class ClaimBusterLayer(K.layers.Layer):
 
         with tf.GradientTape() as tape:
             with tf.GradientTape() as tape2:
-                orig_embed, logits = self.call(x_id, get_embedding=True)
+                orig_embed, logits = self.call(x_id, training=True, get_embedding=True)
                 loss = self.compute_ce_loss(y, logits)
 
             perturb = self._compute_perturbation(loss, orig_embed, tape2)
 
-            logits_adv = self.call(x_id, perturb=perturb)
+            logits_adv = self.call(x_id, training=True, perturb=perturb)
             loss_adv = self.compute_training_loss(y, logits_adv)
 
         grad = tape.gradient(loss_adv, self.vars_to_train)
@@ -126,13 +128,13 @@ class ClaimBusterLayer(K.layers.Layer):
     @tf.function
     def stats_on_batch(self, x_id, y):
         y = tf.one_hot(y, depth=FLAGS.num_classes)
-        logits = self.call(x_id)
+        logits = self.call(x_id, training=False)
 
         return tf.reduce_sum(self.compute_training_loss(y, logits)), self.compute_accuracy(y, logits)
 
     @tf.function
     def preds_on_batch(self, x_id):
-        logits = self.call(x_id)
+        logits = self.call(x_id, training=False)
         return tf.nn.softmax(logits)
 
     def compute_training_loss(self, y, logits):
