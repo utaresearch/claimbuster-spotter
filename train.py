@@ -42,14 +42,9 @@ def main():
     logging.info("{} training examples".format(train_data.get_length()))
     logging.info("{} validation examples".format(test_data.get_length()))
 
-    for crap in train_data:
-        if len(crap[0] != 200) or len(crap[1] != 2):
-            print(len(crap[0]))
-            print(len(crap[1]))
-
-    dataset_train = tf.data.Dataset.from_tensor_slices((train_data.x, train_data.y)).shuffle(
+    dataset_train = tf.data.Dataset.from_tensor_slices((train_data.x[0], train_data.x[1], train_data.y)).shuffle(
         buffer_size=train_data.get_length()).batch(FLAGS.batch_size_reg if not FLAGS.adv_train else FLAGS.batch_size_adv)
-    dataset_test = tf.data.Dataset.from_tensor_slices((test_data.x, test_data.y)).shuffle(
+    dataset_test = tf.data.Dataset.from_tensor_slices((test_data.x[0], train_data.x[1], test_data.y)).shuffle(
         buffer_size=test_data.get_length()).batch(FLAGS.batch_size_reg if not FLAGS.adv_train else FLAGS.batch_size_adv)
 
     logging.info("Warming up...")
@@ -94,8 +89,8 @@ def main():
             if test_data.get_length() > 0:
                 val_loss, val_acc = 0, 0
 
-                for x, y in dataset_test:
-                    val_batch_loss, val_batch_acc = model.stats_on_batch(x, y)
+                for x_id, x_sent, y in dataset_test:
+                    val_batch_loss, val_batch_acc = model.stats_on_batch((x_id, x_sent), y)
                     val_loss += val_batch_loss
                     val_acc += val_batch_acc * np.shape(y)[0]
 
