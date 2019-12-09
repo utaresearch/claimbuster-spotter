@@ -86,11 +86,7 @@ class BertModelLayer(Layer):
         output = self.encoders_layer(embedding_output, mask=mask, training=training)
         output = self.dropout_layer(output, training=training)
 
-        print(output)
-
         pooled_output = tf.squeeze(self.pooler_layer(output[:, 0:1, :], training=training), axis=1)
-
-        print(pooled_output)
 
         if not get_embedding:
             return pooled_output
