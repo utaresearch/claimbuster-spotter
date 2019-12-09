@@ -63,7 +63,7 @@ class ClaimBusterLayer(K.layers.Layer):
 
         self.bert_model = LanguageModel.build_bert()
         self.dropout_layer = L.Dropout(rate=1-FLAGS.kp_cls)
-        self.fc_layer = L.Dense(FLAGS.num_classes)
+        self.fc_layer = L.Dense(FLAGS.num_classes, kernel_initializer='glorot_normal')
 
         self.optimizer = AdamWeightFriction(learning_rate=FLAGS.lr)
         self.vars_to_train = []

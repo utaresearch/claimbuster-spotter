@@ -76,9 +76,9 @@ flags.DEFINE_bool('alt_two_class_combo', False, 'Combine CFS and UFS instead whe
 # Transformer
 flags.DEFINE_bool('tfm_type', 1, '0 XLNet 1 BERT')
 flags.DEFINE_integer('tfm_layers', 12, 'Number of BERT layers.')
-flags.DEFINE_bool('tfm_ft_embed', True, 'Train BERT embedding layer')
+flags.DEFINE_bool('tfm_ft_embed', False, 'Train BERT embedding layer')
 flags.DEFINE_bool('tfm_ft_pooler', True, 'Train BERT pooler layer')
-flags.DEFINE_integer('tfm_ft_enc_layers', 2, 'Last `var` encoding layers are marked as trainable')
+flags.DEFINE_integer('tfm_ft_enc_layers', 2, 'Last n encoding layers are marked as trainable')
 flags.DEFINE_float('kp_tfm_atten', 0.7, 'Keep probability of attention dropout in Transformer')
 flags.DEFINE_float('kp_tfm_hidden', 0.7, 'Keep probability of hidden dropout in Transformer')
 
