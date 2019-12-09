@@ -15,10 +15,10 @@ L = K.layers
 
 
 class ClaimBusterModel(K.models.Model):
-    def __init__(self, training, cls_weights=None):
+    def __init__(self, cls_weights=None):
         super(ClaimBusterModel, self).__init__()
-        self.layer = ClaimBusterLayer()
-        self.computed_cls_weights = cls_weights if cls_weights is not None else [1 for _ in range(FLAGS.num_classes)]
+        logging.info(cls_weights)
+        self.layer = ClaimBusterLayer(cls_weights if cls_weights is not None else [1 for _ in range(FLAGS.num_classes)])
         self.adv = None
 
     def call(self, x_id, **kwargs):
@@ -58,12 +58,14 @@ class ClaimBusterModel(K.models.Model):
 
 
 class ClaimBusterLayer(K.layers.Layer):
-    def __init__(self):
+    def __init__(self, cls_weights=None):
         super(ClaimBusterLayer, self).__init__()
 
         self.bert_model = LanguageModel.build_bert()
         self.dropout_layer = L.Dropout(rate=1-FLAGS.kp_cls)
         self.fc_layer = L.Dense(FLAGS.num_classes)
+
+        self.computed_cls_weights = cls_weights
 
         self.optimizer = AdamWeightFriction(learning_rate=FLAGS.lr)
         self.vars_to_train = []

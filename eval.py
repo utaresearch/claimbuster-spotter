@@ -35,7 +35,7 @@ def main():
 
     logging.info("Warming up...")
 
-    model = ClaimBusterModel(training=False)
+    model = ClaimBusterModel(cls_weights=data_load.class_weights)
     model.warm_up()
 
     logging.info('Attempting to restore weights from {}'.format(FLAGS.cb_model_dir))

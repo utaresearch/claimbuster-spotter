@@ -49,7 +49,7 @@ def main():
 
     logging.info("Warming up...")
 
-    model = ClaimBusterModel(training=True)
+    model = ClaimBusterModel(cls_weights=data_load.class_weights)
     model.warm_up()
 
     start_epoch, end_epoch = 0, FLAGS.train_steps
