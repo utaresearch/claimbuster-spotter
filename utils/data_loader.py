@@ -170,9 +170,13 @@ class DataLoader:
             train_features, train_pos = DataLoader.convert_data_to_tensorflow_format(train_features, train_pos)
             eval_features, eval_pos = DataLoader.convert_data_to_tensorflow_format(eval_features, eval_pos)
 
-            train_data = Dataset(list(zip(train_features, train_pos, train_sent)), train_lab,
-                                 random_state=FLAGS.random_state)
-            eval_data = Dataset(list(zip(eval_features, eval_pos, eval_sent)), eval_lab,
+            assert len(train_features) == len(train_pos) == len(train_sent)
+
+            train_data = Dataset(
+                [(train_features[i], train_pos[i], train_sent[i]) for i in range(len(train_features[i]))], train_lab,
+                random_state=FLAGS.random_state)
+            eval_data = Dataset([(eval_features[i], eval_pos[i], eval_sent[i]) for i in range(len(eval_features[i]))],
+                                eval_lab,
                                 random_state=FLAGS.random_state)
 
             with open(FLAGS.prc_clef_loc, 'wb') as f:
@@ -190,7 +194,7 @@ class DataLoader:
         data_loc = FLAGS.prc_data_loc[:-7] + '_{}'.format('xlnet' if FLAGS.tfm_type == 0 else 'bert') + '.pickle'
 
         if (train_data_in is not None and val_data_in is not None and test_data_in is not None) or \
-           (not os.path.isfile(data_loc)):
+                (not os.path.isfile(data_loc)):
             FLAGS.refresh_data = True
 
         if FLAGS.refresh_data:
@@ -216,12 +220,13 @@ class DataLoader:
             train_features, train_pos = DataLoader.convert_data_to_tensorflow_format(train_features, train_pos)
             eval_features, eval_pos = DataLoader.convert_data_to_tensorflow_format(eval_features, eval_pos)
 
-            print(train_features)
-            print(train_sent)
+            assert len(train_features) == len(train_pos) == len(train_sent)
 
-            train_data = Dataset(list(zip(train_features, train_pos, train_sent)), train_lab,
-                                 random_state=FLAGS.random_state)
-            eval_data = Dataset(list(zip(eval_features, eval_pos, eval_sent)), eval_lab,
+            train_data = Dataset(
+                [(train_features[i], train_pos[i], train_sent[i]) for i in range(len(train_features[i]))], train_lab,
+                random_state=FLAGS.random_state)
+            eval_data = Dataset([(eval_features[i], eval_pos[i], eval_sent[i]) for i in range(len(eval_features[i]))],
+                                eval_lab,
                                 random_state=FLAGS.random_state)
 
             with open(data_loc, 'wb') as f:
