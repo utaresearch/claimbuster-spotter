@@ -63,7 +63,9 @@ class ClaimBusterLayer(K.layers.Layer):
 
         self.bert_model = LanguageModel.build_bert()
         self.dropout_layer = L.Dropout(rate=1-FLAGS.kp_cls)
-        self.fc_layer = L.Dense(FLAGS.num_classes)
+        self.fc_output_layer = L.Dense(FLAGS.num_classes)
+        if FLAGS.cls_hidden:
+            self.fc_hidden_layer = L.Dense(FLAGS.cls_hidden, activation='relu')
 
         self.computed_cls_weights = cls_weights
 
@@ -88,7 +90,11 @@ class ClaimBusterLayer(K.layers.Layer):
         bert_output = tf.concat([bert_output, x_sent], axis=1)
         bert_output = self.dropout_layer(bert_output, training=training)
 
-        ret = self.fc_layer(bert_output)
+        if FLAGS.cls_hidden:
+            bert_output = self.fc_hidden_layer(bert_output)
+            bert_output = self.dropout_layer(bert_output, training=training)
+
+        ret = self.fc_output_layer(bert_output)
 
         if not self.vars_to_train:
             if not FLAGS.restore_and_continue:
