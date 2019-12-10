@@ -30,7 +30,8 @@ def main():
     test_data = data_load.load_testing_data()
     logging.info("{} testing examples".format(test_data.get_length()))
 
-    dataset_test = tf.data.Dataset.from_tensor_slices((test_data.x, test_data.y)).shuffle(
+    dataset_test = tf.data.Dataset.from_tensor_slices(
+        ([x[0] for x in test_data.x], [x[1] for x in test_data.x], test_data.y)).shuffle(
         buffer_size=test_data.get_length()).batch(FLAGS.batch_size_reg)
 
     logging.info("Warming up...")
