@@ -62,6 +62,8 @@ def main():
         start_epoch += last_epoch + 1
         end_epoch += last_epoch + 1 + FLAGS.train_steps
 
+        logging.info('Restore successful')
+
     logging.info("Starting{}training...".format(' ' if not FLAGS.adv_train else ' adversarial '))
 
     epochs_trav = 0
