@@ -160,7 +160,7 @@ class ClaimBusterModel:
 
             # cb_out = tf.matmul(synth_out, output_weights) + output_biases
 
-            cb_out = tf.layers.dense(synth_out, units=FLAGS.num_classes, kernel_initializer=tf.contrib.layers.xavier_initializer())
+            cb_out = tf.keras.layers.Dense(FLAGS.num_classes)(synth_out)
 
             return (orig_embed, cb_out) if not adv else cb_out
 
