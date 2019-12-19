@@ -12,8 +12,8 @@ def plot_stuff(filename, title, axes):
 	density._compute_covariance()
 
 	axes.plot(xs,density(xs))
-	axes.set_title('Distribution of {} ClaimBuster Scores Over a\nComplete Trump vs. Clinton Presidential Debate'.format(title))
-	axes.set_xlabel('ClaimBuster Score')
+	axes.set_title('Distribution of {} ClaimSpotter Scores Over a\nComplete Trump vs. Clinton Presidential Debate'.format(title))
+	axes.set_xlabel('ClaimSpotter Score')
 	axes.set_ylabel('Density')
 
 

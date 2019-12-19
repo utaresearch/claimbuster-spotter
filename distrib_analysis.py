@@ -7,7 +7,7 @@ from urllib.parse import quote
 import sys
 from tqdm import tqdm
 
-from api_wrapper import ClaimBusterAPI
+from api_wrapper import ClaimSpotterAPI
 
 
 def main():
@@ -27,7 +27,7 @@ def main():
 
     # Get claimbuster information
     if sys.argv[1] == 0 or sys.argv[1] == 2:
-        api = ClaimBusterAPI()
+        api = ClaimSpotterAPI()
         scores_advcb = sorted([api.direct_sentence_query(x)[2] for x in sentence_list])
         print('\n'.join([str(x) for x in scores_advcb]))
 

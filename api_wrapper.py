@@ -1,6 +1,6 @@
 import numpy as np
 import os
-from model import ClaimBusterModel
+from model import ClaimSpotterModel
 from models import bert2
 from utils.data_loader import DataLoader
 from utils import transformations as transf
@@ -9,7 +9,7 @@ from absl import logging
 import tensorflow as tf
 
 
-class ClaimBusterAPI:
+class ClaimSpotterAPI:
     def __init__(self):
         logging.set_verbosity(logging.ERROR)
         os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu])
@@ -21,7 +21,7 @@ class ClaimBusterAPI:
 
         transf.load_dependencies()
 
-        self.model = ClaimBusterModel()
+        self.model = ClaimSpotterModel()
         self.model.warm_up()
         self.model.load_custom_model()
 

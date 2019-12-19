@@ -39,7 +39,7 @@ Depending on the VRAM capacity of the selected GPU, as well as the predefined ba
 
 We output F1 scores on the `disjoint_2000.json` dataset using [`eval.py`](eval.py). In the future, a full corpus of quotes from a recent presidential campaign debate series will be used to quantify the in-the-wild reliability of the claim-spotting model.
 
-### Interactive ClaimBuster Demo
+### Interactive ClaimSpotter Demo
 
 Using [`demo.py`](demo.py), users can input individual sentences into the command line, and the model will produce an inference result on the inputted sentence. Each sentence should take under 100ms to process.
 
@@ -156,9 +156,9 @@ python3 demo.py \
 We provide an API wrapper in [api_wrapper.py](api_wrapper.py) to enable easy integration into other applications. There are two simple query functions that extract inference information for a single sentence. Below is a sample usage scenario:
 
 ```python
-from api_wrapper import ClaimBusterAPI
+from api_wrapper import ClaimSpotterAPI
 
-api = ClaimBusterAPI()
+api = ClaimSpotterAPI()
 sentence = "ClaimBuster is a state-of-the-art, end-to-end fact-checking system."
 api_result = api.direct_sentence_query(sentence)  # Returns array w/ class probabilities
 

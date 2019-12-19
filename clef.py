@@ -1,7 +1,7 @@
 import pandas as pd
-from api_wrapper import ClaimBusterAPI
+from api_wrapper import ClaimSpotterAPI
 
-api = ClaimBusterAPI()
+api = ClaimSpotterAPI()
 
 
 def get_score(text):

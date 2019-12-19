@@ -14,10 +14,10 @@ K = tf.keras
 L = K.layers
 
 
-class ClaimBusterModel(K.models.Model):
+class ClaimSpotterModel(K.models.Model):
     def __init__(self, cls_weights=None):
-        super(ClaimBusterModel, self).__init__()
-        self.layer = ClaimBusterLayer(cls_weights if cls_weights is not None else [1 for _ in range(FLAGS.num_classes)])
+        super(ClaimSpotterModel, self).__init__()
+        self.layer = ClaimSpotterLayer(cls_weights if cls_weights is not None else [1 for _ in range(FLAGS.num_classes)])
         self.adv = None
 
     def call(self, x, **kwargs):
@@ -57,9 +57,9 @@ class ClaimBusterModel(K.models.Model):
         return self.layer.preds_on_batch(x)
 
 
-class ClaimBusterLayer(K.layers.Layer):
+class ClaimSpotterLayer(K.layers.Layer):
     def __init__(self, cls_weights=None):
-        super(ClaimBusterLayer, self).__init__()
+        super(ClaimSpotterLayer, self).__init__()
 
         self.bert_model = LanguageModel.build_bert()
         self.dropout_layer = L.Dropout(rate=1-FLAGS.kp_cls)

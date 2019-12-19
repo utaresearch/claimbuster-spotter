@@ -1,8 +1,8 @@
 import numpy as np
-from api_wrapper import ClaimBusterAPI
+from api_wrapper import ClaimSpotterAPI
 
 if __name__ == '__main__':
-    api = ClaimBusterAPI()
+    api = ClaimSpotterAPI()
 
     print('--- Batch Sentence Query ---')
 
