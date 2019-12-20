@@ -142,7 +142,7 @@ def convert_by_vocab(vocab, items):
 
 
 def convert_tokens_to_ids(vocab, tokens):
-    return ['[CLS]'] + convert_by_vocab(vocab, tokens) + ['[SEP]']
+    return convert_by_vocab(vocab, tokens)
 
 
 def convert_ids_to_tokens(inv_vocab, ids):
@@ -176,7 +176,7 @@ class FullTokenizer(object):
         return split_tokens
 
     def convert_tokens_to_ids(self, tokens):
-        return convert_by_vocab(self.vocab, tokens)
+        return convert_by_vocab(self.vocab, ['[CLS]'] + tokens + ['[SEP]'])
 
     def convert_ids_to_tokens(self, ids):
         return convert_by_vocab(self.inv_vocab, ids)
