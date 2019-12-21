@@ -46,14 +46,14 @@ flags.DEFINE_integer('cs_random_state', 59, 'State of pseudo-randomness')
 
 # Model architecture
 flags.DEFINE_integer('cs_cls_hidden', 0, 'Size of hidden classification layer')
-flags.DEFINE_float('kp_cls', 0.7, 'Keep probability of dropout in FC')
+flags.DEFINE_float('cs_kp_cls', 0.7, 'Keep probability of dropout in FC')
 
 # Optimization
 flags.DEFINE_integer('cs_train_steps', 100, 'Number of epochs to run.')
-flags.DEFINE_float('lr', 5e-5, 'Learning rate while during optimiation.')
+flags.DEFINE_float('cs_lr', 5e-5, 'Learning rate while during optimiation.')
 
 # Regularization
-flags.DEFINE_float('l2_reg_coeff', 5e-4, 'If val > 0, use L2 Regularization on weights in graph')
+flags.DEFINE_float('cs_l2_reg_coeff', 5e-4, 'If val > 0, use L2 Regularization on weights in graph')
 
 # Word2vec for pre-processing
 flags.DEFINE_string('cs_w2v_loc', './data/word2vec/w2v3b_gensim.txt', 'Location of w2v embeddings')
@@ -62,9 +62,9 @@ flags.DEFINE_string('cs_w2v_loc_bin', './data/word2vec/w2v3b_gensim.bin', 'Locat
 # Adversarial and virtual adversarial training parameters.
 flags.DEFINE_integer('cs_perturb_id', 0, "Index in [('pos', 'seg', 'tok'), ('pos', 'seg'), ('pos', 'tok'), ('seg', 'tok'), ('pos',), ('seg',), ('tok',)] to perturb")
 flags.DEFINE_integer('cs_adv_type', 0, '0 for AT, 1 for VAT')
-flags.DEFINE_float('adv_coeff', 0.5, 'Coefficient of adversarial loss')
+flags.DEFINE_float('cs_adv_coeff', 0.5, 'Coefficient of adversarial loss')
 flags.DEFINE_bool('cs_combine_reg_adv_loss', True, 'Add loss of regular and adversarial loss during training')
-flags.DEFINE_float('perturb_norm_length', 3.0, 'Norm length of adversarial perturbation')
+flags.DEFINE_float('cs_perturb_norm_length', 3.0, 'Norm length of adversarial perturbation')
 
 # Output stats
 flags.DEFINE_integer('cs_num_classes', 3, 'Number of classes for classification (2 combines NFS and UFS)')
@@ -76,8 +76,8 @@ flags.DEFINE_integer('cs_tfm_layers', 12, 'Number of BERT layers.')
 flags.DEFINE_bool('cs_tfm_ft_embed', False, 'Train BERT embedding layer')
 flags.DEFINE_bool('cs_tfm_ft_pooler', True, 'Train BERT pooler layer')
 flags.DEFINE_integer('cs_tfm_ft_enc_layers', 2, 'Last n encoding layers are marked as trainable')
-flags.DEFINE_float('kp_tfm_atten', 0.8, 'Keep probability of attention dropout in Transformer')
-flags.DEFINE_float('kp_tfm_hidden', 0.8, 'Keep probability of hidden dropout in Transformer')
+flags.DEFINE_float('cs_kp_tfm_atten', 0.8, 'Keep probability of attention dropout in Transformer')
+flags.DEFINE_float('cs_kp_tfm_hidden', 0.8, 'Keep probability of hidden dropout in Transformer')
 
 # BERT
 flags.DEFINE_string('cs_bert_model_loc', './data/bert_pretrain', 'Root location of pretrained BERT files.')

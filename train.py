@@ -10,10 +10,6 @@ import tensorflow as tf
 import numpy as np
 from core.models.model import ClaimSpotterModel
 
-from core.utils import data_loader
-import sys
-sys.modules['data_loader'] = data_loader
-
 K = tf.keras
 
 

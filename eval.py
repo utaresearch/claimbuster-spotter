@@ -2,7 +2,6 @@ import math
 import time
 from tqdm import tqdm
 import os
-from core.utils import data_loader
 from core.utils.data_loader import DataLoader
 from core.utils.flags import FLAGS, print_flags
 from absl import logging
