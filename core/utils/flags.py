@@ -93,6 +93,8 @@ def clean_argv(inp):
 		x_name = x.split('=')[0]
 		if 'cs_' in x_name:
 			ret.append(x)
+		elif not any([z in x_name for z in ['cc_', 'cs_']]):
+			raise Exception('FLAG name {} does not contain correct formatting'.format(x_name))
 
 	logging.info(ret)
 	return ret
