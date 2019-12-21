@@ -94,6 +94,7 @@ def clean_argv(inp):
 		if 'cs_' in x_name:
 			ret.append(x_name)
 
+	logging.info(ret)
 	return ret
 
 
