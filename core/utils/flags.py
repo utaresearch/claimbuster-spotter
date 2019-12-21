@@ -84,7 +84,20 @@ flags.DEFINE_bool('cs_restore_and_continue', False, 'Restore previous training s
 flags.DEFINE_integer('cs_batch_size_reg', 24, 'Size of the batch.')
 flags.DEFINE_integer('cs_batch_size_adv', 12, 'Size of the batch when adversarial training.')
 
-FLAGS(sys.argv)
+
+def clean_argv(inp):
+	ret = []
+	assert len(sys.argv) % 2 == 0
+
+	for i in range(0, len(inp), 2):
+		x_name = inp[i]
+		x_val = inp[i + 1]
+		if 'cc_' in x:
+			ret.append([x_name + x_val])
+
+	return ret
+
+FLAGS(clean_argv(sys.argv))
 
 # Locations (must be last due to customization)
 flags.DEFINE_string('cs_bert_model_loc', '{}/bert_pretrain'.format(FLAGS.cs_data_dir), 'Root location of pretrained BERT files.')
