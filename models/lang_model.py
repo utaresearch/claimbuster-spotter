@@ -1,8 +1,5 @@
 from . import bert2
-
-import sys
-sys.path.append('..')
-from flags import FLAGS
+from ..utils.flags import FLAGS
 
 
 class LanguageModel:

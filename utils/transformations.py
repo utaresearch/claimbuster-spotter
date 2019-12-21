@@ -7,9 +7,7 @@ import glob
 from textblob import TextBlob
 from tensorflow.keras.preprocessing.text import text_to_word_sequence
 from tqdm import tqdm
-
-sys.path.append('..')
-from flags import FLAGS
+from .flags import FLAGS
 
 nltk.download('punkt')
 nltk.download('averaged_perceptron_tagger')

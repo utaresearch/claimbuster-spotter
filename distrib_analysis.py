@@ -7,7 +7,7 @@ from urllib.parse import quote
 import sys
 from tqdm import tqdm
 
-from api_wrapper import ClaimSpotterAPI
+from api.api_wrapper import ClaimSpotterAPI
 
 
 def main():

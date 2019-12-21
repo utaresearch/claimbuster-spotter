@@ -9,11 +9,9 @@ from sklearn.utils import shuffle
 from sklearn.utils.class_weight import compute_class_weight
 from absl import logging
 from . import transformations as transf
-from models import bert2
+from ..models import bert2
 from tensorflow.keras.preprocessing.sequence import pad_sequences
-
-sys.path.append('..')
-from flags import FLAGS
+from .flags import FLAGS
 
 
 class XLNetExample():

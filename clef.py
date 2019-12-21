@@ -1,11 +1,11 @@
 import pandas as pd
-from api_wrapper import ClaimSpotterAPI
+from api.api_wrapper import ClaimSpotterAPI
 
 api = ClaimSpotterAPI()
 
 
 def get_score(text):
-    api_result = api.direct_sentence_query(text)
+    api_result = api.single_sentence_query(text)
     return api_result[-1]
 
 
