@@ -96,7 +96,8 @@ def clean_argv(inp):
 		x_name = inp[i]
 		x_val = inp[i + 1]
 		if 'cs_' in x_name:
-			ret.append([x_name + x_val])
+			ret.append(x_name)
+			ret.append(x_val)
 
 	print(ret)
 
