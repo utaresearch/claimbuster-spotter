@@ -39,7 +39,7 @@ class ClaimSpotterAPI:
     def _prc_sentence_list(self, sentence_list):
         sentence_features = self._extract_info(sentence_list)
         return tf.data.Dataset.from_tensor_slices(
-            (self._create_bert_features(sentence_features[0]), sentence_features[1])).batch(FLAGS.cs_batch_size)
+            (self._create_bert_features(sentence_features[0]), sentence_features[1])).batch(FLAGS.cs_batch_size_reg)
 
     def _retrieve_model_preds(self, dataset):
         ret = []
