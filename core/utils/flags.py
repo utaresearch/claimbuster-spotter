@@ -89,6 +89,9 @@ def clean_argv(inp):
 	ret = []
 	assert (len(inp) - 1) % 2 == 0
 
+	ret.append(inp[0])
+	del inp[0]
+
 	for i in range(0, len(inp), 2):
 		x_name = inp[i]
 		x_val = inp[i + 1]
