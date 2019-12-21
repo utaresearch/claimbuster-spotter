@@ -1,5 +1,5 @@
 import numpy as np
-from api.api_wrapper import ClaimSpotterAPI
+from core.api.api_wrapper import ClaimSpotterAPI
 
 if __name__ == '__main__':
     api = ClaimSpotterAPI()

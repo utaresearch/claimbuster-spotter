@@ -3,12 +3,12 @@ import time
 import os
 from tqdm import tqdm
 from shutil import rmtree
-from utils.data_loader import DataLoader
-from utils.flags import FLAGS, print_flags
+from core.utils.data_loader import DataLoader
+from core.utils.flags import FLAGS, print_flags
 from absl import logging
 import tensorflow as tf
 import numpy as np
-from models.model import ClaimSpotterModel
+from core.models.model import ClaimSpotterModel
 
 K = tf.keras
 

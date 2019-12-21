@@ -2,14 +2,14 @@ import math
 import time
 from tqdm import tqdm
 import os
-from utils.data_loader import DataLoader
-from utils.flags import FLAGS, print_flags
+from core.utils.data_loader import DataLoader
+from core.utils.flags import FLAGS, print_flags
 from absl import logging
 import tensorflow as tf
 import numpy as np
 from sklearn.metrics import f1_score, classification_report
-from utils.compute_ndcg import compute_ndcg
-from models.model import ClaimSpotterModel
+from core.utils.compute_ndcg import compute_ndcg
+from core.models.model import ClaimSpotterModel
 
 K = tf.keras
 

@@ -1,5 +1,5 @@
 import pandas as pd
-from api.api_wrapper import ClaimSpotterAPI
+from core.api.api_wrapper import ClaimSpotterAPI
 
 api = ClaimSpotterAPI()
 
