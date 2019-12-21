@@ -45,7 +45,7 @@ class ClaimSpotterAPI:
         ret = []
         for x, x_sent in dataset:
             ret = ret + list(self.model.preds_on_batch((x, x_sent)).numpy())
-        return ret
+        return list(ret)
 
     def _create_bert_features(self, sentence_list):
         features = [self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(x))
