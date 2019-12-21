@@ -17,32 +17,32 @@ L = K.layers
 class ClaimSpotterModel(K.models.Model):
     def __init__(self, cls_weights=None):
         super(ClaimSpotterModel, self).__init__()
-        self.layer = ClaimSpotterLayer(cls_weights if cls_weights is not None else [1 for _ in range(FLAGS.num_classes)])
+        self.layer = ClaimSpotterLayer(cls_weights if cls_weights is not None else [1 for _ in range(FLAGS.cs_num_classes)])
         self.adv = None
 
     def call(self, x, **kwargs):
         raise Exception('Please do not call this model. Use the *_on_batch functions instead')
 
     def warm_up(self):
-        input_ph_id = K.layers.Input(shape=(FLAGS.max_len,), dtype='int32')
+        input_ph_id = K.layers.Input(shape=(FLAGS.cs_max_len,), dtype='int32')
         input_ph_sent = K.layers.Input(shape=(2,), dtype='float32')
         self.layer.call((input_ph_id, input_ph_sent), training=False)
 
     def load_custom_model(self):
-        if any('.ckpt' in x for x in os.listdir(FLAGS.cb_model_dir)):
-            load_location = FLAGS.cb_model_dir
+        if any('.ckpt' in x for x in os.listdir(FLAGS.cs_model_dir)):
+            load_location = FLAGS.cs_model_dir
         else:
-            folders = [x for x in os.listdir(FLAGS.cb_model_dir) if os.path.isdir(os.path.join(FLAGS.cb_model_dir, x))]
-            load_location = os.path.join(FLAGS.cb_model_dir, sorted(folders)[-1])
+            folders = [x for x in os.listdir(FLAGS.cs_model_dir) if os.path.isdir(os.path.join(FLAGS.cs_model_dir, x))]
+            load_location = os.path.join(FLAGS.cs_model_dir, sorted(folders)[-1])
 
         last_epoch = int(load_location.split('/')[-1])
-        load_location = os.path.join(load_location, FLAGS.cb_model_ckpt)
+        load_location = os.path.join(load_location, FLAGS.cs_cb_model_ckpt)
         self.load_weights(load_location)
 
         return last_epoch
 
     def save_custom_model(self, epoch):
-        self.save_weights(os.path.join(FLAGS.cb_model_dir, str(epoch + 1).zfill(3), FLAGS.cb_model_ckpt))
+        self.save_weights(os.path.join(FLAGS.cs_model_dir, str(epoch + 1).zfill(3), FLAGS.cs_cb_model_ckpt))
 
     def train_on_batch(self, x, y):
         return self.layer.train_on_batch(x, y)
@@ -62,14 +62,14 @@ class ClaimSpotterLayer(K.layers.Layer):
         super(ClaimSpotterLayer, self).__init__()
 
         self.bert_model = LanguageModel.build_bert()
-        self.dropout_layer = L.Dropout(rate=1-FLAGS.kp_cls)
-        self.fc_output_layer = L.Dense(FLAGS.num_classes)
-        if FLAGS.cls_hidden:
-            self.fc_hidden_layer = L.Dense(FLAGS.cls_hidden, activation='relu')
+        self.dropout_layer = L.Dropout(rate=1-FLAGS.cs_kp_cls)
+        self.fc_output_layer = L.Dense(FLAGS.cs_num_classes)
+        if FLAGS.cs_cls_hidden:
+            self.fc_hidden_layer = L.Dense(FLAGS.cs_cls_hidden, activation='relu')
 
         self.computed_cls_weights = cls_weights
 
-        self.optimizer = AdamWeightFriction(learning_rate=FLAGS.lr)
+        self.optimizer = AdamWeightFriction(learning_rate=FLAGS.cs_lr)
         self.vars_to_train = []
 
     def call(self, x, **kwargs):
@@ -90,14 +90,14 @@ class ClaimSpotterLayer(K.layers.Layer):
         bert_output = tf.concat([bert_output, x_sent], axis=1)
         bert_output = self.dropout_layer(bert_output, training=training)
 
-        if FLAGS.cls_hidden:
+        if FLAGS.cs_cls_hidden:
             bert_output = self.fc_hidden_layer(bert_output)
             bert_output = self.dropout_layer(bert_output, training=training)
 
         ret = self.fc_output_layer(bert_output)
 
         if not self.vars_to_train:
-            if not FLAGS.restore_and_continue:
+            if not FLAGS.cs_restore_and_continue:
                 self.init_model_weights()
             self.vars_to_train = self.select_train_vars()
 
@@ -108,7 +108,7 @@ class ClaimSpotterLayer(K.layers.Layer):
 
     @tf.function
     def train_on_batch(self, x, y):
-        y = tf.one_hot(y, depth=FLAGS.num_classes)
+        y = tf.one_hot(y, depth=FLAGS.cs_num_classes)
 
         with tf.GradientTape() as tape:
             logits = self.call(x, training=True)
@@ -121,7 +121,7 @@ class ClaimSpotterLayer(K.layers.Layer):
 
     @tf.function
     def adv_train_on_batch(self, x, y):
-        y = tf.one_hot(y, depth=FLAGS.num_classes)
+        y = tf.one_hot(y, depth=FLAGS.cs_num_classes)
 
         with tf.GradientTape() as tape:
             with tf.GradientTape() as tape2:
@@ -140,7 +140,7 @@ class ClaimSpotterLayer(K.layers.Layer):
 
     @tf.function
     def stats_on_batch(self, x, y):
-        y = tf.one_hot(y, depth=FLAGS.num_classes)
+        y = tf.one_hot(y, depth=FLAGS.cs_num_classes)
         logits = self.call(x, training=False)
 
         return tf.reduce_sum(self.compute_training_loss(y, logits)), self.compute_accuracy(y, logits)
@@ -154,18 +154,18 @@ class ClaimSpotterLayer(K.layers.Layer):
         loss = self.compute_ce_loss(y, logits)
         loss_l2 = 0
 
-        if FLAGS.l2_reg_coeff > 0.0:
+        if FLAGS.cs_l2_reg_coeff > 0.0:
             varlist = self.vars_to_train
             loss_l2 = tf.add_n([tf.nn.l2_loss(v) for v in varlist if 'bias' not in v.name])
 
-        if FLAGS.weight_classes_loss:
+        if FLAGS.cs_weight_classes_loss:
             y_int = tf.argmax(y, axis=1)
             cw = tf.constant(self.computed_cls_weights, dtype=tf.float32)
             loss_adj = tf.map_fn(lambda x: cw[x], y_int, dtype=tf.float32)
 
             loss *= loss_adj
 
-        return loss + FLAGS.l2_reg_coeff * loss_l2
+        return loss + FLAGS.cs_l2_reg_coeff * loss_l2
 
     @staticmethod
     def compute_ce_loss(y, logits):
@@ -175,11 +175,11 @@ class ClaimSpotterLayer(K.layers.Layer):
         train_vars = self.trainable_variables
 
         non_trainable_layers = ['/layer_{}/'.format(num)
-                                for num in range(FLAGS.tfm_layers - FLAGS.tfm_ft_enc_layers)]
-        if not FLAGS.tfm_ft_embed:
-            non_trainable_layers.append('/word_embedding/' if FLAGS.tfm_type == 0 else '/embeddings/')
-        if not FLAGS.tfm_ft_pooler:
-            non_trainable_layers.append('/sequnece_summary/' if FLAGS.tfm_type == 0 else '/pooler/')
+                                for num in range(FLAGS.cs_tfm_layers - FLAGS.cs_tfm_ft_enc_layers)]
+        if not FLAGS.cs_tfm_ft_embed:
+            non_trainable_layers.append('/word_embedding/' if FLAGS.cs_tfm_type == 0 else '/embeddings/')
+        if not FLAGS.cs_tfm_ft_pooler:
+            non_trainable_layers.append('/sequnece_summary/' if FLAGS.cs_tfm_type == 0 else '/pooler/')
 
         train_vars = [v for v in train_vars if not any(z in v.name for z in non_trainable_layers)]
 
@@ -196,11 +196,11 @@ class ClaimSpotterLayer(K.layers.Layer):
     def _compute_perturbation(loss, orig_embed, tape):
         grad = tape.gradient(loss, orig_embed)
         grad = tf.stop_gradient(grad)
-        perturb = FLAGS.perturb_norm_length * grad / tf.norm(grad, ord='euclidean')
+        perturb = FLAGS.cs_perturb_norm_length * grad / tf.norm(grad, ord='euclidean')
 
         return perturb
 
-    def init_model_weights(self, ckpt_path=os.path.join(FLAGS.bert_model_loc, 'bert_model.ckpt')):
+    def init_model_weights(self, ckpt_path=os.path.join(FLAGS.cs_bert_model_loc, 'bert_model.ckpt')):
         # Define several helper functions
         def bert_prefix():
             re_bert = re.compile(r'(.*)/(embeddings|encoder)/(.+):0')

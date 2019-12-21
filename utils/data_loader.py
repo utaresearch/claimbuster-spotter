@@ -45,12 +45,12 @@ class Dataset:
 
 class DataLoader:
     def __init__(self, train_data=None, val_data=None, test_data=None):
-        assert FLAGS.num_classes == 2 or FLAGS.num_classes == 3
+        assert FLAGS.cs_num_classes == 2 or FLAGS.cs_num_classes == 3
 
         self.data, self.eval_data, = self.load_ext_data(train_data, val_data, test_data) \
-            if not FLAGS.use_clef_data else self.load_clef_data()
+            if not FLAGS.cs_use_clef_data else self.load_clef_data()
 
-        if FLAGS.use_clef_data and FLAGS.combine_ours_clef_data:
+        if FLAGS.cs_use_clef_data and FLAGS.cs_combine_ours_clef_data:
             ours_data, ours_eval = self.load_ext_data(train_data, val_data, test_data)
 
             ours_data = self.convert_3_to_2(ours_data)
@@ -61,7 +61,7 @@ class DataLoader:
             self.eval_data.x += ours_eval.x
             self.eval_data.y += ours_eval.y
 
-        if FLAGS.num_classes == 2 and not FLAGS.use_clef_data:
+        if FLAGS.cs_num_classes == 2 and not FLAGS.cs_use_clef_data:
             self.data = self.convert_3_to_2(self.data)
             self.eval_data = self.convert_3_to_2(self.data)
 
@@ -73,7 +73,7 @@ class DataLoader:
 
     @staticmethod
     def convert_3_to_2(data):
-        if FLAGS.alt_two_class_combo:
+        if FLAGS.cs_alt_two_class_combo:
             data.y = [(0 if data.y[i] == 0 else 1) for i in range(len(data.y))]
         else:
             data.y = [(1 if data.y[i] == 2 else 0) for i in range(len(data.y))]
@@ -81,36 +81,36 @@ class DataLoader:
         return data
 
     def compute_class_weights(self):
-        ret = compute_class_weight('balanced', [z for z in range(FLAGS.num_classes)], self.data.y)
+        ret = compute_class_weight('balanced', [z for z in range(FLAGS.cs_num_classes)], self.data.y)
 
-        if FLAGS.num_classes == 3:
+        if FLAGS.cs_num_classes == 3:
             ret[1] /= 4
 
         return ret
 
     def load_training_data(self):
-        ret = Dataset(self.data.x, self.data.y, FLAGS.random_state)
+        ret = Dataset(self.data.x, self.data.y, FLAGS.cs_random_state)
 
-        if FLAGS.sklearn_oversample:
-            classes = [[] for _ in range(FLAGS.num_classes)]
+        if FLAGS.cs_sklearn_oversample:
+            classes = [[] for _ in range(FLAGS.cs_num_classes)]
 
             for i in range(len(ret.x)):
                 classes[ret.y[i]].append(ret.x[i])
 
-            if FLAGS.num_classes == 3:
+            if FLAGS.cs_num_classes == 3:
                 maj_len = len(classes[2])
-                classes[0] = resample(classes[0], n_samples=int(maj_len * 2.75), random_state=FLAGS.random_state)
-                classes[1] = resample(classes[1], n_samples=int(maj_len * 0.90), random_state=FLAGS.random_state)
-                classes[2] = resample(classes[2], n_samples=int(maj_len * 1.50), random_state=FLAGS.random_state)
+                classes[0] = resample(classes[0], n_samples=int(maj_len * 2.75), random_state=FLAGS.cs_random_state)
+                classes[1] = resample(classes[1], n_samples=int(maj_len * 0.90), random_state=FLAGS.cs_random_state)
+                classes[2] = resample(classes[2], n_samples=int(maj_len * 1.50), random_state=FLAGS.cs_random_state)
             else:
                 pass
                 # maj_len = len(classes[0])
-                # # classes[0] = resample(classes[0], n_samples=int(maj_len), random_state=FLAGS.random_state)
-                # classes[1] = resample(classes[1], n_samples=int(maj_len * 0.40), random_state=FLAGS.random_state)
+                # # classes[0] = resample(classes[0], n_samples=int(maj_len), random_state=FLAGS.cs_random_state)
+                # classes[1] = resample(classes[1], n_samples=int(maj_len * 0.40), random_state=FLAGS.cs_random_state)
 
-            ret = Dataset([], [], random_state=FLAGS.random_state)
-            del self.data.x[:FLAGS.train_examples]
-            del self.data.y[:FLAGS.train_examples]
+            ret = Dataset([], [], random_state=FLAGS.cs_random_state)
+            del self.data.x[:FLAGS.cs_train_examples]
+            del self.data.y[:FLAGS.cs_train_examples]
 
             for lab in range(len(classes)):
                 for inp_x in classes[lab]:
@@ -120,40 +120,40 @@ class DataLoader:
                     self.data.x.insert(0, inp_x)
                     self.data.y.insert(0, lab)
 
-            FLAGS.total_examples += ret.get_length() - FLAGS.train_examples
-            FLAGS.train_examples = ret.get_length()
+            FLAGS.cs_total_examples += ret.get_length() - FLAGS.cs_train_examples
+            FLAGS.cs_train_examples = ret.get_length()
 
         ret.shuffle()
 
         return ret
 
     def load_testing_data(self):
-        ret = Dataset([], [], FLAGS.random_state)
+        ret = Dataset([], [], FLAGS.cs_random_state)
 
-        for i in range(FLAGS.test_examples):
+        for i in range(FLAGS.cs_test_examples):
             ret.x.append(self.eval_data.x[i])
             ret.y.append(self.eval_data.y[i])
 
         return ret
 
     def post_process_flags(self):
-        FLAGS.train_examples = self.data.get_length()
-        FLAGS.test_examples = self.eval_data.get_length()
-        FLAGS.total_examples = FLAGS.train_examples + FLAGS.test_examples
+        FLAGS.cs_train_examples = self.data.get_length()
+        FLAGS.cs_test_examples = self.eval_data.get_length()
+        FLAGS.cs_total_examples = FLAGS.cs_train_examples + FLAGS.cs_test_examples
 
     @staticmethod
     def load_clef_data():
-        if not os.path.isfile(FLAGS.prc_clef_loc):
-            FLAGS.refresh_data = True
+        if not os.path.isfile(FLAGS.cs_prc_clef_loc):
+            FLAGS.cs_refresh_data = True
 
         def read_from_file(loc):
             df = pd.read_csv(loc)
             ret_txt, ret_lab = [row['text'] for idx, row in df.iterrows()], [row['label'] for idx, row in df.iterrows()]
             return ret_txt, ret_lab
 
-        if FLAGS.refresh_data:
-            train_txt, train_lab = read_from_file(FLAGS.raw_clef_train_loc)
-            eval_txt, eval_lab = read_from_file(FLAGS.raw_clef_test_loc)
+        if FLAGS.cs_refresh_data:
+            train_txt, train_lab = read_from_file(FLAGS.cs_raw_clef_train_loc)
+            eval_txt, eval_lab = read_from_file(FLAGS.cs_raw_clef_test_loc)
 
             train_features, eval_features = DataLoader.process_text_for_transformers(train_txt, eval_txt)
 
@@ -169,31 +169,31 @@ class DataLoader:
             eval_features = DataLoader.convert_data_to_tensorflow_format(eval_features)
 
             train_data = Dataset(list(map(list, zip(train_features.tolist(), train_sent))), train_lab,
-                                 random_state=FLAGS.random_state)
+                                 random_state=FLAGS.cs_random_state)
             eval_data = Dataset(list(map(list, zip(eval_features.tolist(), eval_sent))), eval_lab,
-                                random_state=FLAGS.random_state)
+                                random_state=FLAGS.cs_random_state)
 
-            with open(FLAGS.prc_clef_loc, 'wb') as f:
+            with open(FLAGS.cs_prc_clef_loc, 'wb') as f:
                 pickle.dump((train_data, eval_data), f)
-            logging.info('Refreshed data, successfully dumped at {}'.format(FLAGS.prc_clef_loc))
+            logging.info('Refreshed data, successfully dumped at {}'.format(FLAGS.cs_prc_clef_loc))
         else:
-            logging.info('Restoring data from {}'.format(FLAGS.prc_clef_loc))
-            with open(FLAGS.prc_clef_loc, 'rb') as f:
+            logging.info('Restoring data from {}'.format(FLAGS.cs_prc_clef_loc))
+            with open(FLAGS.cs_prc_clef_loc, 'rb') as f:
                 train_data, eval_data = pickle.load(f)
 
         return train_data, eval_data
 
     @staticmethod
     def load_ext_data(train_data_in, val_data_in, test_data_in):
-        data_loc = FLAGS.prc_data_loc[:-7] + '_{}'.format('xlnet' if FLAGS.tfm_type == 0 else 'bert') + '.pickle'
+        data_loc = FLAGS.cs_prc_data_loc[:-7] + '_{}'.format('xlnet' if FLAGS.cs_tfm_type == 0 else 'bert') + '.pickle'
 
         if (train_data_in is not None and val_data_in is not None and test_data_in is not None) or \
            (not os.path.isfile(data_loc)):
-            FLAGS.refresh_data = True
+            FLAGS.cs_refresh_data = True
 
-        if FLAGS.refresh_data:
-            train_data = DataLoader.parse_json(FLAGS.raw_data_loc) if train_data_in is None else train_data_in
-            dj_eval_data = DataLoader.parse_json(FLAGS.raw_dj_eval_loc) if test_data_in is None else test_data_in
+        if FLAGS.cs_refresh_data:
+            train_data = DataLoader.parse_json(FLAGS.cs_raw_data_loc) if train_data_in is None else train_data_in
+            dj_eval_data = DataLoader.parse_json(FLAGS.cs_raw_dj_eval_loc) if test_data_in is None else test_data_in
 
             train_txt = [z[0] for z in train_data]
             eval_txt = [z[0] for z in dj_eval_data]
@@ -215,9 +215,9 @@ class DataLoader:
             eval_features = DataLoader.convert_data_to_tensorflow_format(eval_features)
 
             train_data = Dataset(list(map(list, zip(train_features.tolist(), train_sent))), train_lab,
-                                 random_state=FLAGS.random_state)
+                                 random_state=FLAGS.cs_random_state)
             eval_data = Dataset(list(map(list, zip(eval_features.tolist(), eval_sent))), eval_lab,
-                                random_state=FLAGS.random_state)
+                                random_state=FLAGS.cs_random_state)
 
             with open(data_loc, 'wb') as f:
                 pickle.dump((train_data, eval_data), f)
@@ -235,7 +235,7 @@ class DataLoader:
 
     @staticmethod
     def process_text_for_transformers(train_txt, eval_txt):
-        vocab_file = os.path.join(FLAGS.bert_model_loc, "vocab.txt")
+        vocab_file = os.path.join(FLAGS.cs_bert_model_loc, "vocab.txt")
         tokenizer = bert2.bert_tokenization.FullTokenizer(vocab_file, do_lower_case=True)
 
         train_txt = [tokenizer.convert_tokens_to_ids(tokenizer.tokenize(x)) for x in train_txt]
@@ -263,5 +263,5 @@ class DataLoader:
 
     @staticmethod
     def pad_seq(inp, ver=0):  # 0 is int, 1 is string
-        return pad_sequences(inp, padding="post", maxlen=FLAGS.max_len) if ver == 0 else \
-            pad_sequences(inp, padding="post", maxlen=FLAGS.max_len, dtype='str', value='')
+        return pad_sequences(inp, padding="post", maxlen=FLAGS.cs_max_len) if ver == 0 else \
+            pad_sequences(inp, padding="post", maxlen=FLAGS.cs_max_len, dtype='str', value='')

@@ -14,23 +14,23 @@ K = tf.keras
 
 
 def main():
-    os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu])
+    os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.cs_gpu])
     os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 
     print_flags()
 
-    if os.path.isdir(FLAGS.tb_dir):
-        rmtree(FLAGS.tb_dir)
-    if os.path.isdir(FLAGS.cb_model_dir) and not FLAGS.restore_and_continue:
-        print('Continue? (y/n) You will overwrite the contents of FLAGS.cb_model_dir ({})'.format(FLAGS.cb_model_dir))
+    if os.path.isdir(FLAGS.cs_tb_dir):
+        rmtree(FLAGS.cs_tb_dir)
+    if os.path.isdir(FLAGS.cs_model_dir) and not FLAGS.cs_restore_and_continue:
+        print('Continue? (y/n) You will overwrite the contents of FLAGS.cs_model_dir ({})'.format(FLAGS.cs_model_dir))
         inp = input().strip('\r\n\t')
         if inp.lower() == 'y':
-            rmtree(FLAGS.cb_model_dir)
+            rmtree(FLAGS.cs_model_dir)
         else:
             print('Exiting...')
             exit()
-    if not os.path.isdir(FLAGS.cb_model_dir) and FLAGS.restore_and_continue:
-        raise Exception('Cannot restore from non-existent folder: {}'.format(FLAGS.cb_model_dir))
+    if not os.path.isdir(FLAGS.cs_model_dir) and FLAGS.cs_restore_and_continue:
+        raise Exception('Cannot restore from non-existent folder: {}'.format(FLAGS.cs_model_dir))
 
     logging.info("Loading dataset")
     data_load = DataLoader()
@@ -42,28 +42,28 @@ def main():
     logging.info("{} validation examples".format(test_data.get_length()))
 
     dataset_train = tf.data.Dataset.from_tensor_slices(([x[0] for x in train_data.x], [x[1] for x in train_data.x], train_data.y)).shuffle(
-        buffer_size=train_data.get_length()).batch(FLAGS.batch_size_reg if not FLAGS.adv_train else FLAGS.batch_size_adv)
+        buffer_size=train_data.get_length()).batch(FLAGS.cs_batch_size_reg if not FLAGS.cs_adv_train else FLAGS.cs_batch_size_adv)
     dataset_test = tf.data.Dataset.from_tensor_slices(([x[0] for x in test_data.x], [x[1] for x in test_data.x], test_data.y)).shuffle(
-        buffer_size=test_data.get_length()).batch(FLAGS.batch_size_reg if not FLAGS.adv_train else FLAGS.batch_size_adv)
+        buffer_size=test_data.get_length()).batch(FLAGS.cs_batch_size_reg if not FLAGS.cs_adv_train else FLAGS.cs_batch_size_adv)
 
     logging.info("Warming up...")
 
     model = ClaimSpotterModel(cls_weights=data_load.class_weights)
     model.warm_up()
 
-    start_epoch, end_epoch = 0, FLAGS.train_steps
+    start_epoch, end_epoch = 0, FLAGS.cs_train_steps
 
-    if FLAGS.restore_and_continue:
-        logging.info('Attempting to restore weights from {}'.format(FLAGS.cb_model_dir))
+    if FLAGS.cs_restore_and_continue:
+        logging.info('Attempting to restore weights from {}'.format(FLAGS.cs_model_dir))
 
         last_epoch = model.load_custom_model()
 
         start_epoch += last_epoch + 1
-        end_epoch += last_epoch + 1 + FLAGS.train_steps
+        end_epoch += last_epoch + 1 + FLAGS.cs_train_steps
 
         logging.info('Restore successful')
 
-    logging.info("Starting{}training...".format(' ' if not FLAGS.adv_train else ' adversarial '))
+    logging.info("Starting{}training...".format(' ' if not FLAGS.cs_adv_train else ' adversarial '))
 
     epochs_trav = 0
     for epoch in range(start_epoch, end_epoch, 1):
@@ -72,10 +72,10 @@ def main():
         start = time.time()
 
         pbar = tqdm(total=math.ceil(
-            len(train_data.y) / (FLAGS.batch_size_reg if not FLAGS.adv_train else FLAGS.batch_size_adv)))
+            len(train_data.y) / (FLAGS.cs_batch_size_reg if not FLAGS.cs_adv_train else FLAGS.cs_batch_size_adv)))
         for x_id, x_sent, y in dataset_train:
             x = (x_id, x_sent)
-            train_batch_loss, train_batch_acc = (model.train_on_batch(x, y) if not FLAGS.adv_train
+            train_batch_loss, train_batch_acc = (model.train_on_batch(x, y) if not FLAGS.cs_adv_train
                                                  else model.adv_train_on_batch(x, y))
             epoch_loss += train_batch_loss
             epoch_acc += train_batch_acc * np.shape(y)[0]
@@ -85,7 +85,7 @@ def main():
         epoch_loss /= train_data.get_length()
         epoch_acc /= train_data.get_length()
 
-        if epoch % FLAGS.stat_print_interval == 0:
+        if epoch % FLAGS.cs_stat_print_interval == 0:
             log_string = 'Epoch {:>3} Loss: {:>7.4} Acc: {:>7.4f}% '.format(epoch + 1, epoch_loss, epoch_acc * 100)
 
             if test_data.get_length() > 0:
@@ -109,7 +109,7 @@ def main():
             start = time.time()
             epochs_trav = 0
 
-        if epoch % FLAGS.model_save_interval == 0:
+        if epoch % FLAGS.cs_model_save_interval == 0:
             model.save_custom_model(epoch)
 
 

@@ -12,11 +12,11 @@ import tensorflow as tf
 class ClaimSpotterAPI:
     def __init__(self):
         logging.set_verbosity(logging.ERROR)
-        os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.gpu])
+        os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.cs_gpu])
         os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 
         self.return_strings = ['Non-factual statement', 'Unimportant factual statement', 'Salient factual statement']
-        self.tokenizer = bert2.bert_tokenization.FullTokenizer(os.path.join(FLAGS.bert_model_loc, "vocab.txt"),
+        self.tokenizer = bert2.bert_tokenization.FullTokenizer(os.path.join(FLAGS.cs_bert_model_loc, "vocab.txt"),
                                                                do_lower_case=True)
 
         transf.load_dependencies()
@@ -39,7 +39,7 @@ class ClaimSpotterAPI:
     def _prc_sentence_list(self, sentence_list):
         sentence_features = self._extract_info(sentence_list)
         return tf.data.Dataset.from_tensor_slices(
-            (self._create_bert_features(sentence_features[0]), sentence_features[1])).batch(FLAGS.batch_size)
+            (self._create_bert_features(sentence_features[0]), sentence_features[1])).batch(FLAGS.cs_batch_size)
 
     def _retrieve_model_preds(self, dataset):
         ret = []

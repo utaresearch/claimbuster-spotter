@@ -303,10 +303,10 @@ def strip_chars(inpstr, to_strip=string.punctuation):
 def transform_sentence_complete(sentence):
     sentence = correct_mistakes(sentence)
 
-    if not FLAGS.custom_preprc:
+    if not FLAGS.cs_custom_preprc:
         return sentence
 
-    sentence = (process_sentence_ner_spacy(sentence) if FLAGS.ner_spacy else sentence)
+    sentence = (process_sentence_ner_spacy(sentence) if FLAGS.cs_ner_spacy else sentence)
     sentence = ' '.join(text_to_word_sequence(sentence))
 
     sentence = expand_contractions(sentence)
@@ -387,7 +387,7 @@ def process_sentence_ner_spacy(sentence):
 def load_dependencies():
     global nlp, cont, embed_obj
 
-    if FLAGS.ner_spacy:
+    if FLAGS.cs_ner_spacy:
         print("Loading Spacy NER Tagger...")
         nlp = spacy.load("en_core_web_lg")
         print("Tagger loaded.")
