@@ -3,6 +3,7 @@ import time
 import os
 from tqdm import tqdm
 from shutil import rmtree
+from core.utils import data_loader
 from core.utils.data_loader import DataLoader
 from core.utils.flags import FLAGS, print_flags
 from absl import logging
