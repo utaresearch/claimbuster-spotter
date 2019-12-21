@@ -2,8 +2,8 @@ import numpy as np
 import os
 from ..models.model import ClaimSpotterModel
 from ..models import bert2
-from utils.data_loader import DataLoader
-from utils import transformations as transf
+from ..utils.data_loader import DataLoader
+from ..utils import transformations as transf
 from ..utils.flags import FLAGS
 from absl import logging
 import tensorflow as tf
