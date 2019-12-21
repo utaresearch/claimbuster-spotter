@@ -44,7 +44,7 @@ class ClaimSpotterAPI:
     def _retrieve_model_preds(self, dataset):
         ret = []
         for x, x_sent in dataset:
-            ret = ret + list(self.model.preds_on_batch(x).numpy())
+            ret = ret + list(self.model.preds_on_batch((x, x_sent)).numpy())
         return ret
 
     def _create_bert_features(self, sentence_list):
