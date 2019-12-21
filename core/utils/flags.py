@@ -108,4 +108,4 @@ if any(['large' in FLAGS.cs_bert_model_size]):
 
 
 def print_flags():
-	logging.info(FLAGS.cs_flag_values_dict())
+	logging.info(FLAGS.flag_values_dict())
