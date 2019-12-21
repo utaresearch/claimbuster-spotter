@@ -36,13 +36,13 @@ class ClaimSpotterModel(K.models.Model):
             load_location = os.path.join(FLAGS.cs_model_dir, sorted(folders)[-1])
 
         last_epoch = int(load_location.split('/')[-1])
-        load_location = os.path.join(load_location, FLAGS.cs_cb_model_ckpt)
+        load_location = os.path.join(load_location, FLAGS.cs_model_ckpt)
         self.load_weights(load_location)
 
         return last_epoch
 
     def save_custom_model(self, epoch):
-        self.save_weights(os.path.join(FLAGS.cs_model_dir, str(epoch + 1).zfill(3), FLAGS.cs_cb_model_ckpt))
+        self.save_weights(os.path.join(FLAGS.cs_model_dir, str(epoch + 1).zfill(3), FLAGS.cs_model_ckpt))
 
     def train_on_batch(self, x, y):
         return self.layer.train_on_batch(x, y)
