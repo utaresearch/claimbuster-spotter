@@ -92,7 +92,7 @@ def clean_argv(inp):
 	for x in inp:
 		x_name = x.split('=')[0]
 		if 'cs_' in x_name:
-			ret.append(x_name)
+			ret.append(x)
 
 	logging.info(ret)
 	return ret
