@@ -55,10 +55,6 @@ flags.DEFINE_float('cs_lr', 5e-5, 'Learning rate while during optimiation.')
 # Regularization
 flags.DEFINE_float('cs_l2_reg_coeff', 5e-4, 'If val > 0, use L2 Regularization on weights in graph')
 
-# Word2vec for pre-processing
-flags.DEFINE_string('cs_w2v_loc', './data/word2vec/w2v3b_gensim.txt', 'Location of w2v embeddings')
-flags.DEFINE_string('cs_w2v_loc_bin', './data/word2vec/w2v3b_gensim.bin', 'Location of w2v embeddings in BINARY form')
-
 # Adversarial and virtual adversarial training parameters.
 flags.DEFINE_integer('cs_perturb_id', 0, "Index in [('pos', 'seg', 'tok'), ('pos', 'seg'), ('pos', 'tok'), ('seg', 'tok'), ('pos',), ('seg',), ('tok',)] to perturb")
 flags.DEFINE_integer('cs_adv_type', 0, '0 for AT, 1 for VAT')
@@ -80,7 +76,6 @@ flags.DEFINE_float('cs_kp_tfm_atten', 0.8, 'Keep probability of attention dropou
 flags.DEFINE_float('cs_kp_tfm_hidden', 0.8, 'Keep probability of hidden dropout in Transformer')
 
 # BERT
-flags.DEFINE_string('cs_bert_model_loc', './data/bert_pretrain', 'Root location of pretrained BERT files.')
 flags.DEFINE_string('cs_bert_model_size', 'base', 'Version of BERT to use: base or large_wwm')
 
 # Training
@@ -92,6 +87,7 @@ flags.DEFINE_integer('cs_batch_size_adv', 12, 'Size of the batch when adversaria
 FLAGS(sys.argv)
 
 # Locations (must be last due to customization)
+flags.DEFINE_string('cs_bert_model_loc', '{}/bert_pretrain'.format(FLAGS.cs_data_dir), 'Root location of pretrained BERT files.')
 flags.DEFINE_string('cs_raw_data_loc', '{}/data_small.json'.format(FLAGS.cs_data_dir), 'Location of raw data')
 flags.DEFINE_string('cs_raw_dj_eval_loc', '{}/disjoint_2000.json'.format(FLAGS.cs_data_dir), 'Location of raw data')
 flags.DEFINE_string('cs_raw_clef_train_loc', '{}/CT19-T1-Training.csv'.format(FLAGS.cs_data_dir), 'Location of raw CLEF .csv data')
