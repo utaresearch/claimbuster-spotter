@@ -87,7 +87,7 @@ flags.DEFINE_integer('cs_batch_size_adv', 12, 'Size of the batch when adversaria
 
 def clean_argv(inp):
 	ret = []
-	assert len(inp) % 2 == 0
+	assert len(inp - 1) % 2 == 0
 
 	for i in range(0, len(inp), 2):
 		x_name = inp[i]
