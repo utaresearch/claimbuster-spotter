@@ -92,10 +92,11 @@ def clean_argv(inp):
 	for i in range(0, len(inp), 2):
 		x_name = inp[i]
 		x_val = inp[i + 1]
-		if 'cc_' in x:
+		if 'cs_' in x_name:
 			ret.append([x_name + x_val])
 
 	return ret
+
 
 FLAGS(clean_argv(sys.argv))
 
