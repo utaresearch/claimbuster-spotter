@@ -185,7 +185,6 @@ class ClaimSpotterLayer(K.layers.Layer):
 
         logging.info('Removing: {}'.format(non_trainable_layers))
         logging.info([v.name for v in train_vars])
-        exit()
 
         return train_vars
 
