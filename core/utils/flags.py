@@ -103,7 +103,7 @@ def clean_argv(inp):
 FLAGS(clean_argv(sys.argv))
 
 # Locations (must be last due to customization)
-flags.DEFINE_string('cs_model_loc', '{}/{}_pretrain'.format(FLAGS.cs_data_dir, ), 'Root location of pretrained BERT files.')
+flags.DEFINE_string('cs_model_loc', '{}/{}_pretrain'.format(FLAGS.cs_data_dir, FLAGS.cs_tfm_type), 'Root location of pretrained BERT files.')
 flags.DEFINE_string('cs_raw_data_loc', '{}/data_small.json'.format(FLAGS.cs_data_dir), 'Location of raw data')
 flags.DEFINE_string('cs_raw_dj_eval_loc', '{}/disjoint_2000.json'.format(FLAGS.cs_data_dir), 'Location of raw data')
 flags.DEFINE_string('cs_raw_clef_train_loc', '{}/CT19-T1-Training.csv'.format(FLAGS.cs_data_dir), 'Location of raw CLEF .csv data')
