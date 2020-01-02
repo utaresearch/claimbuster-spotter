@@ -9,4 +9,4 @@
 cd ./data/
 ./get_bert.sh
 
-# ./get_xlnet.sh
+./get_albert.sh

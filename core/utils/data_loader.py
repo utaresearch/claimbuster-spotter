@@ -185,7 +185,7 @@ class DataLoader:
 
     @staticmethod
     def load_ext_data(train_data_in, val_data_in, test_data_in):
-        data_loc = FLAGS.cs_prc_data_loc[:-7] + '_{}'.format('xlnet' if FLAGS.cs_tfm_type == 0 else 'bert') + '.pickle'
+        data_loc = FLAGS.cs_prc_data_loc[:-7] + '_{}'.format('albert' if FLAGS.cs_tfm_type == 0 else 'bert') + '.pickle'
 
         if (train_data_in is not None and val_data_in is not None and test_data_in is not None) or \
            (not os.path.isfile(data_loc)):

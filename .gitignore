@@ -1,6 +1,6 @@
 data/all_data_*.pickle
 data/bert_pretrain_*/
-data/xlnet_pretrain_*/
+data/albert_pretrain_*/
 data/word2vec/w2v3b_gensim.bin
 data/word2vec/w2v3b_gensim.txt
 data/glove/glove840b_gensim.txt
