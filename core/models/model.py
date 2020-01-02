@@ -28,10 +28,6 @@ class ClaimSpotterModel(K.models.Model):
         input_ph_sent = K.layers.Input(shape=(2,), dtype='float32')
         self.layer.call((input_ph_id, input_ph_sent), training=False)
 
-        print([v.name for v in self.layer.trainable_variables])
-        print([v.shape for v in self.layer.trainable_variables])
-        exit()
-
     def load_custom_model(self):
         if any('.ckpt' in x for x in os.listdir(FLAGS.cs_model_dir)):
             load_location = FLAGS.cs_model_dir
@@ -208,8 +204,7 @@ class ClaimSpotterLayer(K.layers.Layer):
         if FLAGS.cs_tfm_type == 'bert':
             self.load_bert_weights()
         else:
-            pass
-            # self.load_albert_weights()
+            self.load_albert_weights()
 
     def load_bert_weights(self, ckpt_path=os.path.join(FLAGS.cs_model_loc, 'bert_model.ckpt')):
         # Define several helper functions
@@ -253,6 +248,7 @@ class ClaimSpotterLayer(K.layers.Layer):
                 return "/".join(ns)
             return None
 
+        # Logic begins here
         ckpt_reader = tf.train.load_checkpoint(ckpt_path)
 
         stock_weights = set(ckpt_reader.get_variable_to_dtype_map().keys())
@@ -295,6 +291,13 @@ class ClaimSpotterLayer(K.layers.Layer):
             sorted(stock_weights.difference(loaded_weights)))))
 
         return skipped_weight_value_tuples
+
+    def load_albert_weights(self, ckpt_path=os.path.join(FLAGS.cs_model_loc, 'model.ckpt-best')):
+        ckpt_reader = tf.train.load_checkpoint(ckpt_path)
+
+        stock_weights = set(ckpt_reader.get_variable_to_dtype_map().keys())
+        print(stock_weights)
+        exit()
 
     # def load_albert_weights(bert: BertModelLayer, tfhub_model_path, tags=[]):
     #     """
