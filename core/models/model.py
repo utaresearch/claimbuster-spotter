@@ -185,6 +185,7 @@ class ClaimSpotterLayer(K.layers.Layer):
 
         logging.info('Removing: {}'.format(non_trainable_layers))
         logging.info([v.name for v in train_vars])
+        exit()
 
         return train_vars
 
@@ -297,7 +298,6 @@ class ClaimSpotterLayer(K.layers.Layer):
 
         stock_weights = set(ckpt_reader.get_variable_to_dtype_map().keys())
         print(stock_weights)
-        exit()
 
     # def load_albert_weights(bert: BertModelLayer, tfhub_model_path, tags=[]):
     #     """
