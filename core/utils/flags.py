@@ -67,16 +67,16 @@ flags.DEFINE_integer('cs_num_classes', 3, 'Number of classes for classification 
 flags.DEFINE_bool('cs_alt_two_class_combo', False, 'Combine CFS and UFS instead when num_classes=2.')
 
 # Transformer
-flags.DEFINE_bool('cs_tfm_type', 1, '0 XLNet 1 BERT')
-flags.DEFINE_integer('cs_tfm_layers', 12, 'Number of BERT layers.')
-flags.DEFINE_bool('cs_tfm_ft_embed', False, 'Train BERT embedding layer')
-flags.DEFINE_bool('cs_tfm_ft_pooler', True, 'Train BERT pooler layer')
+flags.DEFINE_string('cs_tfm_type', 'bert', 'Must be `bert` or `albert`')
+flags.DEFINE_integer('cs_tfm_layers', 12, 'Number of transf layers.')
+flags.DEFINE_bool('cs_tfm_ft_embed', False, 'Train transf embedding layer')
+flags.DEFINE_bool('cs_tfm_ft_pooler', True, 'Train transf pooler layer')
 flags.DEFINE_integer('cs_tfm_ft_enc_layers', 2, 'Last n encoding layers are marked as trainable')
 flags.DEFINE_float('cs_kp_tfm_atten', 0.8, 'Keep probability of attention dropout in Transformer')
 flags.DEFINE_float('cs_kp_tfm_hidden', 0.8, 'Keep probability of hidden dropout in Transformer')
 
 # BERT
-flags.DEFINE_string('cs_bert_model_size', 'base', 'Version of BERT to use: base or large_wwm')
+flags.DEFINE_string('cs_model_size', 'base', 'Version of BERT to use: base, large, or large_wwm')
 
 # Training
 flags.DEFINE_bool('cs_adam', True, 'Adam or RMSProp if False')
@@ -103,7 +103,7 @@ def clean_argv(inp):
 FLAGS(clean_argv(sys.argv))
 
 # Locations (must be last due to customization)
-flags.DEFINE_string('cs_bert_model_loc', '{}/bert_pretrain'.format(FLAGS.cs_data_dir), 'Root location of pretrained BERT files.')
+flags.DEFINE_string('cs_model_loc', '{}/{}_pretrain'.format(FLAGS.cs_data_dir, ), 'Root location of pretrained BERT files.')
 flags.DEFINE_string('cs_raw_data_loc', '{}/data_small.json'.format(FLAGS.cs_data_dir), 'Location of raw data')
 flags.DEFINE_string('cs_raw_dj_eval_loc', '{}/disjoint_2000.json'.format(FLAGS.cs_data_dir), 'Location of raw data')
 flags.DEFINE_string('cs_raw_clef_train_loc', '{}/CT19-T1-Training.csv'.format(FLAGS.cs_data_dir), 'Location of raw CLEF .csv data')
@@ -111,13 +111,14 @@ flags.DEFINE_string('cs_raw_clef_test_loc', '{}/CT19-T1-Test.csv'.format(FLAGS.c
 flags.DEFINE_string('cs_prc_data_loc', '{}/all_data.pickle'.format(FLAGS.cs_data_dir), 'Location of saved processed data')
 flags.DEFINE_string('cs_prc_clef_loc', '{}/all_clef_data.pickle'.format(FLAGS.cs_data_dir), 'Location of saved processed CLEF data')
 
-FLAGS.cs_bert_model_loc = FLAGS.cs_bert_model_loc + '_' + FLAGS.cs_bert_model_size
-if any(['large' in FLAGS.cs_bert_model_size]):
+FLAGS.cs_model_loc = FLAGS.cs_model_loc + '_' + FLAGS.cs_model_size
+if any(['large' in FLAGS.cs_model_size]):
 	FLAGS.cs_tfm_layers *= 2
 	FLAGS.cs_tfm_ft_enc_layers *= 2
 	FLAGS.cs_batch_size_reg //= 3
 	FLAGS.cs_batch_size_adv //= 3
 
+assert FLAGS.cs_tfm_type in ['bert', 'albert']
 
 def print_flags():
 	logging.info(FLAGS.flag_values_dict())

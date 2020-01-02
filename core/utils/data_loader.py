@@ -235,7 +235,7 @@ class DataLoader:
 
     @staticmethod
     def process_text_for_transformers(train_txt, eval_txt):
-        vocab_file = os.path.join(FLAGS.cs_bert_model_loc, "vocab.txt")
+        vocab_file = os.path.join(FLAGS.cs_model_loc, "vocab.txt")
         tokenizer = bert2.bert_tokenization.FullTokenizer(vocab_file, do_lower_case=True)
 
         train_txt = [tokenizer.convert_tokens_to_ids(tokenizer.tokenize(x)) for x in train_txt]

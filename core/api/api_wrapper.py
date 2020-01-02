@@ -16,7 +16,7 @@ class ClaimSpotterAPI:
         os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 
         self.return_strings = ['Non-factual statement', 'Unimportant factual statement', 'Salient factual statement']
-        self.tokenizer = bert2.bert_tokenization.FullTokenizer(os.path.join(FLAGS.cs_bert_model_loc, "vocab.txt"),
+        self.tokenizer = bert2.bert_tokenization.FullTokenizer(os.path.join(FLAGS.cs_model_loc, "vocab.txt"),
                                                                do_lower_case=True)
 
         transf.load_dependencies()
