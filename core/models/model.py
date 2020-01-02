@@ -28,6 +28,9 @@ class ClaimSpotterModel(K.models.Model):
         input_ph_sent = K.layers.Input(shape=(2,), dtype='float32')
         self.layer.call((input_ph_id, input_ph_sent), training=False)
 
+        print(self.layer.trainable_variables)
+        exit()
+
     def load_custom_model(self):
         if any('.ckpt' in x for x in os.listdir(FLAGS.cs_model_dir)):
             load_location = FLAGS.cs_model_dir
@@ -204,7 +207,8 @@ class ClaimSpotterLayer(K.layers.Layer):
         if FLAGS.cs_tfm_type == 'bert':
             self.load_bert_weights()
         else:
-            self.load_albert_weights()
+            pass
+            # self.load_albert_weights()
 
     def load_bert_weights(self, ckpt_path=os.path.join(FLAGS.cs_model_loc, 'bert_model.ckpt')):
         # Define several helper functions
