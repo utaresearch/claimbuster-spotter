@@ -28,7 +28,8 @@ class ClaimSpotterModel(K.models.Model):
         input_ph_sent = K.layers.Input(shape=(2,), dtype='float32')
         self.layer.call((input_ph_id, input_ph_sent), training=False)
 
-        print(self.layer.trainable_variables)
+        print([v.name for v in self.layer.trainable_variables])
+        print([v.shape for v in self.layer.trainable_variables])
         exit()
 
     def load_custom_model(self):
