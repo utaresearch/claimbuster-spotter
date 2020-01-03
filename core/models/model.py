@@ -204,7 +204,8 @@ class ClaimSpotterLayer(K.layers.Layer):
         if FLAGS.cs_tfm_type == 'bert':
             self.load_bert_weights()
         else:
-            self.load_albert_weights()
+            pass
+            # self.load_albert_weights()
 
     def load_bert_weights(self, ckpt_path=os.path.join(FLAGS.cs_model_loc, 'bert_model.ckpt')):
         # Define several helper functions
