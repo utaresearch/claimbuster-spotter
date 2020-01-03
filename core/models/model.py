@@ -184,7 +184,7 @@ class ClaimSpotterLayer(K.layers.Layer):
         train_vars = [v for v in train_vars if not any(z in v.name for z in non_trainable_layers)]
 
         logging.info('Removing: {}'.format(non_trainable_layers))
-        logging.info([v.name for v in train_vars])
+        logging.info('Trainable variables: {}'.format([v.name for v in train_vars]))
 
         return train_vars
 
