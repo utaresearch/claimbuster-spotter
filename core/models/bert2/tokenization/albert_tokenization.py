@@ -264,11 +264,12 @@ class FullTokenizer(object):
 
     def convert_tokens_to_ids(self, tokens):
         if self.sp_model:
+            raise Exception('sp_model not supported yet, check the addition of [cLS] and [SEP] tokens')
             tf.logging.info("using sentence piece tokenzier.")
             return [self.sp_model.PieceToId(
                 printable_text(token)) for token in tokens]
         else:
-            return convert_by_vocab(self.vocab, tokens)
+            return convert_by_vocab(self.vocab, ['[CLS]'] + tokens + ['[SEP]'])
 
     def convert_ids_to_tokens(self, ids):
         if self.sp_model:
