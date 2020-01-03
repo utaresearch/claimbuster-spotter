@@ -242,6 +242,7 @@ class FullTokenizer(object):
             self.sp_model = spm.SentencePieceProcessor()
             logging.info("loading sentence piece model")
             self.sp_model.Load(spm_model_file)
+            logging.info("using sentence piece tokenzier.")
             # Note(mingdachen): For the purpose of consisent API, we are
             # generating a vocabulary for the sentence piece tokenizer.
             self.vocab = {self.sp_model.IdToPiece(i): i for i
@@ -267,7 +268,6 @@ class FullTokenizer(object):
         tokens = ['[CLS]'] + tokens + ['[SEP]']
 
         if self.sp_model:
-            logging.info("using sentence piece tokenzier.")
             return [self.sp_model.PieceToId(
                 printable_text(token)) for token in tokens]
         else:
