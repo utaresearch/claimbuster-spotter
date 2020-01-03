@@ -115,9 +115,6 @@ class ClaimSpotterLayer(K.layers.Layer):
             loss = self.compute_training_loss(y, logits)
 
         grad = tape.gradient(loss, self.vars_to_train)
-        print(grad)
-        print(self.vars_to_train)
-        exit()
         self.optimizer.apply_gradients(zip(grad, self.vars_to_train))
 
         return tf.reduce_sum(loss), self.compute_accuracy(y, logits)
