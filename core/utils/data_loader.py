@@ -219,9 +219,6 @@ class DataLoader:
             eval_data = Dataset(list(map(list, zip(eval_features.tolist(), eval_sent))), eval_lab,
                                 random_state=FLAGS.cs_random_state)
 
-            print(train_data.x[0])
-            exit()
-
             with open(data_loc, 'wb') as f:
                 pickle.dump((train_data, eval_data), f)
             logging.info('Refreshed data, successfully dumped at {}'.format(data_loc))
@@ -240,8 +237,11 @@ class DataLoader:
     def process_text_for_transformers(train_txt, eval_txt):
         vocab_file = os.path.join(FLAGS.cs_model_loc, "vocab.txt") \
             if FLAGS.cs_tfm_type == 'bert' else os.path.join(FLAGS.cs_model_loc, "30k-clean.vocab")
+        if FLAGS.cs_tfm_type == 'albert':
+            spm_loc = os.path.join(FLAGS.cs_model_loc, "30k-clean.model")
         tokenizer = bert2.bert_tokenization.FullTokenizer(vocab_file, do_lower_case=True) \
-            if FLAGS.cs_tfm_type == 'bert' else bert2.albert_tokenization.FullTokenizer(vocab_file, do_lower_case=True)
+            if FLAGS.cs_tfm_type == 'bert' else bert2.albert_tokenization.FullTokenizer(vocab_file, do_lower_case=True,
+                                                                                        spm_model_file=spm_loc)
 
         train_txt = [tokenizer.convert_tokens_to_ids(tokenizer.tokenize(x)) for x in train_txt]
         eval_txt = [tokenizer.convert_tokens_to_ids(tokenizer.tokenize(x)) for x in eval_txt]
