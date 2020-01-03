@@ -267,7 +267,7 @@ class FullTokenizer(object):
         if self.sp_model:
             # raise Exception('sp_model not supported yet, check the addition of [cLS] and [SEP] tokens')
             logging.info("using sentence piece tokenzier.")
-            print([printable_text(token)) for token in tokens])
+            print([printable_text(token) for token in tokens])
             return [self.sp_model.PieceToId(
                 printable_text(token)) for token in tokens]
         else:
