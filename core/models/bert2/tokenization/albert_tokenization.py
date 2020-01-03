@@ -268,7 +268,6 @@ class FullTokenizer(object):
 
         if self.sp_model:
             logging.info("using sentence piece tokenzier.")
-            print([printable_text(token) for token in tokens])
             return [self.sp_model.PieceToId(
                 printable_text(token)) for token in tokens]
         else:
