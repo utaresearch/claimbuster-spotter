@@ -219,6 +219,9 @@ class DataLoader:
             eval_data = Dataset(list(map(list, zip(eval_features.tolist(), eval_sent))), eval_lab,
                                 random_state=FLAGS.cs_random_state)
 
+            print(train_data.x[0])
+            exit()
+
             with open(data_loc, 'wb') as f:
                 pickle.dump((train_data, eval_data), f)
             logging.info('Refreshed data, successfully dumped at {}'.format(data_loc))
