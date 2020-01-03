@@ -120,10 +120,5 @@ if any(['large' in FLAGS.cs_model_size]):
 
 assert FLAGS.cs_tfm_type in ['bert', 'albert']
 
-if FLAGS.cs_tfm_type == 'albert':
-	FLAGS.cs_tfm_ft_enc_layers = FLAGS.cs_tfm_layers
-	FLAGS.cs_tfm_ft_embed = True
-	FLAGS.cs_tfm_ft_pooler = True
-
 def print_flags():
 	logging.info(FLAGS.flag_values_dict())
