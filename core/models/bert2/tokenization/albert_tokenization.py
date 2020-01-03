@@ -264,14 +264,15 @@ class FullTokenizer(object):
         return split_tokens
 
     def convert_tokens_to_ids(self, tokens):
+        tokens = ['[CLS]'] + tokens + ['[SEP]']
+
         if self.sp_model:
-            # raise Exception('sp_model not supported yet, check the addition of [cLS] and [SEP] tokens')
             logging.info("using sentence piece tokenzier.")
             print([printable_text(token) for token in tokens])
             return [self.sp_model.PieceToId(
                 printable_text(token)) for token in tokens]
         else:
-            return convert_by_vocab(self.vocab, ['[CLS]'] + tokens + ['[SEP]'])
+            return convert_by_vocab(self.vocab, tokens)
 
     def convert_ids_to_tokens(self, ids):
         if self.sp_model:
