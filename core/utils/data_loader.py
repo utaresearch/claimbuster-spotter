@@ -185,7 +185,7 @@ class DataLoader:
 
     @staticmethod
     def load_ext_data(train_data_in, val_data_in, test_data_in):
-        data_loc = FLAGS.cs_prc_data_loc[:-7] + '_{}'.format('albert' if FLAGS.cs_tfm_type == 0 else 'bert') + '.pickle'
+        data_loc = FLAGS.cs_prc_data_loc[:-7] + '_{}'.format(FLAGS.cs_tfm_type) + '.pickle'
 
         if (train_data_in is not None and val_data_in is not None and test_data_in is not None) or \
            (not os.path.isfile(data_loc)):
@@ -235,8 +235,10 @@ class DataLoader:
 
     @staticmethod
     def process_text_for_transformers(train_txt, eval_txt):
-        vocab_file = os.path.join(FLAGS.cs_model_loc, "vocab.txt")
-        tokenizer = bert2.bert_tokenization.FullTokenizer(vocab_file, do_lower_case=True)
+        vocab_file = os.path.join(FLAGS.cs_model_loc, "vocab.txt") \
+            if FLAGS.cs_tfm_type == 'bert' else os.path.join(FLAGS.cs_model_loc, "30k-clean.vocab")
+        tokenizer = bert2.bert_tokenization.FullTokenizer(vocab_file, do_lower_case=True) \
+            if FLAGS.cs_tfm_type == 'bert' else bert2.albert_tokenization.FullTokenizer(vocab_file, do_lower_case=True)
 
         train_txt = [tokenizer.convert_tokens_to_ids(tokenizer.tokenize(x)) for x in train_txt]
         eval_txt = [tokenizer.convert_tokens_to_ids(tokenizer.tokenize(x)) for x in eval_txt]
