@@ -60,7 +60,7 @@ class BertModelLayer(Layer):
         )
 
         self.dropout_layer = K.layers.Dropout(rate=self.params.hidden_dropout)
-        self.pooler_layer = PoolerLayer(self.params.hidden_size, name='pooler')
+        self.pooler_layer = PoolerLayer(self.params.hidden_size, name="pooler")
 
         super(BertModelLayer, self).build(input_shape)
 
