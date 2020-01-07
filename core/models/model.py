@@ -174,8 +174,11 @@ class ClaimSpotterLayer(K.layers.Layer):
     def select_train_vars(self):
         train_vars = self.trainable_variables
 
-        non_trainable_layers = ['/layer_{}/'.format(num)
-                                for num in range(FLAGS.cs_tfm_layers - FLAGS.cs_tfm_ft_enc_layers)]
+        if FLAGS.cs_tfm_type == 'albert' and FLAGS.cs_tfm_ft_layers == 0:
+            non_trainable_layers = ['/encoder/']
+        else:
+            non_trainable_layers = ['/layer_{}/'.format(num)
+                                    for num in range(FLAGS.cs_tfm_layers - FLAGS.cs_tfm_ft_enc_layers)]
         if not FLAGS.cs_tfm_ft_embed:
             non_trainable_layers.append('/embeddings/')
         if not FLAGS.cs_tfm_ft_pooler:
