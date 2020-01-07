@@ -205,7 +205,7 @@ class ClaimSpotterLayer(K.layers.Layer):
             self.load_bert_weights()
         else:
             pass
-            self.load_albert_weights()
+            # self.load_albert_weights()
 
     def load_bert_weights(self, ckpt_path=os.path.join(FLAGS.cs_model_loc, 'bert_model.ckpt')):
         # Define several helper functions
