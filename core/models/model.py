@@ -280,7 +280,6 @@ class ClaimSpotterLayer(K.layers.Layer):
             else:
                 print("loader: No value for:[{}], i.e.:[{}] in:[{}]".format(param.name, stock_name, ckpt_path))
                 skip_count += 1
-        print(weight_value_tuples)
         K.backend.batch_set_value(weight_value_tuples)
 
         logging.info("Done loading {} BERT weights from: {} into {} (prefix:{}). "
@@ -380,6 +379,7 @@ class ClaimSpotterLayer(K.layers.Layer):
             else:
                 print("loader: No value for:[{}], i.e.:[{}] in:[{}]".format(param.name, stock_name, ckpt_path))
                 skip_count += 1
+        print(weight_value_tuples)
         K.backend.batch_set_value(weight_value_tuples)
 
         logging.info("Done loading {} BERT weights from: {} into {} (prefix:{}). "
