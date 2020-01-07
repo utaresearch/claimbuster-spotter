@@ -10,6 +10,7 @@ from sklearn.utils.class_weight import compute_class_weight
 from absl import logging
 from . import transformations as transf
 from ..models import bert2
+from ..models.bert2.tokenization.custom_albert_tokenization import CustomAlbertTokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from .flags import FLAGS
 
@@ -235,16 +236,15 @@ class DataLoader:
 
     @staticmethod
     def process_text_for_transformers(train_txt, eval_txt):
-        vocab_file = os.path.join(FLAGS.cs_model_loc, "vocab.txt") \
-            if FLAGS.cs_tfm_type == 'bert' else os.path.join(FLAGS.cs_model_loc, "30k-clean.vocab")
-        if FLAGS.cs_tfm_type == 'albert':
-            spm_loc = os.path.join(FLAGS.cs_model_loc, "30k-clean.model")
-        tokenizer = bert2.bert_tokenization.FullTokenizer(vocab_file, do_lower_case=True) \
-            if FLAGS.cs_tfm_type == 'bert' else bert2.albert_tokenization.FullTokenizer(vocab_file, do_lower_case=True,
-                                                                                        spm_model_file=spm_loc)
-
-        train_txt = [tokenizer.convert_tokens_to_ids(tokenizer.tokenize(x)) for x in train_txt]
-        eval_txt = [tokenizer.convert_tokens_to_ids(tokenizer.tokenize(x)) for x in eval_txt]
+        if FLAGS.cs_tfm_type == 'bert':
+            vocab_file = os.path.join(FLAGS.cs_model_loc, "vocab.txt")
+            tokenizer = bert2.bert_tokenization.FullTokenizer(vocab_file, do_lower_case=True)
+            train_txt = [tokenizer.convert_tokens_to_ids(tokenizer.tokenize(x)) for x in train_txt]
+            eval_txt = [tokenizer.convert_tokens_to_ids(tokenizer.tokenize(x)) for x in eval_txt]
+        else:
+            tokenizer = CustomAlbertTokenizer()
+            train_txt = tokenizer.tokenize_array(train_txt)
+            eval_txt = tokenizer.tokenize_array(eval_txt)
 
         return train_txt, eval_txt
 
