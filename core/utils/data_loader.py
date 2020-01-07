@@ -242,7 +242,6 @@ class DataLoader:
         else:
             tokenizer = CustomAlbertTokenizer()
             train_txt = tokenizer.tokenize_array(train_txt)
-            print(train_txt[0])
             eval_txt = tokenizer.tokenize_array(eval_txt)
 
         return train_txt, eval_txt
