@@ -205,6 +205,7 @@ class ClaimSpotterLayer(K.layers.Layer):
             self.load_bert_weights()
         else:
             print([v.name for v in self.trainable_variables])
+            print([v for v in self.trainable_variables if 'albert/encoder/layer_shared/attention/self/value/bias' in v.name])
             exit()
             self.load_albert_weights()
 
