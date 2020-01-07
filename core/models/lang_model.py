@@ -12,6 +12,9 @@ class LanguageModel:
 
     @staticmethod
     def build_transformer():  # independent of tfm type
+        if FLAGS.cs_tfm_type == 'albert':
+            return LanguageModel.test_albert()
+
         bert_params = bert2.params_from_pretrained_ckpt(FLAGS.cs_model_loc)
         bert_params.hidden_dropout = 1 - FLAGS.cs_kp_tfm_hidden
         bert_params.attention_dropout = 1 - FLAGS.cs_kp_tfm_atten
