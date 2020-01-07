@@ -206,8 +206,10 @@ class ClaimSpotterLayer(K.layers.Layer):
         else:
             print([v.name for v in self.trainable_variables])
             print([v for v in self.trainable_variables if 'albert/encoder/layer_shared/attention/self/value/bias' in v.name])
-            exit()
             self.load_albert_weights()
+            print([v for v in self.trainable_variables if
+                   'albert/encoder/layer_shared/attention/self/value/bias' in v.name])
+            exit()
 
     def load_bert_weights(self, ckpt_path=os.path.join(FLAGS.cs_model_loc, 'bert_model.ckpt')):
         # Define several helper functions
