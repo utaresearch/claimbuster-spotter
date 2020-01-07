@@ -351,6 +351,7 @@ class ClaimSpotterLayer(K.layers.Layer):
         ckpt_reader = tf.train.load_checkpoint(ckpt_path)
 
         stock_weights = set(ckpt_reader.get_variable_to_dtype_map().keys())
+        print(stock_weights)
         prefix = bert_prefix()
 
         loaded_weights = set()
@@ -379,7 +380,6 @@ class ClaimSpotterLayer(K.layers.Layer):
             else:
                 print("loader: No value for:[{}], i.e.:[{}] in:[{}]".format(param.name, stock_name, ckpt_path))
                 skip_count += 1
-        print([x[0] for x in weight_value_tuples])
         K.backend.batch_set_value(weight_value_tuples)
 
         logging.info("Done loading {} BERT weights from: {} into {} (prefix:{}). "
