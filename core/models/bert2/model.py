@@ -78,7 +78,7 @@ class BertModelLayer(Layer):
         if mask is None:
             mask = self.embeddings_layer.compute_mask(inputs)
 
-        embedding_output = self.embeddings_layer(inputs, mask=mask, training=training) * 2
+        embedding_output = self.embeddings_layer(inputs, mask=mask, training=training)
 
         if perturb is not None:
             embedding_output += perturb
