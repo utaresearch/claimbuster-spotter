@@ -1,16 +1,14 @@
 from sklearn.utils import resample
-import numpy as np
 import pandas as pd
 import pickle
 import os
 import json
-import sys
 from sklearn.utils import shuffle
 from sklearn.utils.class_weight import compute_class_weight
 from absl import logging
 from . import transformations as transf
 from ..models import bert2
-from ..models.bert2.tokenization.custom_albert_tokenization import CustomAlbertTokenizer
+from ..models.custom_albert_tokenization import CustomAlbertTokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from .flags import FLAGS
 
