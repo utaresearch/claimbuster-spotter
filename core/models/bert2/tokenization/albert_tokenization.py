@@ -146,8 +146,6 @@ def encode_ids(sp_model, text, sample=False):
     pieces = encode_pieces(sp_model, text, return_unicode=False, sample=sample)
     pieces = ['[CLS]'] + pieces + ['[SEP]']
     ids = [sp_model.PieceToId(piece) for piece in pieces]
-    print (pieces, ids)
-    exit()
     return ids
 
 
