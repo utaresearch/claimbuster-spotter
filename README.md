@@ -30,8 +30,8 @@ Preprocessing is accomplished by [`train.py`](train.py). Sentences are extracted
 
 Each training session is predicated upon a pre-trained BERT model as an initialization point. After loading these weights, we offer two possible training algorithms:
 
-* Classifier Fine-Tuning (`--adv_train=False`): uses vanilla stochastic gradient descent to minimize softmax classification objective into NFS/UFS/CFS class division.
-* Adversarial Classifier Fine-Tuning (`--adv_train=True`): applies adversarial perturbations to embeddings and uses stochastic gradient descent to minimize error between each resulting prediction and its corresponding ground-truth.
+* Classifier Fine-Tuning (`--cs_adv_train=False`): uses vanilla stochastic gradient descent to minimize softmax classification objective into NFS/UFS/CFS class division.
+* Adversarial Classifier Fine-Tuning (`--cs_adv_train=True`): applies adversarial perturbations to embeddings and uses stochastic gradient descent to minimize error between each resulting prediction and its corresponding ground-truth.
 
 Depending on the VRAM capacity of the selected GPU, as well as the predefined batch size and number of frozen layers, training time can range between 1 and 10 hours. On an Nvidia GeForce GTX 1080Ti, it takes approximately 3 minutes/epoch to train a `BERT-Base` model and 5 minutes/epoch to train a `BERT-Large` model using regular optimization. Adversarial training doubles the time required.
 
@@ -45,14 +45,7 @@ Using [`demo.py`](demo.py), users can input individual sentences into the comman
 
 ### Command-Line Flags
 
-All flags are defined and editable in [`flags.py`](flags.py).
-
-<!-- ## Different Modes for Executing Code
-
-In [`utils/`](utils/), there are 3 files with varying purposes, as listed below. [`run_eval.sh`](utils/run_eval.sh) is used for official evaluation.
-* [`run_sm.sh`](utils/run_sm.sh): Uses [small dataset](data/data_small.json) split into training/testing
-* [`run_lg.sh`](utils/run_lg.sh): Uses [large dataset](data/data_large.json) split into training/testing
-* [`run_eval.sh`](utils/run_eval.sh): Uses the entire [small dataset](data/data_small.json) for training and the [2000 pre-selected disjoint sentences](data/disjoint_2000.pkl) for evaluation. These are the commands described below in the example procedure. -->
+All flags are defined and editable in [`core/utils/flags.py`](core/utils/flags.py).
 
 ## End-to-End Claim Spotting Procedure
 
@@ -76,6 +69,7 @@ Because BERT pre-trained files are inconvenient/impossible to track with Git, th
 
 ```bash
 chmod +x ./data/get_bert.sh
+chmod +x ./data/get_albert.sh
 chmod +x ./dependencies.sh
 ./dependencies.sh
 ```
@@ -85,7 +79,7 @@ chmod +x ./dependencies.sh
 Training data is drawn from the entire [small dataset](data/data_small.json), and
 testing data is drawn from the [2000 pre-selected disjoint sentences](data/disjoint_2000.pkl). In the future, a full corpus from a recent series of presidential debates will be added to this collection to data.
 
-When [`train.py`](train.py) is run, code to process raw data will be run if `--refresh_data=True` **or** the code cannot find the stored, processed `.pkl` files containing processed data. Please see the next section for code on running the pre-train file.
+When [`train.py`](train.py) is run, code to process raw data will be run if `--cs_refresh_data=True` **or** the code cannot find the stored, processed `.pkl` files containing processed data. Please see the next section for code on running the pre-train file.
 
 ### Classifier Fine-Tuning
 
@@ -97,9 +91,9 @@ Note that the entire [small dataset](data/data_small.json) will be used for trai
 
 ```bash
 python3 train.py \
-    --cb_model_dir=$MDIR \
-    --adv_train=False \
-    --gpu=0
+    --cs_model_dir=$MDIR \
+    --cs_adv_train=False \
+    --cs_gpu=0
 ```
 
 ### Adversarial Training
@@ -108,9 +102,9 @@ As with regular training, `$MDIR` indicates the location where the trained model
 
 ```bash
 python3 train.py \
-    --cb_model_dir=$MDIR \
-    --adv_train=True \
-    --gpu=0 \
+    --cs_model_dir=$MDIR \
+    --cs_adv_train=True \
+    --cs_gpu=0 \
 ```
 
 ### Restore and Continue Training
@@ -122,11 +116,11 @@ Continued training does not depend on the algorithm used to train the preceding 
 Below is an example of using `restore_and_continue` on adversarial training.
 
 ```bash
-python3 advtrain.py \
-    --cb_model_dir=$MDIR \
-    --adv_train=True
-    --gpu=0 \
-    --restore_and_continue=True
+python3 train.py \
+    --cs_model_dir=$MDIR \
+    --cs_adv_train=True
+    --cs_gpu=0 \
+    --cs_restore_and_continue=True
 ```
 
 ### Performance Evaluation on Test Datasets
@@ -135,8 +129,8 @@ Currently, there is only one test dataset available: [disjoint 2000](data/disjoi
 
 ```bash
 python3 eval.py \
-    --cb_model_dir=$MDIR \
-    --gpu=0
+    --cs_model_dir=$MDIR \
+    --cs_gpu=0
 ```
 
 Either the pre-trained or adv-trained model can be evaluated using this code.
@@ -147,20 +141,20 @@ Running the follow code will open an interface to input individual sentences for
 
 ```bash
 python3 demo.py \
-    --cb_model_dir=$MDIR \
-    --gpu=0
+    --cs_model_dir=$MDIR \
+    --cs_gpu=0
 ```
 
 ## API Wrapper
 
-We provide an API wrapper in [api_wrapper.py](api_wrapper.py) to enable easy integration into other applications. There are two simple query functions that extract inference information for a single sentence. Below is a sample usage scenario:
+We provide an API wrapper in [core/api/api_wrapper.py](core/api/api_wrapper.py) to enable easy integration into other applications. There are two simple query functions that extract inference information for a single sentence. Below is a sample usage scenario:
 
 ```python
-from api_wrapper import ClaimSpotterAPI
+from core.api.api_wrapper import ClaimSpotterAPI
 
 api = ClaimSpotterAPI()
 sentence = "ClaimBuster is a state-of-the-art, end-to-end fact-checking system."
-api_result = api.direct_sentence_query(sentence)  # Returns array w/ class probabilities
+api_result = api.single_sentence_query(sentence)  # Returns array w/ class probabilities
 
 api_result_2 = api.subscribe_cmdline_query()  # Collects/processes cmdline input
 ```
