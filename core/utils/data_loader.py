@@ -62,7 +62,7 @@ class DataLoader:
 
         if FLAGS.cs_num_classes == 2 and not FLAGS.cs_use_clef_data:
             self.data = self.convert_3_to_2(self.data)
-            self.eval_data = self.convert_3_to_2(self.data)
+            self.eval_data = self.convert_3_to_2(self.eval_data)
 
         self.class_weights = self.compute_class_weights()
         logging.info('Class weights computed to be {}'.format(self.class_weights))
