@@ -211,6 +211,7 @@ class BertEmbeddingsLayer(Layer):
 
         if token_type_ids is not None:
             token_type_ids = tf.cast(token_type_ids, dtype=tf.int32)
+            print(token_type_ids)
             embedding_output += self.token_type_embeddings_layer(token_type_ids)
 
         if self.position_embeddings_layer is not None:
@@ -218,6 +219,7 @@ class BertEmbeddingsLayer(Layer):
             emb_size = embedding_output.shape[-1]
 
             pos_embeddings = self.position_embeddings_layer(seq_len)
+            print(pos_embeddings)
             # broadcast over all dimension except the last two [..., seq_len, width]
             broadcast_shape = [1] * (embedding_output.shape.ndims - 2) + [seq_len, emb_size]
             embedding_output += tf.reshape(pos_embeddings, broadcast_shape)
