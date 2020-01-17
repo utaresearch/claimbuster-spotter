@@ -75,8 +75,7 @@ class ClaimSpotterLayer(K.layers.Layer):
     def call(self, x, **kwargs):
         assert 'training' in kwargs
 
-        x_id = x[0] if tf.shape(x[0])[0] is None else [x[0], tf.zeros((tf.shape(x[0])), dtype=tf.int32)]
-        print(x_id)
+        x_id = [x[0], tf.zeros((tf.shape(x[0])), dtype=tf.int32)]
         x_sent = x[1]
 
         training = kwargs.get('training')
