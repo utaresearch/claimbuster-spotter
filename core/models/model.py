@@ -75,7 +75,7 @@ class ClaimSpotterLayer(K.layers.Layer):
     def call(self, x, **kwargs):
         assert 'training' in kwargs
 
-        x_id = [x[0]]
+        x_id = x[0]
         print(x_id)
         x_sent = x[1]
 
