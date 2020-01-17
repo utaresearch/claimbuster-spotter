@@ -192,10 +192,6 @@ class BertEmbeddingsLayer(Layer):
 
         input_ids = tf.cast(input_ids, dtype=tf.int32)
 
-        print(input_ids)
-        print(token_type_ids)
-        exit()
-
         if self.extra_word_embeddings_layer is not None:
             token_mask = tf.cast(input_ids >= 0, tf.int32)
             extra_mask = tf.cast(input_ids < 0, tf.int32)
