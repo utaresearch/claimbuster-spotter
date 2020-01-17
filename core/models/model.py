@@ -76,7 +76,7 @@ class ClaimSpotterLayer(K.layers.Layer):
         assert 'training' in kwargs
 
         x_id = [x[0]]
-        print(np.shape(x_id))
+        print(x_id)
         exit()
         x_sent = x[1]
 
