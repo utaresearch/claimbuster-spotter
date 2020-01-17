@@ -77,7 +77,6 @@ class ClaimSpotterLayer(K.layers.Layer):
 
         x_id = [x[0]]
         print(x_id)
-        exit()
         x_sent = x[1]
 
         training = kwargs.get('training')
