@@ -242,11 +242,9 @@ class BertEmbeddingsLayer(Layer):
             perturbable = [('pos', 'seg', 'tok'), ('pos', 'seg'), ('pos', 'tok'), ('seg', 'tok'), ('pos',), ('seg',),
                            ('tok',)]
             cfg = perturbable[get_embedding]
-            print(cfg)
 
             changed = False
             for el in cfg:
-                print(el)
                 if not changed:
                     ret_embed = all_embeddings[el]
                     changed = True
@@ -256,10 +254,7 @@ class BertEmbeddingsLayer(Layer):
             embedding_output = ret_embed
 
             diff = set(perturbable[0]).difference(cfg)
-            print(diff)
-
             for el in diff:
-                print(el)
                 embedding_output += all_embeddings[el]
 
             # exit()
