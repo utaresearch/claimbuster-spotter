@@ -246,6 +246,7 @@ class BertEmbeddingsLayer(Layer):
 
             changed = False
             for el in cfg:
+                print(el)
                 if not changed:
                     ret_embed = all_embeddings[el]
                     changed = True
@@ -258,6 +259,7 @@ class BertEmbeddingsLayer(Layer):
             print(diff)
 
             for el in diff:
+                print(el)
                 embedding_output += all_embeddings[el]
 
             # exit()
