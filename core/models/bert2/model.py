@@ -78,7 +78,8 @@ class BertModelLayer(Layer):
         if mask is None:
             mask = self.embeddings_layer.compute_mask(inputs)
 
-        embedding_output, ret_embed = self.embeddings_layer(inputs, mask=mask, training=training, get_embedding=get_embedding, perturb=perturb)
+        out = self.embeddings_layer(inputs, mask=mask, training=training, get_embedding=get_embedding, perturb=perturb)
+        embedding_output, ret_embed = out[0], out[1]
 
         output = self.encoders_layer(embedding_output, mask=mask, training=training)
         output = self.dropout_layer(output, training=training)
