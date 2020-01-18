@@ -120,7 +120,7 @@ class ClaimSpotterLayer(K.layers.Layer):
 
         return tf.reduce_sum(loss), self.compute_accuracy(y, logits)
 
-    @tf.function
+    # @tf.function
     def adv_train_on_batch(self, x, y):
         y = tf.one_hot(y, depth=FLAGS.cs_num_classes)
 
