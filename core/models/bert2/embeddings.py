@@ -273,7 +273,7 @@ class BertEmbeddingsLayer(Layer):
             if self.word_embeddings_projector_layer:
                 embedding_output = self.word_embeddings_projector_layer(embedding_output)
 
-        return embedding_output, ret_embed  # [B, seq_len, hidden_size]
+        return embedding_output#, ret_embed  # [B, seq_len, hidden_size]
 
     def compute_mask(self, inputs, mask=None):
         if isinstance(inputs, list):
