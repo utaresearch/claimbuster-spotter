@@ -255,7 +255,7 @@ class BertEmbeddingsLayer(Layer):
 
             embedding_output = ret_embed
 
-            diff = set(cfg).difference(set(perturbable[0]))
+            diff = set(perturbable[0]).difference(cfg)
             print(diff)
 
             for el in diff:
