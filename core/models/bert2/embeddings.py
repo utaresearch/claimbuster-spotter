@@ -231,7 +231,7 @@ class BertEmbeddingsLayer(Layer):
 
             embedding_output += pos_embed
 
-        ret_embed = None
+        ret_embed = tf.constant(0)
 
         if get_embedding != -1:
             all_embeddings = {
