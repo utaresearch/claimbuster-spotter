@@ -13,6 +13,8 @@ from tensorflow.keras import backend as K
 
 from .layer import Layer
 
+import itertools
+
 
 class PositionEmbeddingLayer(Layer):
     class Params(Layer.Params):
@@ -182,7 +184,7 @@ class BertEmbeddingsLayer(Layer):
 
         super(BertEmbeddingsLayer, self).build(input_shape)
 
-    def call(self, inputs, mask=None, training=None):
+    def call(self, inputs, mask=None, training=None, get_embedding=-1, perturb=None):
         if isinstance(inputs, list):
             assert 2 == len(inputs), "Expecting inputs to be a [input_ids, token_type_ids] list"
             input_ids, token_type_ids = inputs
@@ -199,20 +201,25 @@ class BertEmbeddingsLayer(Layer):
             extra_tokens = extra_mask * (- input_ids)
             token_output = self.word_embeddings_layer(token_ids)
             extra_output = self.extra_word_embeddings_layer(extra_tokens)
-            embedding_output = tf.add(token_output,
+            tok_embed = tf.add(token_output,
                                       extra_output * tf.expand_dims(tf.cast(extra_mask, K.floatx()), axis=-1))
+            # embedding_output = tok_embed
         else:
-            embedding_output = self.word_embeddings_layer(input_ids)
+            tok_embed = self.word_embeddings_layer(input_ids)
+            # embedding_output = tok_embed
 
         # ALBERT: for brightmart/albert_zh weights - project only token embeddings
         if not self.params.project_position_embeddings:
             if self.word_embeddings_projector_layer:
                 embedding_output = self.word_embeddings_projector_layer(embedding_output)
 
+        assert token_type_ids is not None, 'token_type_ids cannot be none'
         if token_type_ids is not None:
             token_type_ids = tf.cast(token_type_ids, dtype=tf.int32)
-            embedding_output += self.token_type_embeddings_layer(token_type_ids)
+            seg_embed = self.token_type_embeddings_layer(token_type_ids)
+            # embedding_output += seg_embed
 
+        assert self.position_embeddings_layer is not None
         if self.position_embeddings_layer is not None:
             seq_len = input_ids.shape.as_list()[1]
             emb_size = embedding_output.shape[-1]
@@ -220,7 +227,40 @@ class BertEmbeddingsLayer(Layer):
             pos_embeddings = self.position_embeddings_layer(seq_len)
             # broadcast over all dimension except the last two [..., seq_len, width]
             broadcast_shape = [1] * (embedding_output.shape.ndims - 2) + [seq_len, emb_size]
-            embedding_output += tf.reshape(pos_embeddings, broadcast_shape)
+            pos_embed = tf.reshape(pos_embeddings, broadcast_shape)
+
+            # embedding_output += pos_embed
+
+        ret_embed = None
+
+        if get_embedding != -1:
+            all_embeddings = {
+                'tok': tok_embed,
+                'seg': seg_embed,
+                'pos': pos_embed
+            }
+            perturbable = [('pos', 'seg', 'tok'), ('pos', 'seg'), ('pos', 'tok'), ('seg', 'tok'), ('pos',), ('seg',),
+                           ('tok',)]
+            cfg = perturbable[get_embedding]
+            print(cfg)
+
+            for el in cfg:
+                if ret_embed is None:
+                    ret_embed = all_embeddings[el]
+                else:
+                    ret_embed += all_embeddings[el]
+
+            embedding_output = ret_embed
+
+            diff = set(cfg).difference(set(perturbable[0]))
+            print(diff)
+
+            for el in diff:
+                embedding_output += all_embeddings[el]
+
+            exit()
+        else:
+            embedding_output = tok_embed + seg_embed + pos_embed
 
         embedding_output = self.layer_norm_layer(embedding_output)
         embedding_output = self.dropout_layer(embedding_output, training=training)
@@ -230,7 +270,7 @@ class BertEmbeddingsLayer(Layer):
             if self.word_embeddings_projector_layer:
                 embedding_output = self.word_embeddings_projector_layer(embedding_output)
 
-        return embedding_output  # [B, seq_len, hidden_size]
+        return embedding_output, ret_embed  # [B, seq_len, hidden_size]
 
     def compute_mask(self, inputs, mask=None):
         if isinstance(inputs, list):

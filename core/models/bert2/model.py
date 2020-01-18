@@ -74,21 +74,18 @@ class BertModelLayer(Layer):
 
             pf.utils.freeze_leaf_layers(self, freeze_selector)
 
-    def call(self, inputs, perturb=None, get_embedding=False, mask=None, training=None):
+    def call(self, inputs, perturb=None, get_embedding=-1, mask=None, training=None):
         if mask is None:
             mask = self.embeddings_layer.compute_mask(inputs)
 
-        embedding_output = self.embeddings_layer(inputs, mask=mask, training=training)
-
-        if perturb is not None:
-            embedding_output += perturb
+        embedding_output, ret_embed = self.embeddings_layer(inputs, mask=mask, training=training, get_embedding=get_embedding, perturb=perturb)
 
         output = self.encoders_layer(embedding_output, mask=mask, training=training)
         output = self.dropout_layer(output, training=training)
 
         pooled_output = self.pooler_layer(tf.squeeze(output[:, 0:1, :], axis=1), training=training)
 
-        if not get_embedding:
+        if get_embedding == -1:
             return pooled_output
         else:
-            return embedding_output, pooled_output
+            return ret_embed, pooled_output
