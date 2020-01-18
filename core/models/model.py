@@ -83,8 +83,6 @@ class ClaimSpotterLayer(K.layers.Layer):
         perturb = None if 'perturb' not in kwargs else kwargs.get('perturb')
         get_embedding = -1 if 'get_embedding' not in kwargs else kwargs.get('get_embedding')
 
-        print(get_embedding)
-
         if get_embedding == -1:
             bert_output = self.bert_model(x_id, training=training)
         else:
@@ -104,7 +102,7 @@ class ClaimSpotterLayer(K.layers.Layer):
                 self.init_model_weights()
             self.vars_to_train = self.select_train_vars()
 
-        if not get_embedding:
+        if get_embedding == -1:
             return ret
         else:
             return orig_embed, ret
