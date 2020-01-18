@@ -9,6 +9,7 @@ from absl import logging
 import tensorflow as tf
 import numpy as np
 from core.models.model import ClaimSpotterModel
+from sklearn.metrics import f1_score
 
 K = tf.keras
 
@@ -90,6 +91,7 @@ def main():
 
             if test_data.get_length() > 0:
                 val_loss, val_acc = 0, 0
+                val_y, val_pred = [], []
 
                 for x_id, x_sent, y in dataset_test:
                     x = (x_id, x_sent)
@@ -97,10 +99,17 @@ def main():
                     val_loss += val_batch_loss
                     val_acc += val_batch_acc * np.shape(y)[0]
 
+                    preds = model.preds_on_batch((x_id, x_sent))
+                    val_pred = val_pred + preds.numpy().tolist()
+                    val_y = val_y + y.numpy().tolist()
+
                 val_loss /= test_data.get_length()
                 val_acc /= test_data.get_length()
+                val_pred = np.argmax(val_pred, axis=1)
 
-                log_string += 'Dev Loss: {:>7.4f} Dev Acc: {:>7.4f} '.format(val_loss, val_acc)
+                log_string += 'Dev Loss: {:>7.4f} Dev Acc: {:>7.4f} F1-Mac: {:>7.4f} F1-Wei: {:>7.4f}'.format(
+                    val_loss, val_acc, f1_score(val_y, val_pred, average='macro'),
+                    f1_score(val_y, val_pred, average='weighted'))
 
             log_string += '({:3.3f} sec/epoch)'.format((time.time() - start) / epochs_trav)
 
