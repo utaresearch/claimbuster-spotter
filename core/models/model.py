@@ -26,6 +26,7 @@ class ClaimSpotterModel(K.models.Model):
     def warm_up(self):
         input_ph_id = K.layers.Input(shape=(FLAGS.cs_max_len,), dtype='int32')
         input_ph_sent = K.layers.Input(shape=(2,), dtype='float32')
+
         self.layer.call((input_ph_id, input_ph_sent), training=False)
 
     def load_custom_model(self):
@@ -81,6 +82,8 @@ class ClaimSpotterLayer(K.layers.Layer):
         training = kwargs.get('training')
         perturb = None if 'perturb' not in kwargs else kwargs.get('perturb')
         get_embedding = -1 if 'get_embedding' not in kwargs else kwargs.get('get_embedding')
+
+        print(get_embedding)
 
         if get_embedding == -1:
             bert_output = self.bert_model(x_id, training=training)
