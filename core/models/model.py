@@ -85,7 +85,7 @@ class ClaimSpotterLayer(K.layers.Layer):
         if not get_embedding:
             bert_output = self.bert_model(x_id, perturb=perturb, training=training)
         else:
-            orig_embed, bert_output = self.bert_model(x_id, perturb=perturb, get_embedding=True, training=training)
+            orig_embed, bert_output = self.bert_model(x_id, perturb=perturb, get_embedding=get_embedding, training=training)
 
         bert_output = tf.concat([bert_output, x_sent], axis=1)
         bert_output = self.dropout_layer(bert_output, training=training)
@@ -125,7 +125,7 @@ class ClaimSpotterLayer(K.layers.Layer):
 
         with tf.GradientTape() as tape:
             with tf.GradientTape() as tape2:
-                orig_embed, logits = self.call(x, training=True, get_embedding=True)
+                orig_embed, logits = self.call(x, training=True, get_embedding=FLAGS.cs_perturb_id)
                 loss = self.compute_ce_loss(y, logits)
 
             perturb = self._compute_perturbation(loss, orig_embed, tape2)

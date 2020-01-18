@@ -262,6 +262,9 @@ class BertEmbeddingsLayer(Layer):
         else:
             embedding_output = tok_embed + seg_embed + pos_embed
 
+        if perturb is not None:
+            embedding_output += perturb
+
         embedding_output = self.layer_norm_layer(embedding_output)
         embedding_output = self.dropout_layer(embedding_output, training=training)
 
