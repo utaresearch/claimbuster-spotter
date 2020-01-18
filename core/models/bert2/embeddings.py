@@ -258,7 +258,7 @@ class BertEmbeddingsLayer(Layer):
             for el in diff:
                 embedding_output += all_embeddings[el]
 
-            #
+            # exit()
         else:
             embedding_output = tok_embed + seg_embed + pos_embed
 
