@@ -233,37 +233,37 @@ class BertEmbeddingsLayer(Layer):
 
         ret_embed = None
 
-        if get_embedding != -1:
-            all_embeddings = {
-                'tok': tok_embed,
-                'seg': seg_embed,
-                'pos': pos_embed
-            }
-            perturbable = [('pos', 'seg', 'tok'), ('pos', 'seg'), ('pos', 'tok'), ('seg', 'tok'), ('pos',), ('seg',),
-                           ('tok',)]
-            cfg = perturbable[get_embedding]
-            print(cfg)
-
-            for el in cfg:
-                if ret_embed is None:
-                    ret_embed = all_embeddings[el]
-                else:
-                    ret_embed += all_embeddings[el]
-
-            embedding_output = ret_embed
-
-            diff = set(cfg).difference(set(perturbable[0]))
-            print(diff)
-
-            for el in diff:
-                embedding_output += all_embeddings[el]
-
-            # exit()
-        else:
-            embedding_output = tok_embed + seg_embed + pos_embed
-
-        if perturb is not None:
-            embedding_output += perturb
+        # if get_embedding != -1:
+        #     all_embeddings = {
+        #         'tok': tok_embed,
+        #         'seg': seg_embed,
+        #         'pos': pos_embed
+        #     }
+        #     perturbable = [('pos', 'seg', 'tok'), ('pos', 'seg'), ('pos', 'tok'), ('seg', 'tok'), ('pos',), ('seg',),
+        #                    ('tok',)]
+        #     cfg = perturbable[get_embedding]
+        #     print(cfg)
+        #
+        #     for el in cfg:
+        #         if ret_embed is None:
+        #             ret_embed = all_embeddings[el]
+        #         else:
+        #             ret_embed += all_embeddings[el]
+        #
+        #     embedding_output = ret_embed
+        #
+        #     diff = set(cfg).difference(set(perturbable[0]))
+        #     print(diff)
+        #
+        #     for el in diff:
+        #         embedding_output += all_embeddings[el]
+        #
+        #     # exit()
+        # else:
+        #     embedding_output = tok_embed + seg_embed + pos_embed
+        #
+        # if perturb is not None:
+        #     embedding_output += perturb
 
         embedding_output = self.layer_norm_layer(embedding_output)
         embedding_output = self.dropout_layer(embedding_output, training=training)
