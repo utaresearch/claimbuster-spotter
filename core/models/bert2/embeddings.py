@@ -244,10 +244,11 @@ class BertEmbeddingsLayer(Layer):
             cfg = perturbable[get_embedding]
             print(cfg)
 
+            changed = False
             for el in cfg:
-                print(el, ret_embed)
-                if ret_embed == 0:
+                if not changed:
                     ret_embed = all_embeddings[el]
+                    changed = True
                 else:
                     ret_embed += all_embeddings[el]
 
