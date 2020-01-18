@@ -203,10 +203,10 @@ class BertEmbeddingsLayer(Layer):
             extra_output = self.extra_word_embeddings_layer(extra_tokens)
             tok_embed = tf.add(token_output,
                                       extra_output * tf.expand_dims(tf.cast(extra_mask, K.floatx()), axis=-1))
-            # embedding_output = tok_embed
+            embedding_output = tok_embed
         else:
             tok_embed = self.word_embeddings_layer(input_ids)
-            # embedding_output = tok_embed
+            embedding_output = tok_embed
 
         # ALBERT: for brightmart/albert_zh weights - project only token embeddings
         if not self.params.project_position_embeddings:
@@ -217,7 +217,7 @@ class BertEmbeddingsLayer(Layer):
         if token_type_ids is not None:
             token_type_ids = tf.cast(token_type_ids, dtype=tf.int32)
             seg_embed = self.token_type_embeddings_layer(token_type_ids)
-            # embedding_output += seg_embed
+            embedding_output += seg_embed
 
         assert self.position_embeddings_layer is not None
         if self.position_embeddings_layer is not None:
@@ -229,7 +229,7 @@ class BertEmbeddingsLayer(Layer):
             broadcast_shape = [1] * (embedding_output.shape.ndims - 2) + [seq_len, emb_size]
             pos_embed = tf.reshape(pos_embeddings, broadcast_shape)
 
-            # embedding_output += pos_embed
+            embedding_output += pos_embed
 
         ret_embed = None
 
