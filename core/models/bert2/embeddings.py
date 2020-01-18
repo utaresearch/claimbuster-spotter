@@ -245,7 +245,7 @@ class BertEmbeddingsLayer(Layer):
             print(cfg)
 
             for el in cfg:
-                print(el)
+                print(el, ret_embed)
                 if ret_embed == 0:
                     ret_embed = all_embeddings[el]
                 else:
