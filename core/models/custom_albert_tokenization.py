@@ -1,4 +1,4 @@
-from core.models.bert2.tokenization.albert_tokenization import encode_ids, preprocess_text
+from .bert2.tokenization.albert_tokenization import encode_ids, preprocess_text
 from ..utils.flags import FLAGS
 import sentencepiece as spm
 import os
