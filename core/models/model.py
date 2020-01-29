@@ -132,7 +132,7 @@ class ClaimSpotterLayer(K.layers.Layer):
             perturb = self._compute_perturbation(loss, orig_embed, tape2)
 
             logits_adv = self.call(x, training=True, perturb=perturb)
-            loss_adv = self.compute_training_loss(y, logits_adv)
+            loss_adv = self.compute_training_loss(y, logits_adv) + FLAGS.lambda * loss
 
         grad = tape.gradient(loss_adv, self.vars_to_train)
         self.optimizer.apply_gradients(zip(grad, self.vars_to_train))

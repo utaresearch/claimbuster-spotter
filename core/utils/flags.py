@@ -58,7 +58,7 @@ flags.DEFINE_float('cs_l2_reg_coeff', 5e-4, 'If val > 0, use L2 Regularization o
 # Adversarial and virtual adversarial training parameters.
 flags.DEFINE_integer('cs_perturb_id', 0, "Index in [('pos', 'seg', 'tok'), ('pos', 'seg'), ('pos', 'tok'), ('seg', 'tok'), ('pos',), ('seg',), ('tok',)] to perturb")
 flags.DEFINE_integer('cs_adv_type', 0, '0 for AT, 1 for VAT')
-flags.DEFINE_float('cs_adv_coeff', 0.5, 'Coefficient of adversarial loss')
+flags.DEFINE_float('cs_lambda', 0.5, 'Coefficient of adversarial loss')
 flags.DEFINE_bool('cs_combine_reg_adv_loss', True, 'Add loss of regular and adversarial loss during training')
 flags.DEFINE_float('cs_perturb_norm_length', 3.0, 'Norm length of adversarial perturbation')
 
