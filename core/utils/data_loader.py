@@ -166,6 +166,7 @@ class DataLoader:
 
             labels[lab] += 1
             dl.append([txt, lab])
+            print(lab)
 
         logging.info('{}: {}'.format(json_loc, labels))
         return dl
