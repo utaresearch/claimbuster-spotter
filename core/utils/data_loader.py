@@ -44,39 +44,13 @@ class Dataset:
 
 class DataLoader:
     def __init__(self):
-        assert FLAGS.cs_num_classes == 2 or FLAGS.cs_num_classes == 3
-
         self.data, self.eval_data, = self.load_ext_data()
-
-        # if FLAGS.cs_use_clef_data and FLAGS.cs_combine_ours_clef_data:
-        #     ours_data, ours_eval = self.load_ext_data(train_data, val_data, test_data)
-        #
-        #     ours_data = self.convert_3_to_2(ours_data)
-        #     ours_eval = self.convert_3_to_2(ours_eval)
-        #
-        #     self.data.x += ours_data.x
-        #     self.data.y += ours_data.y
-        #     self.eval_data.x += ours_eval.x
-        #     self.eval_data.y += ours_eval.y
-
-        # if FLAGS.cs_num_classes == 2 and not FLAGS.cs_use_clef_data:
-        #     self.data = self.convert_3_to_2(self.data)
-        #     self.eval_data = self.convert_3_to_2(self.eval_data)
 
         self.class_weights = self.compute_class_weights()
         logging.info('Class weights computed to be {}'.format(self.class_weights))
 
         self.data.shuffle()
         self.post_process_flags()
-
-    # @staticmethod
-    # def convert_3_to_2(data):
-    #     if FLAGS.cs_alt_two_class_combo:
-    #         data.y = [(0 if data.y[i] == 0 else 1) for i in range(len(data.y))]
-    #     else:
-    #         data.y = [(1 if data.y[i] == 2 else 0) for i in range(len(data.y))]
-    #
-    #     return data
 
     def compute_class_weights(self):
         ret = compute_class_weight('balanced', [z for z in range(FLAGS.cs_num_classes)], self.data.y)
@@ -116,10 +90,10 @@ class DataLoader:
             FLAGS.cs_refresh_data = True
 
         if FLAGS.cs_refresh_data:
-            train_data = DataLoader.parse_json(FLAGS.cs_raw_data_loc) if not FLAGS.cs_use_clef_data else \
-                read_clef_from_file(FLAGS.cs_raw_clef_train_loc)
-            dj_eval_data = DataLoader.parse_json(FLAGS.cs_raw_dj_eval_loc) if not FLAGS.cs_use_clef_data else \
-                read_clef_from_file(FLAGS.cs_raw_clef_test_loc)
+            train_data = (DataLoader.parse_json(FLAGS.cs_raw_data_loc) if not FLAGS.cs_use_clef_data else \
+                read_clef_from_file(FLAGS.cs_raw_clef_train_loc))
+            dj_eval_data = (DataLoader.parse_json(FLAGS.cs_raw_dj_eval_loc) if not FLAGS.cs_use_clef_data else \
+                read_clef_from_file(FLAGS.cs_raw_clef_test_loc))
 
             if not FLAGS.cs_use_clef_data:
                 train_txt = [z[0] for z in train_data]
@@ -183,16 +157,16 @@ class DataLoader:
             temp_data = json.load(f)
 
         dl = []
-        labels = [0, 0, 0]
+        labels = [0 for _ in FLAGS.cs_num_classes]
 
         for el in temp_data:
             lab = int(el["label"])
             txt = el["text"]
 
-            labels[lab + 1] += 1
+            labels[lab] += 1
             dl.append([txt, lab])
 
-        print('{}: {}'.format(json_loc, labels))
+        logging.info('{}: {}'.format(json_loc, labels))
         return dl
 
     @staticmethod
