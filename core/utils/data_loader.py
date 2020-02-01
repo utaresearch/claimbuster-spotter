@@ -90,17 +90,17 @@ class DataLoader:
             FLAGS.cs_refresh_data = True
 
         if FLAGS.cs_refresh_data:
-            train_data = (DataLoader.parse_json(FLAGS.cs_raw_data_loc) if not FLAGS.cs_use_clef_data else \
-                read_clef_from_file(FLAGS.cs_raw_clef_train_loc))
-            dj_eval_data = (DataLoader.parse_json(FLAGS.cs_raw_dj_eval_loc) if not FLAGS.cs_use_clef_data else \
-                read_clef_from_file(FLAGS.cs_raw_clef_test_loc))
+            train_data = (DataLoader.parse_json(FLAGS.cs_raw_data_loc) if not FLAGS.cs_use_clef_data else
+                          read_clef_from_file(FLAGS.cs_raw_clef_train_loc))
+            dj_eval_data = (DataLoader.parse_json(FLAGS.cs_raw_dj_eval_loc) if not FLAGS.cs_use_clef_data else
+                            read_clef_from_file(FLAGS.cs_raw_clef_test_loc))
 
             if not FLAGS.cs_use_clef_data:
                 train_txt = [z[0] for z in train_data]
                 eval_txt = [z[0] for z in dj_eval_data]
 
-                train_lab = [z[1] + 1 for z in train_data]
-                eval_lab = [z[1] + 1 for z in dj_eval_data]
+                train_lab = [z[1] for z in train_data]
+                eval_lab = [z[1] for z in dj_eval_data]
             else:
                 train_txt, train_lab = train_data
                 eval_txt, eval_lab = dj_eval_data
