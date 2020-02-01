@@ -157,7 +157,7 @@ class DataLoader:
             temp_data = json.load(f)
 
         dl = []
-        labels = [0 for _ in FLAGS.cs_num_classes]
+        labels = [0 for _ in range(FLAGS.cs_num_classes)]
 
         for el in temp_data:
             lab = int(el["label"])
