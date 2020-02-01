@@ -53,7 +53,6 @@ class DataLoader:
         self.post_process_flags()
 
     def compute_class_weights(self):
-        print(self.data.y)
         ret = compute_class_weight('balanced', [z for z in range(FLAGS.cs_num_classes)], self.data.y)
 
         if FLAGS.cs_num_classes == 3:
@@ -161,13 +160,11 @@ class DataLoader:
         labels = [0 for _ in range(FLAGS.cs_num_classes)]
 
         for el in temp_data:
-            print(el)
             lab = int(el["label"])
             txt = el["text"]
 
             labels[lab] += 1
             dl.append([txt, lab])
-            print(lab)
 
         logging.info('{}: {}'.format(json_loc, labels))
         return dl
