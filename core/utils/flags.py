@@ -26,7 +26,6 @@ flags.DEFINE_bool('cs_adv_train', False, 'Use adversarial training?')
 
 # Data
 flags.DEFINE_bool('cs_use_clef_data', False, 'Use CLEF data, rather than ClaimBuster')
-flags.DEFINE_bool('cs_combine_ours_clef_data', False, 'Combine CLEF with ClaimBuster data')
 flags.DEFINE_bool('cs_refresh_data', False, 'Re-process ./data/all_data.pickle')
 flags.DEFINE_integer('cs_max_len', 200, 'Maximum length of input')
 flags.DEFINE_bool('cs_remove_stopwords', False, 'Remove stop words (e.g. the, a, etc.)')
@@ -63,7 +62,7 @@ flags.DEFINE_bool('cs_combine_reg_adv_loss', True, 'Add loss of regular and adve
 flags.DEFINE_float('cs_perturb_norm_length', 3.0, 'Norm length of adversarial perturbation')
 
 # Output stats
-flags.DEFINE_integer('cs_num_classes', 3, 'Number of classes for classification (2 combines NFS and UFS)')
+flags.DEFINE_integer('cs_num_classes', 2, 'Number of classes for classification (2 combines NFS and UFS)')
 flags.DEFINE_bool('cs_alt_two_class_combo', False, 'Combine CFS and UFS instead when num_classes=2.')
 
 # Transformer
@@ -104,10 +103,10 @@ FLAGS(clean_argv(sys.argv))
 
 # Locations (must be last due to customization)
 flags.DEFINE_string('cs_model_loc', '{}/{}_pretrain'.format(FLAGS.cs_data_dir, FLAGS.cs_tfm_type), 'Root location of pretrained BERT files.')
-flags.DEFINE_string('cs_raw_data_loc', '{}/data_small.json'.format(FLAGS.cs_data_dir), 'Location of raw data')
-flags.DEFINE_string('cs_raw_dj_eval_loc', '{}/disjoint_2000.json'.format(FLAGS.cs_data_dir), 'Location of raw data')
-flags.DEFINE_string('cs_raw_clef_train_loc', '{}/CT19-T1-Training.csv'.format(FLAGS.cs_data_dir), 'Location of raw CLEF .csv data')
-flags.DEFINE_string('cs_raw_clef_test_loc', '{}/CT19-T1-Test.csv'.format(FLAGS.cs_data_dir), 'Location of raw CLEF .csv data')
+flags.DEFINE_string('cs_raw_data_loc', '{}/two_class/train.json'.format(FLAGS.cs_data_dir), 'Location of raw data')
+flags.DEFINE_string('cs_raw_dj_eval_loc', '{}/two_class/test.json'.format(FLAGS.cs_data_dir), 'Location of raw data')
+flags.DEFINE_string('cs_raw_clef_train_loc', '{}/clef/CT19-T1-Training.csv'.format(FLAGS.cs_data_dir), 'Location of raw CLEF .csv data')
+flags.DEFINE_string('cs_raw_clef_test_loc', '{}/clef/CT19-T1-Test.csv'.format(FLAGS.cs_data_dir), 'Location of raw CLEF .csv data')
 flags.DEFINE_string('cs_prc_data_loc', '{}/all_data.pickle'.format(FLAGS.cs_data_dir), 'Location of saved processed data')
 flags.DEFINE_string('cs_prc_clef_loc', '{}/all_clef_data.pickle'.format(FLAGS.cs_data_dir), 'Location of saved processed CLEF data')
 
@@ -118,7 +117,10 @@ if any(['large' in FLAGS.cs_model_size]):
 	FLAGS.cs_batch_size_reg //= 3
 	FLAGS.cs_batch_size_adv //= 3
 
+FLAGS.cs_prc_data_loc = FLAGS.cs_prc_data_loc[:-7] + '_{}'.format(FLAGS.cs_tfm_type) + '.pickle'
+
 assert FLAGS.cs_tfm_type in ['bert', 'albert']
+assert FLAGS.num_classes == 2, 'FLAGS.num_classes must be 2: 3 class comparisons are deprecated.'
 
 def print_flags():
 	logging.info(FLAGS.flag_values_dict())
