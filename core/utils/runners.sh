@@ -14,3 +14,4 @@ nohup sh -c "python3 train.py --cs_tfm_ft_embed=False --cs_tfm_ft_enc_layers=12 
 
 nohup sh -c "python3 train.py --cs_tfm_ft_embed=False --cs_tfm_ft_enc_layers=10 --cs_perturb_norm_length=5.0 --cs_lambda=0.5 --cs_model_dir=output --cs_gpu=0 --cs_adv_train=False"&>nohup.out&
 nohup sh -c "python3 train.py --cs_tfm_ft_embed=False --cs_tfm_ft_enc_layers=10 --cs_perturb_norm_length=5.0 --cs_lambda=0.5 --cs_model_dir=output1 --cs_gpu=1 --cs_adv_train=True"&>nohup1.out&
+python3 train.py --refresh_data=True
