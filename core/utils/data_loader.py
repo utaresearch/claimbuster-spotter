@@ -61,15 +61,13 @@ class DataLoader:
         return ret
 
     def load_training_data(self):
-        return Dataset(self.data.x, self.data.y, FLAGS.cs_random_state).shuffle()
+        ret = Dataset(self.data.x, self.data.y, FLAGS.cs_random_state)
+        ret.shuffle()
+        return ret
 
     def load_testing_data(self):
-        ret = Dataset([], [], FLAGS.cs_random_state)
-
-        for i in range(FLAGS.cs_test_examples):
-            ret.x.append(self.eval_data.x[i])
-            ret.y.append(self.eval_data.y[i])
-
+        ret = Dataset(self.eval_data.x, self.eval_data.y, FLAGS.cs_random_state)
+        ret.shuffle()
         return ret
 
     def post_process_flags(self):
