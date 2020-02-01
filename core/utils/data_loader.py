@@ -53,6 +53,7 @@ class DataLoader:
         self.post_process_flags()
 
     def compute_class_weights(self):
+        print(self.data.y)
         ret = compute_class_weight('balanced', [z for z in range(FLAGS.cs_num_classes)], self.data.y)
 
         if FLAGS.cs_num_classes == 3:
