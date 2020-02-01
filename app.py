@@ -74,7 +74,7 @@ async def score_text(request, input_text):
     Returns
     -------
     <Response>
-        Returns a response object with the body containing a dictionary containing the `claim`, it's `result`, and the `scores` associated with it.
+        Returns a response object with the body containing a json-encoded dictionary containing the `claim`, it's `result`, and the `scores` associated with it.
 
         `claim` : string
         `result` : string
@@ -100,7 +100,7 @@ async def score_url(request, url):
     Returns
     -------
     <Response>
-        Returns a response object with the body containing a list of dictionaries containing the `claim`, it's `result`, 
+        Returns a response object with the body containing a json-encoded list of dictionaries containing the `claim`, it's `result`, 
         and the `scores` associated with each claim on the web page.
 
         `claim` : string
