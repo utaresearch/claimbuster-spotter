@@ -161,6 +161,7 @@ class DataLoader:
         labels = [0 for _ in range(FLAGS.cs_num_classes)]
 
         for el in temp_data:
+            print(el)
             lab = int(el["label"])
             txt = el["text"]
 
