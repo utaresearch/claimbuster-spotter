@@ -185,7 +185,7 @@ def main():
 
             cur_y, cur_pred = eval_model(test_x, test_y, test_len, res[1])
             agg_y = np.concatenate((agg_y, cur_y))
-            if agg_pred == []:
+            if not agg_pred:
                 agg_pred = cur_pred
             else:
                 agg_pred = np.concatenate((agg_pred, cur_pred))
@@ -200,7 +200,7 @@ def main():
 
         logging.info('Final stats | F1-Mac: {:>.4f} F1-Wei: {:>.4f} nDCG: {:>.4f}'.format(
             f1_mac, f1_wei, ndcg))
-        logging.info(classification_report(agg_y, np.argmax(agg_pred, axis=1), target_names=target_names, digits=4))
+        print(classification_report(agg_y, np.argmax(agg_pred, axis=1), target_names=target_names, digits=4))
     else:
         train_data = data_load.load_training_data()
         test_data = data_load.load_testing_data()
