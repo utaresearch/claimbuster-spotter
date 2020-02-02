@@ -120,6 +120,8 @@ def main():
 
     if FLAGS.cs_k_fold > 1:
         all_data = data_load.load_crossval_data()
+        all_data.x = np.array(all_data.x)
+        all_data.y = np.array(all_data.y)
         logging.info("{} total cross-validation examples".format(all_data.get_length()))
 
         # implement k-fold
