@@ -175,9 +175,9 @@ def main():
             train_len, val_len, test_len = len(train_y), len(val_y), len(test_y)
             print_str = '|     Running k-fold cross-val iteration #{}: {} train {} val {} test     |'.format(
                 iteration + 1, train_len, val_len, test_len)
-            logging.info(''.join(['-' for _ in range(len(print_str))]))
-            logging.info(print_str)
-            logging.info(''.join(['-' for _ in range(len(print_str))]))
+            horz_str = ''.join(['-' for _ in range(len(print_str))])
+            vert_str = '|' + ''.join([' ' for _ in range(len(print_str) - 2)]) + '|'
+            logging.info(horz_str); logging.info(vert_str); logging.info(print_str); logging.info(vert_str); logging.info(horz_str);
             logging.info(train_idx)
             logging.info(test_idx)
 
