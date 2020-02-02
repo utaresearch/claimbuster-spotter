@@ -190,7 +190,10 @@ def main():
             else:
                 agg_pred = np.concatenate((agg_pred, cur_pred))
 
-            logging.info('----- Iteration #{} OK -----'.format(iteration + 1))
+            print_str = '|     Iteration #{} OK     |'.format(iteration + 1)
+            horz_str = ''.join(['-' for _ in range(len(print_str))])
+            vert_str = '|' + ''.join([' ' for _ in range(len(print_str) - 2)]) + '|'
+            logging.info(horz_str); logging.info(vert_str); logging.info(print_str); logging.info(vert_str); logging.info(horz_str);
 
         f1_mac = f1_score(agg_y, np.argmax(agg_pred, axis=1), average='macro')
         f1_wei = f1_score(agg_y, np.argmax(agg_pred, axis=1), average='weighted')
