@@ -173,9 +173,11 @@ def main():
             train_x, val_x, train_y, val_y = train_test_split(train_x, train_y, test_size=0.1)
 
             train_len, val_len, test_len = len(train_y), len(val_y), len(test_y)
-
-            logging.info('----- Running k-fold cross-val iteration #{}: {} train {} val {} test -----'.format(
-                iteration + 1, train_len, val_len, test_len))
+            print_str = '|     Running k-fold cross-val iteration #{}: {} train {} val {} test     |'.format(
+                iteration + 1, train_len, val_len, test_len)
+            logging.info(''.join(['-' for _ in range(len(print_str))]))
+            logging.info(print_str)
+            logging.info(''.join(['-' for _ in range(len(print_str))]))
             logging.info(train_idx)
             logging.info(test_idx)
 
