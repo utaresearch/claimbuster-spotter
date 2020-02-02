@@ -33,7 +33,7 @@ class ClaimSpotterModel(K.models.Model):
         model_dir = (loc if loc is not None else FLAGS.cs_model_dir)
 
         if any('.ckpt' in x for x in os.listdir(model_dir)):
-            load_location = FLAGS.model_dir
+            load_location = model_dir
         else:
             folders = [x for x in os.listdir(model_dir) if os.path.isdir(os.path.join(model_dir, x))]
             load_location = os.path.join(model_dir, sorted(folders)[-1])
