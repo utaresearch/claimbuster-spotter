@@ -45,6 +45,7 @@ class Dataset:
 class DataLoader:
     def __init__(self):
         self.data, self.eval_data = (self.load_ext_data() if FLAGS.cs_k_fold <= 1 else self.load_kfold_data())
+        print(self.data.y)
 
         self.class_weights = self.compute_class_weights()
         logging.info('Class weights computed to be {}'.format(self.class_weights))
@@ -145,11 +146,8 @@ class DataLoader:
         if FLAGS.cs_refresh_data:
             train_data = DataLoader.parse_json(FLAGS.cs_raw_kfold_data_loc)
 
-            if not FLAGS.cs_use_clef_data:
-                train_txt = [z[0] for z in train_data]
-                train_lab = [z[1] for z in train_data]
-            else:
-                train_txt, train_lab = train_data
+            train_txt = [z[0] for z in train_data]
+            train_lab = [z[1] for z in train_data]
 
             logging.info('Loading preprocessing dependencies')
             transf.load_dependencies()
