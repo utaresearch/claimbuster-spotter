@@ -38,7 +38,7 @@ class ClaimSpotterModel(K.models.Model):
             folders = [x for x in os.listdir(model_dir) if os.path.isdir(os.path.join(model_dir, x))]
             load_location = os.path.join(model_dir, sorted(folders)[-1])
 
-        last_epoch = int(load_location.split('/')[-1])
+        last_epoch = int(load_location.split('/')[-1].split('_')[-1])
         load_location = os.path.join(load_location, FLAGS.cs_model_ckpt)
         self.load_weights(load_location)
 
