@@ -126,10 +126,10 @@ def main():
         kf = KFold(n_splits=FLAGS.cs_k_fold, random_state=FLAGS.cs_random_state, shuffle=True)
         kf.get_n_splits(all_data.x)
         for train_idx, test_idx in kf.split(all_data.x):
-            train_x, test_x = all_data.x[train_idx], all_data.x[test_idx]
-            train_y, test_y = all_data.y[train_idx], all_data.y[test_idx]
             logging.info(train_idx)
             logging.info(test_idx)
+            train_x, test_x = all_data.x[train_idx], all_data.x[test_idx]
+            train_y, test_y = all_data.y[train_idx], all_data.y[test_idx]
             # train_model(train_x, train_y, train_len, test_x, test_y, test_len, class_weights)
 
 
