@@ -53,12 +53,7 @@ class DataLoader:
         self.post_process_flags()
 
     def compute_class_weights(self):
-        ret = compute_class_weight('balanced', [z for z in range(FLAGS.cs_num_classes)], self.data.y)
-
-        if FLAGS.cs_num_classes == 3:
-            ret[1] /= 4
-
-        return ret
+        return compute_class_weight('balanced', [z for z in range(FLAGS.cs_num_classes)], self.data.y)
 
     def load_training_data(self):
         ret = Dataset(self.data.x, self.data.y, FLAGS.cs_random_state)

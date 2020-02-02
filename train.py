@@ -131,6 +131,15 @@ def main():
             train_x, test_x = all_data.x[train_idx], all_data.x[test_idx]
             train_y, test_y = all_data.y[train_idx], all_data.y[test_idx]
             # train_model(train_x, train_y, train_len, test_x, test_y, test_len, class_weights)
+    else:
+        train_data = data_load.load_training_data()
+        test_data = data_load.load_testing_data()
+
+        logging.info("{} training examples".format(train_data.get_length()))
+        logging.info("{} validation examples".format(test_data.get_length()))
+
+        train_model(train_data.x, train_data.y, train_data.get_length(),
+                    test_data.x, test_data.y, test_data.get_length(), data_load.class_weights)
 
 
 if __name__ == '__main__':
