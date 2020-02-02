@@ -42,8 +42,9 @@ class ClaimSpotterModel(K.models.Model):
 
         return last_epoch
 
-    def save_custom_model(self, epoch):
-        self.save_weights(os.path.join(FLAGS.cs_model_dir, str(epoch + 1).zfill(3), FLAGS.cs_model_ckpt))
+    def save_custom_model(self, epoch, fold):
+        self.save_weights(os.path.join(FLAGS.cs_model_dir, 'fold_{}_{}'.format(
+            str(fold + 1).zfill(2),str(epoch + 1).zfill(3)), FLAGS.cs_model_ckpt))
 
     def train_on_batch(self, x, y):
         return self.layer.train_on_batch(x, y)

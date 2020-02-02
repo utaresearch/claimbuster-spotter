@@ -15,7 +15,7 @@ from sklearn.model_selection import KFold
 K = tf.keras
 
 
-def train_model(train_x, train_y, train_len, test_x, test_y, test_len, class_weights):
+def train_model(train_x, train_y, train_len, test_x, test_y, test_len, class_weights, fold):
     dataset_train = tf.data.Dataset.from_tensor_slices(([x[0] for x in train_x], [x[1] for x in train_x], train_y)).shuffle(
         buffer_size=train_len).batch(FLAGS.cs_batch_size_reg if not FLAGS.cs_adv_train else FLAGS.cs_batch_size_adv)
     dataset_test = tf.data.Dataset.from_tensor_slices(([x[0] for x in test_x], [x[1] for x in test_x], test_y)).shuffle(
@@ -93,7 +93,7 @@ def train_model(train_x, train_y, train_len, test_x, test_y, test_len, class_wei
             epochs_trav = 0
 
         if epoch % FLAGS.cs_model_save_interval == 0:
-            model.save_custom_model(epoch)
+            model.save_custom_model(epoch, fold)
 
 
 def main():
@@ -132,11 +132,11 @@ def main():
             train_x, test_x = all_data.x[train_idx], all_data.x[test_idx]
             train_y, test_y = all_data.y[train_idx], all_data.y[test_idx]
 
-            logging.info('--- Running k-fold cross-val iteration #{}: {} train {} test ---'.format(
+            logging.info('----- Running k-fold cross-val iteration #{}: {} train {} test -----'.format(
                 iteration + 1, len(train_idx), len(test_idx)))
             train_model(train_x, train_y, len(train_idx), test_x, test_y, len(test_idx),
-                        DataLoader.compute_class_weights_fold(train_y))
-            logging.info('--- Iteration #{} OK ---'.format(iteration))
+                        DataLoader.compute_class_weights_fold(train_y), iteration)
+            logging.info('----- Iteration #{} OK -----'.format(iteration))
     else:
         train_data = data_load.load_training_data()
         test_data = data_load.load_testing_data()
@@ -145,7 +145,7 @@ def main():
         logging.info("{} validation examples".format(test_data.get_length()))
 
         train_model(train_data.x, train_data.y, train_data.get_length(),
-                    test_data.x, test_data.y, test_data.get_length(), data_load.class_weights)
+                    test_data.x, test_data.y, test_data.get_length(), data_load.class_weights, fold=1)
 
 
 if __name__ == '__main__':
