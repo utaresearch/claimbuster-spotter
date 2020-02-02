@@ -179,6 +179,7 @@ def main():
             logging.info(train_idx)
             logging.info(test_idx)
 
+            print(train_y, val_y, test_y)
             res = train_model(train_x, train_y, train_len, val_x, val_y, val_len,
                               DataLoader.compute_class_weights_fold(train_y), iteration)
 
