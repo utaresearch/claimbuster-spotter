@@ -52,7 +52,7 @@ flags.DEFINE_integer('cs_train_steps', 10, 'Number of epochs to run.')
 flags.DEFINE_float('cs_lr', 5e-5, 'Learning rate while during optimiation.')
 
 # Regularization
-flags.DEFINE_float('cs_l2_reg_coeff', 5e-4, 'If val > 0, use L2 Regularization on weights in graph')
+flags.DEFINE_float('cs_l2_reg_coeff', 0, 'If val > 0, use L2 Regularization on weights in graph')
 
 # Adversarial and virtual adversarial training parameters.
 flags.DEFINE_integer('cs_perturb_id', 0, "Index in [('pos', 'seg', 'tok'), ('pos', 'seg'), ('pos', 'tok'), ('seg', 'tok'), ('pos',), ('seg',), ('tok',)] to perturb")
@@ -78,6 +78,7 @@ flags.DEFINE_float('cs_kp_tfm_hidden', 0.8, 'Keep probability of hidden dropout 
 flags.DEFINE_string('cs_model_size', 'base', 'Version of BERT to use: base, large, or large_wwm')
 
 # Training
+flags.DEFINE_integer('cs_k_fold', 5, 'Number of folds for k-fold cross validation')
 flags.DEFINE_bool('cs_adam', True, 'Adam or RMSProp if False')
 flags.DEFINE_bool('cs_restore_and_continue', False, 'Restore previous training session and continue')
 flags.DEFINE_integer('cs_batch_size_reg', 24, 'Size of the batch.')

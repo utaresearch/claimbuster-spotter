@@ -70,6 +70,11 @@ class DataLoader:
         ret.shuffle()
         return ret
 
+    def load_crossval_data(self):
+        ret = Dataset(self.data.x + self.eval_data.x, self.data.y + self.eval_data.y, FLAGS.cs_random_state)
+        ret.shuffle()
+        return ret
+
     def post_process_flags(self):
         FLAGS.cs_train_examples = self.data.get_length()
         FLAGS.cs_test_examples = self.eval_data.get_length()
