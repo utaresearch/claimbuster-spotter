@@ -45,7 +45,6 @@ class Dataset:
 class DataLoader:
     def __init__(self):
         self.data, self.eval_data = (self.load_ext_data() if FLAGS.cs_k_fold <= 1 else self.load_kfold_data())
-        print(self.data.y)
 
         self.class_weights = self.compute_class_weights()
         logging.info('Class weights computed to be {}'.format(self.class_weights))
