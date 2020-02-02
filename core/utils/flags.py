@@ -104,6 +104,7 @@ FLAGS(clean_argv(sys.argv))
 
 # Locations (must be last due to customization)
 flags.DEFINE_string('cs_model_loc', '{}/{}_pretrain'.format(FLAGS.cs_data_dir, FLAGS.cs_tfm_type), 'Root location of pretrained BERT files.')
+flags.DEFINE_string('cs_raw_kfold_data_loc', '{}/two_class/kfold_20ncs.json'.format(FLAGS.cs_data_dir), 'Location of raw data for k-fold cross validation')
 flags.DEFINE_string('cs_raw_data_loc', '{}/two_class/train.json'.format(FLAGS.cs_data_dir), 'Location of raw data')
 flags.DEFINE_string('cs_raw_dj_eval_loc', '{}/two_class/test.json'.format(FLAGS.cs_data_dir), 'Location of raw data')
 flags.DEFINE_string('cs_raw_clef_train_loc', '{}/clef/CT19-T1-Training.csv'.format(FLAGS.cs_data_dir), 'Location of raw CLEF .csv data')

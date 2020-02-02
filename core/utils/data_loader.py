@@ -44,7 +44,7 @@ class Dataset:
 
 class DataLoader:
     def __init__(self):
-        self.data, self.eval_data = self.load_ext_data()
+        self.data, self.eval_data = (self.load_ext_data() if FLAGS.cs_k_fold <= 1 else self.load_kfold_data())
 
         self.class_weights = self.compute_class_weights()
         logging.info('Class weights computed to be {}'.format(self.class_weights))
@@ -70,9 +70,8 @@ class DataLoader:
         return ret
 
     def load_crossval_data(self):
-        ret = Dataset(self.data.x + self.eval_data.x, self.data.y + self.eval_data.y, FLAGS.cs_random_state)
+        ret = Dataset(self.data.x, self.data.y, FLAGS.cs_random_state)
         ret.shuffle()
-
         return ret
 
     def post_process_flags(self):
@@ -135,6 +134,44 @@ class DataLoader:
                 train_data, eval_data = pickle.load(f)
 
         return train_data, eval_data
+
+    @staticmethod
+    def load_kfold_data():
+        data_loc = FLAGS.cs_prc_data_loc
+
+        if not os.path.isfile(data_loc):
+            FLAGS.cs_refresh_data = True
+
+        if FLAGS.cs_refresh_data:
+            train_data = DataLoader.parse_json(FLAGS.cs_raw_kfold_data_loc)
+
+            if not FLAGS.cs_use_clef_data:
+                train_txt = [z[0] for z in train_data]
+                train_lab = [z[1] for z in train_data]
+            else:
+                train_txt, train_lab = train_data
+
+            logging.info('Loading preprocessing dependencies')
+            transf.load_dependencies()
+
+            logging.info('Processing data')
+            train_txt, _, train_sent = transf.process_dataset(train_txt)
+
+            train_features, _ = DataLoader.process_text_for_transformers(train_txt, [])
+            train_features = DataLoader.convert_data_to_tensorflow_format(train_features)
+
+            train_data = Dataset(list(map(list, zip(train_features.tolist(), train_sent))), train_lab,
+                                 random_state=FLAGS.cs_random_state)
+
+            with open(data_loc, 'wb') as f:
+                pickle.dump(train_data, f)
+            logging.info('Refreshed data, successfully dumped at {}'.format(data_loc))
+        else:
+            logging.info('Restoring data from {}'.format(data_loc))
+            with open(data_loc, 'rb') as f:
+                train_data = pickle.load(f)
+
+        return train_data, None
 
     @staticmethod
     def convert_data_to_tensorflow_format(features):
