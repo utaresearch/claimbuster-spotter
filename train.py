@@ -10,7 +10,7 @@ import tensorflow as tf
 import numpy as np
 from core.models.model import ClaimSpotterModel
 from sklearn.metrics import f1_score
-from sklearn.model_selection import KFold
+from sklearn.model_selection import KFold, train_test_split
 
 K = tf.keras
 
@@ -131,12 +131,15 @@ def main():
             logging.info(test_idx)
             train_x, test_x = all_data.x[train_idx], all_data.x[test_idx]
             train_y, test_y = all_data.y[train_idx], all_data.y[test_idx]
+            train_x, val_x, train_y, val_y = train_test_split(train_x, train_y, test_size=0.1)
 
-            logging.info('----- Running k-fold cross-val iteration #{}: {} train {} test -----'.format(
-                iteration + 1, len(train_idx), len(test_idx)))
-            train_model(train_x, train_y, len(train_idx), test_x, test_y, len(test_idx),
+            train_len, val_len, test_len = len(train_y), len(val_y), len(test_y)
+
+            logging.info('----- Running k-fold cross-val iteration #{}: {} train {} val {} test -----'.format(
+                iteration + 1, train_len, val_len, test_len))
+            train_model(train_x, train_y, train_len, val_x, val_y, val_len,
                         DataLoader.compute_class_weights_fold(train_y), iteration)
-            logging.info('----- Iteration #{} OK -----'.format(iteration))
+            logging.info('----- Iteration #{} OK -----'.format(iteration + 1))
     else:
         train_data = data_load.load_training_data()
         test_data = data_load.load_testing_data()
