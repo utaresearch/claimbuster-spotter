@@ -9,13 +9,16 @@ from absl import logging
 import tensorflow as tf
 import numpy as np
 from core.models.model import ClaimSpotterModel
-from sklearn.metrics import f1_score
+from sklearn.metrics import f1_score, classification_report
 from sklearn.model_selection import KFold, train_test_split
+from core.utils.compute_ndcg import compute_ndcg
 
 K = tf.keras
 
 
 def train_model(train_x, train_y, train_len, test_x, test_y, test_len, class_weights, fold):
+    assert test_len > 0
+
     dataset_train = tf.data.Dataset.from_tensor_slices(([x[0] for x in train_x], [x[1] for x in train_x], train_y)).shuffle(
         buffer_size=train_len).batch(FLAGS.cs_batch_size_reg if not FLAGS.cs_adv_train else FLAGS.cs_batch_size_adv)
     dataset_test = tf.data.Dataset.from_tensor_slices(([x[0] for x in test_x], [x[1] for x in test_x], test_y)).shuffle(
@@ -40,7 +43,9 @@ def train_model(train_x, train_y, train_len, test_x, test_y, test_len, class_wei
 
     logging.info("Starting{}training...".format(' ' if not FLAGS.cs_adv_train else ' adversarial '))
 
+    aggregated_performance = []
     epochs_trav = 0
+
     for epoch in range(start_epoch, end_epoch, 1):
         epochs_trav += 1
         epoch_loss, epoch_acc = 0, 0
@@ -63,27 +68,27 @@ def train_model(train_x, train_y, train_len, test_x, test_y, test_len, class_wei
         if epoch % FLAGS.cs_stat_print_interval == 0:
             log_string = 'Epoch {:>3} Loss: {:>7.4} Acc: {:>7.4f}% '.format(epoch + 1, epoch_loss, epoch_acc * 100)
 
-            if test_len > 0:
-                val_loss, val_acc = 0, 0
-                val_y, val_pred = [], []
+            val_loss, val_acc = 0, 0
+            val_y, val_pred = [], []
 
-                for x_id, x_sent, y in dataset_test:
-                    x = (x_id, x_sent)
-                    val_batch_loss, val_batch_acc = model.stats_on_batch(x, y)
-                    val_loss += val_batch_loss
-                    val_acc += val_batch_acc * np.shape(y)[0]
+            for x_id, x_sent, y in dataset_test:
+                x = (x_id, x_sent)
+                val_batch_loss, val_batch_acc = model.stats_on_batch(x, y)
+                val_loss += val_batch_loss
+                val_acc += val_batch_acc * np.shape(y)[0]
 
-                    preds = model.preds_on_batch((x_id, x_sent))
-                    val_pred = val_pred + preds.numpy().tolist()
-                    val_y = val_y + y.numpy().tolist()
+                preds = model.preds_on_batch((x_id, x_sent))
+                val_pred = val_pred + preds.numpy().tolist()
+                val_y = val_y + y.numpy().tolist()
 
-                val_loss /= test_len
-                val_acc /= test_len
-                val_pred = np.argmax(val_pred, axis=1)
+            val_loss /= test_len
+            val_acc /= test_len
+            val_pred = np.argmax(val_pred, axis=1)
+            f1_mac = f1_score(val_y, val_pred, average='macro')
+            f1_wei = f1_score(val_y, val_pred, average='weighted')
 
-                log_string += 'Dev Loss: {:>7.4f} Dev Acc: {:>7.4f} F1-Mac: {:>7.4f} F1-Wei: {:>7.4f}'.format(
-                    val_loss, val_acc, f1_score(val_y, val_pred, average='macro'),
-                    f1_score(val_y, val_pred, average='weighted'))
+            log_string += 'Dev Loss: {:>7.4f} Dev Acc: {:>7.4f} F1-Mac: {:>7.4f} F1-Wei: {:>7.4f}'.format(
+                val_loss, val_acc, f1_mac, f1_wei)
 
             log_string += '({:3.3f} sec/epoch)'.format((time.time() - start) / epochs_trav)
 
@@ -94,6 +99,40 @@ def train_model(train_x, train_y, train_len, test_x, test_y, test_len, class_wei
 
         if epoch % FLAGS.cs_model_save_interval == 0:
             model.save_custom_model(epoch, fold)
+            aggregated_performance.append((f1_wei, fold, epoch))
+
+    return list(sorted(aggregated_performance, key=lambda x: x[0], reverse=True))[0]
+
+
+def eval_model(test_x, test_y, test_len, class_weights, model_loc):
+    dataset_test = tf.data.Dataset.from_tensor_slices(
+        ([x[0] for x in test_x], [x[1] for x in test_x], test_y)).shuffle(
+        buffer_size=test_len).batch(FLAGS.cs_batch_size_reg)
+
+    logging.info("Warming up...")
+
+    model = ClaimSpotterModel(cls_weights=class_weights)
+    model.warm_up()
+
+    logging.info('Attempting to restore weights from {}'.format(model_loc))
+    model.load_custom_model(loc=model_loc)
+    logging.info('Restore successful')
+
+    logging.info("Starting evaluation...")
+
+    all_y, all_pred = [], []
+
+    pbar = tqdm(total=math.ceil(test_len / FLAGS.cs_batch_size_reg))
+    for x_id, x_sent, y in dataset_test:
+        preds = model.preds_on_batch((x_id, x_sent))
+        all_pred = all_pred + list(preds.numpy())
+        all_y = all_y + list(y.numpy())
+
+        pbar.update(1)
+    pbar.close()
+
+    all_pred_argmax = np.argmax(all_pred, axis=1)
+    return all_y, all_pred_argmax
 
 
 def main():
@@ -120,15 +159,15 @@ def main():
 
     if FLAGS.cs_k_fold > 1:
         all_data = data_load.load_crossval_data()
-        all_data.x = np.array(all_data.x)
-        all_data.y = np.array(all_data.y)
+        all_data.x = np.array(all_data.x[:10])  # @TODO CHANGE WHEN NOT DUMMY
+        all_data.y = np.array(all_data.y[:10])
         logging.info("{} total cross-validation examples".format(all_data.get_length()))
 
-        kf = KFold(n_splits=FLAGS.cs_k_fold, random_state=FLAGS.cs_random_state, shuffle=True)
+        kf = KFold(n_splits=FLAGS.cs_k_fold)
         kf.get_n_splits(all_data.x)
+        agg_y, agg_pred = [], []
+
         for iteration, (train_idx, test_idx) in enumerate(kf.split(all_data.x)):
-            logging.info(train_idx)
-            logging.info(test_idx)
             train_x, test_x = all_data.x[train_idx], all_data.x[test_idx]
             train_y, test_y = all_data.y[train_idx], all_data.y[test_idx]
             train_x, val_x, train_y, val_y = train_test_split(train_x, train_y, test_size=0.1)
@@ -137,9 +176,28 @@ def main():
 
             logging.info('----- Running k-fold cross-val iteration #{}: {} train {} val {} test -----'.format(
                 iteration + 1, train_len, val_len, test_len))
-            train_model(train_x, train_y, train_len, val_x, val_y, val_len,
-                        DataLoader.compute_class_weights_fold(train_y), iteration)
+            logging.info(train_idx)
+            logging.info(test_idx)
+
+            res = train_model(train_x, train_y, train_len, val_x, val_y, val_len,
+                              DataLoader.compute_class_weights_fold(train_y), iteration)
+
+            cur_y, cur_pred = eval_model(test_x, test_y, test_len, DataLoader.compute_class_weights_fold(test_y),
+                                         os.path.join(FLAGS.cs_model_dir, 'fold_{}_{}'.format(res[1], res[2])))
+            agg_y = agg_y + cur_y
+            agg_pred = agg_pred + cur_pred
+
             logging.info('----- Iteration #{} OK -----'.format(iteration + 1))
+
+        f1_mac = f1_score(agg_y, agg_pred, average='macro')
+        f1_wei = f1_score(agg_y, agg_pred, average='weighted')
+        ndcg = compute_ndcg(agg_y, [x[FLAGS.cs_num_classes - 1] for x in agg_pred])
+
+        target_names = ['NFS/UFS', 'CFS']
+
+        print('Final stats | F1-Mac: {:>.4f} F1-Wei: {:>.4f} nDCG: {:>.4f}'.format(
+            f1_mac, f1_wei, ndcg))
+        print(classification_report(agg_y, agg_pred, target_names=target_names, digits=4))
     else:
         train_data = data_load.load_training_data()
         test_data = data_load.load_testing_data()

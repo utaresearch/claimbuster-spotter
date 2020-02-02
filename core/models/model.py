@@ -29,12 +29,14 @@ class ClaimSpotterModel(K.models.Model):
 
         self.layer.call((input_ph_id, input_ph_sent), training=False)
 
-    def load_custom_model(self):
-        if any('.ckpt' in x for x in os.listdir(FLAGS.cs_model_dir)):
-            load_location = FLAGS.cs_model_dir
+    def load_custom_model(self, loc=None):
+        model_dir = (loc if loc is not None else FLAGS.cs_model_dir)
+
+        if any('.ckpt' in x for x in os.listdir(model_dir)):
+            load_location = FLAGS.model_dir
         else:
-            folders = [x for x in os.listdir(FLAGS.cs_model_dir) if os.path.isdir(os.path.join(FLAGS.cs_model_dir, x))]
-            load_location = os.path.join(FLAGS.cs_model_dir, sorted(folders)[-1])
+            folders = [x for x in os.listdir(model_dir) if os.path.isdir(os.path.join(model_dir, x))]
+            load_location = os.path.join(model_dir, sorted(folders)[-1])
 
         last_epoch = int(load_location.split('/')[-1])
         load_location = os.path.join(load_location, FLAGS.cs_model_ckpt)

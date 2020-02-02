@@ -122,6 +122,7 @@ FLAGS.cs_prc_data_loc = FLAGS.cs_prc_data_loc[:-7] + '_{}'.format(FLAGS.cs_tfm_t
 
 assert FLAGS.cs_tfm_type in ['bert', 'albert']
 assert FLAGS.cs_num_classes == 2, 'FLAGS.cs_num_classes must be 2: 3 class comparisons are deprecated.'
+assert FLAGS.cs_stat_print_interval % FLAGS.cs_model_save_interval == 0
 
 def print_flags():
 	logging.info(FLAGS.flag_values_dict())
