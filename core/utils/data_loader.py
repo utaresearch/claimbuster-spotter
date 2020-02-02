@@ -50,7 +50,6 @@ class DataLoader:
         logging.info('Class weights computed to be {}'.format(self.class_weights))
 
         self.data.shuffle()
-        self.post_process_flags()
 
     def compute_class_weights(self):
         return compute_class_weight('balanced', [z for z in range(FLAGS.cs_num_classes)], self.data.y)
