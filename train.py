@@ -104,14 +104,14 @@ def train_model(train_x, train_y, train_len, test_x, test_y, test_len, class_wei
     return list(sorted(aggregated_performance, key=lambda x: x[0], reverse=True))[0]
 
 
-def eval_model(test_x, test_y, test_len, class_weights, model_loc):
+def eval_model(test_x, test_y, test_len, model_loc):
     dataset_test = tf.data.Dataset.from_tensor_slices(
         ([x[0] for x in test_x], [x[1] for x in test_x], test_y)).shuffle(
         buffer_size=test_len).batch(FLAGS.cs_batch_size_reg)
 
     logging.info("Warming up...")
 
-    model = ClaimSpotterModel(cls_weights=class_weights)
+    model = ClaimSpotterModel()
     model.warm_up()
 
     logging.info('Attempting to restore weights from {}'.format(model_loc))
@@ -183,7 +183,7 @@ def main():
             res = train_model(train_x, train_y, train_len, val_x, val_y, val_len,
                               DataLoader.compute_class_weights_fold(train_y), iteration)
 
-            cur_y, cur_pred = eval_model(test_x, test_y, test_len, DataLoader.compute_class_weights_fold(test_y),
+            cur_y, cur_pred = eval_model(test_x, test_y, test_len,
                                          os.path.join(FLAGS.cs_model_dir, 'fold_{}_{}'.format(res[1], res[2])))
             agg_y = agg_y + cur_y
             agg_pred = agg_pred + cur_pred
