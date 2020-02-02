@@ -75,11 +75,6 @@ class DataLoader:
         ret.shuffle()
         return ret
 
-    def post_process_flags(self):
-        FLAGS.cs_train_examples = self.data.get_length()
-        FLAGS.cs_test_examples = self.eval_data.get_length()
-        FLAGS.cs_total_examples = FLAGS.cs_train_examples + FLAGS.cs_test_examples
-
     @staticmethod
     def load_ext_data():
         def read_clef_from_file(loc):

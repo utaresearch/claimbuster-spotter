@@ -38,9 +38,6 @@ flags.DEFINE_integer('cs_stat_print_interval', 1, 'Numbers of epochs before stat
 flags.DEFINE_integer('cs_model_save_interval', 1, 'Numbers of epochs before model is saved again')
 
 # Data v2
-flags.DEFINE_integer('cs_total_examples', None, 'Total number of examples')
-flags.DEFINE_integer('cs_train_examples', None, 'Number of training examples')
-flags.DEFINE_integer('cs_test_examples', None, 'Number of testing examples')
 flags.DEFINE_integer('cs_random_state', 59, 'State of pseudo-randomness')
 
 # Model architecture
