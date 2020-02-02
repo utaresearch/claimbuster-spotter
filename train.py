@@ -183,10 +183,8 @@ def main():
                               DataLoader.compute_class_weights_fold(train_y), iteration)
 
             cur_y, cur_pred = eval_model(test_x, test_y, test_len, res[1])
-            print(agg_y, cur_y, agg_pred, cur_pred)
-
-            agg_y = agg_y + cur_y
-            agg_pred = agg_pred + cur_pred
+            agg_y = np.concatenate(agg_y, cur_y)
+            agg_pred = np.concatenate(agg_pred, cur_pred)
 
             logging.info('----- Iteration #{} OK -----'.format(iteration + 1))
 
