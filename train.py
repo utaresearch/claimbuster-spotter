@@ -98,8 +98,8 @@ def train_model(train_x, train_y, train_len, test_x, test_y, test_len, class_wei
             epochs_trav = 0
 
         if epoch % FLAGS.cs_model_save_interval == 0:
-            model.save_custom_model(epoch, fold)
-            aggregated_performance.append((f1_wei, fold, epoch))
+            loc = model.save_custom_model(epoch, fold)
+            aggregated_performance.append((f1_wei, loc))
 
     return list(sorted(aggregated_performance, key=lambda x: x[0], reverse=True))[0]
 
@@ -179,12 +179,10 @@ def main():
             logging.info(train_idx)
             logging.info(test_idx)
 
-            print(train_y, val_y, test_y)
             res = train_model(train_x, train_y, train_len, val_x, val_y, val_len,
                               DataLoader.compute_class_weights_fold(train_y), iteration)
 
-            cur_y, cur_pred = eval_model(test_x, test_y, test_len,
-                                         os.path.join(FLAGS.cs_model_dir, 'fold_{}_{}'.format(res[1], res[2])))
+            cur_y, cur_pred = eval_model(test_x, test_y, test_len, res[1])
             agg_y = agg_y + cur_y
             agg_pred = agg_pred + cur_pred
 
