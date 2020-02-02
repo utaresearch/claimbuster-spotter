@@ -45,8 +45,9 @@ class ClaimSpotterModel(K.models.Model):
         return last_epoch
 
     def save_custom_model(self, epoch, fold):
-        loc = os.path.join(FLAGS.cs_model_dir, 'fold_{}_{}'.format(str(fold + 1).zfill(2), str(epoch + 1).zfill(3)))
-        self.save_weights(loc, FLAGS.cs_model_ckpt)
+        loc = os.path.join(FLAGS.cs_model_dir, 'fold_{}_{}'.format(str(fold + 1).zfill(2), str(epoch + 1).zfill(3)),
+                           FLAGS.cs_model_ckpt)
+        self.save_weights(loc)
 
         return loc
 
