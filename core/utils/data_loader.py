@@ -44,7 +44,7 @@ class Dataset:
 
 class DataLoader:
     def __init__(self):
-        self.data, self.eval_data, = self.load_ext_data()
+        self.data, self.eval_data = self.load_ext_data()
 
         self.class_weights = self.compute_class_weights()
         logging.info('Class weights computed to be {}'.format(self.class_weights))
@@ -54,6 +54,10 @@ class DataLoader:
 
     def compute_class_weights(self):
         return compute_class_weight('balanced', [z for z in range(FLAGS.cs_num_classes)], self.data.y)
+
+    @staticmethod
+    def compute_class_weights_fold(y_list):
+        return compute_class_weight('balanced', [z for z in range(FLAGS.cs_num_classes)], y_list)
 
     def load_training_data(self):
         ret = Dataset(self.data.x, self.data.y, FLAGS.cs_random_state)
@@ -68,6 +72,7 @@ class DataLoader:
     def load_crossval_data(self):
         ret = Dataset(self.data.x + self.eval_data.x, self.data.y + self.eval_data.y, FLAGS.cs_random_state)
         ret.shuffle()
+
         return ret
 
     def post_process_flags(self):

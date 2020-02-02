@@ -124,15 +124,19 @@ def main():
         all_data.y = np.array(all_data.y)
         logging.info("{} total cross-validation examples".format(all_data.get_length()))
 
-        # implement k-fold
         kf = KFold(n_splits=FLAGS.cs_k_fold, random_state=FLAGS.cs_random_state, shuffle=True)
         kf.get_n_splits(all_data.x)
-        for train_idx, test_idx in kf.split(all_data.x):
+        for iteration, train_idx, test_idx in enumerate(kf.split(all_data.x)):
             logging.info(train_idx)
             logging.info(test_idx)
             train_x, test_x = all_data.x[train_idx], all_data.x[test_idx]
             train_y, test_y = all_data.y[train_idx], all_data.y[test_idx]
-            # train_model(train_x, train_y, train_len, test_x, test_y, test_len, class_weights)
+
+            logging.info('--- Running k-fold cross-val iteration #{}: {} train {} test ---'.format(
+                iteration + 1, len(train_idx), len(test_idx)))
+            train_model(train_x, train_y, len(train_idx), test_x, test_y, len(test_idx),
+                        DataLoader.compute_class_weights_fold(train_y))
+            logging.info('--- Iteration #{} OK ---'.format(iteration))
     else:
         train_data = data_load.load_training_data()
         test_data = data_load.load_testing_data()
