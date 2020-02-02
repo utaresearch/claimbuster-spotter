@@ -126,7 +126,7 @@ def main():
 
         kf = KFold(n_splits=FLAGS.cs_k_fold, random_state=FLAGS.cs_random_state, shuffle=True)
         kf.get_n_splits(all_data.x)
-        for iteration, train_idx, test_idx in enumerate(kf.split(all_data.x)):
+        for iteration, (train_idx, test_idx) in enumerate(kf.split(all_data.x)):
             logging.info(train_idx)
             logging.info(test_idx)
             train_x, test_x = all_data.x[train_idx], all_data.x[test_idx]
