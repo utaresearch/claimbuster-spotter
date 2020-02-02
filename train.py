@@ -131,8 +131,7 @@ def eval_model(test_x, test_y, test_len, model_loc):
         pbar.update(1)
     pbar.close()
 
-    all_pred_argmax = np.argmax(all_pred, axis=1)
-    return all_y, all_pred_argmax
+    return all_y, all_pred
 
 
 def main():
@@ -190,15 +189,15 @@ def main():
 
             logging.info('----- Iteration #{} OK -----'.format(iteration + 1))
 
-        f1_mac = f1_score(agg_y, agg_pred, average='macro')
-        f1_wei = f1_score(agg_y, agg_pred, average='weighted')
+        f1_mac = f1_score(agg_y, np.argmax(agg_pred, axis=1), average='macro')
+        f1_wei = f1_score(agg_y, np.argmax(agg_pred, axis=1), average='weighted')
         ndcg = compute_ndcg(agg_y, [x[FLAGS.cs_num_classes - 1] for x in agg_pred])
 
-        target_names = ['NFS/UFS', 'CFS']
+        target_names = ['NCW', 'CW']
 
-        print('Final stats | F1-Mac: {:>.4f} F1-Wei: {:>.4f} nDCG: {:>.4f}'.format(
+        logging.info('Final stats | F1-Mac: {:>.4f} F1-Wei: {:>.4f} nDCG: {:>.4f}'.format(
             f1_mac, f1_wei, ndcg))
-        print(classification_report(agg_y, agg_pred, target_names=target_names, digits=4))
+        logging.info(classification_report(agg_y, np.argmax(agg_pred, axis=1), target_names=target_names, digits=4))
     else:
         train_data = data_load.load_training_data()
         test_data = data_load.load_testing_data()
