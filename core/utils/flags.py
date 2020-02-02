@@ -78,7 +78,7 @@ flags.DEFINE_float('cs_kp_tfm_hidden', 0.8, 'Keep probability of hidden dropout 
 flags.DEFINE_string('cs_model_size', 'base', 'Version of BERT to use: base, large, or large_wwm')
 
 # Training
-flags.DEFINE_integer('cs_k_fold', 5, 'Number of folds for k-fold cross validation')
+flags.DEFINE_integer('cs_k_fold', 4, 'Number of folds for k-fold cross validation')
 flags.DEFINE_bool('cs_adam', True, 'Adam or RMSProp if False')
 flags.DEFINE_bool('cs_restore_and_continue', False, 'Restore previous training session and continue')
 flags.DEFINE_integer('cs_batch_size_reg', 24, 'Size of the batch.')
