@@ -185,7 +185,7 @@ def main():
 
             cur_y, cur_pred = eval_model(test_x, test_y, test_len, res[1])
             agg_y = np.concatenate((agg_y, cur_y))
-            if not agg_pred:
+            if type(agg_pred) is list:
                 agg_pred = cur_pred
             else:
                 agg_pred = np.concatenate((agg_pred, cur_pred))

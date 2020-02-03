@@ -17,3 +17,6 @@ nohup sh -c "python3 train.py --cs_tfm_ft_embed=False --cs_tfm_ft_enc_layers=10 
 nohup sh -c "python3 train.py --cs_tfm_ft_embed=False --cs_tfm_ft_enc_layers=10 --cs_l2_reg_coeff=0 --cs_perturb_norm_length=3.0 --cs_lambda=0.3 --cs_model_dir=output2 --cs_gpu=2 --cs_adv_train=True"&>nohup2.out&
 python3 train.py --cs_model_dir=output --cs_gpu=0 --cs_k_fold=1
 python3 train.py --cs_model_dir=output --cs_gpu=0 --cs_train_steps=1
+
+nohup sh -c "python3 train.py --cs_tfm_ft_embed=False --cs_tfm_ft_enc_layers=10 --cs_l2_reg_coeff=0 --cs_model_dir=output --cs_gpu=0 --cs_adv_train=False"&>nohup.out&
+nohup sh -c "python3 train.py --cs_tfm_ft_embed=False --cs_tfm_ft_enc_layers=10 --cs_l2_reg_coeff=0 --cs_perturb_norm_length=3.0 --cs_lambda=0.3 --cs_model_dir=output1 --cs_gpu=1 --cs_adv_train=True"&>nohup1.out&
