@@ -15,7 +15,7 @@ class ClaimSpotterAPI:
         os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.cs_gpu])
         os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 
-        self.return_strings = ['Non-factual statement', 'Unimportant factual statement', 'Salient factual statement']
+        self.return_strings = ['Non-factual sentence', 'Check-worthy factual statement']
         self.tokenizer = bert2.bert_tokenization.FullTokenizer(os.path.join(FLAGS.cs_model_loc, "vocab.txt"),
                                                                do_lower_case=True)
 
