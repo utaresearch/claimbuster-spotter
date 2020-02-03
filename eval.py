@@ -15,6 +15,8 @@ K = tf.keras
 
 
 def main():
+    assert 1== 2, 'This file is deprecated. Please contact Kevin if you\'d like to run evals'
+
     os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.cs_gpu])
     os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 
