@@ -158,8 +158,8 @@ def main():
 
     if FLAGS.cs_k_fold > 1:
         all_data = data_load.load_crossval_data()
-        all_data.x = np.array(all_data.x)
-        all_data.y = np.array(all_data.y)
+        all_data.x = np.array(all_data.x[:10])
+        all_data.y = np.array(all_data.y[:10])
         logging.info("{} total cross-validation examples".format(all_data.get_length()))
 
         kf = KFold(n_splits=FLAGS.cs_k_fold)
@@ -185,15 +185,14 @@ def main():
 
             cur_y, cur_pred = eval_model(test_x, test_y, test_len, res[1])
             agg_y = np.concatenate((agg_y, cur_y))
-            if type(agg_pred) is list:
-                agg_pred = cur_pred
-            else:
-                agg_pred = np.concatenate((agg_pred, cur_pred))
+            agg_pred = np.concatenate((agg_pred, cur_pred))
 
             print_str = '|     Iteration #{} OK     |'.format(iteration + 1)
             horz_str = ''.join(['-' for _ in range(len(print_str))])
             vert_str = '|' + ''.join([' ' for _ in range(len(print_str) - 2)]) + '|'
             logging.info(horz_str); logging.info(vert_str); logging.info(print_str); logging.info(vert_str); logging.info(horz_str);
+
+        print(agg_y, agg_pred)
 
         f1_mac = f1_score(agg_y, np.argmax(agg_pred, axis=1), average='macro')
         f1_wei = f1_score(agg_y, np.argmax(agg_pred, axis=1), average='weighted')
