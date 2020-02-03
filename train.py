@@ -199,7 +199,7 @@ def main():
         f1_wei = f1_score(agg_y, np.argmax(agg_pred, axis=1), average='weighted')
         ndcg = compute_ndcg(agg_y, [x[FLAGS.cs_num_classes - 1] for x in agg_pred])
 
-        target_names = ['NCW', 'CW']
+        target_names = ['NCS', 'CFS']
 
         logging.info('Final stats | F1-Mac: {:>.4f} F1-Wei: {:>.4f} nDCG: {:>.4f}'.format(
             f1_mac, f1_wei, ndcg))
