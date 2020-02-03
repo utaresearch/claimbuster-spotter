@@ -125,7 +125,6 @@ def eval_model(test_x, test_y, test_len, model_loc):
     pbar = tqdm(total=math.ceil(test_len / FLAGS.cs_batch_size_reg))
     for x_id, x_sent, y in dataset_test:
         preds = model.preds_on_batch((x_id, x_sent))
-        print(x_id, preds.numpy().tolist())
         all_pred = all_pred + preds.numpy().tolist()
         all_y = all_y + y.numpy().tolist()
 
@@ -185,12 +184,11 @@ def main():
                               DataLoader.compute_class_weights_fold(train_y), iteration)
 
             cur_y, cur_pred = eval_model(test_x, test_y, test_len, res[1])
-            print(cur_y, cur_pred)
             agg_y = np.concatenate((agg_y, cur_y))
-            if type(agg_pred) is list:
-                agg_pred = cur_pred
-            else:
+            try:
                 agg_pred = np.concatenate((agg_pred, cur_pred))
+            except Exception as e:
+                agg_pred = cur_pred
 
             print_str = '|     Iteration #{} OK     |'.format(iteration + 1)
             horz_str = ''.join(['-' for _ in range(len(print_str))])
