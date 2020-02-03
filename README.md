@@ -1,3 +1,5 @@
+# WARNING THIS DOCUMENT IS DEPRECATED.
+
 # Adversarial Claim Spotting
 In this repository, we apply adversarial training as as regularization technique for the purpose of determining whether a given claim is factual and worthy of fact-checking.
 
