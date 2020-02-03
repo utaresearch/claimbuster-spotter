@@ -10,6 +10,7 @@ import params_flow as pf
 
 from tensorflow import keras
 from tensorflow.keras import backend as K
+from absl import logging
 
 from .layer import Layer
 
@@ -242,6 +243,7 @@ class BertEmbeddingsLayer(Layer):
             perturbable = [('pos', 'seg', 'tok'), ('pos', 'seg'), ('pos', 'tok'), ('seg', 'tok'), ('pos',), ('seg',),
                            ('tok',)]
             cfg = perturbable[get_embedding]
+            logging.info(cfg)
 
             changed = False
             for el in cfg:
@@ -252,6 +254,7 @@ class BertEmbeddingsLayer(Layer):
                     ret_embed += all_embeddings[el]
 
             embedding_output = ret_embed
+            logging.info(embedding_output)
 
             diff = set(perturbable[0]).difference(cfg)
             for el in diff:
