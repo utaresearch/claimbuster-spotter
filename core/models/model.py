@@ -5,6 +5,7 @@ import math
 import re
 import tensorflow as tf
 from sklearn.metrics import f1_score
+import json
 from ..utils.flags import FLAGS
 from absl import logging
 from .lang_model import LanguageModel
@@ -44,9 +45,11 @@ class ClaimSpotterModel(K.models.Model):
 
         return last_epoch
 
-    def save_custom_model(self, epoch, fold):
+    def save_custom_model(self, epoch, fold, f1_wei):
         loc = os.path.join(FLAGS.cs_model_dir, 'fold_{}_{}'.format(str(fold + 1).zfill(2), str(epoch + 1).zfill(3)))
         self.save_weights(os.path.join(loc, FLAGS.cs_model_ckpt))
+        with open(os.path.join(loc, 'val_res.json'), 'w') as f:
+            json.dump({'f1_wei': f1_wei}, f)
 
         return loc
 

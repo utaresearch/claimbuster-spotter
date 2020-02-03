@@ -98,7 +98,7 @@ def train_model(train_x, train_y, train_len, test_x, test_y, test_len, class_wei
             epochs_trav = 0
 
         if epoch % FLAGS.cs_model_save_interval == 0:
-            loc = model.save_custom_model(epoch, fold)
+            loc = model.save_custom_model(epoch, fold, f1_wei)
             aggregated_performance.append((f1_wei, loc))
 
     return list(sorted(aggregated_performance, key=lambda x: x[0], reverse=True))[0]
@@ -195,7 +195,8 @@ def main():
             vert_str = '|' + ''.join([' ' for _ in range(len(print_str) - 2)]) + '|'
             logging.info(horz_str); logging.info(vert_str); logging.info(print_str); logging.info(vert_str); logging.info(horz_str);
 
-        print(agg_y, agg_pred)
+        logging.info(agg_y)
+        logging.info(agg_pred)
 
         f1_mac = f1_score(agg_y, np.argmax(agg_pred, axis=1), average='macro')
         f1_wei = f1_score(agg_y, np.argmax(agg_pred, axis=1), average='weighted')
