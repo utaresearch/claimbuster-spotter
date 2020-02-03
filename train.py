@@ -125,8 +125,8 @@ def eval_model(test_x, test_y, test_len, model_loc):
     pbar = tqdm(total=math.ceil(test_len / FLAGS.cs_batch_size_reg))
     for x_id, x_sent, y in dataset_test:
         preds = model.preds_on_batch((x_id, x_sent))
-        all_pred = all_pred + list(preds.numpy())
-        all_y = all_y + list(y.numpy())
+        all_pred = all_pred + preds.numpy().tolist()
+        all_y = all_y + y.numpy().tolist()
 
         pbar.update(1)
     pbar.close()
