@@ -41,6 +41,8 @@ class ClaimSpotterModel(K.models.Model):
 
         last_epoch = int(load_location.split('/')[-1].split('_')[-1])
         load_location = os.path.join(load_location, FLAGS.cs_model_ckpt)
+
+        logging.info('Retrieving pre-trained weights from {}'.format(load_location))
         self.load_weights(load_location)
 
         return last_epoch
