@@ -221,7 +221,7 @@ def main():
         logging.info("{} validation examples".format(test_data.get_length()))
 
         train_model(train_data.x, train_data.y, train_data.get_length(),
-                    test_data.x, test_data.y, test_data.get_length(), data_load.class_weights, fold=1)
+                    test_data.x, test_data.y, test_data.get_length(), data_load.class_weights, fold=0)
 
 
 if __name__ == '__main__':
