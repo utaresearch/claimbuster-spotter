@@ -167,7 +167,7 @@ def main():
         all_data.y = np.array(all_data.y)
         logging.info("{} total cross-validation examples".format(all_data.get_length()))
 
-        kf = StratifiedKFold(n_splits=FLAGS.cs_k_fold)
+        kf = StratifiedKFold(n_splits=FLAGS.cs_k_fold, shuffle=True, random_state=FLAGS.cs_random_state)
         kf.get_n_splits(all_data.x)
         agg_y, agg_pred = [], []
 
