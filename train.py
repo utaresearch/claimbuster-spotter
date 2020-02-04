@@ -98,7 +98,12 @@ def train_model(train_x, train_y, train_len, test_x, test_y, test_len, class_wei
             epochs_trav = 0
 
         if epoch % FLAGS.cs_model_save_interval == 0:
-            loc = model.save_custom_model(epoch, fold, f1_wei)
+            loc = model.save_custom_model(epoch, fold, {
+                'f1_wei': f1_wei,
+                'f1_mac': f1_mac,
+                'val_loss': val_loss,
+                'val_acc': val_acc
+            })
             aggregated_performance.append((f1_wei, loc))
 
     return list(sorted(aggregated_performance, key=lambda x: x[0], reverse=True))[0]

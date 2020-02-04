@@ -45,11 +45,11 @@ class ClaimSpotterModel(K.models.Model):
 
         return last_epoch
 
-    def save_custom_model(self, epoch, fold, f1_wei):
+    def save_custom_model(self, epoch, fold, metrics_obj):
         loc = os.path.join(FLAGS.cs_model_dir, 'fold_{}_{}'.format(str(fold + 1).zfill(2), str(epoch + 1).zfill(3)))
         self.save_weights(os.path.join(loc, FLAGS.cs_model_ckpt))
         with open(os.path.join(loc, 'val_res.json'), 'w') as f:
-            json.dump({'f1_wei': f1_wei}, f)
+            json.dump(metrics_obj, f)
 
         return loc
 
