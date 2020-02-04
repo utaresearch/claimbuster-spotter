@@ -166,7 +166,7 @@ def main():
         kf.get_n_splits(all_data.x)
         agg_y, agg_pred = [], []
 
-        for iteration, (train_idx, test_idx) in enumerate(kf.split(all_data.x)):
+        for iteration, (train_idx, test_idx) in enumerate(kf.split(all_data.x, all_data.y)):
             train_x, test_x = all_data.x[train_idx], all_data.x[test_idx]
             train_y, test_y = all_data.y[train_idx], all_data.y[test_idx]
             train_x, val_x, train_y, val_y = train_test_split(train_x, train_y, test_size=0.1)
