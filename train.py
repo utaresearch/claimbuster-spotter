@@ -10,7 +10,7 @@ import tensorflow as tf
 import numpy as np
 from core.models.model import ClaimSpotterModel
 from sklearn.metrics import f1_score, classification_report
-from sklearn.model_selection import KFold, train_test_split
+from sklearn.model_selection import StratifiedKFold, train_test_split
 from core.utils.compute_ndcg import compute_ndcg
 
 K = tf.keras
@@ -162,7 +162,7 @@ def main():
         all_data.y = np.array(all_data.y)
         logging.info("{} total cross-validation examples".format(all_data.get_length()))
 
-        kf = KFold(n_splits=FLAGS.cs_k_fold)
+        kf = StratifiedKFold(n_splits=FLAGS.cs_k_fold)
         kf.get_n_splits(all_data.x)
         agg_y, agg_pred = [], []
 
