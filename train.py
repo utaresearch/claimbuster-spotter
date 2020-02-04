@@ -101,8 +101,8 @@ def train_model(train_x, train_y, train_len, test_x, test_y, test_len, class_wei
             loc = model.save_custom_model(epoch, fold, {
                 'f1_wei': f1_wei,
                 'f1_mac': f1_mac,
-                'val_loss': val_loss,
-                'val_acc': val_acc
+                'val_loss': val_loss.numpy().tolist(),
+                'val_acc': val_acc.numpy().tolist()
             })
             aggregated_performance.append((f1_wei, loc))
 
