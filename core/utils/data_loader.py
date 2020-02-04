@@ -184,7 +184,7 @@ class DataLoader:
 
     @staticmethod
     def parse_json(json_loc):
-        with open(json_loc) as f:
+        with open(json_loc, encoding=FLAGS.cs_data_file_encoding) as f:
             temp_data = json.load(f)
 
         dl = []
