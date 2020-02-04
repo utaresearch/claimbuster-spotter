@@ -28,6 +28,7 @@ flags.DEFINE_string('cs_tb_dir', './tb_logs', 'Tensorboard location')
 flags.DEFINE_bool('cs_adv_train', False, 'Use adversarial training?')
 
 # Data
+flags.DEFINE_string('cs_data_file_encoding', None, 'Default encoding for data. Default value is None.')
 flags.DEFINE_bool('cs_use_clef_data', False, 'Use CLEF data, rather than ClaimBuster')
 flags.DEFINE_bool('cs_refresh_data', False, 'Re-process ./data/all_data.pickle')
 flags.DEFINE_integer('cs_max_len', 200, 'Maximum length of input')
