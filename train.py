@@ -169,8 +169,6 @@ def main():
         for iteration, (train_idx, test_idx) in enumerate(kf.split(all_data.x, all_data.y)):
             train_x, test_x = all_data.x[train_idx], all_data.x[test_idx]
             train_y, test_y = all_data.y[train_idx], all_data.y[test_idx]
-            logging.info(np.unique(train_y, return_counts=True))
-            logging.info(np.unique(test_y, return_counts=True))
             train_x, val_x, train_y, val_y = train_test_split(train_x, train_y, test_size=0.1)
 
             train_len, val_len, test_len = len(train_y), len(val_y), len(test_y)
@@ -179,8 +177,9 @@ def main():
             horz_str = ''.join(['-' for _ in range(len(print_str))])
             vert_str = '|' + ''.join([' ' for _ in range(len(print_str) - 2)]) + '|'
             logging.info(horz_str); logging.info(vert_str); logging.info(print_str); logging.info(vert_str); logging.info(horz_str);
-            logging.info(train_idx)
-            logging.info(test_idx)
+            logging.info(train_idx); logging.info(test_idx)
+            logging.info(np.unique(train_y, return_counts=True)[1].tolist())
+            logging.info(np.unique(test_y, return_counts=True)[1].tolist())
 
             res = train_model(train_x, train_y, train_len, val_x, val_y, val_len,
                               DataLoader.compute_class_weights_fold(train_y), iteration)
