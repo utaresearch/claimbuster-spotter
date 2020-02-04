@@ -169,6 +169,8 @@ def main():
         for iteration, (train_idx, test_idx) in enumerate(kf.split(all_data.x, all_data.y)):
             train_x, test_x = all_data.x[train_idx], all_data.x[test_idx]
             train_y, test_y = all_data.y[train_idx], all_data.y[test_idx]
+            logging.info(np.unique(train_y, return_counts=True))
+            logging.info(np.unique(test_y, return_counts=True))
             train_x, val_x, train_y, val_y = train_test_split(train_x, train_y, test_size=0.1)
 
             train_len, val_len, test_len = len(train_y), len(val_y), len(test_y)
