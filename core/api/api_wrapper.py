@@ -11,7 +11,7 @@ import tensorflow as tf
 
 class ClaimSpotterAPI:
     def __init__(self):
-        logging.set_verbosity(logging.ERROR)
+        logging.set_verbosity(logging.INFO)
         os.environ['CUDA_VISIBLE_DEVICES'] = ','.join([str(z) for z in FLAGS.cs_gpu])
         os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 
