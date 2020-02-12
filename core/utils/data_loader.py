@@ -47,6 +47,8 @@ class DataLoader:
         self.data, self.eval_data = (self.load_ext_data() if FLAGS.cs_k_fold <= 1 else self.load_kfold_data())
 
         self.class_weights = self.compute_class_weights()
+        if FLAGS.cs_temp_adj_flag:
+            self.class_weights = (1, 4)
         logging.info('Class weights computed to be {}'.format(self.class_weights))
 
         self.data.shuffle()

@@ -113,6 +113,8 @@ flags.DEFINE_string('cs_raw_clef_test_loc', '{}/clef/CT19-T1-Test.csv'.format(FL
 flags.DEFINE_string('cs_prc_data_loc', '{}/all_data.pickle'.format(FLAGS.cs_data_dir), 'Location of saved processed data')
 flags.DEFINE_string('cs_prc_clef_loc', '{}/all_clef_data.pickle'.format(FLAGS.cs_data_dir), 'Location of saved processed CLEF data')
 
+flags.DEFINE_bool('cs_temp_adj_flag', False, 'asdf')
+
 FLAGS.cs_model_loc = FLAGS.cs_model_loc + '_' + FLAGS.cs_model_size
 if any(['large' in FLAGS.cs_model_size]):
 	FLAGS.cs_tfm_layers *= 2
