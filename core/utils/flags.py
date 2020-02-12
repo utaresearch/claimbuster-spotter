@@ -85,6 +85,8 @@ flags.DEFINE_bool('cs_restore_and_continue', False, 'Restore previous training s
 flags.DEFINE_integer('cs_batch_size_reg', 24, 'Size of the batch.')
 flags.DEFINE_integer('cs_batch_size_adv', 12, 'Size of the batch when adversarial training.')
 
+flags.DEFINE_bool('cs_temp_adj_flag', False, 'asdf')
+
 
 def clean_argv(inp):
 	ret = [inp[0]]
@@ -112,8 +114,6 @@ flags.DEFINE_string('cs_raw_clef_train_loc', '{}/clef/CT19-T1-Training.csv'.form
 flags.DEFINE_string('cs_raw_clef_test_loc', '{}/clef/CT19-T1-Test.csv'.format(FLAGS.cs_data_dir), 'Location of raw CLEF .csv data')
 flags.DEFINE_string('cs_prc_data_loc', '{}/all_data.pickle'.format(FLAGS.cs_data_dir), 'Location of saved processed data')
 flags.DEFINE_string('cs_prc_clef_loc', '{}/all_clef_data.pickle'.format(FLAGS.cs_data_dir), 'Location of saved processed CLEF data')
-
-flags.DEFINE_bool('cs_temp_adj_flag', False, 'asdf')
 
 FLAGS.cs_model_loc = FLAGS.cs_model_loc + '_' + FLAGS.cs_model_size
 if any(['large' in FLAGS.cs_model_size]):
