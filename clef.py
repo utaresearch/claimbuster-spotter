@@ -94,7 +94,8 @@ with open("./data/clef/clef2019_test.tsv", encoding="utf-8") as test_data_sv:
     next(test_data)
 
     for d in test_data:
-        if (cur_sent_id := int(d[0])) < prev_sent_id:
+        cur_sent_id = int(d[0])
+        if cur_sent_id < prev_sent_id:
             multi_test_doc_ground_truth_labels.append(deepcopy(all_ground_truth_labels))
             multi_test_doc_predicted_labels.append(deepcopy(all_predicted_labels))
             multi_test_doc_cfs_scores.append(deepcopy(cfs_scores))
@@ -122,7 +123,8 @@ with open("./data/clef/clef2019_test.tsv", encoding="utf-8") as test_data_sv:
         multi_test_doc_predicted_labels.append(deepcopy(all_predicted_labels))
         multi_test_doc_cfs_scores.append(deepcopy(cfs_scores))
 
-if (num_docs := len(multi_test_doc_ground_truth_labels)) == 0:
+num_docs = len(multi_test_doc_ground_truth_labels)
+if num_docs == 0:
     classification_report = mt.classification_report(all_ground_truth_labels, all_predicted_labels, digits=4)
     confusion_matrix = mt.confusion_matrix(all_ground_truth_labels, all_predicted_labels)
     balanced_accuracy = mt.balanced_accuracy_score(all_ground_truth_labels, all_predicted_labels)

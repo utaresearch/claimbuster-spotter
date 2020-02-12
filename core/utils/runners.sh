@@ -26,6 +26,10 @@ nohup sh -c "python3 train.py --cs_adv_train=True --cs_model_dir=output1 --cs_gp
 nohup sh -c "python3 train.py --cs_adv_train=True --cs_model_dir=output2 --cs_gpu=2 --cs_perturb_id=2"&>nohup2.out&
 nohup sh -c "python3 train.py --cs_adv_train=True --cs_model_dir=output3 --cs_gpu=3 --cs_perturb_id=3"&>nohup3.out&
 
+nohup sh -c "python3 train.py --cs_adv_train=True --cs_model_dir=output4 --cs_gpu=0 --cs_perturb_id=4"&>nohup4.out&
+nohup sh -c "python3 train.py --cs_adv_train=True --cs_model_dir=output5 --cs_gpu=1 --cs_perturb_id=5"&>nohup5.out&
+nohup sh -c "python3 train.py --cs_adv_train=True --cs_model_dir=output6 --cs_gpu=2 --cs_perturb_id=6"&>nohup6.out&
+
 nohup sh -c "python3 train.py --cs_model_dir=output --cs_gpu=0"&>nohupbaseline.out&
 nohup sh -c "python3 train.py --cs_adv_train=True --cs_model_dir=output1 --cs_gpu=1 --cs_perturb_id=1"&>nohup1.out&
 nohup sh -c "python3 train.py --cs_adv_train=True --cs_model_dir=output2 --cs_gpu=2 --cs_perturb_id=2"&>nohup2.out&
