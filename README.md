@@ -35,7 +35,7 @@ Each training session is predicated upon a pre-trained BERT model as an initiali
 * Classifier Fine-Tuning (`--cs_adv_train=False`): uses vanilla stochastic gradient descent to minimize softmax classification objective into NFS/UFS/CFS class division.
 * Adversarial Classifier Fine-Tuning (`--cs_adv_train=True`): applies adversarial perturbations to embeddings and uses stochastic gradient descent to minimize error between each resulting prediction and its corresponding ground-truth.
 
-Depending on the VRAM capacity of the selected GPU, as well as the predefined batch size and number of frozen layers, training time can range between 1 and 10 hours. On an Nvidia GeForce GTX 1080Ti, it takes approximately 3 minutes/epoch to train a `BERT-Base` model and 5 minutes/epoch to train a `BERT-Large` model using regular optimization. Adversarial training doubles the time required.
+Depending on the VRAM capacity of the selected GPU, as well as the predefined batch size and number of frozen layers, training time can range between 1 and 10 hours. On an Nvidia GeForce GTX 1080Ti, it takes approximately 3 minutes/epoch to train a `BERT-Base` model using regular optimization. Adversarial training doubles the time required.
 
 ### Evaluations
 
@@ -100,7 +100,7 @@ python3 train.py \
 
 ### Adversarial Training
 
-As with regular training, `$MDIR` indicates the location where the trained model should be stored. `perturb_id` can be in the range `[0,7]` and determines which combination of embeddings will be perturbed. Please see [`flags.py`](flags.py) for more information.
+As with regular training, `$MDIR` indicates the location where the trained model should be stored. `perturb_id` can be in the range `[0, 6]` and determines which combination of embeddings will be perturbed. Please see [`flags.py`](flags.py) for more information.
 
 ```bash
 python3 train.py \

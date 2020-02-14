@@ -28,6 +28,10 @@ nohup sh -c "python3 train.py --cs_adv_train=True --cs_model_dir=output3 --cs_gp
 
 nohup sh -c "python3 train.py --cs_adv_train=True --cs_model_dir=output4 --cs_gpu=0 --cs_perturb_id=4"&>nohup4.out&
 nohup sh -c "python3 train.py --cs_adv_train=True --cs_model_dir=output5 --cs_gpu=1 --cs_perturb_id=5"&>nohup5.out&
+
+nohup sh -c "python3 train.py --cs_adv_train=True --cs_model_dir=output5 --cs_gpu=1 --cs_perturb_id=5 --cs_lambda=0.1"&>nohup5.out&
+nohup sh -c "python3 train.py --cs_adv_train=True --cs_model_dir=output6 --cs_gpu=2 --cs_perturb_id=5 --cs_lambda=0.2"&>nohup6.out&
+
 nohup sh -c "python3 train.py --cs_adv_train=True --cs_model_dir=output6 --cs_gpu=2 --cs_perturb_id=6"&>nohup6.out&
 
 nohup sh -c "python3 train.py --cs_model_dir=output --cs_gpu=0"&>nohupbaseline.out&
@@ -35,3 +39,20 @@ nohup sh -c "python3 train.py --cs_adv_train=True --cs_model_dir=output1 --cs_gp
 nohup sh -c "python3 train.py --cs_adv_train=True --cs_model_dir=output2 --cs_gpu=2 --cs_perturb_id=2"&>nohup2.out&
 
 nohup sh -c "python3 train.py --cs_use_clef_data=True --cs_k_fold=1 --cs_model_dir=output --cs_weight_classes_loss=True --cs_gpu=0"&>nohup.out&
+nohup sh -c "python3 train.py --cs_use_clef_data=True --cs_k_fold=1 --cs_model_dir=output1 --cs_weight_classes_loss=True --cs_gpu=1 --cs_temp_adj_flag=True"&>nohup1.out&
+nohup sh -c "python3 train.py --cs_use_clef_data=True --cs_k_fold=1 --cs_model_dir=output2 --cs_weight_classes_loss=True --cs_gpu=2 --cs_tfm_ft_enc_layers=2"&>nohup2.out&
+nohup sh -c "python3 train.py --cs_use_clef_data=True --cs_k_fold=1 --cs_model_dir=output2 --cs_weight_classes_loss=True --cs_gpu=2 --cs_tfm_ft_enc_layers=2 --cs_restore_and_continue=True"&>nohup2c.out&
+
+# -------------- asdf --------------
+
+nohup sh -c "python3 train.py --cs_use_clef_data=True --cs_k_fold=1 --cs_model_dir=output2 --cs_weight_classes_loss=True --cs_gpu=0 --cs_tfm_ft_enc_layers=2 --cs_adv_train=True --cs_lambda=0.1 --cs_perturb_norm_length=3.0"&>nohup2.out&
+python3 clef.py --cs_model_dir=output2/fold_01_028 --cs_tfm_ft_enc_layers=2 --cs_gpu=3
+
+# 12 or 18
+
+nohup sh -c "python3 train.py --cs_adv_train=True --cs_model_dir=output5 --cs_gpu=1 --cs_perturb_id=0 --cs_lambda=0.1 --cs_tfm_ft_enc_layers=2"&>nohup5.out&
+nohup sh -c "python3 train.py --cs_adv_train=True --cs_model_dir=output6 --cs_gpu=2 --cs_perturb_id=0 --cs_lambda=0.2 --cs_tfm_ft_enc_layers=2"&>nohup6.out&
+
+nohup sh -c "python3 train.py --cs_adv_train=True --cs_model_dir=output7 --cs_gpu=1 --cs_perturb_id=0 --cs_lambda=0.1 --cs_tfm_ft_enc_layers=2 --cs_perturb_norm_length=1.0"&>nohup7.out&
+nohup sh -c "python3 train.py --cs_adv_train=True --cs_model_dir=output8 --cs_gpu=2 --cs_perturb_id=0 --cs_lambda=0.1 --cs_tfm_ft_enc_layers=2 --cs_perturb_norm_length=2.0"&>nohup8.out&
+nohup sh -c "python3 train.py --cs_adv_train=True --cs_model_dir=output9 --cs_gpu=2 --cs_perturb_id=0 --cs_lambda=0.1 --cs_tfm_ft_enc_layers=2 --cs_perturb_norm_length=3.0"&>nohup9.out&

@@ -58,7 +58,7 @@ flags.DEFINE_float('cs_l2_reg_coeff', 0, 'If val > 0, use L2 Regularization on w
 # Adversarial and virtual adversarial training parameters.
 flags.DEFINE_integer('cs_perturb_id', 0, "Index in [('pos', 'seg', 'tok'), ('pos', 'seg'), ('pos', 'tok'), ('seg', 'tok'), ('pos',), ('seg',), ('tok',)] to perturb")
 flags.DEFINE_integer('cs_adv_type', 0, '0 for AT, 1 for VAT')
-flags.DEFINE_float('cs_lambda', 0.3, 'Coefficient of adversarial loss')
+flags.DEFINE_float('cs_lambda', 0.1, 'Coefficient of adversarial loss')
 flags.DEFINE_bool('cs_combine_reg_adv_loss', True, 'Add loss of regular and adversarial loss during training')
 flags.DEFINE_float('cs_perturb_norm_length', 3.0, 'Norm length of adversarial perturbation')
 
@@ -71,7 +71,7 @@ flags.DEFINE_string('cs_tfm_type', 'bert', 'Must be `bert` or `albert`')
 flags.DEFINE_integer('cs_tfm_layers', 12, 'Number of transf layers.')
 flags.DEFINE_bool('cs_tfm_ft_embed', False, 'Train transf embedding layer')
 flags.DEFINE_bool('cs_tfm_ft_pooler', True, 'Train transf pooler layer')
-flags.DEFINE_integer('cs_tfm_ft_enc_layers', 10, 'Last n encoding layers are marked as trainable')
+flags.DEFINE_integer('cs_tfm_ft_enc_layers', 2, 'Last n encoding layers are marked as trainable')
 flags.DEFINE_float('cs_kp_tfm_atten', 0.8, 'Keep probability of attention dropout in Transformer')
 flags.DEFINE_float('cs_kp_tfm_hidden', 0.8, 'Keep probability of hidden dropout in Transformer')
 
