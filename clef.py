@@ -145,11 +145,19 @@ else:
     ndcg = sum([compute_ndcg(x, y) for x, y in zip(multi_test_doc_ground_truth_labels, multi_test_doc_cfs_scores)]) / num_docs
 
     final_p_at_k = [0.0] * len(p_at_k_thresholds)
+    p_at_k = []
     precisions_at_k = [compute_precisions(x, y) for x, y in zip(multi_test_doc_ground_truth_labels, multi_test_doc_cfs_scores)]
     try:
-        precisions_at_k = [p[th - 1] for p, th in zip(precisions_at_k, p_at_k_thresholds)]
+        for p in precisions_at_k:
+            p_th = []
+            for th in p_at_k_thresholds:
+                p_th.append(p[th - 1])
+            p_at_k.append(p_th)
+
         for i in range(0, len(p_at_k_thresholds)):
-            final_p_at_k[i] += precisions_at_k[i]
+            for p_l in p_at_k:
+                final_p_at_k[i] += p_l[i]
+
         final_p_at_k = [x / num_docs for x in final_p_at_k]
     except IndexError:
         final_p_at_k = "Not enough test samples to calculate precisions at defined thresholds."
