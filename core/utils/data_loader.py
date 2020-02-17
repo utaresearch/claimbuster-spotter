@@ -195,7 +195,7 @@ class DataLoader:
         labels = [0 for _ in range(FLAGS.cs_num_classes)]
 
         for el in temp_data:
-            lab = int(el["label"]) + (1 if three_class_file else 0) - (1 if (not int(el["label"]) and three_class_file) == 0 else 0)
+            lab = int(el["label"]) + (1 if three_class_file else 0) - (1 if (not int(el["label"]) == 0 and three_class_file) else 0)
             txt = el["text"]
 
             labels[lab] += 1
