@@ -190,6 +190,7 @@ class DataLoader:
             temp_data = json.load(f)
 
         three_class_file = ('deprecated' in json_loc)
+        print(json_loc, three_class_file)
 
         dl = []
         labels = [0 for _ in range(FLAGS.cs_num_classes)]
