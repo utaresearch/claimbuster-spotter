@@ -190,15 +190,12 @@ class DataLoader:
             temp_data = json.load(f)
 
         three_class_file = ('deprecated' in json_loc)
-        print(json_loc, three_class_file)
 
         dl = []
         labels = [0 for _ in range(FLAGS.cs_num_classes)]
 
         for el in temp_data:
-            lab = int(el["label"]) + (1 if three_class_file else 0) - (1 if (int(el["label"]) != 0 and three_class_file) else 0)
-            if three_class_file:
-                print(lab)
+            lab = int(el["label"]) + (1 if three_class_file else 0) - (1 if (int(el["label"]) != -1 and three_class_file) else 0)
             txt = el["text"]
 
             labels[lab] += 1
