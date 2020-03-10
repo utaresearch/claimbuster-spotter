@@ -94,7 +94,7 @@ class ClaimSpotterLayer(K.layers.Layer):
         get_embedding = -1 if 'get_embedding' not in kwargs else kwargs.get('get_embedding')
 
         if get_embedding == -1:
-            bert_output = self.bert_model(x_id, training=training)
+            bert_output = self.bert_model(x_id, training=training, perturb=perturb)
         else:
             orig_embed, bert_output = self.bert_model(x_id, perturb=perturb, get_embedding=get_embedding, training=training)
 
