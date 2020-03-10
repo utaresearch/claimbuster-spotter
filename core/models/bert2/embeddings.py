@@ -264,7 +264,7 @@ class BertEmbeddingsLayer(Layer):
             embedding_output = tok_embed + seg_embed + pos_embed
 
         if perturb is not None:
-            tf.logging.info('############################### perturbed ###############################')
+            logging.info('Adding {} to embedding_output'.format(perturb))
             embedding_output += perturb
 
         embedding_output = self.layer_norm_layer(embedding_output)
