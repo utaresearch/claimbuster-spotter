@@ -71,15 +71,6 @@ All flags are defined and editable in [`core/utils/flags.py`](bert-adversarial/c
 git clone git@github.com:idirlab/claimspotter.git
 ```
 
-### CD to current directory
-
-From this point forwards, all directories are referenced relative to the project
-root.
-
-```bash
-cd adversarial-claimspotting
-```
-
 ### Fetch dependencies
 
 Because BERT pre-trained files are inconvenient/impossible to track with Git, they must be downloaded at time of use. There is a convenient pre-written script for this purpose.
@@ -87,6 +78,7 @@ Because BERT pre-trained files are inconvenient/impossible to track with Git, th
 ```bash
 chmod +x ./data/get_bert.sh
 chmod +x ./data/get_albert.sh
+cd adversarial-claimspotting
 chmod +x ./dependencies.sh
 ./dependencies.sh
 ```
