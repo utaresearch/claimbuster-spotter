@@ -86,11 +86,9 @@ async def score_text(request, input_text):
     sentences = sent_tokenize(input_text)
     scores = api.batch_sentence_query(sentences)
 
-    print(sentences, scores)
+    results = [{"text":sentences[i], "index":i, "score":scores[i][1], "result":api.return_strings[argmax(scores[i])]} for i in range(len(sentences))]
 
-    idx = argmax(scores)
-
-    return json({'claim':input_text, 'result':api.return_strings[idx], 'scores':scores[1]})
+    return json({'claim':input_text, "origin":"Claim Spotter - Get Score", 'result':results})
 
 @app.route("/score/url/<url:path>", methods=["POST", "GET"])
 async def score_url(request, url):
