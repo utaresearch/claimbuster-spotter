@@ -53,6 +53,8 @@ def get_url_score(url, tokenize_sentence=False):
     
     results = []
 
+    print(api.batch_sentence_query(sentences))
+
     for sentence in sentences:
         scores = api.single_sentence_query(results) if sentence else []
         idx = argmax(scores)
@@ -85,7 +87,7 @@ async def score_text(request, input_text):
 
     idx = argmax(scores)
 
-    return json({'claim':input_text, 'result':api.return_strings[idx], 'scores':scores})
+    return json({'claim':input_text, 'result':api.return_strings[idx], 'scores':scores[1]})
 
 @app.route("/score/url/<url:path>", methods=["POST", "GET"])
 async def score_url(request, url):
