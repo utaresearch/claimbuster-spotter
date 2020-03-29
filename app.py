@@ -83,7 +83,10 @@ async def score_text(request, input_text):
         `scores` : list[float]
     """
     input_text = get_user_input(request, input_text)
-    scores = api.single_sentence_query(input_text) if input_text else []
+    sentences = sent_tokenize(input_text)
+    scores = api.batch_sentence_query(sentences)
+
+    print(sentences, scores)
 
     idx = argmax(scores)
 
