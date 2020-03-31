@@ -118,7 +118,7 @@ multi_test_doc_cfs_scores = []
 p_at_k_thresholds = [10, 20, 50]
 prev_sent_id = -1
 
-with open("../data/clef/clef2019_test.tsv", encoding="utf-8") as test_data_sv:
+with open("./data/clef/clef2019_test.tsv", encoding="utf-8") as test_data_sv:
     test_data = csv.reader(test_data_sv, delimiter="\t", quotechar='"')
     next(test_data)
 
