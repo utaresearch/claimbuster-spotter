@@ -59,7 +59,7 @@ def compute_kde(x):
 
 cfs_scores = []
 
-with open("../data/two_class/2020_debate.tsv", encoding="utf-8") as test_data_sv:
+with open("./data/two_class/2020_debate.tsv", encoding="utf-8") as test_data_sv:
     test_data = csv.reader(test_data_sv, delimiter="\t", quotechar='"')
     next(test_data)
 
