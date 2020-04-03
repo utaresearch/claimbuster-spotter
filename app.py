@@ -21,47 +21,26 @@ def get_user_input(r, input_text, k="input_text"):
 
     return ""
 
-def get_url_score(url, tokenize_sentence=False):
+def get_url_text(url):
     """
-    Returns the scores of each sentence at the provided URL.
+    Returns each sentence at the provided URL.
 
     Parameters
     ----------
     url : string
         Path to web page to score.
-    tokenize_sentence : boolean
-        Return a list of scored sentences instead of a single line.
-    
+
     Returns
     -------
-    list[dict]
-        A list of dictionaries containing values for each `claim`, 
-        it's `result`, and the `scores` associated with it.
-
-        `claim` : string
-        `result` : string
-        `scores` : list[float]
+    url_text: list[str] 
+        List of each sentence in the page loaded at the given URL.
     """
     
     url_text = requests.request('GET', url).text
     url_text = url_text.replace("\r", "")
 
-    if tokenize_sentence:
-        sentences = sent_tokenize(url_text)
-    else:
-        sentences = [url_text]
     
-    results = []
-
-    print(api.batch_sentence_query(sentences))
-
-    for sentence in sentences:
-        scores = api.single_sentence_query(results) if sentence else []
-        idx = argmax(scores)
-
-        results.append({'claim':sentence, 'result':api.return_strings[idx], 'scores':scores})
-
-    return results
+    return url_text
 
 @app.route("/score/text/<input_text:(?!custom/).*>", methods=["POST", "GET"])
 async def score_text(request, input_text):
@@ -79,8 +58,13 @@ async def score_text(request, input_text):
         Returns a response object with the body containing a json-encoded dictionary containing the `claim`, it's `result`, and the `scores` associated with it.
 
         `claim` : string
-        `result` : string
-        `scores` : list[float]
+        `results` : dict
+            {
+                `text` : string
+                `index`: string
+                `score`: float
+                `result`: string
+            }
     """
     input_text = get_user_input(request, input_text)
     sentences = sent_tokenize(input_text)
@@ -88,7 +72,7 @@ async def score_text(request, input_text):
 
     results = [{"text":sentences[i], "index":i, "score":scores[i][1], "result":api.return_strings[argmax(scores[i])]} for i in range(len(sentences))]
 
-    return json({'claim':input_text, "origin":"Claim Spotter - Get Score", 'result':results})
+    return json({'claim':input_text, 'results':results})
 
 @app.route("/score/url/<url:path>", methods=["POST", "GET"])
 async def score_url(request, url):
@@ -107,13 +91,25 @@ async def score_url(request, url):
         and the `scores` associated with each claim on the web page.
 
         `claim` : string
-        `result` : string
-        `scores` : list[float]
+        `results` : list[dict]
+            {
+                `text` : string
+                `index`: string
+                `score`: float
+                `result`: string
+            }
     """
     url = get_user_input(request, url, "url")
-    results = get_url_score(url, True)
+    url_text = get_url_text(url)
 
-    return json(results)
+    sentences = sent_tokenize(url_text)
+
+    scores = api.batch_sentence_query(sentences)
+
+    results = [{"text":sentences[i], "index":i, "score":scores[i][1], "result":api.return_strings[argmax(scores[i])]} for i in range(len(sentences))]
+    
+
+    return json({'claim':input_text, 'results':results})
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000)
