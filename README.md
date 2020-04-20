@@ -6,8 +6,8 @@ In this repository we are providing code to train claim-spotting models via:
 
 ### SVM and BiLSTM Code
 We have also hosted the SVM and BiLSTM code in Colab's. The transformer code is more complex, so we do not have a Colab setup for that.
- - SVM: https://drive.google.com/open?id=1znXCY3Q005_VP4UQnUzPXTXBZrzA6iHB
- - BiLSTM: https://drive.google.com/open?id=1-jw75dQubG6PwO-kePRIs5zpBYjz8FM6
+ - SVM: https://colab.research.google.com/drive/1znXCY3Q005_VP4UQnUzPXTXBZrzA6iHB
+ - BiLSTM: https://colab.research.google.com/drive/1-jw75dQubG6PwO-kePRIs5zpBYjz8FM6
 
 ## Contributors
 
