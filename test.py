@@ -29,7 +29,7 @@ async def score_sentences(request):
     scored_paragraphs = [api.batch_sentence_query(sentences) for sentences in tokenized_paragraphs]
 
     print(tokenized_paragraphs, scored_paragraphs)
-    results = [{"text":tokenized_paragraphs[i][j], "index":j, "score":scored_paragraphs[i][j][1], "result":api.return_strings[argmax(scored_paragraphs[i][j])] for j in range(len(tokenized_paragraphs))} for i in range(len(tokenized_paragraphs))]
+    results = [{"text":tokenized_paragraphs[i][j], "index":j, "score":scored_paragraphs[i][j][1], "result":api.return_strings[argmax(scored_paragraphs[i][j])]} for i in range(len(tokenized_paragraphs)) for j in range(len(tokenized_paragraphs))]
     # results = [{"text":sentences[i], "index":i, "score":scores[i][1], "result":api.return_strings[argmax(scores[i])]} for i in range(len(sentences))]
     return json(results)
 
