@@ -36,7 +36,7 @@ from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.utils import to_categorical
 tf.compat.v1.enable_eager_execution()
-path_to_data = '../data/csv/'
+path_to_data = '../data/two_class/'
 
 #Define parameters for text vectorization
 max_len = 500
@@ -44,7 +44,7 @@ top_words = 5000
 max_words = 10000
 
 # Obtain and process the data
-dataset_loc = path_to_data + 'cfs_ncs_2_5xNCS.csv'
+dataset_loc = path_to_data + 'kfold_25ncs.csv'
 data = pd.read_csv(dataset_loc)
 print("Preview training data\n")
 print(data.head())
@@ -87,10 +87,10 @@ print("Converting labels to categorical values: DONE")
 
 # Parsing the GloVe word-embedding file
 print("Parsing the GloVe word-embedding file...")
-glove_dir = '../../../../glove'
+glove_dir = '../data/glove/'
 
 embeddings_index = {}                                       
-f = open(os.path.join(glove_dir, 'glove.6B.300d.txt'))
+f = open(os.path.join(glove_dir, 'glove6b300d.txt'))
 i = 0
 for line in f:
     values = line.split()
