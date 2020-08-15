@@ -46,12 +46,8 @@ class ClaimSpotterAPI:
         ret = []
         for x, x_sent in dataset:
             val = self.model.preds_on_batch((x, x_sent)).numpy()
-            print(val)
-            # val = np.apply_along_axis(lambda z: (z - z.min()) / (z.max() - z.min()), 1, val)
             val = np.apply_along_axis(self.sigmoid, 1, val)
-            print(val)
             val = np.apply_along_axis(lambda z: z / z.sum(), 1, val)
-            print(val)
             ret = ret + val.tolist()
         return ret
 
