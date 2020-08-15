@@ -7,6 +7,7 @@ from ..utils import transformations as transf
 from ..utils.flags import FLAGS
 from absl import logging
 import tensorflow as tf
+import numpy as np
 
 
 class ClaimSpotterAPI:
@@ -44,7 +45,10 @@ class ClaimSpotterAPI:
     def _retrieve_model_preds(self, dataset):
         ret = []
         for x, x_sent in dataset:
-            ret = ret + self.model.preds_on_batch((x, x_sent)).numpy().tolist()
+            val = self.model.preds_on_batch((x, x_sent)).numpy()
+            val = (val - val.min()) / (val.max() - val.min())
+            val = val / val.sum()
+            ret = ret + val.tolist()
         return ret
 
     def _create_bert_features(self, sentence_list):
