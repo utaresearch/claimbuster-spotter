@@ -46,8 +46,11 @@ class ClaimSpotterAPI:
         ret = []
         for x, x_sent in dataset:
             val = self.model.preds_on_batch((x, x_sent)).numpy()
+            print(val)
             val = (val - val.min()) / (val.max() - val.min())
+            print(val)
             val = val / val.sum()
+            print(val)
             ret = ret + val.tolist()
         return ret
 
