@@ -47,7 +47,8 @@ class ClaimSpotterAPI:
         for x, x_sent in dataset:
             val = self.model.preds_on_batch((x, x_sent)).numpy()
             print(val)
-            val = np.apply_along_axis(lambda z: (z - z.min()) / (z.max() - z.min()), 1, val)
+            # val = np.apply_along_axis(lambda z: (z - z.min()) / (z.max() - z.min()), 1, val)
+            val = np.apply_along_axis(self.sigmoid, 1, val)
             print(val)
             val = np.apply_along_axis(lambda z: z / z.sum(), 1, val)
             print(val)
@@ -58,6 +59,10 @@ class ClaimSpotterAPI:
         features = [self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(x))
                     for x in sentence_list]
         return DataLoader.pad_seq(features)
+
+    @staticmethod
+    def sigmoid(x):
+        return np.exp(-np.logaddexp(0, -x))
 
     @staticmethod
     def _extract_info(sentence_list):
