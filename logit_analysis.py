@@ -15,7 +15,9 @@ if __name__ == '__main__':
     print(sotu)
 
     gstart = time.time()
-    sotu['logits'] = [x[1] for x in api.batch_sentence_query(sotu['text'].to_list())]
+    logits = api.batch_sentence_query(sotu['text'].to_list())
+    sotu['logits_ncs'] = [x[0] for x in logits]
+    sotu['logits_cfs'] = [x[1] for x in logits]
     dur = time.time() - gstart
 
     print(sotu)
