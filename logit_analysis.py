@@ -8,19 +8,20 @@ if __name__ == '__main__':
 
     print('--- 2020 SOTU Processing ---')
 
-    sotu = pd.read_csv('data/sotu_2020.csv')
-    sotu = sotu[['score', 'text']]
-    sotu = sotu.dropna()
+    sotus = [pd.read_csv('data/sotu_2020.csv'), pd.read_csv('data/sotu_2019.csv')]
+    df = pd.concat(sotus)
+    df = df[['score', 'text']]
+    df = df.dropna()
 
-    print(sotu)
+    print(df)
 
     gstart = time.time()
-    logits = api.batch_sentence_query(sotu['text'].to_list())
-    sotu['logits_ncs'] = [x[0] for x in logits]
-    sotu['logits_cfs'] = [x[1] for x in logits]
+    logits = api.batch_sentence_query(df['text'].to_list())
+    df['logits_ncs'] = [x[0] for x in logits]
+    df['logits_cfs'] = [x[1] for x in logits]
     dur = time.time() - gstart
 
-    print(sotu)
+    print(df)
 
     print('Completed processing in {} sec'.format(dur))
-    sotu.to_csv('logit_analysis_output.csv')
+    df.to_csv('logit_analysis_output.csv')
