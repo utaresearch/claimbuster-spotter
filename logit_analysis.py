@@ -8,9 +8,9 @@ if __name__ == '__main__':
 
     print('--- 2020 SOTU Processing ---')
 
-    sotus = [pd.read_csv('data/sotu_2020.csv'), pd.read_csv('data/sotu_2019.csv')]
-    df = pd.concat(sotus)
-    df = df[['score', 'text']]
+    dfs = [pd.read_csv('data/sotu_2020.csv'), pd.read_csv('data/sotu_2019.csv'), pd.read_csv('data/debates_2020.csv')]
+    df = pd.concat(dfs)
+    df = df[['text']]
     df = df.dropna()
 
     print(df)
@@ -24,4 +24,5 @@ if __name__ == '__main__':
     print(df)
 
     print('Completed processing in {} sec'.format(dur))
+    print('{} claims / sec'.format(len(df) / dur))
     df.to_csv('logit_analysis_output.csv')
