@@ -63,3 +63,8 @@ nohup sh -c "python3 train.py --cs_adv_train=True --cs_model_dir=outputFinal --c
 nohup sh -c "python3 train.py --cs_adv_train=True --cs_model_dir=outputFinal2 --cs_gpu=2 --cs_perturb_id=5 --cs_perturb_norm_length=2.0"&>nohupFinal2.out&
 
 nohup sh -c "python3 train.py --cs_k_fold=1 --cs_adv_train=True --cs_model_dir=output --cs_gpu=0 --cs_perturb_id=5 --cs_reg_train_file=kfold_25ncs.json --cs_reg_test_file=../deprecated/disjoint_2000.json --cs_refresh_data=True --cs_train_steps=30"&>nohup.out&
+
+# Logit analysis
+
+python3 logit_analysis.py --cs_model_dir=/projects/claimspotter/output/fold_01_017 --cs_gpu=3
+python3 demo.py --cs_model_dir=/projects/claimspotter/output/fold_01_017 --cs_gpu=3
