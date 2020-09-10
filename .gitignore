@@ -1,3 +1,6 @@
+local_files
+logit_analysis_output.csv
+
 data/all_data_*.pickle
 data/bert_pretrain_*/
 data/albert_pretrain_*/
