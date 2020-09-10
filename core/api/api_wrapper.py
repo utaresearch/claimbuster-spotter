@@ -45,22 +45,12 @@ class ClaimSpotterAPI:
         ret = []
         for x, x_sent in dataset:
             ret = ret + self.model.preds_on_batch((x, x_sent)).numpy().tolist()
-        return self.apply_activation(ret)
+        return ret
 
     def _create_bert_features(self, sentence_list):
         features = [self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(x))
                     for x in sentence_list]
         return DataLoader.pad_seq(features)
-
-    def apply_activation(x):
-        r = FLAGS.cs_ca_r
-
-        if not FLAGS.cs_custom_activation:
-            inter = np.apply_along_axis(np.exp, 1, x)
-        else:
-            inter = np.apply_along_axis(lambda z: np.exp(r * z) / (np.exp(r * z) + 1), 1, x)
-
-        return np.apply_along_axis(lambda z: z / z.sum(), 1, inter)
 
     @staticmethod
     def _extract_info(sentence_list):
