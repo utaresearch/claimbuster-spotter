@@ -159,6 +159,7 @@ class ClaimSpotterLayer(K.layers.Layer):
     @tf.function
     def preds_on_batch(self, x):
         logits = self.call(x, training=False)
+
         return logits
 
     def compute_training_loss(self, y, logits):
