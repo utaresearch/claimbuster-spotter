@@ -6,6 +6,7 @@ from numpy import argmax
 from nltk import sent_tokenize
 
 from core.api.api_wrapper import ClaimSpotterAPI
+from core.api.api_wrapper import FLAGS
 
 app = Sanic()
 api = ClaimSpotterAPI()
@@ -73,6 +74,44 @@ async def score_text(request, input_text):
     results = [{"text":sentences[i], "index":i, "score":scores[i][1], "result":api.return_strings[argmax(scores[i])]} for i in range(len(sentences))]
 
     return json({'claim':input_text, 'results':results})
+
+
+@app.route("/score/text-custom/<input_text:(?!custom/).*>", methods=["POST", "GET"])
+async def score_text_custom_activation(request, input_text):
+    """
+    Returns the scores of the text provided.
+
+    Parameters
+    ----------
+    input_text : string
+        Input text to be scored.
+    
+    Returns
+    -------
+    <Response>
+        Returns a response object with the body containing a json-encoded dictionary containing the `claim`, it's `result`, and the `scores` associated with it.
+
+        `claim` : string
+        `results` : dict
+            {
+                `text` : string
+                `index`: string
+                `score`: float
+                `result`: string
+            }
+    """
+    
+    input_text = get_user_input(request, input_text)
+    sentences = sent_tokenize(input_text)
+    FLAGS.cs_custom_activation = True
+    scores = api.batch_sentence_query(sentences)
+    FLAGS.cs_custom_activation = False
+
+    results = [{"text":sentences[i], "index":i, "score":scores[i][1], "result":api.return_strings[argmax(scores[i])]} for i in range(len(sentences))]
+
+    return json({'claim':input_text, 'results':results})
+
+
 
 @app.route("/score/url/<url:path>", methods=["POST", "GET"])
 async def score_url(request, url):
