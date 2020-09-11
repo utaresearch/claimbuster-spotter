@@ -112,8 +112,6 @@ async def score_text_custom_activation(request, input_text):
 
     return json({'claim':input_text, 'results':results})
 
-
-
 @app.route("/score/url/<url:path>", methods=["POST", "GET"])
 async def score_url(request, url):
     """
@@ -184,7 +182,7 @@ async def score_sentences(request):
     return json(results)
 
 @app.route("/score/batches-custom/", methods=["POST"])
-async def score_sentences(request):
+async def score_sentences_custom_activation(request):
     """
     Returns the scores of the batches of text provided.
 
