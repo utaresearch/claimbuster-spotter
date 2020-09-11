@@ -79,7 +79,7 @@ flags.DEFINE_float('cs_kp_tfm_hidden', 0.8, 'Keep probability of hidden dropout 
 flags.DEFINE_string('cs_model_size', 'base', 'Version of BERT to use: base, large, or large_wwm')
 
 # Predictions
-flags.DEFINE_bool('cs_custom_activation', True, 'Use custom sigmoid normalization for output probabilities')
+flags.DEFINE_bool('cs_custom_activation', False, 'Use custom sigmoid normalization for output probabilities')
 flags.DEFINE_float('cs_ca_r', 0.45, 'Scaling factor for sigmoid function in custom activation function')
 
 # Training
