@@ -34,3 +34,5 @@ __pycache__/
 .ipynb_checkpoints/
 
 visual/
+
+.DS_Store
