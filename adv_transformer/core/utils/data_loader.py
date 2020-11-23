@@ -194,19 +194,8 @@ class DataLoader:
     @staticmethod
     def process_text_for_transformers(train_txt, eval_txt):
         tokenizer = AutoTokenizer.from_pretrained(FLAGS.cs_tfm_type)
-        train_txt = tokenizer.tokenize(train_txt)
-        print(train_txt)
-        exit()
-        # if FLAGS.cs_tfm_type == 'bert':
-        #     vocab_file = os.path.join(FLAGS.cs_model_loc, "vocab.txt")
-        #     tokenizer = AdvFullTokenizer(vocab_file, do_lower_case=True)
-        #     train_txt = [tokenizer.convert_tokens_to_ids(tokenizer.tokenize(x)) for x in train_txt]
-        #     eval_txt = [tokenizer.convert_tokens_to_ids(tokenizer.tokenize(x)) for x in eval_txt]
-        # else:
-        #     tokenizer = CustomAlbertTokenizer()
-        #     train_txt = tokenizer.tokenize_array(train_txt)
-        #     eval_txt = tokenizer.tokenize_array(eval_txt)
-
+        train_txt = tokenizer(train_txt)['input_ids'] if len(train_txt) > 0 else []
+        eval_txt = tokenizer(eval_txt)['input_ids'] if len(eval_txt) > 0 else []
         return train_txt, eval_txt
 
     @staticmethod
