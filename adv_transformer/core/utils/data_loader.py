@@ -28,10 +28,10 @@ from sklearn.utils import shuffle
 from sklearn.utils.class_weight import compute_class_weight
 from absl import logging
 from . import transformations as transf
-from adv_transformer.core.models.advbert.tokenization.bert_tokenization import AdvFullTokenizer
-from adv_transformer.core.models.custom_albert_tokenization import CustomAlbertTokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from .flags import FLAGS
+
+from transformers import AutoTokenizer
 
 
 class XLNetExample():
@@ -193,15 +193,19 @@ class DataLoader:
 
     @staticmethod
     def process_text_for_transformers(train_txt, eval_txt):
-        if FLAGS.cs_tfm_type == 'bert':
-            vocab_file = os.path.join(FLAGS.cs_model_loc, "vocab.txt")
-            tokenizer = AdvFullTokenizer(vocab_file, do_lower_case=True)
-            train_txt = [tokenizer.convert_tokens_to_ids(tokenizer.tokenize(x)) for x in train_txt]
-            eval_txt = [tokenizer.convert_tokens_to_ids(tokenizer.tokenize(x)) for x in eval_txt]
-        else:
-            tokenizer = CustomAlbertTokenizer()
-            train_txt = tokenizer.tokenize_array(train_txt)
-            eval_txt = tokenizer.tokenize_array(eval_txt)
+        tokenizer = AutoTokenizer.from_pretrained(FLAGS.cs_tfm_type)
+        train_txt = tokenizer.tokenize(train_txt)
+        print(train_txt)
+        exit()
+        # if FLAGS.cs_tfm_type == 'bert':
+        #     vocab_file = os.path.join(FLAGS.cs_model_loc, "vocab.txt")
+        #     tokenizer = AdvFullTokenizer(vocab_file, do_lower_case=True)
+        #     train_txt = [tokenizer.convert_tokens_to_ids(tokenizer.tokenize(x)) for x in train_txt]
+        #     eval_txt = [tokenizer.convert_tokens_to_ids(tokenizer.tokenize(x)) for x in eval_txt]
+        # else:
+        #     tokenizer = CustomAlbertTokenizer()
+        #     train_txt = tokenizer.tokenize_array(train_txt)
+        #     eval_txt = tokenizer.tokenize_array(eval_txt)
 
         return train_txt, eval_txt
 

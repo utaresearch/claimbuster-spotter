@@ -89,16 +89,13 @@ flags.DEFINE_integer('cs_num_classes', 2, 'Number of classes for classification 
 flags.DEFINE_bool('cs_alt_two_class_combo', False, 'Combine CFS and UFS instead when num_classes=2.')
 
 # Transformer
-flags.DEFINE_string('cs_tfm_type', 'bert', 'Must be `bert` or `albert`')
+flags.DEFINE_string('cs_tfm_type', 'bert-base-uncased', 'Type of transformer; see https://huggingface.co/transformers/pretrained_models.html')
 flags.DEFINE_integer('cs_tfm_layers', 12, 'Number of transf layers.')
 flags.DEFINE_bool('cs_tfm_ft_embed', False, 'Train transf embedding layer')
 flags.DEFINE_bool('cs_tfm_ft_pooler', True, 'Train transf pooler layer')
 flags.DEFINE_integer('cs_tfm_ft_enc_layers', 2, 'Last n encoding layers are marked as trainable')
 flags.DEFINE_float('cs_kp_tfm_atten', 0.8, 'Keep probability of attention dropout in Transformer')
 flags.DEFINE_float('cs_kp_tfm_hidden', 0.8, 'Keep probability of hidden dropout in Transformer')
-
-# BERT
-flags.DEFINE_string('cs_model_size', 'base', 'Version of BERT to use: base, large, or large_wwm')
 
 # Training
 flags.DEFINE_integer('cs_k_fold', 4, 'Number of folds for k-fold cross validation')
