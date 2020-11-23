@@ -20,7 +20,8 @@ experiments/comparison.png
 
 svm/models*
 bidirectional_lstm/saved_models*
-**output*
+output/
+local_files/
 
 __pycache__/
 
