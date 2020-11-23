@@ -83,7 +83,6 @@ flags.DEFINE_bool('cs_alt_two_class_combo', False, 'Combine CFS and UFS instead 
 
 # Transformer
 flags.DEFINE_string('cs_tfm_type', 'bert-base-uncased', 'Type of transformer; see https://huggingface.co/transformers/pretrained_models.html')
-flags.DEFINE_integer('cs_tfm_layers', 12, 'Number of transf layers.')
 flags.DEFINE_bool('cs_tfm_ft_embed', False, 'Train transf embedding layer')
 flags.DEFINE_bool('cs_tfm_ft_pooler', True, 'Train transf pooler layer')
 flags.DEFINE_integer('cs_tfm_ft_enc_layers', 2, 'Last n encoding layers are marked as trainable')
