@@ -25,13 +25,6 @@ import sys
 
 FLAGS = flags.FLAGS
 
-
-# ------------------------- FLAGS FOR 2-CLASS TRAINING -------------------------
-
-# Re-Copy later when needed
-
-# ------------------------- FLAGS FOR 3-CLASS TRAINING -------------------------
-
 # Hardware
 flags.DEFINE_list('cs_gpu', [0], 'ID of GPU to use: in range [0, 4]')
 
@@ -136,7 +129,6 @@ flags.DEFINE_string('cs_prc_clef_loc', '{}/all_clef_data.pickle'.format(FLAGS.cs
 
 FLAGS.cs_prc_data_loc = FLAGS.cs_prc_data_loc[:-7] + '_{}'.format(FLAGS.cs_tfm_type) + '.pickle'
 
-assert FLAGS.cs_tfm_type in ['bert', 'albert']
 assert FLAGS.cs_num_classes == 2, 'FLAGS.cs_num_classes must be 2: 3 class comparisons are deprecated.'
 assert FLAGS.cs_stat_print_interval % FLAGS.cs_model_save_interval == 0
 
