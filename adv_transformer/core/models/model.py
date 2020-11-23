@@ -25,8 +25,7 @@ import tensorflow as tf
 import json
 from adv_transformer.core.utils.flags import FLAGS
 from absl import logging
-from adv_transformer.core.models.lang_model import LanguageModel
-from adv_transformer.core.optimizers.adam import AdamWeightFriction
+from transformers import TFAutoModel, AutoConfig
 
 
 class ClaimSpotterModel(tf.keras.models.Model):
@@ -36,7 +35,7 @@ class ClaimSpotterModel(tf.keras.models.Model):
         self.adv = None
 
     def call(self, x, **kwargs):
-        raise Exception('Please do not call this model. Use the *_on_batch functions instead')
+        raise Exception('Do not call this model. Use the *_on_batch functions instead')
 
     def warm_up(self):
         input_ph_id = tf.keras.layers.Input(shape=(FLAGS.cs_max_len,), dtype='int32')
@@ -86,7 +85,11 @@ class ClaimSpotterLayer(tf.keras.layers.Layer):
     def __init__(self, cls_weights=None):
         super(ClaimSpotterLayer, self).__init__()
 
-        self.bert_model = LanguageModel.build_transformer()
+        config = AutoConfig.from_pretrained(FLAGS.cs_tfm_type)
+        config.hidden_dropout_prob = 1 - FLAGS.cs_kp_tfm_hidden
+        config.attention_probs_dropout_prob = 1 - FLAGS.cs_kp_tfm_atten
+        self.bert_model = TFAutoModel.from_pretrained(config)
+
         self.dropout_layer = tf.keras.layers.Dropout(rate=1-FLAGS.cs_kp_cls)
         self.fc_output_layer = tf.keras.layers.Dense(FLAGS.cs_num_classes)
         if FLAGS.cs_cls_hidden:
@@ -94,7 +97,7 @@ class ClaimSpotterLayer(tf.keras.layers.Layer):
 
         self.computed_cls_weights = cls_weights
 
-        self.optimizer = AdamWeightFriction(learning_rate=FLAGS.cs_lr)
+        self.optimizer = tf.optimizers.Adam(learning_rate=FLAGS.cs_lr)
         self.vars_to_train = []
 
     def call(self, x, **kwargs):
@@ -233,188 +236,3 @@ class ClaimSpotterLayer(tf.keras.layers.Layer):
             self.load_bert_weights()
         else:
             self.load_albert_weights()
-
-    def load_bert_weights(self, ckpt_path=os.path.join(FLAGS.cs_model_loc, 'bert_model.ckpt')):
-        # Define several helper functions
-        def bert_prefix():
-            re_bert = re.compile(r'(.*)/(embeddings|encoder)/(.+):0')
-            match = re_bert.match(self.weights[0].name)
-            assert match, "Unexpected bert layer: {} weight:{}".format(self, self.weights[0].name)
-            prefix = match.group(1)
-            return prefix
-
-        def map_to_stock_variable_name(name, pfx="bert"):
-            name = name.split(":")[0]
-            ns = name.split("/")
-            pns = pfx.split("/")
-
-            if ns[:len(pns)] != pns:
-                return None
-
-            name = "/".join(["bert"] + ns[len(pns):])
-            ns = name.split("/")
-
-            if ns[1] not in ["encoder", "embeddings", "pooler"]:
-                return None
-            if ns[1] == "embeddings":
-                if ns[2] == "LayerNorm":
-                    return name
-                elif ns[2] == "word_embeddings_projector":
-                    ns[2] = "word_embeddings_2"
-                    if ns[3] == "projector":
-                        ns[3] = "embeddings"
-                        return "/".join(ns[:-1])
-                    return "/".join(ns)
-                else:
-                    return "/".join(ns[:-1])
-            if ns[1] == "encoder":
-                if ns[3] == "intermediate":
-                    return "/".join(ns[:4] + ["dense"] + ns[4:])
-                else:
-                    return name
-            if ns[1] == "pooler":
-                return "/".join(ns)
-            return None
-
-        # Logic begins here
-        ckpt_reader = tf.train.load_checkpoint(ckpt_path)
-
-        stock_weights = set(ckpt_reader.get_variable_to_dtype_map().keys())
-        prefix = bert_prefix()
-
-        loaded_weights = set()
-        skip_count = 0
-        weight_value_tuples = []
-        skipped_weight_value_tuples = []
-
-        bert_params = self.weights
-        param_values = tf.keras.backend.batch_get_value(self.weights)
-
-        for ndx, (param_value, param) in enumerate(zip(param_values, bert_params)):
-            stock_name = map_to_stock_variable_name(param.name, prefix)
-
-            if stock_name and ckpt_reader.has_tensor(stock_name):
-                ckpt_value = ckpt_reader.get_tensor(stock_name)
-
-                if param_value.shape != ckpt_value.shape:
-                    logging.info("loader: Skipping weight:[{}] as the weight shape:[{}] is not compatible "
-                                 "with the checkpoint:[{}] shape:{}".format(param.name, param.shape,
-                                                                            stock_name, ckpt_value.shape))
-                    skipped_weight_value_tuples.append((param, ckpt_value))
-                    continue
-
-                weight_value_tuples.append((param, ckpt_value))
-                loaded_weights.add(stock_name)
-            else:
-                print("loader: No value for:[{}], i.e.:[{}] in:[{}]".format(param.name, stock_name, ckpt_path))
-                skip_count += 1
-        tf.keras.backend.batch_set_value(weight_value_tuples)
-
-        logging.info("Done loading {} BERT weights from: {} into {} (prefix:{}). "
-                     "Count of weights not found in the checkpoint was: [{}]. "
-                     "Count of weights with mismatched shape: [{}]".format(
-            len(weight_value_tuples), ckpt_path, self, prefix, skip_count, len(skipped_weight_value_tuples)))
-
-        logging.info("Unused weights from checkpoint: {}".format("\n\t" + "\n\t".join(
-            sorted(stock_weights.difference(loaded_weights)))))
-
-        return skipped_weight_value_tuples
-
-    def load_albert_weights(self, ckpt_path=os.path.join(FLAGS.cs_model_loc, 'model.ckpt-best')):
-        # Define several helper functions
-        def bert_prefix():
-            re_bert = re.compile(r'(.*)/(embeddings|encoder)/(.+):0')
-            match = re_bert.match(self.weights[0].name)
-            assert match, "Unexpected bert layer: {} weight:{}".format(self, self.weights[0].name)
-            prefix = match.group(1)
-            return prefix
-
-        def map_to_stock_variable_name(name, prefix="bert"):
-            name = re.compile("encoder/layer_shared/intermediate/(?=kernel|bias)").sub(
-                "encoder/transformer/group_0/inner_group_0/ffn_1/intermediate/dense/", name)
-            name = re.compile("encoder/layer_shared/output/dense/(?=kernel|bias)").sub(
-                "encoder/transformer/group_0/inner_group_0/ffn_1/intermediate/output/dense/", name)
-
-            name = name.replace("encoder/layer_shared/output/dense",
-                                "encoder/transformer/group_0/inner_group_0/ffn_1/intermediate/output/dense")
-            name = name.replace("encoder/layer_shared/attention/output/LayerNorm",
-                                "encoder/transformer/group_0/inner_group_0/LayerNorm")
-            name = name.replace("encoder/layer_shared/output/LayerNorm",
-                                "encoder/transformer/group_0/inner_group_0/LayerNorm_1")
-            name = name.replace("encoder/layer_shared/attention",
-                                "encoder/transformer/group_0/inner_group_0/attention_1")
-
-            name = name.replace("embeddings/word_embeddings_projector/projector",
-                                "encoder/embedding_hidden_mapping_in/kernel")
-            name = name.replace("embeddings/word_embeddings_projector/bias",
-                                "encoder/embedding_hidden_mapping_in/bias")
-
-            name = name.split(":")[0]
-            ns = name.split("/")
-            pns = prefix.split("/")
-
-            if ns[:len(pns)] != pns:
-                return None
-
-            name = "/".join(["bert"] + ns[len(pns):])
-            ns = name.split("/")
-
-            if ns[1] not in ["encoder", "embeddings", "pooler"]:
-                return None
-            if ns[1] == "embeddings":
-                if ns[2] == "LayerNorm":
-                    return name
-                else:
-                    return "/".join(ns[:-1])
-            if ns[1] == "encoder":
-                if ns[3] == "intermediate":
-                    return "/".join(ns[:4] + ["dense"] + ns[4:])
-                else:
-                    return name
-            if ns[1] == "pooler":
-                return "/".join(ns)
-            return None
-
-        # Logic begins here
-        ckpt_reader = tf.train.load_checkpoint(ckpt_path)
-
-        stock_weights = set(ckpt_reader.get_variable_to_dtype_map().keys())
-        prefix = bert_prefix()
-
-        loaded_weights = set()
-        skip_count = 0
-        weight_value_tuples = []
-        skipped_weight_value_tuples = []
-
-        bert_params = self.weights
-        param_values = tf.keras.backend.batch_get_value(self.weights)
-
-        for ndx, (param_value, param) in enumerate(zip(param_values, bert_params)):
-            stock_name = map_to_stock_variable_name(param.name, prefix)
-
-            if stock_name and ckpt_reader.has_tensor(stock_name):
-                ckpt_value = ckpt_reader.get_tensor(stock_name)
-
-                if param_value.shape != ckpt_value.shape:
-                    logging.info("loader: Skipping weight:[{}] as the weight shape:[{}] is not compatible "
-                                 "with the checkpoint:[{}] shape:{}".format(param.name, param.shape,
-                                                                            stock_name, ckpt_value.shape))
-                    skipped_weight_value_tuples.append((param, ckpt_value))
-                    continue
-
-                weight_value_tuples.append((param, ckpt_value))
-                loaded_weights.add(stock_name)
-            else:
-                print("loader: No value for:[{}], i.e.:[{}] in:[{}]".format(param.name, stock_name, ckpt_path))
-                skip_count += 1
-        tf.keras.backend.batch_set_value(weight_value_tuples)
-
-        logging.info("Done loading {} BERT weights from: {} into {} (prefix:{}). "
-                     "Count of weights not found in the checkpoint was: [{}]. "
-                     "Count of weights with mismatched shape: [{}]".format(
-            len(weight_value_tuples), ckpt_path, self, prefix, skip_count, len(skipped_weight_value_tuples)))
-
-        logging.info("Unused weights from checkpoint: {}".format("\n\t" + "\n\t".join(
-            sorted(stock_weights.difference(loaded_weights)))))
-
-        return skipped_weight_value_tuples
