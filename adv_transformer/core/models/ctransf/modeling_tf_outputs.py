@@ -3,7 +3,7 @@ from typing import List, Optional, Tuple
 
 import tensorflow as tf
 
-from .file_utils import ModelOutput
+from transformers.file_utils import ModelOutput
 
 
 @dataclass
