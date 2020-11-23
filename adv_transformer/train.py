@@ -119,7 +119,7 @@ def train_model(train_x, train_y, train_len, test_x, test_y, test_len, class_wei
             start = time.time()
             epochs_trav = 0
 
-        if epoch % FLAGS.cs_model_save_interval == 0:
+        if epoch >= FLAGS.cs_train_steps * 0.67 and epoch % FLAGS.cs_model_save_interval == 0:
             loc = model.save_custom_model(epoch, fold, {
                 'f1_wei': f1_wei,
                 'f1_mac': f1_mac,
