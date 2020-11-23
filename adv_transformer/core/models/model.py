@@ -200,7 +200,7 @@ class ClaimSpotterLayer(tf.keras.layers.Layer):
     def select_train_vars(self):
         train_vars = self.trainable_variables
 
-        non_trainable_layers = [f'_._{i}/' for i in range(self.config.num_hidden_layers - FLAGS.FLAGS.cs_tfm_ft_enc_layers)]
+        non_trainable_layers = [f'_._{i}/' for i in range(self.config.num_hidden_layers - FLAGS.cs_tfm_ft_enc_layers)]
         if not FLAGS.cs_tfm_ft_embed:
             non_trainable_layers.append('/embeddings/')
         if not FLAGS.cs_tfm_ft_pooler:
