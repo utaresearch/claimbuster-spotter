@@ -88,7 +88,7 @@ class ClaimSpotterLayer(tf.keras.layers.Layer):
         config = AutoConfig.from_pretrained(FLAGS.cs_tfm_type)
         config.hidden_dropout_prob = 1 - FLAGS.cs_kp_tfm_hidden
         config.attention_probs_dropout_prob = 1 - FLAGS.cs_kp_tfm_atten
-        self.bert_model = TFAutoModel.from_pretrained(config)
+        self.bert_model = TFAutoModel.from_config(config)
 
         self.dropout_layer = tf.keras.layers.Dropout(rate=1-FLAGS.cs_kp_cls)
         self.fc_output_layer = tf.keras.layers.Dense(FLAGS.cs_num_classes)
@@ -103,15 +103,15 @@ class ClaimSpotterLayer(tf.keras.layers.Layer):
     def call(self, x, **kwargs):
         assert 'training' in kwargs
 
-        x_id = [x[0], tf.zeros((tf.shape(x[0])), dtype=tf.int32)]
-        x_sent = x[1]
+        x_id, x_sent = x[0], x[1]
 
         training = kwargs.get('training')
         perturb = kwargs.get('perturb', None)
         get_embedding = kwargs.get('get_embedding', -1)
 
         if get_embedding == -1:
-            bert_output = self.bert_model(x_id, training=training, perturb=perturb)
+            # bert_output = self.bert_model(x_id, training=training, perturb=perturb)
+            bert_output = self.bert_model(x_id, return_dict=True)['pooler_output']
         else:
             orig_embed, bert_output = self.bert_model(x_id, perturb=perturb, get_embedding=get_embedding, training=training)
 
@@ -125,8 +125,6 @@ class ClaimSpotterLayer(tf.keras.layers.Layer):
         ret = self.fc_output_layer(bert_output)
 
         if not self.vars_to_train:
-            if not FLAGS.cs_restore_and_continue:
-                self.init_model_weights()
             self.vars_to_train = self.select_train_vars()
 
         if get_embedding == -1:
@@ -231,8 +229,3 @@ class ClaimSpotterLayer(tf.keras.layers.Layer):
 
         return perturb
 
-    def init_model_weights(self):
-        if FLAGS.cs_tfm_type == 'bert':
-            self.load_bert_weights()
-        else:
-            self.load_albert_weights()
