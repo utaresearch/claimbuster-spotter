@@ -21,8 +21,8 @@
 #
 import tensorflow as tf
 from bert import params_from_pretrained_ckpt
-from bert_adversarial.core.models.advbert.model import AdvBertModelLayer
-from bert_adversarial.core.utils.flags import FLAGS
+from adv_transformer.core.models.advbert.model import AdvBertModelLayer
+from adv_transformer.core.utils.flags import FLAGS
 
 
 class LanguageModel:

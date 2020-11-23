@@ -21,7 +21,7 @@
 #
 
 import numpy as np
-from bert_adversarial.core.api.api_wrapper import ClaimSpotterAPI
+from adv_transformer.core.api.api_wrapper import ClaimSpotterAPI
 
 if __name__ == '__main__':
     api = ClaimSpotterAPI()

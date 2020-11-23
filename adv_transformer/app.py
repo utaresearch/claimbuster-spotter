@@ -27,7 +27,7 @@ from requests import request
 from numpy import argmax
 from nltk import sent_tokenize
 
-from bert_adversarial.core.api.api_wrapper import ClaimSpotterAPI
+from adv_transformer.core.api.api_wrapper import ClaimSpotterAPI
 
 app = Sanic()
 api = ClaimSpotterAPI()

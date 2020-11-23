@@ -55,7 +55,7 @@ Using [`demo.py`](bert-adversarial/demo.py), users can input individual sentence
 
 ```bash
 # From the root folder execute:
-python3 -m bert_adversarial.demo.py \
+python3 -m adv_transformer.demo.py \
     --cs_model_dir=$MDIR \
     --cs_gpu=0
 ```
@@ -98,7 +98,7 @@ Once data is processed and dumped into `.pkl` files, [`train.py`](bert-adversari
 
 ```bash
 # From the root folder execute:
-python3 -m bert_adversarial.train \
+python3 -m adv_transformer.train \
     --cs_model_dir=$MDIR \
     --cs_adv_train=False \
     --cs_gpu=0
@@ -110,7 +110,7 @@ As with regular training, `$MDIR` indicates the location where the trained model
 
 ```bash
 # From the root folder execute:
-python3 -m bert_adversarial.train \
+python3 -m adv_transformer.train \
     --cs_model_dir=$MDIR \
     --cs_adv_train=True \
     --cs_gpu=0
@@ -126,7 +126,7 @@ Below is an example of using `restore_and_continue` on adversarial training.
 
 ```bash
 # From the root folder execute:
-python3 -m bert_adversarial.train \
+python3 -m adv_transformer.train \
     --cs_model_dir=$MDIR \
     --cs_adv_train=True
     --cs_gpu=0 \
@@ -138,7 +138,7 @@ python3 -m bert_adversarial.train \
 We provide an API wrapper in [core/api/api_wrapper.py](bert-adversarial/core/api/api_wrapper.py) to enable easy integration into other applications. There are two simple query functions that extract inference information for a single sentence. Below is a sample usage scenario:
 
 ```python
-from bert_adversarial.core.api.api_wrapper import ClaimSpotterAPI
+from adv_transformer.core.api.api_wrapper import ClaimSpotterAPI
 
 api = ClaimSpotterAPI()
 sentence = "ClaimBuster is a state-of-the-art, end-to-end fact-checking system."
@@ -153,7 +153,7 @@ In `app.py` you'll find code to host a trained model as a web application. The s
 
 ```bash
 # From the root folder execute:
-python3 -m bert_adversarial.app \
+python3 -m adv_transformer.app \
     --cs_model_dir=$MDIR \
     --cs_gpu=0
 ```

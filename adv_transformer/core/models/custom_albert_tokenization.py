@@ -22,8 +22,8 @@
 import sentencepiece as spm
 import os
 from bert.tokenization.albert_tokenization import preprocess_text
-from bert_adversarial.core.models.advbert.tokenization.albert_tokenization import encode_ids
-from bert_adversarial.core.utils.flags import FLAGS
+from adv_transformer.core.models.advbert.tokenization.albert_tokenization import encode_ids
+from adv_transformer.core.utils.flags import FLAGS
 
 
 class CustomAlbertTokenizer:
