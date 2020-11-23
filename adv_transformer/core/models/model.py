@@ -87,7 +87,7 @@ class ClaimSpotterLayer(tf.keras.layers.Layer):
 
         self.config = AutoConfig.from_pretrained(FLAGS.cs_tfm_type)
         self.config.hidden_dropout_prob = 1 - FLAGS.cs_kp_tfm_hidden
-        self.config.attention_probs_dropout_prob = 1 - FLAGS.cs_kp_tfm_atten
+        self.config.attention_probs_dropout_prob = 1 - FLAGS.cs_kp_tfm_attn
         self.bert_model = TFAutoModel.from_config(self.config)
 
         self.dropout_layer = tf.keras.layers.Dropout(rate=1-FLAGS.cs_kp_cls)
