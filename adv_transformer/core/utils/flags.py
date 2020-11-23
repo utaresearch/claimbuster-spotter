@@ -97,8 +97,6 @@ flags.DEFINE_bool('cs_restore_and_continue', False, 'Restore previous training s
 flags.DEFINE_integer('cs_batch_size_reg', 24, 'Size of the batch.')
 flags.DEFINE_integer('cs_batch_size_adv', 12, 'Size of the batch when adversarial training.')
 
-flags.DEFINE_bool('cs_temp_adj_flag', False, 'Temp flag')
-
 
 def clean_argv(inp):
 	ret = [inp[0]]
