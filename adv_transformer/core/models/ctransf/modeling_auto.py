@@ -47,7 +47,7 @@ from transformers.modeling_tf_albert import (
     TFAlbertForTokenClassification,
     TFAlbertModel,
 )
-from transformers.modeling_tf_bert import (
+from adv_transformer.core.models.ctransf.modeling_tf_bert import (
     TFBertForMaskedLM,
     TFBertForMultipleChoice,
     TFBertForPreTraining,
