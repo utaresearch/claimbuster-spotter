@@ -64,7 +64,7 @@ flags.DEFINE_integer('cs_cls_hidden', 0, 'Size of hidden classification layer')
 flags.DEFINE_float('cs_kp_cls', 0.7, 'Keep probability of dropout in FC')
 
 # Optimization
-flags.DEFINE_integer('cs_train_steps', 20, 'Number of epochs to run.')
+flags.DEFINE_integer('cs_train_steps', 40, 'Number of epochs to run.')
 flags.DEFINE_float('cs_lr', 5e-5, 'Learning rate during optimization.')
 
 # Regularization
@@ -73,7 +73,7 @@ flags.DEFINE_float('cs_l2_reg_coeff', 0, 'If val > 0, use L2 Regularization on w
 # Adversarial and virtual adversarial training parameters.
 flags.DEFINE_integer('cs_perturb_id', 0, "Index in [('pos', 'seg', 'tok'), ('pos', 'seg'), ('pos', 'tok'), ('seg', 'tok'), ('pos',), ('seg',), ('tok',)] to perturb")
 flags.DEFINE_integer('cs_adv_type', 0, '0 for AT, 1 for VAT')
-flags.DEFINE_float('cs_lambda', 0.1, 'Coefficient of adversarial loss')
+flags.DEFINE_float('cs_lambda', 0.3, 'Coefficient of adversarial loss')
 flags.DEFINE_bool('cs_combine_reg_adv_loss', True, 'Add loss of regular and adversarial loss during training')
 flags.DEFINE_float('cs_perturb_norm_length', 2.0, 'Norm length of adversarial perturbation')
 
@@ -90,11 +90,11 @@ flags.DEFINE_float('cs_kp_tfm_attn', 0.8, 'Keep probability of attention dropout
 flags.DEFINE_float('cs_kp_tfm_hidden', 0.8, 'Keep probability of hidden dropout in Transformer')
 
 # Training
-flags.DEFINE_integer('cs_k_fold', 4, 'Number of folds for k-fold cross validation')
+flags.DEFINE_integer('cs_k_fold', 1, 'Number of folds for k-fold cross validation')
 flags.DEFINE_bool('cs_adam', True, 'Adam or RMSProp if False')
 flags.DEFINE_bool('cs_restore_and_continue', False, 'Restore previous training session and continue')
 flags.DEFINE_integer('cs_batch_size_reg', 24, 'Size of the batch.')
-flags.DEFINE_integer('cs_batch_size_adv', 12, 'Size of the batch when adversarial training.')
+flags.DEFINE_integer('cs_batch_size_adv', 24, 'Size of the batch when adversarial training.')
 
 
 def clean_argv(inp):
