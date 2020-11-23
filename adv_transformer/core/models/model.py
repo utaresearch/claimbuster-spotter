@@ -89,6 +89,7 @@ class ClaimSpotterLayer(tf.keras.layers.Layer):
         self.config.hidden_dropout_prob = 1 - FLAGS.cs_kp_tfm_hidden
         self.config.attention_probs_dropout_prob = 1 - FLAGS.cs_kp_tfm_attn
         self.bert_model = TFAutoModel.from_config(self.config)
+        self.pooler_weights = None
 
         self.dropout_layer = tf.keras.layers.Dropout(rate=1-FLAGS.cs_kp_cls)
         self.fc_output_layer = tf.keras.layers.Dense(FLAGS.cs_num_classes)
@@ -114,15 +115,16 @@ class ClaimSpotterLayer(tf.keras.layers.Layer):
             # bert_output = self.bert_model(x_id, training=training, return_dict=True)['pooler_output']
             bert_output = self.bert_model(x_id, training=training, perturb=perturb, return_dict=True)['last_hidden_state']
         else:
-            cur_res = self.bert_model(x_id, training=training, get_embedding=get_embedding)
+            cur_res = self.bert_model(x_id, training=training, get_embedding=get_embedding, return_dict=True)
             orig_embed, bert_output = cur_res['orig_embedding'], cur_res['last_hidden_state']
 
         bert_output = tf.reduce_mean(bert_output, axis=1)
-        for layer in self.bert_model.layers:
-            print(layer)
-            exit()
-        # then pool the average using BERT weights
 
+        if self.pooler_weights is None:
+            self.pooler_weights = [weight for weight in self.bert_model.weights if '/pooler/dense/' in weight.name]
+            assert len(self.pooler_weights) == 2 and 'kernel' in self.pooler_weights[0].name and 'bias' in self.pooler_weights[1].name
+
+        bert_output = tf.matmul(bert_output, self.pooler_weights[0]) + self.pooler_weights[1]
 
         bert_output = tf.concat([bert_output, x_sent], axis=1)
         bert_output = self.dropout_layer(bert_output, training=training)
