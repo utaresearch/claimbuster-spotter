@@ -134,13 +134,6 @@ flags.DEFINE_string('cs_raw_clef_test_loc', '{}/clef/CT19-T1-Test.csv'.format(FL
 flags.DEFINE_string('cs_prc_data_loc', '{}/all_data.pickle'.format(FLAGS.cs_data_dir), 'Location of saved processed data')
 flags.DEFINE_string('cs_prc_clef_loc', '{}/all_clef_data.pickle'.format(FLAGS.cs_data_dir), 'Location of saved processed CLEF data')
 
-FLAGS.cs_model_loc = FLAGS.cs_model_loc + '_' + FLAGS.cs_model_size
-if any(['large' in FLAGS.cs_model_size]):
-	FLAGS.cs_tfm_layers *= 2
-	FLAGS.cs_tfm_ft_enc_layers *= 2
-	FLAGS.cs_batch_size_reg //= 3
-	FLAGS.cs_batch_size_adv //= 3
-
 FLAGS.cs_prc_data_loc = FLAGS.cs_prc_data_loc[:-7] + '_{}'.format(FLAGS.cs_tfm_type) + '.pickle'
 
 assert FLAGS.cs_tfm_type in ['bert', 'albert']
