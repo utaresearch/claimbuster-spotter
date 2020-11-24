@@ -38,7 +38,7 @@ from transformers.configuration_auto import (
     XLNetConfig,
 )
 from transformers.configuration_utils import PretrainedConfig
-from transformers.modeling_tf_albert import (
+from adv_transformer.core.models.ctransf.modeling_tf_albert import (
     TFAlbertForMaskedLM,
     TFAlbertForMultipleChoice,
     TFAlbertForPreTraining,
