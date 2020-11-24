@@ -640,7 +640,7 @@ class TFBertMainAdvLayer(tf.keras.layers.Layer):
             training=training,
         )
 
-        sequence_output = encoder_outputs[0]
+        sequence_output = tf.reduce_mean(encoder_outputs, axis=1)
         pooled_output = self.pooler(sequence_output)
 
         if not return_dict:
