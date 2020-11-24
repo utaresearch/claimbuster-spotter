@@ -507,6 +507,8 @@ class TFRobertaMainAdvLayer(tf.keras.layers.Layer):
         output_attentions=None,
         output_hidden_states=None,
         return_dict=None,
+        perturb=None,
+        get_embedding=None,
         training=False,
     ):
         if isinstance(inputs, (tuple, list)):
@@ -554,6 +556,8 @@ class TFRobertaMainAdvLayer(tf.keras.layers.Layer):
             token_type_ids = tf.fill(input_shape, 0)
 
         embedding_output = self.embeddings(input_ids, position_ids, token_type_ids, inputs_embeds, training=training)
+        if perturb is not None:
+            embedding_output += perturb
 
         # We create a 3D attention mask from a 2D tensor mask.
         # Sizes are [batch_size, 1, 1, to_seq_length]
@@ -600,11 +604,14 @@ class TFRobertaMainAdvLayer(tf.keras.layers.Layer):
                 pooled_output,
             ) + encoder_outputs[1:]
 
+        ret_embed = embedding_output if get_embedding is not None else None
+
         return TFBaseModelOutputWithPooling(
             last_hidden_state=sequence_output,
             pooler_output=pooled_output,
             hidden_states=encoder_outputs.hidden_states,
             attentions=encoder_outputs.attentions,
+            orig_embedding=ret_embed
         )
 
 
