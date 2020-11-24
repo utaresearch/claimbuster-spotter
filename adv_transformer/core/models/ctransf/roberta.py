@@ -462,7 +462,7 @@ class TFRobertaEncoder(tf.keras.layers.Layer):
 
 
 @keras_serializable
-class TFRobertaMainLayer(tf.keras.layers.Layer):
+class TFRobertaMainAdvLayer(tf.keras.layers.Layer):
     config_class = RobertaConfig
 
     def __init__(self, config, **kwargs):
@@ -715,7 +715,7 @@ ROBERTA_INPUTS_DOCSTRING = r"""
 class TFRobertaModel(TFRobertaPreTrainedModel):
     def __init__(self, config, *inputs, **kwargs):
         super().__init__(config, *inputs, **kwargs)
-        self.roberta = TFRobertaMainLayer(config, name="roberta")
+        self.roberta = TFRobertaMainAdvLayer(config, name="roberta")
 
     @add_start_docstrings_to_model_forward(ROBERTA_INPUTS_DOCSTRING.format("batch_size, sequence_length"))
     @add_code_sample_docstrings(
@@ -770,7 +770,7 @@ class TFRobertaForMaskedLM(TFRobertaPreTrainedModel, TFMaskedLanguageModelingLos
     def __init__(self, config, *inputs, **kwargs):
         super().__init__(config, *inputs, **kwargs)
 
-        self.roberta = TFRobertaMainLayer(config, name="roberta")
+        self.roberta = TFRobertaMainAdvLayer(config, name="roberta")
         self.lm_head = TFRobertaLMHead(config, self.roberta.embeddings, name="lm_head")
 
     def get_output_embeddings(self):
@@ -883,7 +883,7 @@ class TFRobertaForSequenceClassification(TFRobertaPreTrainedModel, TFSequenceCla
         super().__init__(config, *inputs, **kwargs)
         self.num_labels = config.num_labels
 
-        self.roberta = TFRobertaMainLayer(config, name="roberta")
+        self.roberta = TFRobertaMainAdvLayer(config, name="roberta")
         self.classifier = TFRobertaClassificationHead(config, name="classifier")
 
     @add_start_docstrings_to_model_forward(ROBERTA_INPUTS_DOCSTRING.format("batch_size, sequence_length"))
@@ -962,7 +962,7 @@ class TFRobertaForMultipleChoice(TFRobertaPreTrainedModel, TFMultipleChoiceLoss)
     def __init__(self, config, *inputs, **kwargs):
         super().__init__(config, *inputs, **kwargs)
 
-        self.roberta = TFRobertaMainLayer(config, name="roberta")
+        self.roberta = TFRobertaMainAdvLayer(config, name="roberta")
         self.dropout = tf.keras.layers.Dropout(config.hidden_dropout_prob)
         self.classifier = tf.keras.layers.Dense(
             1, kernel_initializer=get_initializer(config.initializer_range), name="classifier"
@@ -1090,7 +1090,7 @@ class TFRobertaForTokenClassification(TFRobertaPreTrainedModel, TFTokenClassific
         super().__init__(config, *inputs, **kwargs)
         self.num_labels = config.num_labels
 
-        self.roberta = TFRobertaMainLayer(config, name="roberta")
+        self.roberta = TFRobertaMainAdvLayer(config, name="roberta")
         self.dropout = tf.keras.layers.Dropout(config.hidden_dropout_prob)
         self.classifier = tf.keras.layers.Dense(
             config.num_labels, kernel_initializer=get_initializer(config.initializer_range), name="classifier"
@@ -1177,7 +1177,7 @@ class TFRobertaForQuestionAnswering(TFRobertaPreTrainedModel, TFQuestionAnswerin
         super().__init__(config, *inputs, **kwargs)
         self.num_labels = config.num_labels
 
-        self.roberta = TFRobertaMainLayer(config, name="roberta")
+        self.roberta = TFRobertaMainAdvLayer(config, name="roberta")
         self.qa_outputs = tf.keras.layers.Dense(
             config.num_labels, kernel_initializer=get_initializer(config.initializer_range), name="qa_outputs"
         )
