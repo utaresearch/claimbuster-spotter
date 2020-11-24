@@ -432,10 +432,12 @@ class TFBertPooler(tf.keras.layers.Layer):
     def call(self, hidden_states):
         # We "pool" the model by simply taking the hidden state corresponding
         # to the first token.
-        first_token_tensor = hidden_states[:, 0]
-        pooled_output = self.dense(first_token_tensor)
+        # first_token_tensor = hidden_states[:, 0]
+        # pooled_output = self.dense(first_token_tensor)
 
-        return pooled_output
+        # return pooled_output
+
+        return self.dense(tf.reduce_mean(hidden_states, axis=1))
 
 
 class TFBertPredictionHeadTransform(tf.keras.layers.Layer):
@@ -639,8 +641,7 @@ class TFBertMainAdvLayer(tf.keras.layers.Layer):
             return_dict,
             training=training,
         )
-
-        sequence_output = tf.reduce_mean(encoder_outputs, axis=1)
+        sequence_output = encoder_outputs[0]
         pooled_output = self.pooler(sequence_output)
 
         if not return_dict:
