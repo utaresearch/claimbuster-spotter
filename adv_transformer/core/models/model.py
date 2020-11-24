@@ -41,7 +41,7 @@ class ClaimSpotterModel(tf.keras.models.Model):
         input_ph_id = tf.keras.layers.Input(shape=(FLAGS.cs_max_len,), dtype='int32')
         input_ph_sent = tf.keras.layers.Input(shape=(2,), dtype='float32')
 
-        self.layer.call((input_ph_id, input_ph_sent), training=False)
+        self.layer.call((input_ph_id, input_ph_sent), training=False, return_dict=True)
 
     def load_custom_model(self, loc=None):
         model_dir = (loc if loc is not None else FLAGS.cs_model_dir)
