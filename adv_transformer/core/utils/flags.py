@@ -77,7 +77,7 @@ flags.DEFINE_float('cs_perturb_norm_length', 2.0, 'Norm length of adversarial pe
 
 # Model Architecture
 flags.DEFINE_string('cs_tfm_type', 'bert-base-uncased', 'Type of transformer; see https://huggingface.co/transformers/pretrained_models.html')
-flags.DEFINE_string('cs_pooling_strategy', 'first', 'How to pool: using average of all steps or [CLS]')
+flags.DEFINE_string('cs_pool_strat', 'first', 'How to pool: using average of all steps or [CLS]')
 flags.DEFINE_bool('cs_tfm_ft_embed', False, 'Train transf embedding layer')
 flags.DEFINE_bool('cs_tfm_ft_pooler', True, 'Train transf pooler layer')
 flags.DEFINE_integer('cs_tfm_ft_enc_layers', 2, 'Last n encoding layers are marked as trainable')
@@ -118,7 +118,7 @@ flags.DEFINE_string('cs_prc_clef_loc', '{}/all_clef_data.pickle'.format(FLAGS.cs
 FLAGS.cs_prc_data_loc = FLAGS.cs_prc_data_loc[:-7] + '_{}'.format(FLAGS.cs_tfm_type) + '.pickle'
 
 # Sanity Checks
-assert FLAGS.cs_pooling_strategy in ['mean', 'first']
+assert FLAGS.cs_pool_strat in ['mean', 'first']
 assert FLAGS.cs_num_classes == 2, 'FLAGS.cs_num_classes must be 2: 3 class comparisons are deprecated.'
 assert FLAGS.cs_stat_print_interval % FLAGS.cs_model_save_interval == 0
 

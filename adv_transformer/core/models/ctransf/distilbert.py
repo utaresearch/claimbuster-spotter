@@ -484,6 +484,9 @@ class TFDistilBertMainAdvLayer(tf.keras.layers.Layer):
             training=training,
         )
 
+        print(tfmr_output['last_hidden_state'])
+        exit()
+
         ret_embed = embedding_output if get_embedding is not None else None
 
         return TFBaseModelOutput(

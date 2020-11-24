@@ -54,6 +54,7 @@ from transformers.modeling_tf_utils import (
 from transformers.tokenization_utils import BatchEncoding
 from transformers.utils import logging
 
+from adv_transformer.core.utils.flags import FLAGS
 
 logger = logging.get_logger(__name__)
 
@@ -614,7 +615,8 @@ class TFAlbertMainAdvLayer(tf.keras.layers.Layer):
         )
 
         sequence_output = encoder_outputs[0]
-        pooled_output = self.pooler(sequence_output[:, 0])
+        pooled_output = self.pooler(sequence_output if FLAGS.cs_pool_strat == 'first'
+                                    else tf.reduce_mean(encoder_outputs[0], axis=1))
 
         if not return_dict:
             return (

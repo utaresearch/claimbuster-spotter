@@ -49,6 +49,7 @@ from transformers.modeling_tf_utils import (
 from transformers.tokenization_utils_base import BatchEncoding
 from transformers.utils import logging
 
+from adv_transformer.core.utils.flags import FLAGS
 
 logger = logging.get_logger(__name__)
 
@@ -235,13 +236,8 @@ class TFRobertaPooler(tf.keras.layers.Layer):
             name="dense",
         )
 
-    def call(self, hidden_states):
-        # We "pool" the model by simply taking the hidden state corresponding
-        # to the first token.
-        first_token_tensor = hidden_states[:, 0]
-        pooled_output = self.dense(first_token_tensor)
-
-        return pooled_output
+    def call(self, hidden_states, pre_selected=False):
+        return self.dense(hidden_states[:, 0] if not pre_selected else hidden_states)
 
 
 # Copied from transformers.modeling_tf_bert.TFBertSelfAttention
@@ -596,7 +592,8 @@ class TFRobertaMainAdvLayer(tf.keras.layers.Layer):
         )
 
         sequence_output = encoder_outputs[0]
-        pooled_output = self.pooler(sequence_output)
+        pooled_output = self.pooler(sequence_output if FLAGS.cs_pool_strat == 'first'
+                                    else tf.reduce_mean(encoder_outputs[0], axis=1), pre_selected=True)
 
         if not return_dict:
             return (
