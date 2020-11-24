@@ -649,7 +649,7 @@ class TFBertMainAdvLayer(tf.keras.layers.Layer):
                 pooled_output,
             ) + encoder_outputs[1:]
 
-        ret_embed = embedding_output if get_embedding else None
+        ret_embed = embedding_output if get_embedding is not None else None
 
         return TFBaseModelOutputWithPooling(
             last_hidden_state=sequence_output,
