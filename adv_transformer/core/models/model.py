@@ -111,7 +111,6 @@ class ClaimSpotterLayer(tf.keras.layers.Layer):
         get_embedding = kwargs.get('get_embedding', -1)
 
         if get_embedding == -1:
-            # bert_output = self.bert_model(x_id, training=training, perturb=perturb)
             # bert_output = self.bert_model(x_id, training=training, return_dict=True)['pooler_output']
             bert_output = self.bert_model(x_id, training=training, perturb=perturb, return_dict=True)['pooler_output']
         else:
