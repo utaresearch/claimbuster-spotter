@@ -22,8 +22,8 @@
 import tensorflow as tf
 from bert.model import BertModelLayer
 from bert.transformer import TransformerEncoderLayer
-from bert_adversarial.core.models.advbert.pooler import PoolerLayer
-from bert_adversarial.core.models.advbert.embeddings import AdvBertEmbeddingsLayer
+from adv_transformer.core.models.advbert.pooler import PoolerLayer
+from adv_transformer.core.models.advbert.embeddings import AdvBertEmbeddingsLayer
 
 
 class AdvBertModelLayer(BertModelLayer):

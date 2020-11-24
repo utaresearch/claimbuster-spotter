@@ -23,10 +23,10 @@ import os
 import re
 import tensorflow as tf
 import json
-from bert_adversarial.core.utils.flags import FLAGS
+from adv_transformer.core.utils.flags import FLAGS
 from absl import logging
-from bert_adversarial.core.models.lang_model import LanguageModel
-from bert_adversarial.core.optimizers.adam import AdamWeightFriction
+from adv_transformer.core.models.lang_model import LanguageModel
+from adv_transformer.core.optimizers.adam import AdamWeightFriction
 
 
 class ClaimSpotterModel(tf.keras.models.Model):

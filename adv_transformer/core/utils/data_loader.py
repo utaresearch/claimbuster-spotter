@@ -28,8 +28,8 @@ from sklearn.utils import shuffle
 from sklearn.utils.class_weight import compute_class_weight
 from absl import logging
 from . import transformations as transf
-from bert_adversarial.core.models.advbert.tokenization.bert_tokenization import AdvFullTokenizer
-from bert_adversarial.core.models.custom_albert_tokenization import CustomAlbertTokenizer
+from adv_transformer.core.models.advbert.tokenization.bert_tokenization import AdvFullTokenizer
+from adv_transformer.core.models.custom_albert_tokenization import CustomAlbertTokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from .flags import FLAGS
 

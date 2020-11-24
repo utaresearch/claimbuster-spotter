@@ -138,7 +138,7 @@ python3 -m bert_adversarial.train \
 We provide an API wrapper in [core/api/api_wrapper.py](bert-adversarial/core/api/api_wrapper.py) to enable easy integration into other applications. There are two simple query functions that extract inference information for a single sentence. Below is a sample usage scenario:
 
 ```python
-from bert_adversarial.core.api.api_wrapper import ClaimSpotterAPI
+from adv_transformer.core.api.api_wrapper import ClaimSpotterAPI
 
 api = ClaimSpotterAPI()
 sentence = "ClaimBuster is a state-of-the-art, end-to-end fact-checking system."

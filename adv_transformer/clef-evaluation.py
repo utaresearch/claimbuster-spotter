@@ -26,7 +26,7 @@ from itertools import chain
 from sklearn import metrics as mt
 from copy import deepcopy
 from numpy import argmax
-from bert_adversarial.core.api.api_wrapper import ClaimSpotterAPI
+from adv_transformer.core.api.api_wrapper import ClaimSpotterAPI
 
 api = ClaimSpotterAPI()
 
