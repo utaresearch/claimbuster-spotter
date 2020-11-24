@@ -416,6 +416,8 @@ class TFDistilBertMainAdvLayer(tf.keras.layers.Layer):
         output_attentions=None,
         output_hidden_states=None,
         return_dict=None,
+        perturb=None,
+        get_embedding=None,
         training=False,
     ):
         if isinstance(inputs, (tuple, list)):
@@ -469,6 +471,9 @@ class TFDistilBertMainAdvLayer(tf.keras.layers.Layer):
             head_mask = [None] * self.num_hidden_layers
 
         embedding_output = self.embeddings(input_ids, inputs_embeds=inputs_embeds)  # (bs, seq_length, dim)
+        if perturb is not None:
+            embedding_output += perturb
+
         tfmr_output = self.transformer(
             embedding_output,
             attention_mask,
@@ -479,7 +484,14 @@ class TFDistilBertMainAdvLayer(tf.keras.layers.Layer):
             training=training,
         )
 
-        return tfmr_output  # last-layer hidden-state, (all hidden_states), (all attentions)
+        ret_embed = embedding_output if get_embedding is not None else None
+
+        return TFBaseModelOutput(
+            last_hidden_state=tfmr_output['last_hidden_state'],
+            hidden_states=tfmr_output['hidden_states'],
+            attentions=tfmr_output['attentions'],
+            orig_embedding=ret_embed
+        )
 
 
 # INTERFACE FOR ENCODER AND TASK SPECIFIC MODEL #

@@ -30,6 +30,7 @@ class TFBaseModelOutput(ModelOutput):
     last_hidden_state: tf.Tensor = None
     hidden_states: Optional[Tuple[tf.Tensor]] = None
     attentions: Optional[Tuple[tf.Tensor]] = None
+    orig_embedding: Optional[tf.Tensor] = None
 
 
 @dataclass
