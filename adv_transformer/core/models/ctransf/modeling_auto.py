@@ -65,7 +65,7 @@ from transformers.modeling_tf_camembert import (
     TFCamembertModel,
 )
 from transformers.modeling_tf_ctrl import TFCTRLLMHeadModel, TFCTRLModel
-from transformers.modeling_tf_distilbert import (
+from adv_transformer.core.models.ctransf.distilbert import (
     TFDistilBertForMaskedLM,
     TFDistilBertForMultipleChoice,
     TFDistilBertForQuestionAnswering,
@@ -99,7 +99,7 @@ from transformers.modeling_tf_mobilebert import (
     TFMobileBertModel,
 )
 from transformers.modeling_tf_openai import TFOpenAIGPTLMHeadModel, TFOpenAIGPTModel
-from transformers.modeling_tf_roberta import (
+from adv_transformer.core.models.ctransf.roberta import (
     TFRobertaForMaskedLM,
     TFRobertaForMultipleChoice,
     TFRobertaForQuestionAnswering,
