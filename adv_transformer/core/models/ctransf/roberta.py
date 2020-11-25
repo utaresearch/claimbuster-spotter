@@ -592,7 +592,7 @@ class TFRobertaMainAdvLayer(tf.keras.layers.Layer):
         )
 
         sequence_output = encoder_outputs[0]
-        pooled_output = self.pooler(sequence_output if FLAGS.cs_pool_strat == 'first'
+        pooled_output = self.pooler(sequence_output[:, 0] if FLAGS.cs_pool_strat == 'first'
                                     else tf.reduce_mean(encoder_outputs[0], axis=1), pre_selected=True)
 
         if not return_dict:
