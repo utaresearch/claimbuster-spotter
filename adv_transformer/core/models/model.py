@@ -88,7 +88,6 @@ class ClaimSpotterLayer(tf.keras.layers.Layer):
         config = AutoConfig.from_pretrained(FLAGS.cs_tfm_type)
         config.hidden_dropout_prob = 1 - FLAGS.cs_kp_tfm_hidden
         config.attention_probs_dropout_prob = 1 - FLAGS.cs_kp_tfm_attn
-        config.use_return_dict = True
 
         self.transf_model = TFAutoModel.from_pretrained(FLAGS.cs_tfm_type, config=config)
         self.pooler_weights = None
