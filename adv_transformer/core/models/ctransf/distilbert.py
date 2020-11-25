@@ -493,13 +493,14 @@ class TFDistilBertMainAdvLayer(tf.keras.layers.Layer):
             training=training,
         )
 
-        pooled_output = self.pooler(tfmr_output[:, 0] if FLAGS.cs_pool_strat == 'first'
-                                    else tf.reduce_mean(tfmr_output, axis=1))
+        sequence_output = tfmr_output['last_hidden_state']
+        pooled_output = self.pooler(sequence_output[:, 0] if FLAGS.cs_pool_strat == 'first'
+                                    else tf.reduce_mean(sequence_output, axis=1))
 
         ret_embed = embedding_output if get_embedding is not None else None
 
         return TFBaseModelOutputWithPooling(
-            last_hidden_state=tfmr_output['last_hidden_state'],
+            last_hidden_state=sequence_output,
             pooler_output=pooled_output,
             hidden_states=tfmr_output['hidden_states'],
             attentions=tfmr_output['attentions'],
