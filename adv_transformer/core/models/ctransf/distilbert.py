@@ -502,8 +502,8 @@ class TFDistilBertMainAdvLayer(tf.keras.layers.Layer):
         return TFBaseModelOutputWithPooling(
             last_hidden_state=sequence_output,
             pooler_output=pooled_output,
-            hidden_states=tfmr_output['hidden_states'],
-            attentions=tfmr_output['attentions'],
+            hidden_states=tfmr_output['hidden_states'] if 'hidden_states' in tfmr_output else None,
+            attentions=tfmr_output['attentions'] if 'attentions' in tfmr_output else None,
             orig_embedding=ret_embed
         )
 
