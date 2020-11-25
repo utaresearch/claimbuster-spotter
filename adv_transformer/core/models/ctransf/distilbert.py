@@ -415,7 +415,7 @@ class TFDistilBertMainAdvLayer(tf.keras.layers.Layer):
         inputs_embeds=None,
         output_attentions=None,
         output_hidden_states=None,
-        return_dict=None,
+        return_dict=True,
         perturb=None,
         get_embedding=None,
         training=False,
