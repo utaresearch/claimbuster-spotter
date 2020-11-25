@@ -51,6 +51,7 @@ from transformers.modeling_tf_utils import (
 from transformers.tokenization_utils import BatchEncoding
 from transformers.utils import logging
 
+from adv_transformer.core.utils.flags import FLAGS
 
 logger = logging.get_logger(__name__)
 
