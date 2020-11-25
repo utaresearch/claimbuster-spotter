@@ -93,3 +93,5 @@ nohup sh -c "python3 train.py --cs_k_fold=1 --cs_adv_train=True --cs_model_dir=o
 
 nohup sh -c "python3 -m adv_transformer.train --cs_model_dir=output --cs_gpu=0"&>nohup.out&
 nohup sh -c "python3 -m adv_transformer.train --cs_model_dir=output1 --cs_gpu=1 --cs_adv_train=True"&>nohup1.out&
+
+nohup sh -c "python3 -m adv_transformer.train --cs_model_dir=output1 --cs_gpu=1 --cs_pool_strat=mean"&>nohup1.out&

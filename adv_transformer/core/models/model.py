@@ -85,10 +85,12 @@ class ClaimSpotterLayer(tf.keras.layers.Layer):
     def __init__(self, cls_weights=None):
         super(ClaimSpotterLayer, self).__init__()
 
-        self.config = AutoConfig.from_pretrained(FLAGS.cs_tfm_type)
-        self.config.hidden_dropout_prob = 1 - FLAGS.cs_kp_tfm_hidden
-        self.config.attention_probs_dropout_prob = 1 - FLAGS.cs_kp_tfm_attn
-        self.bert_model = TFAutoModel.from_pretrained(FLAGS.cs_tfm_type, config=self.config)
+        config = AutoConfig.from_pretrained(FLAGS.cs_tfm_type)
+        config.hidden_dropout_prob = 1 - FLAGS.cs_kp_tfm_hidden
+        config.attention_probs_dropout_prob = 1 - FLAGS.cs_kp_tfm_attn
+        config.use_return_dict = True
+
+        self.transf_model = TFAutoModel.from_pretrained(FLAGS.cs_tfm_type, config=config)
         self.pooler_weights = None
 
         self.dropout_layer = tf.keras.layers.Dropout(rate=1-FLAGS.cs_kp_cls)
@@ -112,9 +114,9 @@ class ClaimSpotterLayer(tf.keras.layers.Layer):
 
         if get_embedding == -1:
             # bert_output = self.bert_model(x_id, training=training, return_dict=True)['pooler_output']
-            bert_output = self.bert_model(x_id, training=training, perturb=perturb, return_dict=True)['pooler_output']
+            bert_output = self.transf_model(x_id, training=training, perturb=perturb, return_dict=True)['pooler_output']
         else:
-            cur_res = self.bert_model(x_id, training=training, get_embedding=get_embedding, return_dict=True)
+            cur_res = self.transf_model(x_id, training=training, get_embedding=get_embedding, return_dict=True)
             orig_embed, bert_output = cur_res['orig_embedding'], cur_res['pooler_output']
 
         bert_output = tf.concat([bert_output, x_sent], axis=1)
@@ -202,7 +204,8 @@ class ClaimSpotterLayer(tf.keras.layers.Layer):
     def select_train_vars(self):
         train_vars = self.trainable_variables
 
-        non_trainable_layers = [f'_._{i}/' for i in range(self.config.num_hidden_layers - FLAGS.cs_tfm_ft_enc_layers)]
+        non_trainable_layers = [f'_._{i}/'
+                                for i in range(self.transf_model.config.num_hidden_layers - FLAGS.cs_tfm_ft_enc_layers)]
         if not FLAGS.cs_tfm_ft_embed:
             non_trainable_layers.append('/embeddings/')
         if not FLAGS.cs_tfm_ft_pooler:
