@@ -29,6 +29,7 @@ from transformers.file_utils import (
 )
 from adv_transformer.core.models.ctransf.modeling_tf_outputs import (
     TFBaseModelOutput,
+    TFBaseModelOutputWithPooling,
     TFMaskedLMOutput,
     TFMultipleChoiceModelOutput,
     TFQuestionAnsweringModelOutput,
@@ -397,6 +398,13 @@ class TFDistilBertMainAdvLayer(tf.keras.layers.Layer):
         self.embeddings = TFEmbeddings(config, name="embeddings")  # Embeddings
         self.transformer = TFTransformer(config, name="transformer")  # Encoder
 
+        self.pooler = tf.keras.layers.Dense(
+            config.hidden_size,
+            kernel_initializer=get_initializer(config.initializer_range),
+            activation="tanh",
+            name="pooler",
+        )
+
     def get_input_embeddings(self):
         return self.embeddings
 
@@ -484,13 +492,14 @@ class TFDistilBertMainAdvLayer(tf.keras.layers.Layer):
             training=training,
         )
 
-        print(tfmr_output['last_hidden_state'])
-        exit()
+        pooled_output = self.pooler(tfmr_output[:, 0] if FLAGS.cs_pool_strat == 'first'
+                                    else tf.reduce_mean(tfmr_output, axis=1))
 
         ret_embed = embedding_output if get_embedding is not None else None
 
-        return TFBaseModelOutput(
+        return TFBaseModelOutputWithPooling(
             last_hidden_state=tfmr_output['last_hidden_state'],
+            pooler_output=pooled_output,
             hidden_states=tfmr_output['hidden_states'],
             attentions=tfmr_output['attentions'],
             orig_embedding=ret_embed
