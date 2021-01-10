@@ -76,12 +76,10 @@ class ClaimSpotterAPI:
     @staticmethod
     def _apply_activation(x):
         r = FLAGS.cs_ca_r
-
         if not FLAGS.cs_custom_activation:
             inter = np.apply_along_axis(np.exp, 1, x)
         else:
             inter = np.apply_along_axis(lambda z: np.exp(r * z) / (np.exp(r * z) + 1), 1, x)
-
         return np.apply_along_axis(lambda z: z / z.sum(), 1, inter)
 
     @staticmethod
