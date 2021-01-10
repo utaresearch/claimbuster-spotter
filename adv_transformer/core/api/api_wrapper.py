@@ -39,7 +39,6 @@ class ClaimSpotterAPI:
         os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 
         self.return_strings = ['Non-factual sentence', 'Check-worthy factual statement']
-        # self.tokenizer = AdvFullTokenizer(os.path.join(FLAGS.cs_model_loc, "vocab.txt"), do_lower_case=True)
         self.tokenizer = AutoTokenizer.from_pretrained(FLAGS.cs_tfm_type)
 
         transf.load_dependencies()
