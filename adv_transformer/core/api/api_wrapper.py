@@ -71,9 +71,8 @@ class ClaimSpotterAPI:
         return ret
 
     def _create_bert_features(self, sentence_list):
-        # @TODO FIX THIS
-        features = [self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(x))
-                    for x in sentence_list]
+        features = self.tokenizer(sentence_list)['input_ids']
+        print(features)
         return DataLoader.pad_seq(features)
 
     @staticmethod
