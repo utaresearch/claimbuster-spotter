@@ -176,7 +176,8 @@ class ClaimSpotterLayer(tf.keras.layers.Layer):
     @tf.function
     def preds_on_batch(self, x):
         logits = self.call(x, training=False)
-        return tf.nn.softmax(logits)
+        # return tf.nn.softmax(logits)
+        return logits
 
     def compute_training_loss(self, y, logits):
         loss = self.compute_ce_loss(y, logits)
