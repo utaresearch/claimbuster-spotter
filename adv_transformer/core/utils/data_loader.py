@@ -34,14 +34,6 @@ from .flags import FLAGS
 from transformers import AutoTokenizer
 
 
-class XLNetExample():
-    def __init__(self, text_a, label, guid, text_b=None):
-        self.text_a = text_a
-        self.label = label
-        self.guid = guid
-        self.text_b = text_b
-
-
 class Dataset:
     x = []
     y = []
