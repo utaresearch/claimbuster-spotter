@@ -87,6 +87,10 @@ flags.DEFINE_float('cs_kp_tfm_hidden', 0.8, 'Keep probability of hidden dropout 
 flags.DEFINE_integer('cs_cls_hidden', 0, 'Size of hidden classification layer')
 flags.DEFINE_float('cs_kp_cls', 0.7, 'Keep probability of dropout in FC')
 
+# Predictions
+flags.DEFINE_bool('cs_custom_activation', True, 'Use custom sigmoid normalization for output probabilities')
+flags.DEFINE_float('cs_ca_r', 0.45, 'Scaling factor for sigmoid function in custom activation function')
+
 
 def clean_argv(inp):
 	ret = [inp[0]]

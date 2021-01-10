@@ -21,6 +21,7 @@
 #
 
 import os
+import numpy as np
 from adv_transformer.core.models.model import ClaimSpotterModel
 from adv_transformer.core.utils.data_loader import DataLoader
 from adv_transformer.core.utils import transformations as transf
@@ -67,11 +68,22 @@ class ClaimSpotterAPI:
         ret = []
         for x, x_sent in dataset:
             ret = ret + self.model.preds_on_batch((x, x_sent)).numpy().tolist()
-        return ret
+        return self._apply_activation(ret)
 
     def _create_tfm_features(self, sentence_list):
         features = self.tokenizer(sentence_list)['input_ids']
         return DataLoader.pad_seq(features)
+
+    @staticmethod
+    def _apply_activation(x):
+        r = FLAGS.cs_ca_r
+
+        if not FLAGS.cs_custom_activation:
+            inter = np.apply_along_axis(np.exp, 1, x)
+        else:
+            inter = np.apply_along_axis(lambda z: np.exp(r * z) / (np.exp(r * z) + 1), 1, x)
+
+        return np.apply_along_axis(lambda z: z / z.sum(), 1, inter)
 
     @staticmethod
     def _extract_info(sentence_list):
