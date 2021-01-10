@@ -89,7 +89,7 @@ flags.DEFINE_float('cs_kp_cls', 0.7, 'Keep probability of dropout in FC')
 
 # Predictions
 flags.DEFINE_bool('cs_custom_activation', True, 'Use custom sigmoid normalization for output probabilities')
-flags.DEFINE_float('cs_ca_r', 0.45, 'Scaling factor for sigmoid function in custom activation function')
+flags.DEFINE_float('cs_ca_r', 0.40, 'Scaling factor for sigmoid function in custom activation function')
 
 
 def clean_argv(inp):

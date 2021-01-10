@@ -10,8 +10,6 @@ if __name__ == '__main__':
 
     dfs = [pd.read_csv('data/sotu_2020.csv'), pd.read_csv('data/sotu_2019.csv'), pd.read_csv('data/debates_2020.csv')]
 
-    # dfs = [pd.read_csv('data/sotu_2020.csv')]
-    # dfs = [pd.read_csv('data/sotu_2019.csv')]
     df = pd.concat(dfs)
     df = df[['text']]
     df = df.dropna()
