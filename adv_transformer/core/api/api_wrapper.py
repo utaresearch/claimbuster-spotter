@@ -22,7 +22,6 @@
 
 import os
 from adv_transformer.core.models.model import ClaimSpotterModel
-from adv_transformer.core.models.advbert.tokenization.bert_tokenization import AdvFullTokenizer
 from adv_transformer.core.utils.data_loader import DataLoader
 from adv_transformer.core.utils import transformations as transf
 from adv_transformer.core.utils.flags import FLAGS
@@ -62,7 +61,7 @@ class ClaimSpotterAPI:
     def _prc_sentence_list(self, sentence_list):
         sentence_features = self._extract_info(sentence_list)
         return tf.data.Dataset.from_tensor_slices(
-            (self._create_bert_features(sentence_features[0]), sentence_features[1])).batch(FLAGS.cs_batch_size_reg)
+            (self._create_tfm_features(sentence_features[0]), sentence_features[1])).batch(FLAGS.cs_batch_size_reg)
 
     def _retrieve_model_preds(self, dataset):
         ret = []
@@ -70,7 +69,7 @@ class ClaimSpotterAPI:
             ret = ret + self.model.preds_on_batch((x, x_sent)).numpy().tolist()
         return ret
 
-    def _create_bert_features(self, sentence_list):
+    def _create_tfm_features(self, sentence_list):
         features = self.tokenizer(sentence_list)['input_ids']
         return DataLoader.pad_seq(features)
 

@@ -1,4 +1,6 @@
 # Adversarial Claim Spotting
+WARNING THIS IS DEPRECATED!!! NEW DOCUMENTATION COMING SOON!
+
 We present our application of adversarial training as a regularization technique, on top of a transformer network, for the purpose of determining whether a given claim is factual and worthy of fact-checking.
 
 ## Table of Contents

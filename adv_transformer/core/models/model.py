@@ -112,20 +112,19 @@ class ClaimSpotterLayer(tf.keras.layers.Layer):
         get_embedding = kwargs.get('get_embedding', -1)
 
         if get_embedding == -1:
-            # bert_output = self.bert_model(x_id, training=training, return_dict=True)['pooler_output']
-            bert_output = self.transf_model(x_id, training=training, perturb=perturb, return_dict=True)['pooler_output']
+            tfm_output = self.transf_model(x_id, training=training, perturb=perturb, return_dict=True)['pooler_output']
         else:
             cur_res = self.transf_model(x_id, training=training, get_embedding=get_embedding, return_dict=True)
-            orig_embed, bert_output = cur_res['orig_embedding'], cur_res['pooler_output']
+            orig_embed, tfm_output = cur_res['orig_embedding'], cur_res['pooler_output']
 
-        bert_output = tf.concat([bert_output, x_sent], axis=1)
-        bert_output = self.dropout_layer(bert_output, training=training)
+        tfm_output = tf.concat([tfm_output, x_sent], axis=1)
+        tfm_output = self.dropout_layer(tfm_output, training=training)
 
         if FLAGS.cs_cls_hidden:
-            bert_output = self.fc_hidden_layer(bert_output)
-            bert_output = self.dropout_layer(bert_output, training=training)
+            tfm_output = self.fc_hidden_layer(tfm_output)
+            tfm_output = self.dropout_layer(tfm_output, training=training)
 
-        ret = self.fc_output_layer(bert_output)
+        ret = self.fc_output_layer(tfm_output)
 
         if not self.vars_to_train:
             self.vars_to_train = self.select_train_vars()
