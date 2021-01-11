@@ -67,7 +67,6 @@ class ClaimSpotterAPI:
         ret = []
         for x, x_sent in dataset:
             ret = ret + self.model.preds_on_batch((x, x_sent)).numpy().tolist()
-        # return ret
         return self._apply_activation(ret)
 
     def _create_tfm_features(self, sentence_list):

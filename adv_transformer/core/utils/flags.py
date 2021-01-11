@@ -33,7 +33,7 @@ flags.DEFINE_bool('cs_ner_spacy', False, 'Named entity recognition with spaCy')
 
 # Base directories
 flags.DEFINE_string('cs_model_dir', './output', 'Location of model (both input and output)')
-flags.DEFINE_string('cs_model_ckpt', 'bert_claimspotter.ckpt', 'Filename of model .ckpt')
+flags.DEFINE_string('cs_model_ckpt', 'claimspotter.ckpt', 'Filename of model .ckpt')
 flags.DEFINE_string('cs_data_dir', './data', 'Location of data')
 flags.DEFINE_string('cs_kfold_data_file', 'kfold_25ncs.json', 'Data file to use during KFold cross validation.')
 flags.DEFINE_string('cs_reg_train_file', 'train.json', 'Data file to use for non-KFold training.')

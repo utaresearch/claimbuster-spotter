@@ -121,6 +121,4 @@ nohup sh -c "python3 -m adv_transformer.train --cs_model_dir=output_roberta_larg
 
 
 # prod
-nohup sh -c "python3 -m adv_transformer.train --cs_model_dir=output_distilbert_adv --cs_gpu=0 --cs_tfm_type=distilbert-base-uncased --cs_adv_train=True --cs_train_steps=15 --cs_k_fold=1"&>nohup_distilbert_adv.out&
-
-nohup sh -c "python3 -m adv_transformer.train --cs_adv_train=True --cs_train_steps=15 --cs_k_fold=1 --cs_model_dir=output_distilbert_adv2 --cs_gpu=1 --cs_tfm_type=distilbert-base-uncased --cs_tfm_ft_enc_layers=1"&>nohup_distilbert_adv2.out&
+nohup sh -c "python3 -m adv_transformer.train --cs_model_dir=output_distilbert_adv --cs_gpu=0 --cs_tfm_type=distilbert-base-uncased --cs_adv_train=True --cs_train_steps=10 --cs_k_fold=1 --cs_reg_train_file=kfold_25ncs.json"&>nohup_distilbert_adv.out&
