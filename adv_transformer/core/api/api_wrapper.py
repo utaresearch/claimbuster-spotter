@@ -45,7 +45,13 @@ class ClaimSpotterAPI:
 
         self.model = ClaimSpotterModel()
         self.model.warm_up()
-        self.model.load_custom_model()
+
+        try:
+            self.model.load_custom_model()
+        except FileNotFoundError as e:
+            print(e)
+            print('Error loading model, defaulting to pretrained transformer + random initialization. '
+                  'MAKE SURE THIS IS INTENDED!')
 
     def subscribe_cmdline_query(self):
         print('Enter a sentence to process')
