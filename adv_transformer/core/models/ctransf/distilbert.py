@@ -510,7 +510,6 @@ class TFDistilBertMainAdvLayer(tf.keras.layers.Layer):
 
         embedding_output, ret_embed = self.embeddings(input_ids, get_embedding=get_embedding,
                                                       inputs_embeds=inputs_embeds)  # (bs, seq_length, dim)
-        ret_embed = ret_embed if get_embedding is not None else None
         if perturb is not None:
             embedding_output += perturb
 
