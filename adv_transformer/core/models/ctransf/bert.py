@@ -580,7 +580,7 @@ class TFBertMainAdvLayer(tf.keras.layers.Layer):
         output_hidden_states=None,
         return_dict=None,
         perturb=None,
-        get_embedding=None,
+        get_embedding=-1,
         training=False,
     ):
         if isinstance(inputs, (tuple, list)):
