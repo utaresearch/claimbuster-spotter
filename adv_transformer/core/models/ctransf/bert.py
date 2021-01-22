@@ -189,7 +189,7 @@ class TFBertEmbeddings(tf.keras.layers.Layer):
         position_embeddings = tf.cast(self.position_embeddings(position_ids), inputs_embeds.dtype)
         token_type_embeddings = tf.cast(self.token_type_embeddings(token_type_ids), inputs_embeds.dtype)
 
-        ret_embed = tf.Variable(0)
+        ret_embed = tf.constant(0)
 
         if get_embedding != -1:
             all_embeddings = {
@@ -200,7 +200,6 @@ class TFBertEmbeddings(tf.keras.layers.Layer):
             perturbable = [('pos', 'seg', 'tok'), ('pos', 'seg'), ('pos', 'tok'), ('seg', 'tok'), ('pos',), ('seg',),
                            ('tok',)]
             cfg = perturbable[get_embedding]
-            print(cfg)
 
             changed = False
             for el in cfg:
@@ -211,7 +210,6 @@ class TFBertEmbeddings(tf.keras.layers.Layer):
                     ret_embed += all_embeddings[el]
 
             embedding_output = ret_embed
-            print(embedding_output)
 
             diff = set(perturbable[0]).difference(cfg)
             for el in diff:
