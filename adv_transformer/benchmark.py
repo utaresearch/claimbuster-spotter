@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import string
 import random
 import time
@@ -13,7 +14,12 @@ def generate_sentence():
 if __name__ == '__main__':
     api = ClaimSpotterAPI()
 
-    sentence_list = [generate_sentence() for _ in range(5000)]
+    # sentence_list = [generate_sentence() for _ in range(5000)]
+
+    df = pd.read_csv('./data/benchmark_test.csv')
+    sentence_list = df['text'].tolist()
+    n = min(sentence_list, 10000)
+    sentence_list = np.random.choice(sentence_list, n, replace=False)
 
     print('### warm up ###')
 
