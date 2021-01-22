@@ -628,8 +628,7 @@ class TFBertMainAdvLayer(tf.keras.layers.Layer):
             token_type_ids = tf.fill(input_shape, 0)
 
         embedding_output, ret_embed = self.embeddings(input_ids, position_ids, token_type_ids, inputs_embeds,
-                                                      get_embedding=(FLAGS.cs_perturb_id if FLAGS.cs_adv_train else -1),
-                                                      training=training)
+                                                      get_embedding=get_embedding, training=training)
         ret_embed = ret_embed if get_embedding is not None else None
         if perturb is not None:
             embedding_output += perturb

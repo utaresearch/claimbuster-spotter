@@ -98,7 +98,8 @@ class TFEmbeddings(tf.keras.layers.Layer):
             )
         super().build(input_shape)
 
-    def call(self, input_ids=None, position_ids=None, inputs_embeds=None, mode="embedding", training=False):
+    def call(self, input_ids=None, position_ids=None, inputs_embeds=None, mode="embedding",
+             get_embedding=-1, training=False):
         """
         Get token embeddings of inputs.
 
@@ -118,13 +119,14 @@ class TFEmbeddings(tf.keras.layers.Layer):
         https://github.com/tensorflow/models/blob/a009f4fb9d2fc4949e32192a944688925ef78659/official/transformer/v2/embedding_layer.py#L24
         """
         if mode == "embedding":
-            return self._embedding(input_ids, position_ids, inputs_embeds, training=training)
+            return self._embedding(input_ids, position_ids, inputs_embeds,
+                                   get_embedding=get_embedding, training=training)
         elif mode == "linear":
             return self._linear(input_ids)
         else:
             raise ValueError("mode {} is not valid.".format(mode))
 
-    def _embedding(self, input_ids, position_ids, inputs_embeds, training=False):
+    def _embedding(self, input_ids, position_ids, inputs_embeds, get_embedding, training=False):
         """
         Parameters:
             input_ids: tf.Tensor(bs, max_seq_length) The token ids to embed.
@@ -148,10 +150,37 @@ class TFEmbeddings(tf.keras.layers.Layer):
             self.position_embeddings(position_ids), inputs_embeds.dtype
         )  # (bs, max_seq_length, dim)
 
-        embeddings = inputs_embeds + position_embeddings  # (bs, max_seq_length, dim)
-        embeddings = self.LayerNorm(embeddings)  # (bs, max_seq_length, dim)
+        ret_embed = tf.constant(0)
+
+        if get_embedding != -1:
+            all_embeddings = {
+                'tok': inputs_embeds,
+                'pos': position_embeddings
+            }
+            perturbable = [('pos', 'seg', 'tok'), ('pos', 'seg'), ('pos', 'tok'), ('seg', 'tok'), ('pos',), ('seg',),
+                           ('tok',)]
+            assert get_embedding not in [0, 1, 3, 5], f'You can\'t perturb an embedding that doesn\'t exist: seg'
+            cfg = perturbable[get_embedding]
+
+            changed = False
+            for el in cfg:
+                if not changed:
+                    ret_embed = all_embeddings[el]
+                    changed = True
+                else:
+                    ret_embed += all_embeddings[el]
+
+            embedding_output = ret_embed
+
+            diff = set(perturbable[0]).difference(cfg)
+            for el in diff:
+                embedding_output += all_embeddings[el]
+        else:
+            embedding_output = inputs_embeds + position_embeddings
+
+        embeddings = self.LayerNorm(embedding_output)  # (bs, max_seq_length, dim)
         embeddings = self.dropout(embeddings, training=training)  # (bs, max_seq_length, dim)
-        return embeddings
+        return embeddings, ret_embed
 
     def _linear(self, inputs):
         """
@@ -479,7 +508,9 @@ class TFDistilBertMainAdvLayer(tf.keras.layers.Layer):
 
             head_mask = [None] * self.num_hidden_layers
 
-        embedding_output = self.embeddings(input_ids, inputs_embeds=inputs_embeds)  # (bs, seq_length, dim)
+        embedding_output, ret_embed = self.embeddings(input_ids, get_embedding=get_embedding,
+                                                      inputs_embeds=inputs_embeds)  # (bs, seq_length, dim)
+        ret_embed = ret_embed if get_embedding is not None else None
         if perturb is not None:
             embedding_output += perturb
 
@@ -496,8 +527,6 @@ class TFDistilBertMainAdvLayer(tf.keras.layers.Layer):
         sequence_output = tfmr_output['last_hidden_state']
         pooled_output = self.pooler(sequence_output[:, 0] if FLAGS.cs_pool_strat == 'first'
                                     else tf.reduce_mean(sequence_output, axis=1))
-
-        ret_embed = embedding_output if get_embedding is not None else None
 
         return TFBaseModelOutputWithPooling(
             last_hidden_state=sequence_output,
