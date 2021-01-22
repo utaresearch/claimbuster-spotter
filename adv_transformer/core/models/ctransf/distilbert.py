@@ -172,7 +172,7 @@ class TFEmbeddings(tf.keras.layers.Layer):
 
             embedding_output = ret_embed
 
-            diff = set(perturbable[0]).difference(cfg)
+            diff = set(perturbable[2]).difference(cfg)
             for el in diff:
                 embedding_output += all_embeddings[el]
         else:
