@@ -2,8 +2,8 @@ import numpy as np
 import string
 import random
 import time
-from core.api.api_wrapper import ClaimSpotterAPI
-from core.utils.flags import FLAGS
+from adv_transformer.core.api.api_wrapper import ClaimSpotterAPI
+from adv_transformer.core.utils.flags import FLAGS
 
 
 def generate_sentence():
