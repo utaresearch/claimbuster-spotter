@@ -15,6 +15,11 @@ if __name__ == '__main__':
 
     sentence_list = [generate_sentence() for _ in range(5000)]
 
+    print('### warm up ###')
+
+    for el in sentence_list[:500]:
+        api.single_sentence_query(el)
+
     print('### single query test ###')
 
     gstart = time.time()
