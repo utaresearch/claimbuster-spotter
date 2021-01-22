@@ -18,7 +18,7 @@ if __name__ == '__main__':
 
     df = pd.read_csv('./data/benchmark_test.csv')
     sentence_list = df['text'].tolist()
-    n = min(sentence_list, 10000)
+    n = min(len(sentence_list), 10000)
     sentence_list = np.random.choice(sentence_list, n, replace=False)
 
     print('### warm up ###')
