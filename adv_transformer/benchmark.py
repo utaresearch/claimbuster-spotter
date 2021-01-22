@@ -13,6 +13,7 @@ def generate_sentence():
 
 if __name__ == '__main__':
     api = ClaimSpotterAPI()
+    np.random.seed(42)
 
     # sentence_list = [generate_sentence() for _ in range(5000)]
 
