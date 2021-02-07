@@ -114,8 +114,8 @@ flags.DEFINE_string('cs_model_loc', '{}/{}_pretrain'.format(FLAGS.cs_data_dir, F
 flags.DEFINE_string('cs_raw_kfold_data_loc', '{0}/two_class/{1}'.format(FLAGS.cs_data_dir, FLAGS.cs_kfold_data_file), 'Location of raw data for k-fold cross validation')
 flags.DEFINE_string('cs_raw_data_loc', '{0}/two_class/{1}'.format(FLAGS.cs_data_dir, FLAGS.cs_reg_train_file), 'Location of raw training data')
 flags.DEFINE_string('cs_raw_dj_eval_loc', '{0}/two_class/{1}'.format(FLAGS.cs_data_dir, FLAGS.cs_reg_test_file), 'Location of raw testing data')
-flags.DEFINE_string('cs_raw_clef_train_loc', '{}/clef/CT19-T1-Training.csv'.format(FLAGS.cs_data_dir), 'Location of raw CLEF .csv data')
-flags.DEFINE_string('cs_raw_clef_test_loc', '{}/clef/CT19-T1-Test.csv'.format(FLAGS.cs_data_dir), 'Location of raw CLEF .csv data')
+flags.DEFINE_string('cs_raw_clef_train_loc', '{}/clef20/training_v2.tsv'.format(FLAGS.cs_data_dir), 'Location of raw CLEF .csv data')
+flags.DEFINE_string('cs_raw_clef_test_loc', '{}/clef20/dev_v2.tsv'.format(FLAGS.cs_data_dir), 'Location of raw CLEF .csv data')
 flags.DEFINE_string('cs_prc_data_loc', '{}/all_data.pickle'.format(FLAGS.cs_data_dir), 'Location of saved processed data')
 flags.DEFINE_string('cs_prc_clef_loc', '{}/all_clef_data.pickle'.format(FLAGS.cs_data_dir), 'Location of saved processed CLEF data')
 
