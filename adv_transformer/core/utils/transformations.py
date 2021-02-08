@@ -322,14 +322,21 @@ def strip_chars(inpstr, to_strip=string.punctuation):
 
 
 def transform_sentence_complete(sentence):
+    def camel_case_split(identifier):
+        matches = re.finditer('.+?(?:(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])|$)', identifier)
+        return [m.group(0) for m in matches]
+
+    # if FLAGS.cs_use_clef_data:
     sentence = emoji.get_emoji_regexp().sub(r'', sentence)
     sentence = re.sub('(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)', '', sentence)
-    sentence = sentence.replace('#', '').strip()
-    sentence = sentence.replace('@', '').strip()
+    sentence = re.sub('^@?(\w){1,15}$', 'user', sentence)
+    sentence = ' '.join([' '.join(camel_case_split(x[1:])) if x[0] == '#' else x for x in sentence.split()])
     sentence = correct_mistakes(sentence)
 
+    print(sentence)
+
     if not FLAGS.cs_custom_preprc:
-        return sentence
+        return sentence.strip()
 
     sentence = (process_sentence_ner_spacy(sentence) if FLAGS.cs_ner_spacy else sentence)
     sentence = ' '.join(text_to_word_sequence(sentence))
@@ -338,7 +345,7 @@ def transform_sentence_complete(sentence):
     sentence = remove_possessives(sentence)
     sentence = remove_kill_words(sentence)
 
-    return sentence
+    return sentence.strip()
 
 
 def process_dataset(inp_data):
