@@ -331,7 +331,7 @@ def transform_sentence_complete(sentence):
     sentence = re.sub('(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)', '', sentence)
     # sentence = re.sub('^@?(\w){1,15}$', 'user', sentence)
     sentence = ' '.join([' '.join(camel_case_split(x[1:])) if x[0] == '#' or x[0] == '@' else x for x in sentence.split()])
-    sentence = ' '.join(['virus' if 'covid' in x.lower() else x for x in sentence.split()])
+    sentence = ' '.join(['virus' if any([y in x.lower() for y in ['covid', 'corona']]) else x for x in sentence.split()])
     sentence = correct_mistakes(sentence)
 
     print(sentence)
