@@ -24,6 +24,7 @@ import pandas as pd
 import pickle
 import os
 import json
+import emoji
 from sklearn.utils import shuffle
 from sklearn.utils.class_weight import compute_class_weight
 from absl import logging
@@ -91,7 +92,8 @@ class DataLoader:
         def read_clef_from_file(loc):
             yr = 2020 if 'clef20' in loc else 2019
             df = pd.read_csv(loc, delimiter=('\t' if yr == 2020 else ','))
-            ret_txt, ret_lab = ([row['tweet_text' if yr == 2020 else 'text'] for idx, row in df.iterrows()],
+            ret_txt, ret_lab = ([emoji.get_emoji_regexp().sub(r'', row['tweet_text' if yr == 2020 else 'text'].decode('utf8'))
+                                 for idx, row in df.iterrows()],
                                 [row['check_worthiness' if yr == 2020 else 'label'] for idx, row in df.iterrows()])
             return ret_txt, ret_lab
 
