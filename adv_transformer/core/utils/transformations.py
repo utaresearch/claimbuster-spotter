@@ -23,6 +23,8 @@
 import nltk
 import spacy
 import string
+import emoji
+import re
 from textblob import TextBlob
 from tensorflow.keras.preprocessing.text import text_to_word_sequence
 from tqdm import tqdm
@@ -320,6 +322,8 @@ def strip_chars(inpstr, to_strip=string.punctuation):
 
 
 def transform_sentence_complete(sentence):
+    sentence = emoji.get_emoji_regexp().sub(r'', sentence)
+    sentence = re.sub('(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)', '', sentence)
     sentence = correct_mistakes(sentence)
 
     if not FLAGS.cs_custom_preprc:
