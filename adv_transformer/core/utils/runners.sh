@@ -127,15 +127,16 @@ nohup sh -c "python3 -m adv_transformer.train --cs_model_dir=output_roberta_larg
 nohup sh -c "python3 -m adv_transformer.train --cs_model_dir=output_distilbert_adv --cs_gpu=0 --cs_tfm_type=distilbert-base-uncased --cs_adv_train=True --cs_train_steps=10 --cs_k_fold=1 --cs_reg_train_file=kfold_25ncs.json"&>nohup_distilbert_adv.out&
 
 # clef eval
-nohup sh -c "python3 -m adv_transformer.train --cs_model_dir=output_distilbert_adv_clef --cs_gpu=0 --cs_tfm_type=distilbert-base-uncased --cs_adv_train=True --cs_train_steps=10 --cs_use_clef_data=True --cs_k_fold=1 --cs_tfm_ft_enc_layers=3"&>nohup_distilbert_adv_clef.out&
-nohup sh -c "python3 -m adv_transformer.train --cs_model_dir=output_bert_adv_clef --cs_gpu=0 --cs_tfm_type=bert-base-uncased --cs_adv_train=True --cs_train_steps=30 --cs_use_clef_data=True --cs_k_fold=1"&>nohup_bert_adv_clef.out&
-nohup sh -c "python3 -m adv_transformer.train --cs_model_dir=output_roberta_adv_clef --cs_gpu=0 --cs_tfm_type=roberta-base --cs_adv_train=True --cs_train_steps=30 --cs_use_clef_data=True --cs_k_fold=1 --"&>nohup_roberta_adv_clef.out&
+nohup sh -c "python3 -m adv_transformer.train --cs_model_dir=output_distilbert_adv_clef --cs_gpu=1 --cs_tfm_type=distilbert-base-uncased --cs_adv_train=True --cs_train_steps=10 --cs_use_clef_data=True --cs_k_fold=1 --cs_tfm_ft_enc_layers=3"&>nohup_distilbert_adv_clef.out&
+nohup sh -c "python3 -m adv_transformer.train --cs_model_dir=output_bert_adv_clef --cs_gpu=1 --cs_tfm_type=bert-base-uncased --cs_adv_train=True --cs_train_steps=20 --cs_use_clef_data=True --cs_k_fold=1 --cs_refresh_data=True"&>nohup_bert_adv_clef.out&
+nohup sh -c "python3 -m adv_transformer.train --cs_model_dir=output_roberta_adv_clef --cs_gpu=1 --cs_tfm_type=roberta-base --cs_adv_train=True --cs_train_steps=20 --cs_use_clef_data=True --cs_k_fold=1 --cs_refresh_data=True"&>nohup_roberta_adv_clef.out&
 
-python3 -m adv_transformer.benchmark --cs_model_dir=output_distilbert_adv --cs_gpu=0 --cs_tfm_type=distilbert-base-uncased
+python3 -m adv_transformer.benchmark --cs_model_dir=output_distilbert_adv_clef --cs_gpu=0 --cs_tfm_type=distilbert-base-uncased
 python3 -m adv_transformer.benchmark --cs_gpu=1 --cs_tfm_type=bert-base-uncased
 python3 -m adv_transformer.benchmark --cs_gpu=1 --cs_tfm_type=roberta-base
 
-python3 -m adv_transformer.clef_eval_2020 --cs_model_dir=output_distilbert_adv_clef/fold_01_009 --cs_gpu=1 --cs_tfm_type=distilbert-base-uncased
+python3 -m adv_transformer.clef_eval_2020 --cs_model_dir=output_roberta_adv_clef --cs_gpu=1 --cs_tfm_type=roberta-base
+python3 -m adv_transformer.clef_eval_2020 --cs_model_dir=output_distilbert_adv_clef --cs_gpu=1 --cs_tfm_type=distilbert-base-uncased
 python3 scorer/main.py --gold_file_path="./test-input/test-input/test-gold.tsv" --pred_file_path="../clef-out.tsv"
 
 python3 -m adv_transformer.train --cs_model_dir=output_bert_clef --cs_gpu=0 --cs_tfm_type=bert-base-uncased --cs_train_steps=30 --cs_use_clef_data=True --cs_k_fold=1

@@ -324,6 +324,7 @@ def strip_chars(inpstr, to_strip=string.punctuation):
 def transform_sentence_complete(sentence):
     sentence = emoji.get_emoji_regexp().sub(r'', sentence)
     sentence = re.sub('(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)', '', sentence)
+    sentence = sentence.replace('#', '')
     sentence = correct_mistakes(sentence)
 
     if not FLAGS.cs_custom_preprc:
