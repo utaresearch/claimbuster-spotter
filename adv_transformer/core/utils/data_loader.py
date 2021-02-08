@@ -92,7 +92,7 @@ class DataLoader:
         def read_clef_from_file(loc):
             yr = 2020 if 'clef20' in loc else 2019
             df = pd.read_csv(loc, delimiter=('\t' if yr == 2020 else ','))
-            ret_txt, ret_lab = ([emoji.get_emoji_regexp().sub(r'', row['tweet_text' if yr == 2020 else 'text'].decode('utf8'))
+            ret_txt, ret_lab = ([emoji.get_emoji_regexp().sub(r'', row['tweet_text' if yr == 2020 else 'text'])
                                  for idx, row in df.iterrows()],
                                 [row['check_worthiness' if yr == 2020 else 'label'] for idx, row in df.iterrows()])
             return ret_txt, ret_lab
