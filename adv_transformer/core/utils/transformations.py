@@ -326,15 +326,15 @@ def transform_sentence_complete(sentence):
         matches = re.finditer('.+?(?:(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])|$)', identifier)
         return [m.group(0) for m in matches]
 
-    # if FLAGS.cs_use_clef_data:
-    sentence = emoji.get_emoji_regexp().sub(r'', sentence)
-    sentence = re.sub('(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)', 'url', sentence)
-    # sentence = re.sub('^@?(\w){1,15}$', 'user', sentence)
-    sentence = ' '.join([' '.join(camel_case_split(x[1:])) if x[0] == '#' or x[0] == '@' else x for x in sentence.split()])
-    sentence = ' '.join(['ebola' if any([y in x.lower() for y in ['covid', 'corona']]) else x for x in sentence.split()])
-    sentence = correct_mistakes(sentence)
+    if FLAGS.cs_use_clef_data and 'task1' in FLAGS.cs_raw_clef_train_loc:
+        sentence = emoji.get_emoji_regexp().sub(r'', sentence)
+        sentence = re.sub('(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)', 'url', sentence)
+        # sentence = re.sub('^@?(\w){1,15}$', 'user', sentence)
+        sentence = ' '.join([' '.join(camel_case_split(x[1:])) if x[0] == '#' or x[0] == '@' else x for x in sentence.split()])
+        sentence = ' '.join(['ebola' if any([y in x.lower() for y in ['covid', 'corona']]) else x for x in sentence.split()])
+        print(sentence)
 
-    print(sentence)
+    sentence = correct_mistakes(sentence)
 
     if not FLAGS.cs_custom_preprc:
         return sentence.strip()

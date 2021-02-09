@@ -90,9 +90,10 @@ class DataLoader:
     def load_ext_data():
         def read_clef_from_file(loc):
             yr = 2020 if 'clef20' in loc else 2019
+            task = 1 if 'task1' in loc else 5
             df = pd.read_csv(loc, delimiter=('\t' if yr == 2020 else ','))
-            ret_txt, ret_lab = ([row['tweet_text' if yr == 2020 else 'text'] for idx, row in df.iterrows()],
-                                [row['check_worthiness' if yr == 2020 else 'label'] for idx, row in df.iterrows()])
+            ret_txt, ret_lab = ([row['tweet_text' if yr == 2020 and task == 1 else 'text'] for idx, row in df.iterrows()],
+                                [row['check_worthiness' if yr == 2020 and task == 1 else 'label'] for idx, row in df.iterrows()])
             return ret_txt, ret_lab
 
         data_loc = (FLAGS.cs_prc_data_loc if not FLAGS.cs_use_clef_data else FLAGS.cs_prc_clef_loc)
