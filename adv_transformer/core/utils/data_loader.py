@@ -101,7 +101,7 @@ class DataLoader:
             if yr == 2020 and task == 5 and 'train.tsv' in loc or 'test-gold.tsv' in loc:
                 for i in reversed(range(len(ret_txt))):
                     if ret_lab[i] == 0:
-                        if np.random.uniform() < 0.8:
+                        if np.random.uniform() < 0.9:
                             del ret_txt[i]
                             del ret_lab[i]
             return ret_txt, ret_lab
