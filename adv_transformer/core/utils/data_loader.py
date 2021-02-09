@@ -24,6 +24,7 @@ import pandas as pd
 import pickle
 import os
 import json
+import numpy as np
 from sklearn.utils import shuffle
 from sklearn.utils.class_weight import compute_class_weight
 from absl import logging
@@ -32,6 +33,8 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 from .flags import FLAGS
 
 from transformers import AutoTokenizer
+
+np.random.set_state(FLAGS.cs_random_state)
 
 
 class Dataset:
@@ -94,6 +97,13 @@ class DataLoader:
             df = pd.read_csv(loc, delimiter=('\t' if yr == 2020 else ','))
             ret_txt, ret_lab = ([row['tweet_text' if yr == 2020 and task == 1 else 'text'] for idx, row in df.iterrows()],
                                 [row['check_worthiness' if yr == 2020 and task == 1 else 'label'] for idx, row in df.iterrows()])
+
+            if yr == 2020 and task == 5 and 'train.tsv' in loc:
+                for i in reversed(range(len(ret_txt))):
+                    if ret_lab == 0:
+                        if np.random.uniform() > 0.8:
+                            del ret_txt[i]
+                            del ret_lab[i]
             return ret_txt, ret_lab
 
         data_loc = (FLAGS.cs_prc_data_loc if not FLAGS.cs_use_clef_data else FLAGS.cs_prc_clef_loc)
