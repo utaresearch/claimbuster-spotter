@@ -98,7 +98,7 @@ class DataLoader:
             ret_txt, ret_lab = ([row['tweet_text' if yr == 2020 and task == 1 else 'text'] for idx, row in df.iterrows()],
                                 [row['check_worthiness' if yr == 2020 and task == 1 else 'label'] for idx, row in df.iterrows()])
 
-            if yr == 2020 and task == 5 and 'train.tsv' in loc:
+            if yr == 2020 and task == 5 and 'train.tsv' in loc or 'test-gold.tsv' in loc:
                 for i in reversed(range(len(ret_txt))):
                     if ret_lab == 0:
                         if np.random.uniform() > 0.8:
