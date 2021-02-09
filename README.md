@@ -1,13 +1,10 @@
 # Claim Spotting
 In this repository we are providing code to train claim-spotting models via:
-  - [SVM](https://github.com/idirlab/claimspotter/tree/master/svm)
-  - [Bi-Directional LSTM](https://github.com/idirlab/claimspotter/tree/master/bidirectional-lstm)
-  - [Adversarial Training on a Transformer Model](https://github.com/idirlab/claimspotter/tree/master/bert-adversarial)
+  - [SVM](https://github.com/idirlab/claimspotter/tree/master/svm) <a href="https://colab.research.google.com/github/claimspotter/tree/master/svm/svm-notebook.ipynb" target="_parent\"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a>
+  - [Bi-Directional LSTM](https://github.com/idirlab/claimspotter/tree/master/bidirectional-lstm) <a href="https://colab.research.google.com/github/claimspotter/tree/master/bidirectional-lstm/bilstm-notebook.ipynb" target="_parent\"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a>
+  - [Adversarial Training on a Transformer Model](https://github.com/idirlab/claimspotter/tree/master/bert-adversarial) ^
 
-### SVM and BiLSTM Code
-We have also hosted the SVM and BiLSTM code in Colab's. The transformer code is more complex, so we do not have a Colab setup for that.
- - SVM: https://colab.research.google.com/drive/1znXCY3Q005_VP4UQnUzPXTXBZrzA6iHB
- - BiLSTM: https://colab.research.google.com/drive/1-jw75dQubG6PwO-kePRIs5zpBYjz8FM6
+^ The transformer code is more complex, so we do not have a Colab setup for that.
 
 ## Contributors
 
