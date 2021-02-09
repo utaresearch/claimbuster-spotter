@@ -34,7 +34,7 @@ from .flags import FLAGS
 
 from transformers import AutoTokenizer
 
-np.random.set_state(FLAGS.cs_random_state)
+np.random.seed(FLAGS.cs_random_state)
 
 
 class Dataset:
