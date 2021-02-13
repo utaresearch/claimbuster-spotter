@@ -14,6 +14,8 @@ We present our application of adversarial training as a regularization technique
 
 Please see [`requirements.txt`](bert-adversarial/requirements.txt) for a list of required Python packages. You may use `pip3 install -r requirements.txt` to install them at once.
 
+Note that you will need to execute `spacy download en` to install the English language model if this your first time installing this module.
+
 ## Experimental Setup
 
 * Intel(R) Xeon(R) CPU E5-2695 v4 @ 2.10GHz
