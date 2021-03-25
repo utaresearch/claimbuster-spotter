@@ -27,7 +27,7 @@ from nltk import sent_tokenize
 
 from adv_transformer.core.api.api_wrapper import ClaimSpotterAPI
 
-app = Sanic()
+app = Sanic(__name__)
 api = ClaimSpotterAPI()
 
 
