@@ -20,7 +20,7 @@
 import tensorflow as tf
 
 from transformers.activations_tf import get_tf_activation
-from transformers.configuration_distilbert import DistilBertConfig
+from transformers import DistilBertConfig
 from transformers.file_utils import (
     MULTIPLE_CHOICE_DUMMY_INPUTS,
     add_code_sample_docstrings,

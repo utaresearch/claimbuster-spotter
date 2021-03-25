@@ -18,26 +18,61 @@
 import logging
 from collections import OrderedDict
 
-from transformers.configuration_auto import (
-    AlbertConfig,
-    AutoConfig,
-    BertConfig,
-    CamembertConfig,
-    CTRLConfig,
-    DistilBertConfig,
-    ElectraConfig,
-    FlaubertConfig,
-    GPT2Config,
-    MobileBertConfig,
-    OpenAIGPTConfig,
-    RobertaConfig,
-    T5Config,
-    TransfoXLConfig,
-    XLMConfig,
-    XLMRobertaConfig,
-    XLNetConfig,
-)
+from transformers import (AlbertConfig,
+                          AutoConfig,
+                          BertConfig,
+                          CamembertConfig,
+                          CTRLConfig,
+                          DistilBertConfig,
+                          ElectraConfig,
+                          FlaubertConfig,
+                          GPT2Config,
+                          MobileBertConfig,
+                          OpenAIGPTConfig,
+                          RobertaConfig,
+                          T5Config,
+                          TransfoXLConfig,
+                          XLMConfig,
+                          XLMRobertaConfig,
+                          XLNetConfig, TFCamembertForMaskedLM, TFCamembertForMultipleChoice,
+                          TFCamembertForQuestionAnswering,
+                          TFCamembertForSequenceClassification,
+                          TFCamembertForTokenClassification,
+                          TFCamembertModel, TFCTRLLMHeadModel, TFCTRLModel, TFElectraForMaskedLM,
+                          TFElectraForPreTraining,
+                          TFElectraForQuestionAnswering,
+                          TFElectraForTokenClassification,
+                          TFElectraModel, TFFlaubertForMultipleChoice,
+                          TFFlaubertForQuestionAnsweringSimple,
+                          TFFlaubertForSequenceClassification,
+                          TFFlaubertForTokenClassification,
+                          TFFlaubertModel,
+                          TFFlaubertWithLMHeadModel, TFGPT2LMHeadModel, TFGPT2Model, TFMobileBertForMaskedLM,
+                          TFMobileBertForMultipleChoice,
+                          TFMobileBertForPreTraining,
+                          TFMobileBertForQuestionAnswering,
+                          TFMobileBertForSequenceClassification,
+                          TFMobileBertForTokenClassification,
+                          TFMobileBertModel, TFOpenAIGPTLMHeadModel, TFOpenAIGPTModel, TFT5ForConditionalGeneration,
+                          TFT5Model,
+                          TFTransfoXLLMHeadModel, TFTransfoXLModel, TFXLMForMultipleChoice,
+                          TFXLMForQuestionAnsweringSimple,
+                          TFXLMForSequenceClassification,
+                          TFXLMForTokenClassification,
+                          TFXLMModel,
+                          TFXLMWithLMHeadModel, TFXLMRobertaForMaskedLM,
+                          TFXLMRobertaForMultipleChoice,
+                          TFXLMRobertaForQuestionAnswering,
+                          TFXLMRobertaForSequenceClassification,
+                          TFXLMRobertaForTokenClassification,
+                          TFXLMRobertaModel, TFXLNetForMultipleChoice,
+                          TFXLNetForQuestionAnsweringSimple,
+                          TFXLNetForSequenceClassification,
+                          TFXLNetForTokenClassification,
+                          TFXLNetLMHeadModel,
+                          TFXLNetModel)
 from transformers.configuration_utils import PretrainedConfig
+
 from adv_transformer.core.models.ctransf.albert import (
     TFAlbertForMaskedLM,
     TFAlbertForMultipleChoice,
@@ -45,7 +80,7 @@ from adv_transformer.core.models.ctransf.albert import (
     TFAlbertForQuestionAnswering,
     TFAlbertForSequenceClassification,
     TFAlbertForTokenClassification,
-    TFAlbertModel,
+    TFAlbertModel
 )
 from adv_transformer.core.models.ctransf.bert import (
     TFBertForMaskedLM,
@@ -54,17 +89,8 @@ from adv_transformer.core.models.ctransf.bert import (
     TFBertForQuestionAnswering,
     TFBertForSequenceClassification,
     TFBertForTokenClassification,
-    TFBertModel,
+    TFBertModel
 )
-from transformers.modeling_tf_camembert import (
-    TFCamembertForMaskedLM,
-    TFCamembertForMultipleChoice,
-    TFCamembertForQuestionAnswering,
-    TFCamembertForSequenceClassification,
-    TFCamembertForTokenClassification,
-    TFCamembertModel,
-)
-from transformers.modeling_tf_ctrl import TFCTRLLMHeadModel, TFCTRLModel
 from adv_transformer.core.models.ctransf.distilbert import (
     TFDistilBertForMaskedLM,
     TFDistilBertForMultipleChoice,
@@ -73,32 +99,6 @@ from adv_transformer.core.models.ctransf.distilbert import (
     TFDistilBertForTokenClassification,
     TFDistilBertModel,
 )
-from transformers.modeling_tf_electra import (
-    TFElectraForMaskedLM,
-    TFElectraForPreTraining,
-    TFElectraForQuestionAnswering,
-    TFElectraForTokenClassification,
-    TFElectraModel,
-)
-from transformers.modeling_tf_flaubert import (
-    TFFlaubertForMultipleChoice,
-    TFFlaubertForQuestionAnsweringSimple,
-    TFFlaubertForSequenceClassification,
-    TFFlaubertForTokenClassification,
-    TFFlaubertModel,
-    TFFlaubertWithLMHeadModel,
-)
-from transformers.modeling_tf_gpt2 import TFGPT2LMHeadModel, TFGPT2Model
-from transformers.modeling_tf_mobilebert import (
-    TFMobileBertForMaskedLM,
-    TFMobileBertForMultipleChoice,
-    TFMobileBertForPreTraining,
-    TFMobileBertForQuestionAnswering,
-    TFMobileBertForSequenceClassification,
-    TFMobileBertForTokenClassification,
-    TFMobileBertModel,
-)
-from transformers.modeling_tf_openai import TFOpenAIGPTLMHeadModel, TFOpenAIGPTModel
 from adv_transformer.core.models.ctransf.roberta import (
     TFRobertaForMaskedLM,
     TFRobertaForMultipleChoice,
@@ -107,36 +107,8 @@ from adv_transformer.core.models.ctransf.roberta import (
     TFRobertaForTokenClassification,
     TFRobertaModel,
 )
-from transformers.modeling_tf_t5 import TFT5ForConditionalGeneration, TFT5Model
-from transformers.modeling_tf_transfo_xl import TFTransfoXLLMHeadModel, TFTransfoXLModel
-from transformers.modeling_tf_xlm import (
-    TFXLMForMultipleChoice,
-    TFXLMForQuestionAnsweringSimple,
-    TFXLMForSequenceClassification,
-    TFXLMForTokenClassification,
-    TFXLMModel,
-    TFXLMWithLMHeadModel,
-)
-from transformers.modeling_tf_xlm_roberta import (
-    TFXLMRobertaForMaskedLM,
-    TFXLMRobertaForMultipleChoice,
-    TFXLMRobertaForQuestionAnswering,
-    TFXLMRobertaForSequenceClassification,
-    TFXLMRobertaForTokenClassification,
-    TFXLMRobertaModel,
-)
-from transformers.modeling_tf_xlnet import (
-    TFXLNetForMultipleChoice,
-    TFXLNetForQuestionAnsweringSimple,
-    TFXLNetForSequenceClassification,
-    TFXLNetForTokenClassification,
-    TFXLNetLMHeadModel,
-    TFXLNetModel,
-)
-
 
 logger = logging.getLogger(__name__)
-
 
 TF_MODEL_MAPPING = OrderedDict(
     [

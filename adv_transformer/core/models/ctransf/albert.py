@@ -22,7 +22,7 @@ from typing import Optional, Tuple
 import tensorflow as tf
 
 from transformers.activations_tf import get_tf_activation
-from transformers.configuration_albert import AlbertConfig
+from transformers import AlbertConfig
 from transformers.file_utils import (
     MULTIPLE_CHOICE_DUMMY_INPUTS,
     ModelOutput,

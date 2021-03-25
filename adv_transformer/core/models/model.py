@@ -20,7 +20,6 @@
 #     Arlington, TX 76019
 #
 import os
-import re
 import tensorflow as tf
 import json
 from adv_transformer.core.utils.flags import FLAGS
