@@ -118,7 +118,7 @@ nohup sh -c "python3 -m adv_transformer.train --cs_model_dir=output_distilbert_a
 nohup sh -c "python3 -m adv_transformer.train --cs_model_dir=output_albert --cs_gpu=1 --cs_tfm_type=albert-base-v2 --cs_tfm_ft_enc_layers=12 --cs_train_steps=30 --cs_lr=1e-4"&>nohup_albert.out&
 
 nohup sh -c "python3 -m adv_transformer.train --cs_model_dir=output_bert --cs_gpu=0 --cs_tfm_type=bert-base-uncased --cs_train_steps=15"&>nohup_bert.out&
-nohup sh -c "python3 -m adv_transformer.train --cs_model_dir=output_bert_adv --cs_gpu=0 --cs_tfm_type=bert-base-uncased --cs_train_steps=15 --cs_perturb_id=6 --cs_adv_train=True"&>nohup_bert_adv.out&
+  nohup sh -c "python3 -m adv_transformer.train --cs_model_dir=output_bert_adv --cs_gpu=0 --cs_tfm_type=bert-base-uncased --cs_train_steps=15 --cs_perturb_id=6 --cs_adv_train=True"&>nohup_bert_adv.out&
 
 # large
 nohup sh -c "python3 -m adv_transformer.train --cs_model_dir=output_roberta_large --cs_gpu=1 --cs_tfm_type=roberta-large --cs_train_steps=30 --cs_tfm_ft_enc_layers=4 --cs_refresh_data=True"&>nohup_roberta_large.out&
