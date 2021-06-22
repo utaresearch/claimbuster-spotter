@@ -61,7 +61,7 @@ flags.DEFINE_integer('cs_model_save_interval', 1, 'Numbers of epochs before mode
 flags.DEFINE_integer('cs_k_fold', 4, 'Number of folds for k-fold cross validation')
 flags.DEFINE_bool('cs_restore_and_continue', False, 'Restore previous training session and continue')
 flags.DEFINE_integer('cs_batch_size_reg', 24, 'Size of the batch.')
-flags.DEFINE_integer('cs_batch_size_adv', 24, 'Size of the batch when adversarial training.')
+flags.DEFINE_integer('cs_batch_size_adv', 12, 'Size of the batch when adversarial training.')
 
 flags.DEFINE_integer('cs_train_steps', 15, 'Number of epochs to run.')
 flags.DEFINE_float('cs_lr', 5e-5, 'Learning rate during optimization.')
