@@ -77,6 +77,7 @@ flags.DEFINE_float('cs_perturb_norm_length', 2.0, 'Norm length of adversarial pe
 
 # Model Architecture
 flags.DEFINE_string('cs_tfm_type', 'bert-base-uncased', 'Type of transformer; see https://huggingface.co/transformers/pretrained_models.html')
+flags.DEFINE_integer('cs_hidden_size', 768, 'Embedding size')
 flags.DEFINE_string('cs_pool_strat', 'first', 'How to pool: using average of all steps or [CLS]')
 flags.DEFINE_bool('cs_tfm_ft_embed', False, 'Train transf embedding layer')
 flags.DEFINE_bool('cs_tfm_ft_pooler', True, 'Train transf pooler layer')

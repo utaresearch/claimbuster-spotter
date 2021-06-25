@@ -89,7 +89,8 @@ class ClaimSpotterLayer(tf.keras.layers.Layer):
         config.attention_probs_dropout_prob = 1 - FLAGS.cs_kp_tfm_attn
 
         self.transf_model = TFAutoModel.from_pretrained(FLAGS.cs_tfm_type, config=config)
-        self.pooler_weights = None
+        glorot_init = tf.keras.initializers.GlorotNormal()
+        self.adv_weights = glorot_init(shape=(FLAGS.cs_hidden_size,))
 
         self.dropout_layer = tf.keras.layers.Dropout(rate=1-FLAGS.cs_kp_cls)
         self.fc_output_layer = tf.keras.layers.Dense(FLAGS.cs_num_classes)
@@ -220,11 +221,12 @@ class ClaimSpotterLayer(tf.keras.layers.Layer):
     def compute_accuracy(y, logits):
         return tf.reduce_mean(tf.cast(tf.equal(tf.argmax(logits, axis=1), tf.argmax(y, axis=1)), dtype=tf.float32))
 
-    @staticmethod
-    def _compute_perturbation(loss, orig_embed, tape):
+    def _compute_perturbation(self, loss, orig_embed, tape):
         grad = tape.gradient(loss, orig_embed)
         grad = tf.stop_gradient(grad)
-        perturb = FLAGS.cs_perturb_norm_length * grad / tf.norm(grad, ord='euclidean')
+        print(tf.shape(grad))
+        print(tf.shape(self.adv_weights))
+
+        perturb = grad / tf.norm(grad, ord='euclidean') * self.adv_weights
 
         return perturb
-
