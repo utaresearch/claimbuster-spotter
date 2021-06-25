@@ -90,7 +90,7 @@ class ClaimSpotterLayer(tf.keras.layers.Layer):
 
         self.transf_model = TFAutoModel.from_pretrained(FLAGS.cs_tfm_type, config=config)
         glorot_init = tf.keras.initializers.GlorotNormal()
-        self.adv_weights = glorot_init(shape=(FLAGS.cs_hidden_size,))
+        self.adv_weights = tf.Variable(glorot_init(shape=(FLAGS.cs_hidden_size,)), name='adv_weights')
 
         self.dropout_layer = tf.keras.layers.Dropout(rate=1-FLAGS.cs_kp_cls)
         self.fc_output_layer = tf.keras.layers.Dense(FLAGS.cs_num_classes)
