@@ -211,6 +211,7 @@ class ClaimSpotterLayer(tf.keras.layers.Layer):
             non_trainable_layers.append('/pooler/')
 
         train_vars = [v for v in train_vars if not any(z in v.name for z in non_trainable_layers)]
+        train_vars.append(self.adv_weights)
 
         logging.info('Removing: {}'.format(non_trainable_layers))
         logging.info('Trainable variables: {}'.format([v.name for v in train_vars]))
@@ -227,6 +228,6 @@ class ClaimSpotterLayer(tf.keras.layers.Layer):
         print(tf.shape(grad))
         print(tf.shape(self.adv_weights))
 
-        perturb = grad / tf.norm(grad, ord='euclidean') * self.adv_weights
+        perturb = grad / tf.norm(grad, ord='euclidean') * self.adv_weights[None, None, :]
 
         return perturb
