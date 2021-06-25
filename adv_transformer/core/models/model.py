@@ -225,8 +225,6 @@ class ClaimSpotterLayer(tf.keras.layers.Layer):
     def _compute_perturbation(self, loss, orig_embed, tape):
         grad = tape.gradient(loss, orig_embed)
         grad = tf.stop_gradient(grad)
-        print(tf.shape(grad))
-        print(tf.shape(self.adv_weights))
 
         perturb = grad / tf.norm(grad, ord='euclidean') * self.adv_weights[None, None, :]
 
