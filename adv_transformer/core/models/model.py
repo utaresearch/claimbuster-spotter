@@ -164,6 +164,10 @@ class ClaimSpotterLayer(tf.keras.layers.Layer):
         grad = tape.gradient(loss_adv, self.vars_to_train)
         self.optimizer.apply_gradients(zip(grad, self.vars_to_train))
 
+        lb, ub = FLAGS.cs_perturb_norm_length_range
+        self.adv_weights = tf.math.minimum(self.adv_weights, ub)
+        self.adv_weights = tf.math.maximum(self.adv_weights, lb)
+
         return tf.reduce_sum(loss_adv), self.compute_accuracy(y, logits_adv)
 
     @tf.function
