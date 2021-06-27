@@ -90,7 +90,8 @@ class ClaimSpotterLayer(tf.keras.layers.Layer):
 
         self.transf_model = TFAutoModel.from_pretrained(FLAGS.cs_tfm_type, config=config)
         glorot_init = tf.keras.initializers.GlorotNormal()
-        self.adv_weights = tf.Variable(glorot_init(shape=(FLAGS.cs_hidden_size,)), name='adv_weights')
+        self.adv_weights = tf.Variable(glorot_init(shape=(FLAGS.cs_hidden_size,)), name='adv_weights',
+                                       constraint=lambda x: tf.clip_by_value(x, *FLAGS.cs_perturb_norm_length_range))
 
         self.dropout_layer = tf.keras.layers.Dropout(rate=1-FLAGS.cs_kp_cls)
         self.fc_output_layer = tf.keras.layers.Dense(FLAGS.cs_num_classes)
@@ -163,10 +164,6 @@ class ClaimSpotterLayer(tf.keras.layers.Layer):
 
         grad = tape.gradient(loss_adv, self.vars_to_train)
         self.optimizer.apply_gradients(zip(grad, self.vars_to_train))
-
-        lb, ub = FLAGS.cs_perturb_norm_length_range
-        self.adv_weights = tf.math.minimum(self.adv_weights, ub)
-        self.adv_weights = tf.math.maximum(self.adv_weights, lb)
 
         return tf.reduce_sum(loss_adv), self.compute_accuracy(y, logits_adv)
 
