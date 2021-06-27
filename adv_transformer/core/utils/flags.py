@@ -72,6 +72,7 @@ flags.DEFINE_bool('cs_adv_train', False, 'Use adversarial training?')
 flags.DEFINE_integer('cs_perturb_id', 6, "Index in [('pos', 'seg', 'tok'), ('pos', 'seg'), ('pos', 'tok'), ('seg', 'tok'), ('pos',), ('seg',), ('tok',)] to perturb")
 flags.DEFINE_integer('cs_adv_type', 0, '0 for AT, 1 for VAT')
 flags.DEFINE_float('cs_lambda', 0.25, 'Coefficient of adversarial loss')
+flags.DEFINE_float('cs_lambda_eps', 0.2, 'Coefficient of adversarial norm weights')
 flags.DEFINE_bool('cs_combine_reg_adv_loss', True, 'Add loss of regular and adversarial loss during training')
 flags.DEFINE_list('cs_perturb_norm_length_range', [0.5, 5.0], 'Norm length bounds for adversarial perturbation (learned via sgd)')
 

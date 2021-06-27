@@ -160,7 +160,8 @@ class ClaimSpotterLayer(tf.keras.layers.Layer):
             perturb = self._compute_perturbation(loss, orig_embed, tape2)
 
             logits_adv = self.call(x, training=True, perturb=perturb)
-            loss_adv = self.compute_training_loss(y, logits_adv) + FLAGS.cs_lambda * loss
+            loss_adv = self.compute_training_loss(y, logits_adv) + FLAGS.cs_lambda * loss - \
+                       FLAGS.cs_lambda_eps * tf.norm(self.adv_weights)
 
         grad = tape.gradient(loss_adv, self.vars_to_train)
         self.optimizer.apply_gradients(zip(grad, self.vars_to_train))
