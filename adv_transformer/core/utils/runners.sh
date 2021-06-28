@@ -110,10 +110,10 @@ nohup sh -c "python3 -m adv_transformer.train --cs_model_dir=output2 --cs_gpu=0 
 # base
 
 nohup sh -c "python3 -m adv_transformer.train --cs_model_dir=output_roberta --cs_gpu=0 --cs_tfm_type=roberta-base --cs_train_steps=30 --cs_tfm_ft_enc_layers=4"&>nohup_roberta.out&
-nohup sh -c "python3 -m adv_transformer.train --cs_model_dir=output_roberta_adv --cs_gpu=0 --cs_tfm_type=roberta-base --cs_train_steps=35 --cs_tfm_ft_enc_layers=6 --cs_adv_train=True"&>nohup_roberta_adv.out&
+nohup sh -c "python3 -m adv_transformer.train --cs_model_dir=output_roberta_adv --cs_gpu=0 --cs_tfm_type=roberta-base --cs_train_steps=35 --cs_tfm_ft_enc_layers=6 --cs_adv_train=True --cs_perturb_id=6"&>nohup_roberta_adv.out&
 
-nohup sh -c "python3 -m adv_transformer.train --cs_model_dir=output_distilbert --cs_gpu=1 --cs_tfm_type=distilbert-base-uncased"&>nohup_distilbert.out&
-nohup sh -c "python3 -m adv_transformer.train --cs_model_dir=output_distilbert_adv --cs_gpu=1 --cs_tfm_type=distilbert-base-uncased --cs_adv_train=True --cs_train_steps=10"&>nohup_distilbert_adv.out&
+nohup sh -c "python3 -m adv_transformer.train --cs_model_dir=output_distilbert --cs_gpu=1 --cs_tfm_type=distilbert-base-uncased --cs_train_steps=10"&>nohup_distilbert.out&
+nohup sh -c "python3 -m adv_transformer.train --cs_model_dir=output_distilbert_adv --cs_gpu=1 --cs_tfm_type=distilbert-base-uncased --cs_adv_train=True --cs_train_steps=10 --cs_perturb_id=6"&>nohup_distilbert_adv.out&
 
 nohup sh -c "python3 -m adv_transformer.train --cs_model_dir=output_albert --cs_gpu=1 --cs_tfm_type=albert-base-v2 --cs_tfm_ft_enc_layers=12 --cs_train_steps=30 --cs_lr=1e-4"&>nohup_albert.out&
 
