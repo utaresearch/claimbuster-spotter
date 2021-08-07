@@ -92,6 +92,7 @@ class ClaimSpotterLayer(tf.keras.layers.Layer):
         glorot_init = tf.keras.initializers.GlorotNormal()
         self.adv_weights = tf.Variable(glorot_init(shape=(FLAGS.cs_hidden_size,)), name='adv_weights',
                                        constraint=lambda x: tf.clip_by_value(x, *FLAGS.cs_perturb_norm_length_range))
+        self.adv_embed_weights = tf.Variable(tf.ones(shape=(3,)), name='adv_embed_weights')
 
         self.dropout_layer = tf.keras.layers.Dropout(rate=1-FLAGS.cs_kp_cls)
         self.fc_output_layer = tf.keras.layers.Dense(FLAGS.cs_num_classes)
@@ -116,7 +117,7 @@ class ClaimSpotterLayer(tf.keras.layers.Layer):
             tfm_output = self.transf_model(x_id, training=training, perturb=perturb, return_dict=True)['pooler_output']
         else:
             cur_res = self.transf_model(x_id, training=training, get_embedding=get_embedding, return_dict=True)
-            orig_embed, tfm_output = cur_res['orig_embedding'], cur_res['pooler_output']
+            orig_embeds, tfm_output = cur_res['orig_embeddings'], cur_res['pooler_output']
 
         tfm_output = tf.concat([tfm_output, x_sent], axis=1)
         tfm_output = self.dropout_layer(tfm_output, training=training)
@@ -133,7 +134,7 @@ class ClaimSpotterLayer(tf.keras.layers.Layer):
         if get_embedding == -1:
             return ret
         else:
-            return orig_embed, ret
+            return orig_embeds, ret
 
     @tf.function
     def train_on_batch(self, x, y):
@@ -154,10 +155,10 @@ class ClaimSpotterLayer(tf.keras.layers.Layer):
 
         with tf.GradientTape() as tape:
             with tf.GradientTape() as tape2:
-                orig_embed, logits = self.call(x, training=True, get_embedding=FLAGS.cs_perturb_id)
+                orig_embeds, logits = self.call(x, training=True, get_embedding=FLAGS.cs_perturb_id)
                 loss = self.compute_ce_loss(y, logits)
 
-            perturb = self._compute_perturbation(loss, orig_embed, tape2)
+            perturb = self._compute_perturbation(loss, orig_embeds, tape2)
 
             logits_adv = self.call(x, training=True, perturb=perturb)
             loss_adv = self.compute_training_loss(y, logits_adv) + FLAGS.cs_lambda * loss - \
@@ -224,10 +225,21 @@ class ClaimSpotterLayer(tf.keras.layers.Layer):
     def compute_accuracy(y, logits):
         return tf.reduce_mean(tf.cast(tf.equal(tf.argmax(logits, axis=1), tf.argmax(y, axis=1)), dtype=tf.float32))
 
-    def _compute_perturbation(self, loss, orig_embed, tape):
-        grad = tape.gradient(loss, orig_embed)
-        grad = tf.stop_gradient(grad)
+    def _compute_perturbation(self, loss, orig_embeds, tape):
+        print(orig_embeds)
 
-        perturb = grad / tf.norm(grad, ord='euclidean') * self.adv_weights[None, None, :]
+        all_perturbs = []
+        for embed in orig_embeds:
+            grad = tape.gradient(loss, embed)
+            grad = tf.stop_gradient(grad)
+            all_perturbs.append(grad / tf.norm(grad, ord='euclidean'))
+        all_perturbs = tf.stack(all_perturbs, axis=1)
 
-        return perturb
+        print(all_perturbs, self.adv_embed_weights)
+
+        all_perturbs = all_perturbs * 3 * tf.nn.softmax(self.adv_embed_weights)[None, :, None, None]
+        final_perturb = tf.reduce_mean(all_perturbs, axis=1)
+
+        print(final_perturb)
+
+        return final_perturb

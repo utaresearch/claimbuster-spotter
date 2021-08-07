@@ -137,7 +137,6 @@ class TFBertEmbeddings(tf.keras.layers.Layer):
         token_type_ids=None,
         inputs_embeds=None,
         mode="embedding",
-        get_embedding=-1,
         training=False,
     ):
         """
@@ -159,14 +158,13 @@ class TFBertEmbeddings(tf.keras.layers.Layer):
         https://github.com/tensorflow/models/blob/a009f4fb9d2fc4949e32192a944688925ef78659/official/transformer/v2/embedding_layer.py#L24
         """
         if mode == "embedding":
-            return self._embedding(input_ids, position_ids, token_type_ids, inputs_embeds,
-                                   get_embedding=get_embedding, training=training)
+            return self._embedding(input_ids, position_ids, token_type_ids, inputs_embeds, training=training)
         elif mode == "linear":
             return self._linear(input_ids)
         else:
             raise ValueError("mode {} is not valid.".format(mode))
 
-    def _embedding(self, input_ids, position_ids, token_type_ids, inputs_embeds, get_embedding, training=False):
+    def _embedding(self, input_ids, position_ids, token_type_ids, inputs_embeds, training=False):
         """Applies embedding based on inputs tensor."""
         assert not (input_ids is None and inputs_embeds is None)
 
@@ -189,33 +187,8 @@ class TFBertEmbeddings(tf.keras.layers.Layer):
         position_embeddings = tf.cast(self.position_embeddings(position_ids), inputs_embeds.dtype)
         token_type_embeddings = tf.cast(self.token_type_embeddings(token_type_ids), inputs_embeds.dtype)
 
-        ret_embed = tf.constant(0)
-
-        if get_embedding != -1:
-            all_embeddings = {
-                'tok': inputs_embeds,
-                'seg': token_type_embeddings,
-                'pos': position_embeddings
-            }
-            perturbable = [('pos', 'seg', 'tok'), ('pos', 'seg'), ('pos', 'tok'), ('seg', 'tok'), ('pos',), ('seg',),
-                           ('tok',)]
-            cfg = perturbable[get_embedding]
-
-            changed = False
-            for el in cfg:
-                if not changed:
-                    ret_embed = all_embeddings[el]
-                    changed = True
-                else:
-                    ret_embed += all_embeddings[el]
-
-            embedding_output = ret_embed
-
-            diff = set(perturbable[0]).difference(cfg)
-            for el in diff:
-                embedding_output += all_embeddings[el]
-        else:
-            embedding_output = inputs_embeds + position_embeddings + token_type_embeddings
+        embedding_output = inputs_embeds + position_embeddings + token_type_embeddings
+        ret_embed = (inputs_embeds, position_embeddings, token_type_embeddings)
 
         embeddings = self.LayerNorm(embedding_output)
         embeddings = self.dropout(embeddings, training=training)
@@ -580,7 +553,6 @@ class TFBertMainAdvLayer(tf.keras.layers.Layer):
         output_hidden_states=None,
         return_dict=None,
         perturb=None,
-        get_embedding=-1,
         training=False,
     ):
         if isinstance(inputs, (tuple, list)):
@@ -628,7 +600,7 @@ class TFBertMainAdvLayer(tf.keras.layers.Layer):
             token_type_ids = tf.fill(input_shape, 0)
 
         embedding_output, ret_embed = self.embeddings(input_ids, position_ids, token_type_ids, inputs_embeds,
-                                                      get_embedding=get_embedding, training=training)
+                                                      training=training)
         if perturb is not None:
             embedding_output += perturb
 
@@ -682,7 +654,7 @@ class TFBertMainAdvLayer(tf.keras.layers.Layer):
             pooler_output=pooled_output,
             hidden_states=encoder_outputs.hidden_states,
             attentions=encoder_outputs.attentions,
-            orig_embedding=ret_embed
+            orig_embeddings=ret_embed
         )
 
 

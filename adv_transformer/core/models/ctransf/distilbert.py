@@ -98,8 +98,7 @@ class TFEmbeddings(tf.keras.layers.Layer):
             )
         super().build(input_shape)
 
-    def call(self, input_ids=None, position_ids=None, inputs_embeds=None, mode="embedding",
-             get_embedding=-1, training=False):
+    def call(self, input_ids=None, position_ids=None, inputs_embeds=None, mode="embedding", training=False):
         """
         Get token embeddings of inputs.
 
@@ -119,14 +118,13 @@ class TFEmbeddings(tf.keras.layers.Layer):
         https://github.com/tensorflow/models/blob/a009f4fb9d2fc4949e32192a944688925ef78659/official/transformer/v2/embedding_layer.py#L24
         """
         if mode == "embedding":
-            return self._embedding(input_ids, position_ids, inputs_embeds,
-                                   get_embedding=get_embedding, training=training)
+            return self._embedding(input_ids, position_ids, inputs_embeds, training=training)
         elif mode == "linear":
             return self._linear(input_ids)
         else:
             raise ValueError("mode {} is not valid.".format(mode))
 
-    def _embedding(self, input_ids, position_ids, inputs_embeds, get_embedding, training=False):
+    def _embedding(self, input_ids, position_ids, inputs_embeds, training=False):
         """
         Parameters:
             input_ids: tf.Tensor(bs, max_seq_length) The token ids to embed.
@@ -150,33 +148,8 @@ class TFEmbeddings(tf.keras.layers.Layer):
             self.position_embeddings(position_ids), inputs_embeds.dtype
         )  # (bs, max_seq_length, dim)
 
-        ret_embed = tf.constant(0)
-
-        if get_embedding != -1:
-            all_embeddings = {
-                'tok': inputs_embeds,
-                'pos': position_embeddings
-            }
-            perturbable = [('pos', 'seg', 'tok'), ('pos', 'seg'), ('pos', 'tok'), ('seg', 'tok'), ('pos',), ('seg',),
-                           ('tok',)]
-            assert get_embedding not in [0, 1, 3, 5], f'You can\'t perturb an embedding that doesn\'t exist: seg'
-            cfg = perturbable[get_embedding]
-
-            changed = False
-            for el in cfg:
-                if not changed:
-                    ret_embed = all_embeddings[el]
-                    changed = True
-                else:
-                    ret_embed += all_embeddings[el]
-
-            embedding_output = ret_embed
-
-            diff = set(perturbable[2]).difference(cfg)
-            for el in diff:
-                embedding_output += all_embeddings[el]
-        else:
-            embedding_output = inputs_embeds + position_embeddings
+        embedding_output = inputs_embeds + position_embeddings
+        ret_embed = (inputs_embeds, position_embeddings)
 
         embeddings = self.LayerNorm(embedding_output)  # (bs, max_seq_length, dim)
         embeddings = self.dropout(embeddings, training=training)  # (bs, max_seq_length, dim)
@@ -455,7 +428,6 @@ class TFDistilBertMainAdvLayer(tf.keras.layers.Layer):
         output_hidden_states=None,
         return_dict=True,
         perturb=None,
-        get_embedding=-1,
         training=False,
     ):
         if isinstance(inputs, (tuple, list)):
@@ -508,8 +480,7 @@ class TFDistilBertMainAdvLayer(tf.keras.layers.Layer):
 
             head_mask = [None] * self.num_hidden_layers
 
-        embedding_output, ret_embed = self.embeddings(input_ids, get_embedding=get_embedding,
-                                                      inputs_embeds=inputs_embeds)  # (bs, seq_length, dim)
+        embedding_output, ret_embed = self.embeddings(input_ids, inputs_embeds=inputs_embeds)  # (bs, seq_length, dim)
         if perturb is not None:
             embedding_output += perturb
 
@@ -532,7 +503,7 @@ class TFDistilBertMainAdvLayer(tf.keras.layers.Layer):
             pooler_output=pooled_output,
             hidden_states=tfmr_output['hidden_states'] if 'hidden_states' in tfmr_output else None,
             attentions=tfmr_output['attentions'] if 'attentions' in tfmr_output else None,
-            orig_embedding=ret_embed
+            orig_embeddings=ret_embed
         )
 
 
