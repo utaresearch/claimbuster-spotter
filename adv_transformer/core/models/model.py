@@ -116,7 +116,7 @@ class ClaimSpotterLayer(tf.keras.layers.Layer):
         if get_embedding == -1:
             tfm_output = self.transf_model(x_id, training=training, perturb=perturb, return_dict=True)['pooler_output']
         else:
-            cur_res = self.transf_model(x_id, training=training, get_embedding=get_embedding, return_dict=True)
+            cur_res = self.transf_model(x_id, training=training, return_dict=True)
             orig_embeds, tfm_output = cur_res['orig_embeddings'], cur_res['pooler_output']
 
         tfm_output = tf.concat([tfm_output, x_sent], axis=1)

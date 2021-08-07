@@ -83,11 +83,11 @@ flags.DEFINE_string('cs_pool_strat', 'first', 'How to pool: using average of all
 flags.DEFINE_bool('cs_tfm_ft_embed', False, 'Train transf embedding layer')
 flags.DEFINE_bool('cs_tfm_ft_pooler', True, 'Train transf pooler layer')
 flags.DEFINE_integer('cs_tfm_ft_enc_layers', 2, 'Last n encoding layers are marked as trainable')
-flags.DEFINE_float('cs_kp_tfm_attn', 0.8, 'Keep probability of attention dropout in Transformer')
-flags.DEFINE_float('cs_kp_tfm_hidden', 0.8, 'Keep probability of hidden dropout in Transformer')
+flags.DEFINE_float('cs_kp_tfm_attn', 0.9, 'Keep probability of attention dropout in Transformer')
+flags.DEFINE_float('cs_kp_tfm_hidden', 0.9, 'Keep probability of hidden dropout in Transformer')
 
 flags.DEFINE_integer('cs_cls_hidden', 0, 'Size of hidden classification layer')
-flags.DEFINE_float('cs_kp_cls', 0.7, 'Keep probability of dropout in FC')
+flags.DEFINE_float('cs_kp_cls', 0.9, 'Keep probability of dropout in FC')
 
 # Predictions
 flags.DEFINE_bool('cs_custom_activation', True, 'Use custom sigmoid normalization for output probabilities')
